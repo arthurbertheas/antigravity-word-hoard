@@ -54,7 +54,7 @@ export function WordExplorer() {
 
         // Fallback: simple scroll to top within iframe (if has own scrollbar)
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [currentPage, selectedWord, filters]);
+    }, [currentPage, filters]);
 
     return (
         <div ref={topRef} className="bg-white min-h-0">
