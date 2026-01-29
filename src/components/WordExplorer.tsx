@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { LayoutGrid, List, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutGrid, List, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 
@@ -37,8 +37,18 @@ export function WordExplorer() {
 
     return (
         <div className="h-screen flex overflow-hidden bg-background">
+            {/* Background effects */}
+            <div className="fixed inset-0 pointer-events-none">
+                {/* Top gradient orb */}
+                <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] animate-float-slow" />
+                {/* Bottom gradient orb */}
+                <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[100px] animate-float-slow" style={{ animationDelay: '-3s' }} />
+                {/* Accent orb */}
+                <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-accent/3 rounded-full blur-[80px] animate-float" style={{ animationDelay: '-5s' }} />
+            </div>
+
             {/* Panneau de filtres */}
-            <aside className="w-80 shrink-0 border-r border-border/50 overflow-hidden">
+            <aside className="w-80 shrink-0 border-r border-border/30 overflow-hidden glass relative z-10">
                 <FilterPanel
                     filters={filters}
                     updateFilter={handleFilterChange}
@@ -57,27 +67,34 @@ export function WordExplorer() {
             </aside>
 
             {/* Zone principale */}
-            <main className="flex-1 flex flex-col overflow-hidden">
+            <main className="flex-1 flex flex-col overflow-hidden relative z-10">
                 {/* Toolbar */}
-                <div className="shrink-0 px-6 py-4 border-b border-border/50 bg-card/30 backdrop-blur-sm">
+                <div className="shrink-0 px-6 py-5 border-b border-border/30 glass">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <h1 className="text-2xl font-bold gradient-text">
-                                Banque de Mots
-                            </h1>
-                            <span className="text-muted-foreground">
-                                {words.length} résultat{words.length > 1 ? 's' : ''}
-                            </span>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20">
+                                    <Sparkles className="w-5 h-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold gradient-text tracking-tight">
+                                        Banque de Mots
+                                    </h1>
+                                    <p className="text-sm text-muted-foreground">
+                                        {words.length} résultat{words.length > 1 ? 's' : ''} sur {totalWords}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             {/* Toggle vue */}
-                            <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+                            <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1 border border-border/30">
                                 <Button
                                     variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                                     size="sm"
                                     onClick={() => setViewMode('grid')}
-                                    className="h-8 w-8 p-0"
+                                    className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-primary/20 text-primary' : ''}`}
                                 >
                                     <LayoutGrid className="w-4 h-4" />
                                 </Button>
@@ -85,7 +102,7 @@ export function WordExplorer() {
                                     variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                                     size="sm"
                                     onClick={() => setViewMode('list')}
-                                    className="h-8 w-8 p-0"
+                                    className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-primary/20 text-primary' : ''}`}
                                 >
                                     <List className="w-4 h-4" />
                                 </Button>
@@ -99,7 +116,7 @@ export function WordExplorer() {
                                     setCurrentPage(1);
                                 }}
                             >
-                                <SelectTrigger className="w-24">
+                                <SelectTrigger className="w-28 bg-muted/30 border-border/30">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -118,20 +135,23 @@ export function WordExplorer() {
                 <div className="flex-1 overflow-auto p-6">
                     {paginatedWords.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                            <p className="text-lg">Aucun mot ne correspond à vos critères</p>
+                            <div className="p-4 rounded-full bg-muted/20 mb-4">
+                                <Sparkles className="w-8 h-8 text-muted-foreground/50" />
+                            </div>
+                            <p className="text-lg font-medium">Aucun mot ne correspond à vos critères</p>
                             <Button
                                 variant="link"
                                 onClick={() => {
                                     setCurrentPage(1);
                                     resetFilters();
                                 }}
-                                className="mt-2"
+                                className="mt-2 text-primary"
                             >
                                 Réinitialiser les filtres
                             </Button>
                         </div>
                     ) : viewMode === 'grid' ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 stagger-fade-in">
                             {paginatedWords.map((word, index) => (
                                 <WordCard
                                     key={`${word.ORTHO}-${index}`}
@@ -141,18 +161,18 @@ export function WordExplorer() {
                             ))}
                         </div>
                     ) : (
-                        <div className="space-y-2">
+                        <div className="space-y-2 stagger-fade-in">
                             {paginatedWords.map((word, index) => (
                                 <div
                                     key={`${word.ORTHO}-${index}`}
-                                    className="flex items-center gap-4 p-3 rounded-lg bg-card/50 hover:bg-card/80 cursor-pointer transition-colors"
+                                    className="flex items-center gap-4 p-4 rounded-xl glass border border-border/30 hover:border-primary/30 cursor-pointer transition-all duration-300 hover-lift group"
                                     onClick={() => setSelectedWord(word)}
                                 >
-                                    <span className="font-bold text-lg min-w-32">{word.ORTHO}</span>
-                                    <span className="font-mono text-muted-foreground">/{word.PHON}/</span>
-                                    <span className="text-sm text-muted-foreground">{word.SYNT}</span>
+                                    <span className="font-bold text-lg min-w-32 group-hover:gradient-text transition-all">{word.ORTHO}</span>
+                                    <span className="font-mono text-muted-foreground text-sm">/{word.PHON}/</span>
+                                    <span className="text-sm text-muted-foreground bg-muted/30 px-2 py-0.5 rounded">{word.SYNT}</span>
                                     <span className="text-sm text-muted-foreground">{word.NBSYLL} syll.</span>
-                                    <span className="text-sm text-muted-foreground ml-auto">{word.PSYLL}</span>
+                                    <span className="font-mono text-sm text-muted-foreground ml-auto bg-muted/30 px-2 py-0.5 rounded">{word.PSYLL}</span>
                                 </div>
                             ))}
                         </div>
@@ -161,10 +181,10 @@ export function WordExplorer() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="shrink-0 px-6 py-4 border-t border-border/50 bg-card/30 backdrop-blur-sm">
+                    <div className="shrink-0 px-6 py-4 border-t border-border/30 glass">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">
-                                Page {currentPage} sur {totalPages}
+                            <span className="text-sm text-muted-foreground font-mono">
+                                Page {currentPage} / {totalPages}
                             </span>
                             <div className="flex items-center gap-2">
                                 <Button
@@ -172,6 +192,7 @@ export function WordExplorer() {
                                     size="sm"
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
+                                    className="border-border/50 hover:border-primary/50 hover:bg-primary/10"
                                 >
                                     <ChevronLeft className="w-4 h-4 mr-1" />
                                     Précédent
@@ -195,7 +216,7 @@ export function WordExplorer() {
                                                 variant={currentPage === pageNum ? 'secondary' : 'ghost'}
                                                 size="sm"
                                                 onClick={() => setCurrentPage(pageNum)}
-                                                className="w-8 h-8 p-0"
+                                                className={`w-8 h-8 p-0 font-mono ${currentPage === pageNum ? 'bg-primary/20 text-primary border border-primary/30' : ''}`}
                                             >
                                                 {pageNum}
                                             </Button>
@@ -208,6 +229,7 @@ export function WordExplorer() {
                                     size="sm"
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={currentPage === totalPages}
+                                    className="border-border/50 hover:border-primary/50 hover:bg-primary/10"
                                 >
                                     Suivant
                                     <ChevronRight className="w-4 h-4 ml-1" />
