@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
-import { WordDetailPanel } from "./WordDetailPanel";
-import { WordDetailDrawer } from "./WordDetailDrawer"; // Garder pour mobile si besoin, ou supprimer
+import { WordDetailView } from "./WordDetailView";
 import { useWords } from "@/hooks/useWords";
 import { Word } from "@/types/word";
 import { Button } from "@/components/ui/button";
@@ -65,180 +64,168 @@ export function WordExplorer() {
                         </div>
                     </aside>
 
-                    {/* Right side - Results */}
+                    {/* Right side - Results or Detail */}
                     <main className="flex-1 min-w-0">
-                        {/* Toolbar */}
-                        <div className="flex items-center justify-between mb-6">
-                            <p className="text-muted-foreground">
-                                <span className="font-semibold text-foreground">{words.length}</span> résultat{words.length > 1 ? 's' : ''}
-                            </p>
+                        {selectedWord ? (
+                            <WordDetailView
+                                word={selectedWord}
+                                onBack={() => setSelectedWord(null)}
+                            />
+                        ) : (
+                            <>
+                                {/* Toolbar */}
+                                <div className="flex items-center justify-between mb-6">
+                                    <p className="text-muted-foreground">
+                                        <span className="font-semibold text-foreground">{words.length}</span> résultat{words.length > 1 ? 's' : ''}
+                                    </p>
 
-                            <div className="flex items-center gap-3">
-                                {/* Toggle vue */}
-                                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                                    <Button
-                                        variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                                        size="sm"
-                                        onClick={() => setViewMode('grid')}
-                                        className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
-                                    >
-                                        <LayoutGrid className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                        variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-                                        size="sm"
-                                        onClick={() => setViewMode('list')}
-                                        className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
-                                    >
-                                        <List className="w-4 h-4" />
-                                    </Button>
-                                </div>
-
-                                {/* Items per page */}
-                                <Select
-                                    value={itemsPerPage.toString()}
-                                    onValueChange={(value) => {
-                                        setItemsPerPage(parseInt(value));
-                                        setCurrentPage(1);
-                                    }}
-                                >
-                                    <SelectTrigger className="w-28 bg-white">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {ITEMS_PER_PAGE_OPTIONS.map((option) => (
-                                            <SelectItem key={option} value={option.toString()}>
-                                                {option} / page
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        {/* Grille/Liste de mots */}
-                        <div className="min-h-[400px]">
-                            {paginatedWords.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground bg-card rounded-2xl border border-border">
-                                    <p className="text-lg font-medium">Aucun mot ne correspond</p>
-                                    <Button
-                                        variant="link"
-                                        onClick={() => {
-                                            setCurrentPage(1);
-                                            resetFilters();
-                                        }}
-                                        className="mt-2 text-primary"
-                                    >
-                                        Réinitialiser les filtres
-                                    </Button>
-                                </div>
-                            ) : viewMode === 'grid' ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-fade-in">
-                                    {paginatedWords.map((word, index) => (
-                                        <WordCard
-                                            key={`${word.ORTHO}-${index}`}
-                                            word={word}
-                                            onClick={setSelectedWord}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="space-y-2 stagger-fade-in">
-                                    {paginatedWords.map((word, index) => (
-                                        <div
-                                            key={`${word.ORTHO}-${index}`}
-                                            className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 cursor-pointer transition-all hover-lift group"
-                                            onClick={() => setSelectedWord(word)}
-                                        >
-                                            <span className="font-bold text-lg min-w-28 group-hover:text-primary transition-colors">{word.ORTHO}</span>
-                                            <span className="font-mono text-muted-foreground text-sm">/{word.PHON}/</span>
-                                            <span className="text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary">{word.SYNT}</span>
-                                            <span className="text-sm text-muted-foreground">{word.NBSYLL} syll.</span>
-                                            <span className="font-mono text-sm text-muted-foreground ml-auto">{word.PSYLL}</span>
+                                    <div className="flex items-center gap-3">
+                                        {/* Toggle vue */}
+                                        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                                            <Button
+                                                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                                                size="sm"
+                                                onClick={() => setViewMode('grid')}
+                                                className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+                                            >
+                                                <LayoutGrid className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                                                size="sm"
+                                                onClick={() => setViewMode('list')}
+                                                className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
+                                            >
+                                                <List className="w-4 h-4" />
+                                            </Button>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
 
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="mt-8 flex items-center justify-between">
-                                <span className="text-sm text-muted-foreground">
-                                    Page {currentPage} sur {totalPages}
-                                </span>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                        disabled={currentPage === 1}
-                                    >
-                                        <ChevronLeft className="w-4 h-4 mr-1" />
-                                        Précédent
-                                    </Button>
-
-                                    <div className="flex items-center gap-1">
-                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                            let pageNum: number;
-                                            if (totalPages <= 5) {
-                                                pageNum = i + 1;
-                                            } else if (currentPage <= 3) {
-                                                pageNum = i + 1;
-                                            } else if (currentPage >= totalPages - 2) {
-                                                pageNum = totalPages - 4 + i;
-                                            } else {
-                                                pageNum = currentPage - 2 + i;
-                                            }
-                                            return (
-                                                <Button
-                                                    key={pageNum}
-                                                    variant={currentPage === pageNum ? 'default' : 'ghost'}
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage(pageNum)}
-                                                    className="w-8 h-8 p-0"
-                                                >
-                                                    {pageNum}
-                                                </Button>
-                                            );
-                                        })}
+                                        {/* Items per page */}
+                                        <Select
+                                            value={itemsPerPage.toString()}
+                                            onValueChange={(value) => {
+                                                setItemsPerPage(parseInt(value));
+                                                setCurrentPage(1);
+                                            }}
+                                        >
+                                            <SelectTrigger className="w-28 bg-white">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {ITEMS_PER_PAGE_OPTIONS.map((option) => (
+                                                    <SelectItem key={option} value={option.toString()}>
+                                                        {option} / page
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
-
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                        disabled={currentPage === totalPages}
-                                    >
-                                        Suivant
-                                        <ChevronRight className="w-4 h-4 ml-1" />
-                                    </Button>
                                 </div>
-                            </div>
+
+                                {/* Grille/Liste de mots */}
+                                <div className="min-h-[400px]">
+                                    {paginatedWords.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center h-64 text-muted-foreground bg-card rounded-2xl border border-border">
+                                            <p className="text-lg font-medium">Aucun mot ne correspond</p>
+                                            <Button
+                                                variant="link"
+                                                onClick={() => {
+                                                    setCurrentPage(1);
+                                                    resetFilters();
+                                                }}
+                                                className="mt-2 text-primary"
+                                            >
+                                                Réinitialiser les filtres
+                                            </Button>
+                                        </div>
+                                    ) : viewMode === 'grid' ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-fade-in">
+                                            {paginatedWords.map((word, index) => (
+                                                <WordCard
+                                                    key={`${word.ORTHO}-${index}`}
+                                                    word={word}
+                                                    onClick={setSelectedWord}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2 stagger-fade-in">
+                                            {paginatedWords.map((word, index) => (
+                                                <div
+                                                    key={`${word.ORTHO}-${index}`}
+                                                    className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 cursor-pointer transition-all hover-lift group"
+                                                    onClick={() => setSelectedWord(word)}
+                                                >
+                                                    <span className="font-bold text-lg min-w-28 group-hover:text-primary transition-colors">{word.ORTHO}</span>
+                                                    <span className="font-mono text-muted-foreground text-sm">/{word.PHON}/</span>
+                                                    <span className="text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary">{word.SYNT}</span>
+                                                    <span className="text-sm text-muted-foreground">{word.NBSYLL} syll.</span>
+                                                    <span className="font-mono text-sm text-muted-foreground ml-auto">{word.PSYLL}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="mt-8 flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground">
+                                            Page {currentPage} sur {totalPages}
+                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                                disabled={currentPage === 1}
+                                            >
+                                                <ChevronLeft className="w-4 h-4 mr-1" />
+                                                Précédent
+                                            </Button>
+
+                                            <div className="flex items-center gap-1">
+                                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                                    let pageNum: number;
+                                                    if (totalPages <= 5) {
+                                                        pageNum = i + 1;
+                                                    } else if (currentPage <= 3) {
+                                                        pageNum = i + 1;
+                                                    } else if (currentPage >= totalPages - 2) {
+                                                        pageNum = totalPages - 4 + i;
+                                                    } else {
+                                                        pageNum = currentPage - 2 + i;
+                                                    }
+                                                    return (
+                                                        <Button
+                                                            key={pageNum}
+                                                            variant={currentPage === pageNum ? 'default' : 'ghost'}
+                                                            size="sm"
+                                                            onClick={() => setCurrentPage(pageNum)}
+                                                            className="w-8 h-8 p-0"
+                                                        >
+                                                            {pageNum}
+                                                        </Button>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                Suivant
+                                                <ChevronRight className="w-4 h-4 ml-1" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </main>
-
-                    {/* Right side - Detail Panel (Desktop only) */}
-                    {selectedWord && (
-                        <aside className="w-80 shrink-0 hidden xl:block animate-in slide-in-from-right duration-500 fade-in pl-2">
-                            <div className="sticky top-6">
-                                <WordDetailPanel
-                                    word={selectedWord}
-                                    onClose={() => setSelectedWord(null)}
-                                />
-                            </div>
-                        </aside>
-                    )}
                 </div>
-            </div>
-
-
-            {/* Drawer détail (Mobile/Tablet uniquement) */}
-            <div className="xl:hidden">
-                <WordDetailDrawer
-                    word={selectedWord}
-                    onClose={() => setSelectedWord(null)}
-                />
             </div>
         </div>
     );
