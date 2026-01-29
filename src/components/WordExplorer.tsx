@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { LayoutGrid, List, ChevronLeft, ChevronRight } from "lucide-react";
 
-const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
+const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48];
 
 export function WordExplorer() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
@@ -37,15 +37,14 @@ export function WordExplorer() {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Main application container - designed to embed in Webflow */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-                {/* Two-column layout like the SaaS */}
-                <div className="flex gap-8">
+                {/* Two-column layout */}
+                <div className="flex gap-6">
 
-                    {/* Left sidebar - Filters */}
-                    <aside className="w-72 shrink-0">
-                        <div className="sticky top-6 bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+                    {/* Sidebar - Filters */}
+                    <aside className="w-64 shrink-0">
+                        <div className="sticky top-6 bg-white rounded-xl border border-border overflow-hidden">
                             <FilterPanel
                                 filters={filters}
                                 updateFilter={handleFilterChange}
@@ -64,33 +63,29 @@ export function WordExplorer() {
                         </div>
                     </aside>
 
-                    {/* Right side - Results */}
+                    {/* Main - Results */}
                     <main className="flex-1 min-w-0">
                         {/* Toolbar */}
-                        <div className="flex items-center justify-between mb-6">
-                            <p className="text-muted-foreground">
-                                <span className="font-semibold text-foreground">{words.length}</span> résultat{words.length > 1 ? 's' : ''}
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-sm text-muted-foreground">
+                                <span className="font-medium text-foreground">{words.length}</span> mot{words.length > 1 ? 's' : ''}
                             </p>
 
-                            <div className="flex items-center gap-3">
-                                {/* Toggle vue */}
-                                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                                    <Button
-                                        variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                                        size="sm"
+                            <div className="flex items-center gap-2">
+                                {/* View toggle */}
+                                <div className="flex items-center border border-border rounded-lg overflow-hidden">
+                                    <button
                                         onClick={() => setViewMode('grid')}
-                                        className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+                                        className={`p-2 ${viewMode === 'grid' ? 'bg-muted' : 'bg-white hover:bg-muted/50'}`}
                                     >
                                         <LayoutGrid className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                        variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-                                        size="sm"
+                                    </button>
+                                    <button
                                         onClick={() => setViewMode('list')}
-                                        className={`h-8 w-8 p-0 ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
+                                        className={`p-2 ${viewMode === 'list' ? 'bg-muted' : 'bg-white hover:bg-muted/50'}`}
                                     >
                                         <List className="w-4 h-4" />
-                                    </Button>
+                                    </button>
                                 </div>
 
                                 {/* Items per page */}
@@ -101,13 +96,13 @@ export function WordExplorer() {
                                         setCurrentPage(1);
                                     }}
                                 >
-                                    <SelectTrigger className="w-28 bg-white">
+                                    <SelectTrigger className="w-24 h-9 text-sm">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {ITEMS_PER_PAGE_OPTIONS.map((option) => (
                                             <SelectItem key={option} value={option.toString()}>
-                                                {option} / page
+                                                {option}/page
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -115,24 +110,23 @@ export function WordExplorer() {
                             </div>
                         </div>
 
-                        {/* Grille/Liste de mots */}
+                        {/* Results */}
                         <div className="min-h-[400px]">
                             {paginatedWords.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground bg-card rounded-2xl border border-border">
-                                    <p className="text-lg font-medium">Aucun mot ne correspond</p>
-                                    <Button
-                                        variant="link"
+                                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground bg-muted/30 rounded-xl">
+                                    <p className="text-sm">Aucun mot trouvé</p>
+                                    <button
                                         onClick={() => {
                                             setCurrentPage(1);
                                             resetFilters();
                                         }}
-                                        className="mt-2 text-primary"
+                                        className="text-sm text-primary hover:underline mt-1"
                                     >
-                                        Réinitialiser les filtres
-                                    </Button>
+                                        Effacer les filtres
+                                    </button>
                                 </div>
                             ) : viewMode === 'grid' ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-fade-in">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-fade-in">
                                     {paginatedWords.map((word, index) => (
                                         <WordCard
                                             key={`${word.ORTHO}-${index}`}
@@ -142,17 +136,17 @@ export function WordExplorer() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="space-y-2 stagger-fade-in">
+                                <div className="space-y-1 stagger-fade-in">
                                     {paginatedWords.map((word, index) => (
                                         <div
                                             key={`${word.ORTHO}-${index}`}
-                                            className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 cursor-pointer transition-all hover-lift group"
+                                            className="flex items-center gap-4 p-3 rounded-lg border border-transparent hover:border-border hover:bg-muted/30 cursor-pointer transition-colors"
                                             onClick={() => setSelectedWord(word)}
                                         >
-                                            <span className="font-bold text-lg min-w-28 group-hover:text-primary transition-colors">{word.ORTHO}</span>
-                                            <span className="font-mono text-muted-foreground text-sm">/{word.PHON}/</span>
-                                            <span className="text-sm px-2 py-0.5 rounded-full bg-primary/10 text-primary">{word.SYNT}</span>
-                                            <span className="text-sm text-muted-foreground">{word.NBSYLL} syll.</span>
+                                            <span className="font-medium w-28">{word.ORTHO}</span>
+                                            <span className="font-mono text-sm text-muted-foreground">/{word.PHON}/</span>
+                                            <span className="pill text-xs py-0.5 px-2">{word.SYNT}</span>
+                                            <span className="text-sm text-muted-foreground">{word.NBSYLL} syll</span>
                                             <span className="font-mono text-sm text-muted-foreground ml-auto">{word.PSYLL}</span>
                                         </div>
                                     ))}
@@ -160,66 +154,37 @@ export function WordExplorer() {
                             )}
                         </div>
 
-                        {/* Pagination */}
+                        {/* Pagination - Simple style like the SaaS */}
                         {totalPages > 1 && (
-                            <div className="mt-8 flex items-center justify-between">
+                            <div className="flex items-center justify-center gap-4 mt-6 pt-6 border-t border-border">
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="text-sm text-primary hover:underline disabled:text-muted-foreground disabled:no-underline disabled:cursor-not-allowed flex items-center gap-1"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                    Précédent
+                                </button>
+
                                 <span className="text-sm text-muted-foreground">
                                     Page {currentPage} sur {totalPages}
                                 </span>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                        disabled={currentPage === 1}
-                                    >
-                                        <ChevronLeft className="w-4 h-4 mr-1" />
-                                        Précédent
-                                    </Button>
 
-                                    <div className="flex items-center gap-1">
-                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                            let pageNum: number;
-                                            if (totalPages <= 5) {
-                                                pageNum = i + 1;
-                                            } else if (currentPage <= 3) {
-                                                pageNum = i + 1;
-                                            } else if (currentPage >= totalPages - 2) {
-                                                pageNum = totalPages - 4 + i;
-                                            } else {
-                                                pageNum = currentPage - 2 + i;
-                                            }
-                                            return (
-                                                <Button
-                                                    key={pageNum}
-                                                    variant={currentPage === pageNum ? 'default' : 'ghost'}
-                                                    size="sm"
-                                                    onClick={() => setCurrentPage(pageNum)}
-                                                    className="w-8 h-8 p-0"
-                                                >
-                                                    {pageNum}
-                                                </Button>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                        disabled={currentPage === totalPages}
-                                    >
-                                        Suivant
-                                        <ChevronRight className="w-4 h-4 ml-1" />
-                                    </Button>
-                                </div>
+                                <button
+                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="text-sm text-primary hover:underline disabled:text-muted-foreground disabled:no-underline disabled:cursor-not-allowed flex items-center gap-1"
+                                >
+                                    Suivant
+                                    <ChevronRight className="w-4 h-4" />
+                                </button>
                             </div>
                         )}
                     </main>
                 </div>
             </div>
 
-            {/* Modal détail */}
+            {/* Modal */}
             <WordDetailModal
                 word={selectedWord}
                 onClose={() => setSelectedWord(null)}
