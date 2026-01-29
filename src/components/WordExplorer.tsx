@@ -15,10 +15,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { LayoutGrid, List, ChevronLeft, ChevronRight } from "lucide-react";
+import { useIframeResize } from "@/hooks/useIframeResize";
 
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 
-import { useIframeResize } from "@/hooks/useIframeResize";
+
 
 export function WordExplorer() {
     return (
