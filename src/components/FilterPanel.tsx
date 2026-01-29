@@ -111,89 +111,27 @@ export function FilterPanel({
                         />
                     </div>
 
-                    <Separator />
+                    <Separator className="mb-4" />
 
-                    <Accordion type="multiple" defaultValue={['categories', 'syllables']} className="space-y-1">
+                    {/* FILTRES PRIMAIRES */}
+                    <div className="mb-2">
+                        <h4 className="text-xs font-semibold text-primary uppercase tracking-wide mb-3 pl-1">
+                            Structure & Graphie
+                        </h4>
+                    </div>
 
-                        {/* Catégories syntaxiques */}
-                        <AccordionItem value="categories" className="border-0">
-                            <AccordionTrigger className="hover:no-underline py-3 text-sm font-medium">
-                                Catégorie
-                                {filters.categories.length > 0 && (
-                                    <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0">
-                                        {filters.categories.length}
-                                    </Badge>
-                                )}
-                            </AccordionTrigger>
-                            <AccordionContent className="pb-3">
-                                <div className="flex flex-wrap gap-2">
-                                    {categories.map((cat) => {
-                                        const isActive = filters.categories.includes(cat);
-                                        return (
-                                            <button
-                                                key={cat}
-                                                onClick={() => toggleArrayFilter('categories', cat)}
-                                                className={`
-                          pill text-xs
-                          ${isActive ? 'pill-active' : 'pill-default'}
-                        `}
-                                            >
-                                                {SYNT_LABELS[cat]}
-                                                <span className="ml-1 text-muted-foreground/70">
-                                                    {stats.categories[cat] || 0}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-
-                        {/* Nombre de syllabes */}
-                        <AccordionItem value="syllables" className="border-0">
-                            <AccordionTrigger className="hover:no-underline py-3 text-sm font-medium">
-                                Syllabes
-                                {filters.syllables.length > 0 && (
-                                    <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0">
-                                        {filters.syllables.length}
-                                    </Badge>
-                                )}
-                            </AccordionTrigger>
-                            <AccordionContent className="pb-3">
-                                <div className="flex flex-wrap gap-2">
-                                    {syllables.map((syll) => {
-                                        const isActive = filters.syllables.includes(syll);
-                                        return (
-                                            <button
-                                                key={syll}
-                                                onClick={() => toggleArrayFilter('syllables', syll)}
-                                                className={`
-                          pill text-xs font-mono
-                          ${isActive ? 'pill-active' : 'pill-default'}
-                        `}
-                                            >
-                                                {syll}
-                                                <span className="ml-1 text-muted-foreground/70">
-                                                    ({stats.syllables[syll] || 0})
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-
+                    <Accordion type="multiple" defaultValue={['structures', 'graphemes']} className="space-y-1 mb-6">
                         {/* Structure syllabique */}
                         <AccordionItem value="structures" className="border-0">
-                            <AccordionTrigger className="hover:no-underline py-3 text-sm font-medium">
-                                Structure
+                            <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                                Structure syllabique
                                 {filters.structures.length > 0 && (
                                     <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0">
                                         {filters.structures.length}
                                     </Badge>
                                 )}
                             </AccordionTrigger>
-                            <AccordionContent className="pb-3">
+                            <AccordionContent className="pb-3 pt-1">
                                 <div className="space-y-2">
                                     {structures.map((struct) => (
                                         <div key={struct} className="flex items-center gap-2">
@@ -220,16 +158,16 @@ export function FilterPanel({
 
                         {/* Complexité graphémique */}
                         <AccordionItem value="graphemes" className="border-0">
-                            <AccordionTrigger className="hover:no-underline py-3 text-sm font-medium">
-                                Graphèmes
+                            <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                                Complexité graphémique
                                 {filters.graphemes.length > 0 && (
                                     <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0">
                                         {filters.graphemes.length}
                                     </Badge>
                                 )}
                             </AccordionTrigger>
-                            <AccordionContent className="pb-3">
-                                <div className="space-y-2 max-h-48 overflow-y-auto">
+                            <AccordionContent className="pb-3 pt-1">
+                                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                                     {graphemeCodes.map((code) => (
                                         <div key={code} className="flex items-center gap-2">
                                             <Checkbox
@@ -239,7 +177,7 @@ export function FilterPanel({
                                             />
                                             <Label
                                                 htmlFor={`graph-${code}`}
-                                                className="text-xs cursor-pointer flex-1 truncate"
+                                                className="text-xs cursor-pointer flex-1 leading-tight"
                                                 title={GRAPHEME_LABELS[code]}
                                             >
                                                 <span className="font-mono font-bold text-primary">{code}.</span>{' '}
@@ -253,18 +191,61 @@ export function FilterPanel({
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                    </Accordion>
+
+
+                    <Separator className="mb-4" />
+
+                    {/* FILTRES SECONDAIRES */}
+                    <div className="mb-2">
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 pl-1">
+                            Autres critères
+                        </h4>
+                    </div>
+
+                    <Accordion type="multiple" defaultValue={[]} className="space-y-1">
+                        {/* Nombre de syllabes */}
+                        <AccordionItem value="syllables" className="border-0">
+                            <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                                Nombre de syllabes
+                                {filters.syllables.length > 0 && (
+                                    <Badge className="ml-2 bg-secondary text-secondary-foreground text-xs px-1.5 py-0">
+                                        {filters.syllables.length}
+                                    </Badge>
+                                )}
+                            </AccordionTrigger>
+                            <AccordionContent className="pb-3 pt-1">
+                                <div className="flex flex-wrap gap-2">
+                                    {syllables.map((syll) => {
+                                        const isActive = filters.syllables.includes(syll);
+                                        return (
+                                            <button
+                                                key={syll}
+                                                onClick={() => toggleArrayFilter('syllables', syll)}
+                                                className={`
+                                                  pill text-xs font-mono h-8 w-8 flex items-center justify-center
+                                                  ${isActive ? 'pill-active' : 'pill-default'}
+                                                `}
+                                            >
+                                                {syll}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
 
                         {/* Fréquence */}
                         <AccordionItem value="frequency" className="border-0">
-                            <AccordionTrigger className="hover:no-underline py-3 text-sm font-medium">
+                            <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
                                 Fréquence
                                 {filters.frequencies.length > 0 && (
-                                    <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0">
+                                    <Badge className="ml-2 bg-secondary text-secondary-foreground text-xs px-1.5 py-0">
                                         {filters.frequencies.length}
                                     </Badge>
                                 )}
                             </AccordionTrigger>
-                            <AccordionContent className="pb-3">
+                            <AccordionContent className="pb-3 pt-1">
                                 <div className="flex flex-wrap gap-2">
                                     {frequencyCodes.map((code) => {
                                         const isActive = filters.frequencies.includes(code);
@@ -273,9 +254,9 @@ export function FilterPanel({
                                                 key={code}
                                                 onClick={() => toggleArrayFilter('frequencies', code)}
                                                 className={`
-                          pill text-xs
-                          ${isActive ? 'pill-active' : 'pill-default'}
-                        `}
+                                                  pill text-xs px-3 py-1
+                                                  ${isActive ? 'pill-active' : 'pill-default'}
+                                                `}
                                             >
                                                 {FREQUENCY_LABELS[code]}
                                             </button>
@@ -287,20 +268,16 @@ export function FilterPanel({
 
                         {/* Longueur */}
                         <AccordionItem value="length" className="border-0">
-                            <AccordionTrigger className="hover:no-underline py-3 text-sm font-medium">
-                                Longueur
+                            <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                                Longueur (lettres)
                                 {(filters.minLetters !== 1 || filters.maxLetters !== 20) && (
-                                    <Badge className="ml-2 bg-primary text-white text-xs px-1.5 py-0">
+                                    <Badge className="ml-2 bg-secondary text-secondary-foreground text-xs px-1.5 py-0">
                                         {filters.minLetters}-{filters.maxLetters}
                                     </Badge>
                                 )}
                             </AccordionTrigger>
-                            <AccordionContent className="pb-3">
-                                <div className="space-y-3">
-                                    <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>{filters.minLetters} lettres</span>
-                                        <span>{filters.maxLetters} lettres</span>
-                                    </div>
+                            <AccordionContent className="pb-3 pt-1">
+                                <div className="space-y-4 px-1">
                                     <Slider
                                         value={[filters.minLetters, filters.maxLetters]}
                                         min={1}
@@ -312,10 +289,15 @@ export function FilterPanel({
                                         }}
                                         className="w-full"
                                     />
+                                    <div className="flex justify-between text-xs text-muted-foreground">
+                                        <span>{filters.minLetters} lettres</span>
+                                        <span>{filters.maxLetters} lettres</span>
+                                    </div>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
+
                 </div>
             </ScrollArea>
         </div>
