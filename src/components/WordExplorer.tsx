@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
@@ -45,8 +45,21 @@ export function WordExplorer() {
         updateFilter(key, value);
     };
 
+    const topRef = useRef<HTMLDivElement>(null);
+
+    // Scroll to top on change
+    useEffect(() => {
+        // Force parent scroll via scrollIntoView
+        if (topRef.current) {
+            topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // Fallback for non-iframe or basic scroll
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.parent.postMessage({ type: 'scroll_top' }, '*');
+    }, [currentPage, selectedWord, filters]);
+
     return (
-        <div className="bg-white min-h-0">
+        <div ref={topRef} className="bg-white min-h-0">
             {/* Main application container - designed to embed in Webflow */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
