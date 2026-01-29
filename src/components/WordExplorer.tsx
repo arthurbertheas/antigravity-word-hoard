@@ -32,12 +32,7 @@ export function WordExplorer() {
     const endIndex = startIndex + itemsPerPage;
     const paginatedWords = words.slice(startIndex, endIndex);
 
-    // Scroll to top on change
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        // Optional: Notify parent if embedded
-        window.parent.postMessage({ type: 'scroll_top' }, '*');
-    }, [currentPage, selectedWord, filters]);
+
 
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
