@@ -268,9 +268,8 @@ function WordExplorerContent() {
                     </main>
                 </div>
             </div>
+            <SelectionBar />
         </div>
-            </div >
-        <SelectionBar />
-        </div >
     );
+}
 }
