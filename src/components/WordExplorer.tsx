@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
+import { SelectionBar } from "./SelectionBar";
 import { useWords } from "@/hooks/useWords";
 import { Word } from "@/types/word";
 import { Button } from "@/components/ui/button";
+import { SelectionProvider } from "@/contexts/SelectionContext";
 import {
     Select,
     SelectContent,
@@ -19,6 +21,14 @@ const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 import { useIframeResize } from "@/hooks/useIframeResize";
 
 export function WordExplorer() {
+    return (
+        <SelectionProvider>
+            <WordExplorerContent />
+        </SelectionProvider>
+    );
+}
+
+function WordExplorerContent() {
     useIframeResize();
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
     const [selectedWord, setSelectedWord] = useState<Word | null>(null);
@@ -259,5 +269,8 @@ export function WordExplorer() {
                 </div>
             </div>
         </div>
+            </div >
+        <SelectionBar />
+        </div >
     );
 }
