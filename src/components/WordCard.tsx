@@ -32,7 +32,7 @@ export function WordCard({ word, onClick }: WordCardProps) {
             )}
             onClick={() => onClick?.(word)}
         >
-            <div className="absolute top-2 left-2 z-10 transition-opacity duration-200">
+            <div className="absolute top-2 right-2 z-10 transition-opacity duration-200">
                 {/* Selection Circle - Visible on hover or if selected */}
                 <button
                     onClick={handleSelection}
