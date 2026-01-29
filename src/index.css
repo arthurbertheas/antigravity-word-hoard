@@ -2,51 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Premium Typography - Following SKILL.md guidelines */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@200;300;400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
     /* Light theme - Matching matériel orthophonie SaaS */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 222 47% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 210 40% 98%;
+    --card-foreground: 222 47% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 222 47% 20%;
 
     /* Primary blue matching the SaaS branding */
-    --primary: 217 91% 50%;
+    --primary: 217 91% 55%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - light gray */
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
+    /* Secondary - soft blue */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 20%;
 
-    /* Accent - teal from the gradient card */
-    --accent: 174 72% 46%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - matching the yellow/teal gradient from the cards */
+    --accent: 174 72% 56%;
+    --accent-foreground: 222 47% 20%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 50%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 55%;
 
     --radius: 0.75rem;
 
+    /* Custom design tokens */
+    --glow-primary: 217 91% 55%;
+
+    /* Gradients - matching the card gradient from the screenshots */
+    --gradient-card: linear-gradient(135deg, hsl(48 100% 85%), hsl(174 72% 75%));
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 55%), hsl(200 91% 55%));
+    --gradient-subtle: linear-gradient(135deg, hsl(217 91% 55% / 0.05), hsl(174 72% 56% / 0.05));
+
+    /* Shadows - softer for light theme */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-card: 0 4px 20px -2px rgb(0 0 0 / 0.08);
+
+    /* Typography */
+    --font-display: 'Bricolage Grotesque', sans-serif;
+    --font-body: 'Space Grotesk', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+
     /* Sidebar tokens */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 217 91% 50%;
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 222 47% 20%;
+    --sidebar-primary: 217 91% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 96%;
-    --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 50%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 20%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 217 91% 55%;
   }
 }
 
@@ -61,7 +83,8 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-body);
+    font-feature-settings: "ss01", "ss02", "cv01";
   }
 
   h1,
@@ -70,45 +93,60 @@
   h4,
   h5,
   h6 {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-display);
     font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl font-bold;
+    letter-spacing: -0.03em;
+  }
+
+  h2 {
+    @apply text-xl md:text-2xl font-semibold;
   }
 
   code,
   pre,
   .font-mono {
-    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-family: var(--font-mono);
   }
 }
 
 @layer utilities {
 
-  /* Pill button - like phoneme buttons in the SaaS */
-  .pill {
-    @apply inline-flex items-center justify-center;
-    @apply px-3 py-1.5 text-sm font-medium;
-    @apply rounded-full border border-border;
-    @apply bg-white text-foreground;
-    @apply transition-all duration-150;
-    @apply cursor-pointer select-none;
+  /* Gradient text */
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .pill:hover {
-    @apply border-primary/50 text-primary;
+  /* Subtle background for sections */
+  .bg-subtle {
+    background: linear-gradient(180deg, hsl(210 40% 98%), hsl(0 0% 100%));
   }
 
-  .pill-active {
-    @apply bg-primary/10 border-primary text-primary;
+  /* Card with gradient like the SaaS */
+  .card-gradient {
+    background: var(--gradient-card);
   }
 
-  .pill-active:hover {
-    @apply bg-primary/20;
+  /* Premium animations */
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
   }
 
-  /* Staggered fade-in animation */
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out;
+  }
+
+  /* Staggered animations for list items */
   .stagger-fade-in>* {
     opacity: 0;
-    animation: fade-in-up 0.3s ease-out forwards;
+    animation: fade-in-up 0.4s ease-out forwards;
   }
 
   .stagger-fade-in>*:nth-child(1) {
@@ -116,54 +154,101 @@
   }
 
   .stagger-fade-in>*:nth-child(2) {
-    animation-delay: 30ms;
+    animation-delay: 40ms;
   }
 
   .stagger-fade-in>*:nth-child(3) {
-    animation-delay: 60ms;
+    animation-delay: 80ms;
   }
 
   .stagger-fade-in>*:nth-child(4) {
-    animation-delay: 90ms;
-  }
-
-  .stagger-fade-in>*:nth-child(5) {
     animation-delay: 120ms;
   }
 
+  .stagger-fade-in>*:nth-child(5) {
+    animation-delay: 160ms;
+  }
+
   .stagger-fade-in>*:nth-child(6) {
-    animation-delay: 150ms;
+    animation-delay: 200ms;
   }
 
   .stagger-fade-in>*:nth-child(7) {
-    animation-delay: 180ms;
-  }
-
-  .stagger-fade-in>*:nth-child(8) {
-    animation-delay: 210ms;
-  }
-
-  .stagger-fade-in>*:nth-child(9) {
     animation-delay: 240ms;
   }
 
+  .stagger-fade-in>*:nth-child(8) {
+    animation-delay: 280ms;
+  }
+
+  .stagger-fade-in>*:nth-child(9) {
+    animation-delay: 320ms;
+  }
+
   .stagger-fade-in>*:nth-child(10) {
-    animation-delay: 270ms;
+    animation-delay: 360ms;
   }
 
   .stagger-fade-in>*:nth-child(11) {
-    animation-delay: 300ms;
+    animation-delay: 400ms;
   }
 
   .stagger-fade-in>*:nth-child(12) {
-    animation-delay: 330ms;
+    animation-delay: 440ms;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Interactive scale */
+  .interactive-scale {
+    transition: transform 0.15s ease;
+  }
+
+  .interactive-scale:hover {
+    transform: scale(1.02);
+  }
+
+  .interactive-scale:active {
+    transform: scale(0.98);
+  }
+
+  /* Pill button style like the phoneme pills */
+  .pill {
+    @apply inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium rounded-full border transition-all;
+  }
+
+  .pill-default {
+    @apply bg-white border-border text-foreground hover:border-primary hover:text-primary;
+  }
+
+  .pill-active {
+    @apply bg-primary/10 border-primary text-primary;
   }
 }
 
-@keyframes fade-in-up {
+/* Keyframes */
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
 
   to {
@@ -172,26 +257,40 @@
   }
 }
 
-/* Scrollbar - subtle */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar styling - subtle for light theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: hsl(var(--muted) / 0.5);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.2);
+  background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.4);
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
-/* Selection */
+/* Selection styling */
 ::selection {
-  background: hsl(var(--primary) / 0.15);
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
 }
