@@ -49,13 +49,11 @@ export function WordExplorer() {
 
     // Scroll to top on change
     useEffect(() => {
-        // Force parent scroll via scrollIntoView
-        if (topRef.current) {
-            topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        // Fallback for non-iframe or basic scroll
+        // Send message to parent (Webflow) to scroll to the custom anchor
+        window.parent.postMessage({ type: 'scroll_to_offset' }, '*');
+
+        // Fallback: simple scroll to top within iframe (if has own scrollbar)
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        window.parent.postMessage({ type: 'scroll_top' }, '*');
     }, [currentPage, selectedWord, filters]);
 
     return (
