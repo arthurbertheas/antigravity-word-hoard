@@ -19,20 +19,8 @@ Go to **Page Settings** > **Custom Code** > **Footer Code (Before </body> tag)**
 window.addEventListener('message', function(event) {
     // 1. Handle Scroll to Top
     if (event.data.type === 'scroll_to_offset') {
-        // Defines where to scroll to. 
-        // Priority: 
-        // 1. Element with class .section-header (Your "Banque de mots" title section)
-        // 2. Element with class .w-layout-grid (Common Webflow layout)
-        // 3. <h1> tag
-        // 4. Top of body
-        const target = document.querySelector('.section-header') || 
-                       document.querySelector('.w-layout-grid') || 
-                       document.querySelector('h1') || 
-                       document.body;
-        
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        // Scroll to the very top of the site
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // 2. Handle Auto-Resize (Optional, for better seamless fit)
