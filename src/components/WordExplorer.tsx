@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
-import { WordDetailDrawer } from "./WordDetailDrawer";
+import { WordDetailPanel } from "./WordDetailPanel";
+import { WordDetailDrawer } from "./WordDetailDrawer"; // Garder pour mobile si besoin, ou supprimer
 import { useWords } from "@/hooks/useWords";
 import { Word } from "@/types/word";
 import { Button } from "@/components/ui/button";
@@ -216,14 +217,29 @@ export function WordExplorer() {
                             </div>
                         )}
                     </main>
+
+                    {/* Right side - Detail Panel (Desktop only) */}
+                    {selectedWord && (
+                        <aside className="w-80 shrink-0 hidden xl:block animate-in slide-in-from-right duration-500 fade-in pl-2">
+                            <div className="sticky top-6">
+                                <WordDetailPanel
+                                    word={selectedWord}
+                                    onClose={() => setSelectedWord(null)}
+                                />
+                            </div>
+                        </aside>
+                    )}
                 </div>
             </div>
 
-            {/* Drawer détail */}
-            <WordDetailDrawer
-                word={selectedWord}
-                onClose={() => setSelectedWord(null)}
-            />
+
+            {/* Drawer détail (Mobile/Tablet uniquement) */}
+            <div className="xl:hidden">
+                <WordDetailDrawer
+                    word={selectedWord}
+                    onClose={() => setSelectedWord(null)}
+                />
+            </div>
         </div>
     );
 }
