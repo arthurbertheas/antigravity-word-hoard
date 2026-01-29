@@ -16,7 +16,10 @@ import { LayoutGrid, List, ChevronLeft, ChevronRight } from "lucide-react";
 
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 
+import { useIframeResize } from "@/hooks/useIframeResize";
+
 export function WordExplorer() {
+    useIframeResize();
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
     const [selectedWord, setSelectedWord] = useState<Word | null>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -36,7 +39,7 @@ export function WordExplorer() {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="bg-white min-h-0">
             {/* Main application container - designed to embed in Webflow */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
