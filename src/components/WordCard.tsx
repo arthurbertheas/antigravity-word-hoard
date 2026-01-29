@@ -37,47 +37,25 @@ export function WordCard({ word, onClick }: WordCardProps) {
                 <button
                     onClick={handleSelection}
                     className={cn(
-                        "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 border",
+                        "w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 border",
                         selected
                             ? "bg-primary border-primary text-white opacity-100"
                             : "bg-white border-border text-muted-foreground opacity-0 group-hover:opacity-100 hover:border-primary hover:text-primary"
                     )}
                 >
-                    {selected ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                    {selected ? <Check className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
                 </button>
             </div>
 
-            <CardContent className="p-4 flex flex-col items-center text-center gap-1.5 h-full justify-center min-h-[110px]">
-
-                {/* Structure Code (Discrete Top Right) */}
-                <div className="absolute top-2 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-                        {word["code structure"]}
-                    </span>
-                </div>
+            <CardContent className="p-3 flex flex-col items-center text-center justify-center min-h-[60px]">
 
                 {/* Mot Principal - FOCUS */}
                 <h3 className={cn(
-                    "text-xl font-bold tracking-tight leading-none transition-colors",
+                    "text-lg font-bold tracking-tight leading-none transition-colors",
                     selected ? "text-primary" : "text-foreground/90 group-hover:text-primary"
                 )}>
                     {word.ORTHO.toLowerCase()}
                 </h3>
-
-                {/* Phonétique - Support */}
-                <p className="text-sm text-muted-foreground/60 font-mono">
-                    [{word.PHON}]
-                </p>
-
-                {/* Syllabes - Technique mais discret */}
-                <div className={cn(
-                    "mt-2 text-xs font-medium font-mono px-2 py-0.5 rounded-md transition-opacity",
-                    selected
-                        ? "bg-white/50 text-primary opacity-100"
-                        : "bg-primary/5 text-primary/80 opacity-70 group-hover:opacity-100"
-                )}>
-                    {formattedSyllables}
-                </div>
 
             </CardContent>
         </Card>
