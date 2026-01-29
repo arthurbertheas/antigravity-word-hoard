@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
-import { WordDetailModal } from "./WordDetailModal";
+import { WordDetailDrawer } from "./WordDetailDrawer";
 import { useWords } from "@/hooks/useWords";
 import { Word } from "@/types/word";
 import { Button } from "@/components/ui/button";
@@ -219,8 +219,8 @@ export function WordExplorer() {
                 </div>
             </div>
 
-            {/* Modal détail */}
-            <WordDetailModal
+            {/* Drawer détail */}
+            <WordDetailDrawer
                 word={selectedWord}
                 onClose={() => setSelectedWord(null)}
             />
