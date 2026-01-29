@@ -198,7 +198,10 @@ export function WordExplorer() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                                onClick={() => {
+                                                    isPaginationTrigger.current = true;
+                                                    setCurrentPage((p) => Math.max(1, p - 1));
+                                                }}
                                                 disabled={currentPage === 1}
                                             >
                                                 <ChevronLeft className="w-4 h-4 mr-1" />
@@ -222,7 +225,10 @@ export function WordExplorer() {
                                                             key={pageNum}
                                                             variant={currentPage === pageNum ? 'default' : 'ghost'}
                                                             size="sm"
-                                                            onClick={() => setCurrentPage(pageNum)}
+                                                            onClick={() => {
+                                                                isPaginationTrigger.current = true;
+                                                                setCurrentPage(pageNum);
+                                                            }}
                                                             className="w-8 h-8 p-0"
                                                         >
                                                             {pageNum}
@@ -234,7 +240,10 @@ export function WordExplorer() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                                onClick={() => {
+                                                    isPaginationTrigger.current = true;
+                                                    setCurrentPage((p) => Math.min(totalPages, p + 1));
+                                                }}
                                                 disabled={currentPage === totalPages}
                                             >
                                                 Suivant
