@@ -32,7 +32,7 @@ export function WordCard({ word, onClick }: WordCardProps) {
 
                 {/* Mot Principal - FOCUS */}
                 <h3 className="text-xl font-bold text-foreground/90 tracking-tight leading-none group-hover:text-primary transition-colors">
-                    {word.ORTHO}
+                    {word.ORTHO.toLowerCase()}
                 </h3>
 
                 {/* Phonétique - Support */}
