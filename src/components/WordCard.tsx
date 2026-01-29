@@ -8,37 +8,62 @@ interface WordCardProps {
 }
 
 export function WordCard({ word, onClick }: WordCardProps) {
-    const syntLabel = SYNT_LABELS[word.SYNT] || word.SYNT;
-    const frequency = parseFloat(word["fréquence"].replace(',', '.'));
+    // Mapping court pour les badges de structure
+    const SHORT_STRUCTURE_LABELS: Record<string, string> = {
+        a: 'CV Simple',
+        b: 'CVC / VCV',
+        c: 'E muet',
+        d: 'Cons. Double',
+        e: 'Fin. Muette',
+        f: 'Gr. Cons. Simple',
+        g: 'Gr. Cons. Complexe'
+    };
+
+    const structureLabel = SHORT_STRUCTURE_LABELS[word["code structure"]] || word["code structure"];
+    // Remplacer les tirets ou points par des points médians pour la lisibilité
+    const formattedSyllables = word.PSYLL.replace(/[-.]/g, ' · ');
 
     return (
         <Card
             className="
         group cursor-pointer relative overflow-hidden
-        bg-white border border-border rounded-2xl
+        bg-white border-border/60 hover:border-primary/50
         transition-all duration-200 ease-out
-        hover-lift hover:border-primary/30
-        shadow-sm hover:shadow-md
+        hover-lift shadow-sm hover:shadow-md
       "
             onClick={() => onClick?.(word)}
         >
-            <CardContent className="p-4 flex flex-col gap-2">
-                {/* Structure syllabique (Top right) */}
-                <div className="absolute top-3 right-3">
-                    <span className="text-xs font-mono text-primary/70 bg-primary/5 px-2 py-0.5 rounded text-foreground/70">
-                        {word.PSYLL}
-                    </span>
+            <CardContent className="p-0">
+                {/* Partie Supérieure : Identité du mot */}
+                <div className="p-4 bg-white">
+                    <div className="flex justify-between items-start mb-1">
+                        <h3 className="text-lg font-bold text-primary tracking-tight leading-tight">
+                            {word.ORTHO}
+                        </h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground font-mono">
+                        [{word.PHON}]
+                    </p>
                 </div>
 
-                {/* Mot principal */}
-                <h3 className="text-lg font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
-                    {word.ORTHO}
-                </h3>
+                {/* Séparateur */}
+                <div className="h-px bg-border/60 w-full" />
 
-                {/* Phonétique */}
-                <p className="text-sm text-muted-foreground font-mono">
-                    /{word.PHON}/
-                </p>
+                {/* Partie Inférieure : Zone Technique */}
+                <div className="p-3 bg-muted/30 flex justify-between items-center gap-2">
+                    {/* Découpage syllabique */}
+                    <span className="text-sm font-bold text-[#0056b3] font-mono tracking-wide">
+                        {formattedSyllables}
+                    </span>
+
+                    {/* Tag Structure */}
+                    <Badge
+                        variant="outline"
+                        className="text-[10px] h-5 px-1.5 bg-white border-primary/20 text-primary/80 font-medium whitespace-nowrap"
+                    >
+                        {structureLabel}
+                    </Badge>
+                </div>
             </CardContent>
         </Card>
     );
