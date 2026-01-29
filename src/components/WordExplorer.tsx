@@ -41,15 +41,21 @@ export function WordExplorer() {
     };
 
     const topRef = useRef<HTMLDivElement>(null);
+    const isPaginationTrigger = useRef(false);
 
-    // Scroll to top on change
+    // Scroll to top ONLY on specific interactions (Pagination)
     useEffect(() => {
-        // Send message to parent (Webflow) to scroll to the custom anchor
-        window.parent.postMessage({ type: 'scroll_to_offset' }, '*');
+        if (isPaginationTrigger.current) {
+            // Send message to parent (Webflow) to scroll to the custom anchor
+            window.parent.postMessage({ type: 'scroll_to_offset' }, '*');
 
-        // Fallback: simple scroll to top within iframe (if has own scrollbar)
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [currentPage, filters]);
+            // Fallback: simple scroll to top within iframe
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Reset trigger
+            isPaginationTrigger.current = false;
+        }
+    }, [currentPage]);
 
     return (
         <div ref={topRef} className="bg-white min-h-0">
