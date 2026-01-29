@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
@@ -31,6 +31,13 @@ export function WordExplorer() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedWords = words.slice(startIndex, endIndex);
+
+    // Scroll to top on change
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Optional: Notify parent if embedded
+        window.parent.postMessage({ type: 'scroll_top' }, '*');
+    }, [currentPage, selectedWord, filters]);
 
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
