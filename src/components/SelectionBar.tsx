@@ -8,7 +8,7 @@ export function SelectionBar() {
     if (selectedWords.length === 0) return null;
 
     return (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="sticky top-4 z-50 flex justify-center mb-4 animate-in fade-in slide-in-from-top-4 duration-300">
             <div className="bg-foreground text-background rounded-full shadow-2xl px-6 py-3 flex items-center gap-6 min-w-[320px] justify-between border border-border/20">
 
                 <div className="flex items-center gap-3">

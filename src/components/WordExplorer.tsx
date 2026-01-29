@@ -155,6 +155,8 @@ function WordExplorerContent() {
                                     </div>
                                 </div>
 
+                                <SelectionBar />
+
                                 {/* Grille/Liste de mots */}
                                 <div className="min-h-[400px]">
                                     {paginatedWords.length === 0 ? (
