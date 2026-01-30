@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { X, ChevronLeft, ChevronRight, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -19,46 +19,55 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
     const [fadeKey, setFadeKey] = useState(0);
 
     // Accessibility Defaults
-    // scale factor: 1 = default clamp size. Range: 0.5 to 2
     const [textScale, setTextScale] = useState([1]);
-    const [letterSpacing, setLetterSpacing] = useState([0]); // em unit
+    const [letterSpacing, setLetterSpacing] = useState([0]);
 
     const validWords = words.filter(w => w && w.ORTHO);
     const currentWord = validWords[currentIndex];
 
-    // 1. Manage Body Scroll Lock & Visibility
+    // --- PARENT COMMUNICATION & SCROLL LOCK ---
     useEffect(() => {
         if (isOpen) {
             setIsVisible(true);
             setIsClosing(false);
             setCurrentIndex(0);
             setFadeKey(0);
-            // Lock scroll
+
+            // 1. Lock Internal Scroll
             document.body.style.overflow = 'hidden';
+
+            // 2. Tell Parent (Webflow) to HIDE the floating bar
+            window.parent.postMessage({ type: 'focus_mode_change', isOpen: true }, '*');
+
         } else {
             setIsClosing(true);
-            // Unlock scroll immediately or after animation? 
-            // Usually safer to unlock after animation to prevent jumping background
             const timer = setTimeout(() => {
                 setIsVisible(false);
                 setIsClosing(false);
-                document.body.style.overflow = ''; // Restore
+
+                // Unlock / Restore
+                document.body.style.overflow = '';
+                window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
             }, 300);
             return () => {
                 clearTimeout(timer);
-                document.body.style.overflow = ''; // Cleanup safety
+                document.body.style.overflow = '';
+                // Safety restore on unmount
+                window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
             };
         }
     }, [isOpen]);
 
-    // Cleanup on unmount just in case
+    // Cleanup when component unmounts completely
     useEffect(() => {
         return () => {
             document.body.style.overflow = '';
+            window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
         };
     }, []);
 
-    // 2. Keyboard Navigation
+    // --- COMMAND LISTENER (PREV/NEXT from Keyboard/Parent?) ---
+    // (Here we stick to the component-level keyboard listener)
     useEffect(() => {
         if (!isOpen) return;
 
@@ -70,7 +79,6 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
             } else if (e.key === "ArrowLeft") {
                 handlePrev();
             } else if (e.key === " ") {
-                // Prevent scrolling with spacebar
                 e.preventDefault();
             }
         };
@@ -83,7 +91,6 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
         setIsClosing(true);
         setTimeout(() => {
             onClose();
-            // Scroll restore handled in effect
         }, 300);
     };
 
@@ -107,21 +114,33 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
     return (
         <div
             className={cn(
-                // Layout Fixes: Fixed, Top/Left 0, Max Z-Index, 100vw/100vh
-                "fixed top-0 left-0 right-0 bottom-0 z-[2147483647] w-[100vw] h-[100vh] bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden",
+                // FORCE RESET: Ensure no parent padding/margin affects this
+                // USE 'fixed' and exact viewport units
+                "fixed top-0 left-0 w-[100vw] h-[100dvh] z-[2147483647]",
+                "bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden m-0 p-0",
                 isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
             )}
-            // Prevent scrolling events from bubbling up
+            style={{
+                // Fallback for browsers that might have issues with tailwind classes in iframe (though unlikely)
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100dvh',
+                margin: 0,
+                padding: 0,
+                zIndex: 2147483647
+            }}
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
         >
-            {/* --- Top Controls --- */}
+            {/* Top Controls */}
 
-            {/* 1. Accessibility Toggle (Left) */}
-            <div className="absolute top-8 left-8 z-[2147483647]">
+            {/* Accessibility (Left) */}
+            <div className="absolute top-6 left-6 z-[2147483647]">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-border bg-white shadow-sm hover:bg-gray-50 transition-transform hover:scale-105">
+                        <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-border bg-white shadow-sm hover:bg-gray-50 hover:scale-105 transition-all">
                             <Settings2 className="w-6 h-6 text-muted-foreground" />
                         </Button>
                     </PopoverTrigger>
@@ -158,8 +177,8 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
                 </Popover>
             </div>
 
-            {/* 2. Close Button (Right) */}
-            <div className="absolute top-8 right-8 z-[2147483647]">
+            {/* Close (Right) */}
+            <div className="absolute top-6 right-6 z-[2147483647]">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -172,15 +191,15 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
             </div>
 
 
-            {/* --- Main Content: The Word --- */}
+            {/* Content */}
             <div key={fadeKey} className="w-full px-5 animate-fade-in-word flex justify-center items-center">
                 <h1
-                    className="font-bold tracking-tight text-foreground leading-none select-none text-center break-words max-w-full"
+                    className="font-bold tracking-tight text-foreground leading-none select-none text-center break-words w-full"
                     style={{
-                        // Responsive Clamp logic scaled by user preference
                         fontSize: `calc(clamp(2.5rem, 8vw, 6rem) * ${textScale[0]})`,
                         letterSpacing: `${letterSpacing[0]}em`,
-                        padding: '0 20px'
+                        padding: '0 20px',
+                        maxWidth: '100%'
                     }}
                 >
                     {currentWord.ORTHO}
@@ -188,37 +207,32 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
             </div>
 
 
-            {/* --- Navigation Capsule (Bottom 10%) --- */}
+            {/* Navigation Capsule */}
             <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 z-[2147483647]">
                 <div className="flex items-center gap-1 bg-white border border-black/5 shadow-2xl rounded-full p-2 pl-3 hover-lift transition-all">
 
-                    {/* Prev Button */}
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handlePrev}
                         disabled={currentIndex === 0}
                         className="h-11 w-11 rounded-full hover:bg-black/5 disabled:opacity-20"
-                        aria-label="Mot précédent"
                     >
                         <ChevronLeft className="w-7 h-7 text-foreground" />
                     </Button>
 
-                    {/* Counter / Status */}
                     <div className="px-4 min-w-[80px] text-center">
                         <span className="text-sm font-bold font-mono text-muted-foreground">
                             {currentIndex + 1} / {validWords.length}
                         </span>
                     </div>
 
-                    {/* Next Button */}
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handleNext}
                         disabled={currentIndex === validWords.length - 1}
                         className="h-11 w-11 rounded-full hover:bg-black/5 disabled:opacity-20"
-                        aria-label="Mot suivant"
                     >
                         <ChevronRight className="w-7 h-7 text-foreground" />
                     </Button>
