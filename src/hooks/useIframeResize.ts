@@ -1,26 +1,37 @@
 import { useEffect } from 'react';
 
-export function useIframeResize() {
+// Enhanced V8/V9 Adaptive Resize Logic
+export function useIframeResize(isFocusMode: boolean = false) {
     useEffect(() => {
         let timeoutId: any;
 
         const sendHeight = () => {
-            // Debounce to prevent message flooding during animations
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
-                const height = document.body.scrollHeight;
+                let height;
+
+                if (isFocusMode) {
+                    // IF FOCUS MODE: Match viewport height exactly (100vh)
+                    // This prevents the iframe from being taller than the screen, ensuring the slideshow fits perfectly.
+                    // We use innerHeight because '100dvh' inside iframe = innerHeight.
+                    height = window.innerHeight;
+                } else {
+                    // NORMAL MODE: Match content height
+                    height = document.body.scrollHeight;
+                }
+
+                // Send to parent
                 window.parent.postMessage({ type: 'resize', height }, '*');
-            }, 50); // 50ms delay
+            }, 50);
         };
 
         const observer = new ResizeObserver(sendHeight);
         observer.observe(document.body);
 
-        // Initial send (immediate)
-        const initialHeight = document.body.scrollHeight;
-        window.parent.postMessage({ type: 'resize', height: initialHeight }, '*');
+        // Send initially
+        sendHeight();
 
-        // Also send on window resize
+        // Also listen to window resize (crucial for Focus Mode dynamic height)
         window.addEventListener('resize', sendHeight);
 
         return () => {
@@ -28,5 +39,5 @@ export function useIframeResize() {
             window.removeEventListener('resize', sendHeight);
             clearTimeout(timeoutId);
         };
-    }, []);
+    }, [isFocusMode]); // Re-run when mode changes
 }

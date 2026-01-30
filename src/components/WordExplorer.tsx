@@ -32,7 +32,6 @@ export function WordExplorer() {
 }
 
 function WordExplorerContent() {
-    useIframeResize();
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
     const { selectedWords } = useSelection();
     const [selectedWord, setSelectedWord] = useState<Word | null>(null);
@@ -42,6 +41,11 @@ function WordExplorerContent() {
 
     // Focus / Diaporama Mode State
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
+
+    // V9/10: Adaptive Resize Logic
+    // When Focus Mode is open, we tell the iframe to resize to viewport height (to fit slide perfectly).
+    // When closed, it resizes to content height (scrolling).
+    useIframeResize(isFocusModeOpen);
 
     // Pagination
     const totalPages = Math.ceil(words.length / itemsPerPage);
