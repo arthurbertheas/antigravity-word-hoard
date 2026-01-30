@@ -81,10 +81,14 @@ function WordExplorerContent() {
             if (event.data && event.data.type === 'launch_diaporama') {
                 if (selectedWords.length > 0) {
                     // Extract Layout Data from Parent
-                    const { scrollY, innerHeight } = event.data;
+                    const { scrollY, top, innerHeight } = event.data;
 
-                    if (typeof scrollY === 'number' && typeof innerHeight === 'number') {
-                        setFocusLayout({ top: scrollY, height: innerHeight });
+                    // V7: Prefer 'top' (calculated offset) over 'scrollY'
+                    const finalTop = typeof top === 'number' ? top : scrollY;
+                    const finalHeight = typeof innerHeight === 'number' ? innerHeight : window.innerHeight;
+
+                    if (typeof finalTop === 'number') {
+                        setFocusLayout({ top: finalTop, height: finalHeight });
                     } else {
                         setFocusLayout(undefined); // Fallback to fixed
                     }
