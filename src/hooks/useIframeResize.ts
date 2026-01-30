@@ -11,10 +11,9 @@ export function useIframeResize(isFocusMode: boolean = false) {
                 let height;
 
                 if (isFocusMode) {
-                    // IF FOCUS MODE: Match viewport height exactly (100vh)
-                    // This prevents the iframe from being taller than the screen, ensuring the slideshow fits perfectly.
-                    // We use innerHeight because '100dvh' inside iframe = innerHeight.
-                    height = window.innerHeight;
+                    // V20: Don't send height in focus mode.
+                    // Webflow promotes the iframe to fixed fullscreen (100vw/100vh).
+                    return;
                 } else {
                     // NORMAL MODE: Match content height
                     height = document.body.scrollHeight;

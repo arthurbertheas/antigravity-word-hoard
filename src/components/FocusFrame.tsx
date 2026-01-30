@@ -120,8 +120,8 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
                 isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
             )}
             style={{
-                width: '100vw',
-                height: '100dvh'
+                width: '100%',
+                height: '100%'
             }}
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
