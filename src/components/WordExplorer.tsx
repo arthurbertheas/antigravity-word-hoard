@@ -98,7 +98,7 @@ function WordExplorerContent() {
                     </aside>
 
                     {/* Right side - Results or Detail */}
-                    <main className="flex-1 min-w-0">
+                    <main className="flex-1 min-w-0 pb-32">
                         {selectedWord ? (
                             <WordDetailView
                                 word={selectedWord}
