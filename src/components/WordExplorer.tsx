@@ -158,7 +158,7 @@ function WordExplorerContent() {
                                 <SelectionBar />
 
                                 {/* Grille/Liste de mots */}
-                                <div className="min-h-[400px]">
+                                <div>
                                     {paginatedWords.length === 0 ? (
                                         <div className="flex flex-col items-center justify-center h-64 text-muted-foreground bg-card rounded-2xl border border-border">
                                             <p className="text-lg font-medium">Aucun mot ne correspond</p>
