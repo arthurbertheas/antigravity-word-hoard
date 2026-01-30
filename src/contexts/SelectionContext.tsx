@@ -10,14 +10,20 @@ interface SelectionContextType {
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
 
+// Helper to generate a unique ID for a word
+export function getWordId(word: Word): string {
+    return `${word.ORTHO}_${word.SYNT}_${word.PHON}_${word.NBSYLL}`;
+}
+
 export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedWords, setSelectedWords] = useState<Word[]>([]);
 
     const toggleSelection = (word: Word) => {
+        const targetId = getWordId(word);
         setSelectedWords(prev => {
-            const exists = prev.some(w => w.ORTHO === word.ORTHO); // Assuming ORTHO is unique enough for now, or use ID if available
+            const exists = prev.some(w => getWordId(w) === targetId);
             if (exists) {
-                return prev.filter(w => w.ORTHO !== word.ORTHO);
+                return prev.filter(w => getWordId(w) !== targetId);
             } else {
                 return [...prev, word];
             }
@@ -29,7 +35,8 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     };
 
     const isSelected = (word: Word) => {
-        return selectedWords.some(w => w.ORTHO === word.ORTHO);
+        const targetId = getWordId(word);
+        return selectedWords.some(w => getWordId(w) === targetId);
     };
 
     // Webflow Bridge: Sync state with parent (send updates)
