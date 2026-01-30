@@ -5,6 +5,11 @@ import { X, Download, Trash2 } from "lucide-react";
 export function SelectionBar() {
     const { selectedWords, clearSelection } = useSelection();
 
+    // Hide internal bar if in iframe (Webflow takes over via Bridge)
+    if (typeof window !== 'undefined' && window.self !== window.top) {
+        return null;
+    }
+
     if (selectedWords.length === 0) return null;
 
     return (

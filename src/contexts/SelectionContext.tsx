@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Word } from '@/types/word';
 
 interface SelectionContextType {
@@ -31,6 +31,33 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     const isSelected = (word: Word) => {
         return selectedWords.some(w => w.ORTHO === word.ORTHO);
     };
+
+    // Webflow Bridge: Sync state with parent (send updates)
+    useEffect(() => {
+        window.parent.postMessage({
+            type: 'selection_update',
+            count: selectedWords.length,
+            selectedIds: selectedWords.map(w => w.ORTHO)
+        }, '*');
+    }, [selectedWords]);
+
+    // Webflow Bridge: Listen for commands from parent
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (!event.data) return;
+
+            if (event.data.type === 'clear_selection_command') {
+                clearSelection();
+            }
+            if (event.data.type === 'export_selection_command') {
+                // Trigger export logic (simple alert for now as per current feature set)
+                alert(`Export de ${selectedWords.length} mots (commande reçue de Webflow)`);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [selectedWords]);
 
     return (
         <SelectionContext.Provider value={{ selectedWords, toggleSelection, clearSelection, isSelected }}>
