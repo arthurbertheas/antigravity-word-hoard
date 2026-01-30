@@ -3,7 +3,9 @@ import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
 import { SelectionBar } from "./SelectionBar";
+import { FocusFrame } from "./FocusFrame";
 import { useWords } from "@/hooks/useWords";
+import { useSelection } from "@/contexts/SelectionContext";
 import { Word } from "@/types/word";
 import { Button } from "@/components/ui/button";
 import { SelectionProvider } from "@/contexts/SelectionContext";
@@ -32,10 +34,14 @@ export function WordExplorer() {
 function WordExplorerContent() {
     useIframeResize();
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
+    const { selectedWords } = useSelection();
     const [selectedWord, setSelectedWord] = useState<Word | null>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(24);
+
+    // Focus / Diaporama Mode State
+    const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
 
     // Pagination
     const totalPages = Math.ceil(words.length / itemsPerPage);
@@ -67,6 +73,22 @@ function WordExplorerContent() {
             isPaginationTrigger.current = false;
         }
     }, [currentPage]);
+
+    // Listener for Webflow "Launch Diaporama" command
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data && event.data.type === 'launch_diaporama') {
+                if (selectedWords.length > 0) {
+                    setIsFocusModeOpen(true);
+                } else {
+                    alert("Veuillez d'abord sélectionner des mots.");
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [selectedWords]);
 
     return (
         <div ref={topRef} className="bg-white min-h-0">
@@ -155,6 +177,7 @@ function WordExplorerContent() {
                                     </div>
                                 </div>
 
+                                {/* Fallback internal selection bar (useful for Dev, hidden in iframe) */}
                                 <SelectionBar />
 
                                 {/* Grille/Liste de mots */}
@@ -271,6 +294,13 @@ function WordExplorerContent() {
                     </main>
                 </div>
             </div>
+
+            {/* Focus Frame Overlay (Slideshow) */}
+            <FocusFrame
+                words={selectedWords}
+                isOpen={isFocusModeOpen}
+                onClose={() => setIsFocusModeOpen(false)}
+            />
 
         </div>
     );
