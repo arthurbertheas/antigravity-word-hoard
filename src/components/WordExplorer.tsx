@@ -155,7 +155,7 @@ function WordExplorerContent() {
                                     </div>
                                 </div>
 
-                                <SelectionBar />
+
 
                                 {/* Grille/Liste de mots */}
                                 <div>
@@ -270,6 +270,7 @@ function WordExplorerContent() {
                         )}
                     </main>
                 </div>
+                <SelectionBar />
             </div>
 
         </div>
