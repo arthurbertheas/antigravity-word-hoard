@@ -3,9 +3,7 @@ import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
 import { SelectionBar } from "./SelectionBar";
-import { FocusFrame } from "./FocusFrame";
 import { useWords } from "@/hooks/useWords";
-import { useSelection } from "@/contexts/SelectionContext";
 import { Word } from "@/types/word";
 import { Button } from "@/components/ui/button";
 import { SelectionProvider } from "@/contexts/SelectionContext";
@@ -34,14 +32,10 @@ export function WordExplorer() {
 function WordExplorerContent() {
     useIframeResize();
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
-    const { selectedWords } = useSelection(); // Get selected words for FocusFrame
     const [selectedWord, setSelectedWord] = useState<Word | null>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(24);
-
-    // Focus Mode State
-    const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
 
     // Pagination
     const totalPages = Math.ceil(words.length / itemsPerPage);
@@ -161,7 +155,7 @@ function WordExplorerContent() {
                                     </div>
                                 </div>
 
-                                <SelectionBar onLaunchSlideshow={() => setIsFocusModeOpen(true)} />
+                                <SelectionBar />
 
                                 {/* Grille/Liste de mots */}
                                 <div className="min-h-[400px]">
@@ -277,13 +271,6 @@ function WordExplorerContent() {
                     </main>
                 </div>
             </div>
-
-            {/* Focus Frame Overlay */}
-            <FocusFrame
-                words={selectedWords}
-                isOpen={isFocusModeOpen}
-                onClose={() => setIsFocusModeOpen(false)}
-            />
 
         </div>
     );
