@@ -42,6 +42,7 @@ function WordExplorerContent() {
 
     // Focus / Diaporama Mode State
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
+    const [focusLayout, setFocusLayout] = useState<{ top: number; height: number } | undefined>(undefined);
 
     // Pagination
     const totalPages = Math.ceil(words.length / itemsPerPage);
@@ -79,6 +80,15 @@ function WordExplorerContent() {
         const handleMessage = (event: MessageEvent) => {
             if (event.data && event.data.type === 'launch_diaporama') {
                 if (selectedWords.length > 0) {
+                    // Extract Layout Data from Parent
+                    const { scrollY, innerHeight } = event.data;
+
+                    if (typeof scrollY === 'number' && typeof innerHeight === 'number') {
+                        setFocusLayout({ top: scrollY, height: innerHeight });
+                    } else {
+                        setFocusLayout(undefined); // Fallback to fixed
+                    }
+
                     setIsFocusModeOpen(true);
                 } else {
                     alert("Veuillez d'abord sélectionner des mots.");
@@ -300,6 +310,7 @@ function WordExplorerContent() {
                 words={selectedWords}
                 isOpen={isFocusModeOpen}
                 onClose={() => setIsFocusModeOpen(false)}
+                layout={focusLayout}
             />
 
         </div>

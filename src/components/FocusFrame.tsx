@@ -10,9 +10,10 @@ interface FocusFrameProps {
     words: Word[];
     isOpen: boolean;
     onClose: () => void;
+    layout?: { top: number; height: number }; // V6: Viewport geometry from parent
 }
 
-export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
+export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isClosing, setIsClosing] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -41,24 +42,24 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
 
         } else {
             setIsClosing(true);
+
+            // V6 Improvement: Notify parent IMMEDIATELY to restore bar while overlay fades out
+            window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
+
             const timer = setTimeout(() => {
                 setIsVisible(false);
                 setIsClosing(false);
-
-                // Unlock / Restore
+                // Unlock
                 document.body.style.overflow = '';
-                window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
             }, 300);
             return () => {
                 clearTimeout(timer);
                 document.body.style.overflow = '';
-                // Safety restore on unmount
-                window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
             };
         }
     }, [isOpen]);
 
-    // Cleanup when component unmounts completely
+    // Cleanup
     useEffect(() => {
         return () => {
             document.body.style.overflow = '';
@@ -66,8 +67,7 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
         };
     }, []);
 
-    // --- COMMAND LISTENER (PREV/NEXT from Keyboard/Parent?) ---
-    // (Here we stick to the component-level keyboard listener)
+    // Keyboard
     useEffect(() => {
         if (!isOpen) return;
 
@@ -89,6 +89,8 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
 
     const handleClose = () => {
         setIsClosing(true);
+        // Instant notify (redundant with effect but safe)
+        window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
         setTimeout(() => {
             onClose();
         }, 300);
@@ -111,26 +113,33 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
     if (!isVisible && !isOpen) return null;
     if (!currentWord) return null;
 
+    // V6 Style Logic: Absolute positioning if layout data present
+    const frameStyle = layout ? {
+        position: 'absolute' as const,
+        top: `${layout.top}px`,
+        height: `${layout.height}px`,
+        left: 0,
+        width: '100%',
+        zIndex: 2147483647
+    } : {
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100dvh',
+        zIndex: 2147483647
+    };
+
+    // V6 Class Logic: Remove 'fixed' classes
+    const frameClasses = cn(
+        "bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden m-0 p-0",
+        isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
+    );
+
     return (
         <div
-            className={cn(
-                // FORCE RESET: Ensure no parent padding/margin affects this
-                // USE 'fixed' and exact viewport units
-                "fixed top-0 left-0 w-[100vw] h-[100dvh] z-[2147483647]",
-                "bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden m-0 p-0",
-                isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
-            )}
-            style={{
-                // Fallback for browsers that might have issues with tailwind classes in iframe (though unlikely)
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100dvh',
-                margin: 0,
-                padding: 0,
-                zIndex: 2147483647
-            }}
+            className={frameClasses}
+            style={frameStyle}
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
         >
@@ -196,7 +205,7 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
                 <h1
                     className="font-bold tracking-tight text-foreground leading-none select-none text-center break-words w-full"
                     style={{
-                        fontSize: `calc(clamp(2.5rem, 8vw, 6rem) * ${textScale[0]})`,
+                        fontSize: `calc(clamp(2rem, 8vw, 6rem) * ${textScale[0]})`, // Slightly smaller min as requested
                         letterSpacing: `${letterSpacing[0]}em`,
                         padding: '0 20px',
                         maxWidth: '100%'
