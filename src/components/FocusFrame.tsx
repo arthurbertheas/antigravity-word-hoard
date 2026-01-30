@@ -37,13 +37,13 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
             document.body.style.overflow = 'hidden';
 
             // Tell Parent (Webflow) that we are OPEN
-            // (Webflow script will then promote iframe to fullscreen)
+            // (Webflow script will hide the external bar)
             window.parent.postMessage({ type: 'focus_mode_change', isOpen: true }, '*');
 
         } else {
             setIsClosing(true);
 
-            // Notify parent IMMEDIATELY to start restoring iframe (transition sync)
+            // Notify parent IMMEDIATELY to show the external bar again
             window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
 
             const timer = setTimeout(() => {
@@ -115,8 +115,7 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
     return (
         <div
             className={cn(
-                // V9: Simple Fixed Fullscreen. 
-                // We rely on the parent (Webflow) making the IFRAME ITSELF fullscreen.
+                // Fixed Fullscreen Overlay (inside Iframe)
                 "fixed inset-0 z-[2147483647] bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden",
                 isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
             )}
