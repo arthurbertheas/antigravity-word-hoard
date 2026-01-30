@@ -178,7 +178,7 @@ function WordExplorerContent() {
                                 </div>
 
                                 {/* Fallback internal selection bar (useful for Dev, hidden in iframe) */}
-                                <SelectionBar />
+                                {!isFocusModeOpen && <SelectionBar />}
 
                                 {/* Grille/Liste de mots */}
                                 <div className="min-h-[400px]">

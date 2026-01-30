@@ -107,8 +107,8 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
     return (
         <div
             className={cn(
-                // Layout Fixes: Fixed, Inset 0, Z-Index 9999, Height 100dvh
-                "fixed inset-0 z-[9999] w-screen h-[100dvh] bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden",
+                // Layout Fixes: Fixed, Top/Left 0, Max Z-Index, 100vw/100vh
+                "fixed top-0 left-0 right-0 bottom-0 z-[2147483647] w-[100vw] h-[100vh] bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden",
                 isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
             )}
             // Prevent scrolling events from bubbling up
@@ -116,10 +116,9 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
             onTouchMove={(e) => e.stopPropagation()}
         >
             {/* --- Top Controls --- */}
-            {/* Absolute positioning for spacing independent of flex centering */}
 
             {/* 1. Accessibility Toggle (Left) */}
-            <div className="absolute top-8 left-8 z-[10000]">
+            <div className="absolute top-8 left-8 z-[2147483647]">
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-border bg-white shadow-sm hover:bg-gray-50 transition-transform hover:scale-105">
@@ -160,7 +159,7 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
             </div>
 
             {/* 2. Close Button (Right) */}
-            <div className="absolute top-8 right-8 z-[10000]">
+            <div className="absolute top-8 right-8 z-[2147483647]">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -174,13 +173,14 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
 
 
             {/* --- Main Content: The Word --- */}
-            <div key={fadeKey} className="w-full px-4 animate-fade-in-word flex justify-center items-center">
+            <div key={fadeKey} className="w-full px-5 animate-fade-in-word flex justify-center items-center">
                 <h1
-                    className="font-bold tracking-tight text-foreground leading-none select-none text-center break-words max-w-[90vw]"
+                    className="font-bold tracking-tight text-foreground leading-none select-none text-center break-words max-w-full"
                     style={{
                         // Responsive Clamp logic scaled by user preference
-                        fontSize: `calc(clamp(3rem, 10vw, 8rem) * ${textScale[0]})`,
-                        letterSpacing: `${letterSpacing[0]}em`
+                        fontSize: `calc(clamp(2.5rem, 8vw, 6rem) * ${textScale[0]})`,
+                        letterSpacing: `${letterSpacing[0]}em`,
+                        padding: '0 20px'
                     }}
                 >
                     {currentWord.ORTHO}
@@ -189,7 +189,7 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
 
 
             {/* --- Navigation Capsule (Bottom 10%) --- */}
-            <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 z-[10000]">
+            <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 z-[2147483647]">
                 <div className="flex items-center gap-1 bg-white border border-black/5 shadow-2xl rounded-full p-2 pl-3 hover-lift transition-all">
 
                     {/* Prev Button */}
