@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -10,10 +10,9 @@ interface FocusFrameProps {
     words: Word[];
     isOpen: boolean;
     onClose: () => void;
-    layout?: { top: number; height: number }; // V6: Viewport geometry from parent
 }
 
-export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) {
+export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isClosing, setIsClosing] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -26,7 +25,7 @@ export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) 
     const validWords = words.filter(w => w && w.ORTHO);
     const currentWord = validWords[currentIndex];
 
-    // --- PARENT COMMUNICATION & SCROLL LOCK ---
+    // --- PARENT COMMUNICATION ---
     useEffect(() => {
         if (isOpen) {
             setIsVisible(true);
@@ -34,22 +33,22 @@ export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) 
             setCurrentIndex(0);
             setFadeKey(0);
 
-            // 1. Lock Internal Scroll
+            // Lock internal scroll
             document.body.style.overflow = 'hidden';
 
-            // 2. Tell Parent (Webflow) to HIDE the floating bar
+            // Tell Parent (Webflow) that we are OPEN
+            // (Webflow script will then promote iframe to fullscreen)
             window.parent.postMessage({ type: 'focus_mode_change', isOpen: true }, '*');
 
         } else {
             setIsClosing(true);
 
-            // V6 Improvement: Notify parent IMMEDIATELY to restore bar while overlay fades out
+            // Notify parent IMMEDIATELY to start restoring iframe (transition sync)
             window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
 
             const timer = setTimeout(() => {
                 setIsVisible(false);
                 setIsClosing(false);
-                // Unlock
                 document.body.style.overflow = '';
             }, 300);
             return () => {
@@ -63,6 +62,7 @@ export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) 
     useEffect(() => {
         return () => {
             document.body.style.overflow = '';
+            // Ensure we tell parent we are closed if unmounted
             window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
         };
     }, []);
@@ -89,7 +89,6 @@ export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) 
 
     const handleClose = () => {
         setIsClosing(true);
-        // Instant notify (redundant with effect but safe)
         window.parent.postMessage({ type: 'focus_mode_change', isOpen: false }, '*');
         setTimeout(() => {
             onClose();
@@ -113,33 +112,18 @@ export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) 
     if (!isVisible && !isOpen) return null;
     if (!currentWord) return null;
 
-    // V6 Style Logic: Absolute positioning if layout data present
-    const frameStyle = layout ? {
-        position: 'absolute' as const,
-        top: `${layout.top}px`,
-        height: `${layout.height}px`,
-        left: 0,
-        width: '100%',
-        zIndex: 2147483647
-    } : {
-        position: 'fixed' as const,
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100dvh',
-        zIndex: 2147483647
-    };
-
-    // V6 Class Logic: Remove 'fixed' classes
-    const frameClasses = cn(
-        "bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden m-0 p-0",
-        isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
-    );
-
     return (
         <div
-            className={frameClasses}
-            style={frameStyle}
+            className={cn(
+                // V9: Simple Fixed Fullscreen. 
+                // We rely on the parent (Webflow) making the IFRAME ITSELF fullscreen.
+                "fixed inset-0 z-[2147483647] bg-[#fafafa] flex flex-col items-center justify-center overflow-hidden",
+                isClosing ? "animate-slide-out-bottom" : "animate-slide-in-bottom"
+            )}
+            style={{
+                width: '100vw',
+                height: '100dvh'
+            }}
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
         >
@@ -205,7 +189,7 @@ export function FocusFrame({ words, isOpen, onClose, layout }: FocusFrameProps) 
                 <h1
                     className="font-bold tracking-tight text-foreground leading-none select-none text-center break-words w-full"
                     style={{
-                        fontSize: `calc(clamp(2rem, 8vw, 6rem) * ${textScale[0]})`, // Slightly smaller min as requested
+                        fontSize: `calc(clamp(2rem, 8vw, 6rem) * ${textScale[0]})`,
                         letterSpacing: `${letterSpacing[0]}em`,
                         padding: '0 20px',
                         maxWidth: '100%'
