@@ -4,6 +4,8 @@ import { Word } from '@/types/word';
 interface SelectionContextType {
     selectedWords: Word[];
     toggleSelection: (word: Word) => void;
+    addItem: (word: Word) => void;
+    removeItem: (wordId: string) => void;
     clearSelection: () => void;
     isSelected: (word: Word) => boolean;
 }
@@ -17,6 +19,19 @@ export function getWordId(word: Word): string {
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedWords, setSelectedWords] = useState<Word[]>([]);
+
+    const addItem = (word: Word) => {
+        const targetId = getWordId(word);
+        setSelectedWords(prev => {
+            const exists = prev.some(w => getWordId(w) === targetId);
+            if (exists) return prev;
+            return [...prev, word];
+        });
+    };
+
+    const removeItem = (wordId: string) => {
+        setSelectedWords(prev => prev.filter(w => getWordId(w) !== wordId));
+    };
 
     const toggleSelection = (word: Word) => {
         const targetId = getWordId(word);
@@ -67,7 +82,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     }, [selectedWords]);
 
     return (
-        <SelectionContext.Provider value={{ selectedWords, toggleSelection, clearSelection, isSelected }}>
+        <SelectionContext.Provider value={{ selectedWords, toggleSelection, addItem, removeItem, clearSelection, isSelected }}>
             {children}
         </SelectionContext.Provider>
     );
