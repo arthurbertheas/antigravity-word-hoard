@@ -7,7 +7,7 @@ export interface PlayerSettings {
     speedMs: number;
     gapMs: number;
     fontSize: number;
-    fontFamily: 'sans' | 'serif' | 'mono' | 'opendyslexic';
+    fontFamily: 'arial' | 'verdana' | 'mdi-ecole' | 'sans' | 'serif' | 'mono' | 'opendyslexic';
     highlightVowels: boolean;
     letterSpacing: number;
 }
@@ -40,7 +40,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     speedMs: 1000,
     gapMs: 500,
     fontSize: 15,
-    fontFamily: 'sans',
+    fontFamily: 'arial',
     highlightVowels: false,
     letterSpacing: 0,
 };

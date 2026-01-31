@@ -31,12 +31,15 @@ export function WordDisplay({ word }: WordDisplayProps) {
     const fontStyles: React.CSSProperties = {
         fontSize: `${settings.fontSize}vmin`,
         letterSpacing: `${settings.letterSpacing}px`,
-        fontFamily: settings.fontFamily === 'opendyslexic' ? 'OpenDyslexic, sans-serif' : 'inherit',
+        fontFamily: settings.fontFamily === 'opendyslexic' ? 'OpenDyslexic, sans-serif' :
+            settings.fontFamily === 'arial' ? 'Arial, sans-serif' :
+                settings.fontFamily === 'verdana' ? 'Verdana, sans-serif' :
+                    settings.fontFamily === 'mdi-ecole' ? '"MDI Ecole", cursive' : 'inherit',
     };
 
     const containerClasses = cn(
         "flex items-center justify-center text-center transition-all duration-200 w-full",
-        settings.fontFamily === 'sans' && "font-sans",
+        (settings.fontFamily === 'sans' || settings.fontFamily === 'arial') && "font-sans",
         settings.fontFamily === 'serif' && "font-serif",
         settings.fontFamily === 'mono' && "font-mono",
     );

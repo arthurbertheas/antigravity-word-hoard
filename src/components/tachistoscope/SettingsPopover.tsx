@@ -53,10 +53,10 @@ export function SettingsPopover() {
                                 <SelectTrigger className="w-full h-8 bg-neutral-800 border-neutral-700 text-white text-xs hover:border-neutral-500 transition-colors">
                                     <SelectValue placeholder="Choisir une police" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-neutral-900 border-neutral-800 text-white">
-                                    <SelectItem value="sans" className="focus:bg-neutral-800 focus:text-white">Sans Serif</SelectItem>
-                                    <SelectItem value="serif" className="focus:bg-neutral-800 focus:text-white">Serif</SelectItem>
-                                    <SelectItem value="mono" className="focus:bg-neutral-800 focus:text-white">Monospace</SelectItem>
+                                <SelectContent className="bg-neutral-900 border-neutral-800 text-white z-[150]">
+                                    <SelectItem value="arial" className="focus:bg-neutral-800 focus:text-white">Arial</SelectItem>
+                                    <SelectItem value="verdana" className="focus:bg-neutral-800 focus:text-white">Verdana</SelectItem>
+                                    <SelectItem value="mdi-ecole" className="focus:bg-neutral-800 focus:text-white">MDI École</SelectItem>
                                     <SelectItem value="opendyslexic" className="focus:bg-neutral-800 focus:text-white">OpenDyslexic</SelectItem>
                                 </SelectContent>
                             </Select>
