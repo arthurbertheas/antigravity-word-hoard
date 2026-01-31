@@ -45,7 +45,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     fontFamily: 'arial',
     highlightVowels: false,
     letterSpacing: 0,
-    mode: 'auto',
+    mode: 'manual',
     manualInterlude: true,
 };
 
@@ -59,15 +59,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         const saved = localStorage.getItem('tachistoscope-settings');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            // Migration: if fontSize is in the old pixel range (> 50), reset to default vmin level
-            if (parsed.fontSize > 50) {
-                return { ...parsed, fontSize: DEFAULT_SETTINGS.fontSize };
-            }
-            return parsed;
+        const initial = saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+
+        // Ensure all required fields exist (merge with defaults)
+        const merged = { ...DEFAULT_SETTINGS, ...initial };
+
+        // Migration: if fontSize is in the old pixel range (> 50), reset to default vmin level
+        // and ensure mode is manual if it was not explicitly set before
+        if (merged.fontSize > 50) {
+            merged.fontSize = DEFAULT_SETTINGS.fontSize;
         }
-        return DEFAULT_SETTINGS;
+
+        return merged;
     });
 
     useEffect(() => {
