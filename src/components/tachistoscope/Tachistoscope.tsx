@@ -110,10 +110,14 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isPlaying, currentIndex, words, setIsPlaying, nextWord, prevWord, logResult, onClose]);
 
+    useEffect(() => {
+        console.log("TachistoscopeContent mounted with", words.length, "words");
+    }, [words.length]);
+
     if (words.length === 0) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
             {/* Close Button */}
             <Button
                 variant="ghost"

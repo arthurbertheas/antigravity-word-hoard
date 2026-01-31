@@ -16,6 +16,7 @@ const VOWEL_GRAPHEMES = new Set([
 ]);
 
 export function WordDisplay({ word }: WordDisplayProps) {
+    if (!word || !word.GSEG) return null;
     const { settings, phase } = usePlayer();
 
     const segments = useMemo(() => {

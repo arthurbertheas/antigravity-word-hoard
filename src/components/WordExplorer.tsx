@@ -44,6 +44,7 @@ function WordExplorerContent() {
 
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
+        console.log("Filter change:", key, value);
         updateFilter(key, value);
     };
 
@@ -51,6 +52,7 @@ function WordExplorerContent() {
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
             if (event.data && event.data.type === 'launch_diaporama') {
+                console.log("Diaporama launch command received from postMessage");
                 if (selectedWords.length > 0) {
                     setIsFocusModeOpen(true);
                 } else {
@@ -61,10 +63,11 @@ function WordExplorerContent() {
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, [selectedWords]);
+    }, [selectedWords, setIsFocusModeOpen]);
 
     // Send Focus Mode state to parent for fullscreen promotion
     useEffect(() => {
+        console.log("Focus Mode Change:", isFocusModeOpen);
         window.parent.postMessage({
             type: 'focus_mode_change',
             isOpen: isFocusModeOpen
