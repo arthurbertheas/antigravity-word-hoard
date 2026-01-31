@@ -34,58 +34,67 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
     .body-lock {
         overflow: hidden !important;
     }
-    /* 2. Invisible au chargement pour éviter le saut */
+    /* 2. Style de base pour l'iframe dans Webflow */
     iframe {
-        transition: opacity 0.5s ease-in-out;
+        width: 100% !important;
+        display: block !important;
+        border: none !important;
+        /* Opacity supprimée pour éviter le bug d'écran blanc */
+    }
+    
+    /* 3. VERROUILLAGE ULTIME DU SCROLL DE PAGE */
+    html, body {
+        overflow: hidden !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 </style>
 
 <script>
+/**
+ * SCRIPT D'INTEGRATION "ROBUSTE"
+ * Objectif : Calcule la place restante et s'assure que l'iframe est TOUJOURS visible.
+ */
 (function () {
     const iframe = document.querySelector('iframe');
-    if (!iframe) return;
+    if (!iframe) {
+        console.error("Antigravity: Iframe introuvable !");
+        return;
+    }
 
-    // A. On cache l'iframe le temps du calcul
-    iframe.style.opacity = '0';
-
-    // B. Fonction de calcul PRECIS (Pixel Perfect)
+    // Fonction de calcul PRECIS
     function fitIframeToViewport() {
         if (iframe.classList.contains('focused-iframe')) return;
 
         try {
-            // 1. On récupère la position du haut de l'iframe par rapport au viewport
+            // 1. On récupère la position ABSOLUE du haut de l'iframe (par rapport au début du document)
             const rect = iframe.getBoundingClientRect();
-            const topOffset = rect.top;
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const absoluteTop = rect.top + scrollTop;
             
-            // 2. On calcule la place restante exacte
-            // window.innerHeight = La hauteur visible du navigateur
-            const availableHeight = window.innerHeight - topOffset;
+            // 2. On calcule la hauteur disponible dans le viewport INITIAL (sans compter le scroll actuel)
+            // On veut que le bas de l'iframe touche le bas de la fenêtre QUAND on est tout en haut
+            const availableHeight = window.innerHeight - absoluteTop;
 
-            // 3. On applique la hauteur (min 500px pour sécurité)
-            // On retire 5px de buffer pour éviter tout scroll externe accidentel
-            const finalHeight = Math.max(availableHeight - 5, 500);
-            
-            iframe.style.height = finalHeight + 'px';
-            
-            // C. On affiche l'iframe une fois la taille calée
-            if (iframe.style.opacity === '0') {
-               requestAnimationFrame(() => {
-                   iframe.style.opacity = '1';
-               });
-            }
+            console.log("Antigravity Resize:", { absoluteTop, availableHeight });
 
+            // 3. On applique la hauteur
+            // On retire 10px de marge de sécurité pour les arrondis de pixels
+            const finalHeight = Math.max(availableHeight - 10, 200);
+            
+            iframe.style.setProperty('height', finalHeight + 'px', 'important');
+            
         } catch (e) {
-            console.error("Erreur calcul hauteur", e);
-            iframe.style.height = 'calc(100vh - 300px)'; // Fallback
-            iframe.style.opacity = '1';
+            console.error("Antigravity Erreur:", e);
+            iframe.style.height = '500px'; // Sécurité absolue
         }
     }
 
-    // D. Auto-Correction (Polling rapide au chargement pour gérer les images Webflow)
-    const checkTimes = [50, 100, 300, 500, 1000, 2000];
+    // Polling rapide au chargement pour s'adapter aux changements de layout (chargement images, etc.)
+    const checkTimes = [50, 200, 500, 1000, 2000, 5000];
     checkTimes.forEach(t => setTimeout(fitIframeToViewport, t));
 
-    // E. Gestion des Messages
     window.addEventListener('message', function(event) {
         if (!event.data) return;
 
@@ -104,13 +113,11 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
             } else {
                 iframe.classList.remove('focused-iframe');
                 document.body.classList.remove('body-lock');
-                // Petit délai pour recalculer après fermeture
                 setTimeout(fitIframeToViewport, 50);
             }
         }
     });
 
-    // F. Resize Standard
     window.addEventListener('resize', fitIframeToViewport);
     
     // Premier appel
@@ -118,3 +125,10 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
 })();
 </script>
 ```
+
+> [!TIP]
+> **Réglages Webflow Designer :**
+> - Assure-toi que le composant **Code Embed** a une hauteur réglée sur `Auto` (comme sur ton image).
+> - Vérifie que le parent du Code Embed (Section ou Div) n'a pas de `Max Height` ou `Height` fixe qui briderait l'expansion.
+> - Le script s'occupe de tout le reste.
+
