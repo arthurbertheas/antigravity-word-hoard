@@ -29,44 +29,43 @@ export function SettingsPopover() {
                 </Button>
             </PopoverTrigger>
             <PopoverContent
-                className="w-80 p-6 bg-white border border-border/50 shadow-xl rounded-xl z-[110]"
+                className="w-80 p-5 bg-[#171717] border border-white/10 shadow-2xl rounded-2xl z-[110]"
                 side="top"
                 align="end"
                 sideOffset={12}
             >
                 <div className="space-y-6">
-                    <div className="flex items-center gap-2 border-b pb-2">
-                        <Settings2 className="w-4 h-4 text-muted-foreground" />
-                        <h4 className="font-bold text-sm uppercase tracking-wider">Réglages Lecteur</h4>
-                    </div>
-
-                    {/* Typography */}
+                    {/* Typography Section */}
                     <div className="space-y-4">
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                                <Label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-tight">
-                                    <Type className="w-3.5 h-3.5" /> Police
+                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">
+                                    Police
                                 </Label>
+                                <span className="text-white text-[10px] font-mono uppercase opacity-50">
+                                    {settings.fontFamily}
+                                </span>
                             </div>
                             <Select
                                 value={settings.fontFamily}
                                 onValueChange={(v: any) => updateSettings({ fontFamily: v })}
                             >
-                                <SelectTrigger className="w-full h-8 text-sm">
+                                <SelectTrigger className="w-full h-8 bg-neutral-800 border-neutral-700 text-white text-xs hover:border-neutral-500 transition-colors">
                                     <SelectValue placeholder="Choisir une police" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="sans">Sans Serif</SelectItem>
-                                    <SelectItem value="serif">Serif</SelectItem>
-                                    <SelectItem value="mono">Monospace</SelectItem>
-                                    <SelectItem value="opendyslexic">OpenDyslexic</SelectItem>
+                                <SelectContent className="bg-neutral-900 border-neutral-800 text-white">
+                                    <SelectItem value="sans" className="focus:bg-neutral-800 focus:text-white">Sans Serif</SelectItem>
+                                    <SelectItem value="serif" className="focus:bg-neutral-800 focus:text-white">Serif</SelectItem>
+                                    <SelectItem value="mono" className="focus:bg-neutral-800 focus:text-white">Monospace</SelectItem>
+                                    <SelectItem value="opendyslexic" className="focus:bg-neutral-800 focus:text-white">OpenDyslexic</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-tight">Zoom: {settings.fontSize}</Label>
+                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Zoom</Label>
+                                <span className="text-white text-[11px] font-mono">{settings.fontSize}</span>
                             </div>
                             <Slider
                                 value={[settings.fontSize]}
@@ -74,12 +73,14 @@ export function SettingsPopover() {
                                 max={30}
                                 step={1}
                                 onValueChange={([v]) => updateSettings({ fontSize: v })}
+                                className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
                             />
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-tight">Espacement: {settings.letterSpacing}px</Label>
+                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Espacement</Label>
+                                <span className="text-white text-[11px] font-mono">{settings.letterSpacing}px</span>
                             </div>
                             <Slider
                                 value={[settings.letterSpacing]}
@@ -87,19 +88,19 @@ export function SettingsPopover() {
                                 max={40}
                                 step={1}
                                 onValueChange={([v]) => updateSettings({ letterSpacing: v })}
+                                className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
                             />
                         </div>
                     </div>
 
-                    <div className="h-px bg-border/50" />
+                    <div className="h-px bg-white/5" />
 
-                    {/* Engine Timing */}
+                    {/* Timing Section */}
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-tight">
-                                    <Zap className="w-3.5 h-3.5" /> Exposition: {(settings.speedMs / 1000).toFixed(1)} s
-                                </Label>
+                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Exposition</Label>
+                                <span className="text-white text-[11px] font-mono">{(settings.speedMs / 1000).toFixed(1)} s</span>
                             </div>
                             <Slider
                                 value={[settings.speedMs]}
@@ -107,14 +108,14 @@ export function SettingsPopover() {
                                 max={5000}
                                 step={100}
                                 onValueChange={([v]) => updateSettings({ speedMs: v })}
+                                className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
                             />
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-tight">
-                                    <Timer className="w-3.5 h-3.5" /> Temps Inter-mots: {(settings.gapMs / 1000).toFixed(1)} s
-                                </Label>
+                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Pause Inter-mots</Label>
+                                <span className="text-white text-[11px] font-mono">{(settings.gapMs / 1000).toFixed(1)} s</span>
                             </div>
                             <Slider
                                 value={[settings.gapMs]}
@@ -122,21 +123,23 @@ export function SettingsPopover() {
                                 max={5000}
                                 step={100}
                                 onValueChange={([v]) => updateSettings({ gapMs: v })}
+                                className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
                             />
                         </div>
                     </div>
 
-                    <div className="h-px bg-border/50" />
+                    <div className="h-px bg-white/5" />
 
-                    {/* Features */}
+                    {/* Feature Toggles */}
                     <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <Label className="text-sm font-bold">Mise en exergue</Label>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Colorer les voyelles</p>
+                            <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Voyelles</Label>
+                            <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Mise en exergue</p>
                         </div>
                         <Switch
                             checked={settings.highlightVowels}
                             onCheckedChange={(v) => updateSettings({ highlightVowels: v })}
+                            className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
                         />
                     </div>
                 </div>
