@@ -78,6 +78,10 @@
     @apply border-border;
   }
 
+  html, body, #root {
+    @apply h-full overflow-hidden;
+  }
+
   html {
     scroll-behavior: smooth;
   }

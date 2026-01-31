@@ -64,7 +64,7 @@ function WordExplorerContent() {
     }, [selectedWords]);
 
     return (
-        <div className="flex bg-white h-screen w-full overflow-hidden">
+        <div className="flex bg-white h-full w-full overflow-hidden">
             {/* Zone A: Sidebar - Filters (Scrollable) */}
             <aside className="w-72 shrink-0 border-r border-border bg-card/5 overflow-y-auto h-full">
                 <div className="p-4 pb-20">

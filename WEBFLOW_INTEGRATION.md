@@ -13,23 +13,34 @@ To make the page scroll back up to the "Tous les outils" or section header speci
 ### 📍 Where to add?
 Go to **Page Settings** > **Custom Code** > **Footer Code (Before </body> tag)**.
 
-### 📜 Script to Copy:
+### 📜 Script to Copy (Dashboard Mode):
 ```html
 <script>
 window.addEventListener('message', function(event) {
+    const iframe = document.querySelector('iframe'); // Ensure this selects YOUR iframe
+    if (!iframe) return;
+
     // 1. Handle Scroll to Top
     if (event.data.type === 'scroll_to_offset') {
-        // Scroll to the very top of the site
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 2. Handle Auto-Resize (Optional, for better seamless fit)
-    if (event.data.type === 'resize' && event.data.height) {
-        const iframe = document.querySelector('iframe'); // Ensure this selects YOUR iframe
-        if (iframe) {
-            iframe.style.height = event.data.height + 'px';
-        }
+    // 2. Dashboard Mode Resize (Fills the available viewport)
+    // We calculate the remaining height from the top of the iframe to the bottom of the screen.
+    function fitIframeToViewport() {
+        const topOffset = iframe.getBoundingClientRect().top;
+        const availableHeight = window.innerHeight - topOffset;
+        // Limit to a reasonable minimum height
+        iframe.style.height = Math.max(availableHeight, 600) + 'px';
     }
+
+    if (event.data.type === 'resize') {
+        fitIframeToViewport();
+    }
+    
+    // Also fit initially and on window resize
+    fitIframeToViewport();
+    window.addEventListener('resize', fitIframeToViewport);
 });
 </script>
 ```
