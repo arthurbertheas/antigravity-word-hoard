@@ -1,32 +1,100 @@
+import { useState } from "react";
 import { useSelection, getWordId } from "@/contexts/SelectionContext";
 import { Button } from "@/components/ui/button";
 import { ListChecks, ChevronRight, X, Trash2 } from "lucide-react";
 
 export function SelectionTray() {
     const { selectedWords, clearSelection, removeItem } = useSelection();
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+    // Stats calculation
+    const totalSyllables = selectedWords.reduce((acc, word) => acc + Number(word.SYLL || 0), 0);
+    const avgSyllables = selectedWords.length > 0 ? (totalSyllables / selectedWords.length).toFixed(1) : 0;
+
+    const handleClearRequest = () => {
+        if (selectedWords.length > 5) {
+            setShowClearConfirm(true);
+        } else {
+            clearSelection();
+        }
+    };
 
     return (
         <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300">
             {/* Header (Sandwich: Fixed) */}
-            <div className="flex-none p-4 border-b border-border bg-white/80 backdrop-blur-md">
+            <div className="flex-none p-4 border-b border-border bg-white">
                 <div className="flex items-center justify-between mb-1">
                     <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                         <ListChecks className="w-4 h-4 text-primary" />
                         Ma Liste
                     </h2>
                     {selectedWords.length > 0 && (
-                        <button
-                            onClick={clearSelection}
-                            className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group"
-                        >
-                            <Trash2 className="w-3 sil-3 group-hover:scale-110 transition-transform" />
-                            Vider
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {showClearConfirm ? (
+                                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+                                    <button
+                                        onClick={() => setShowClearConfirm(false)}
+                                        className="text-[10px] font-bold text-muted-foreground hover:text-foreground"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            clearSelection();
+                                            setShowClearConfirm(false);
+                                        }}
+                                        className="text-[10px] font-bold text-destructive hover:underline"
+                                    >
+                                        Confirmer
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleClearRequest}
+                                    className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group"
+                                >
+                                    <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
+                                    Vider
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
-                <div className="text-2xl font-black text-foreground">
-                    {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
+                <div className="flex items-baseline gap-2">
+                    <div className="text-2xl font-black text-foreground">
+                        {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
+                    </div>
                 </div>
+
+                {/* Micro Stats Bar */}
+                {selectedWords.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                        <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
+                            <div className="flex items-center gap-1">
+                                <span className="text-primary">{totalSyllables}</span> Syllabes
+                            </div>
+                            <div className="w-1 h-1 rounded-full bg-border" />
+                            <div className="flex items-center gap-1">
+                                Moy. <span className="text-primary">{avgSyllables}</span>
+                            </div>
+                        </div>
+
+                        {/* Category Tags */}
+                        <div className="flex flex-wrap gap-1">
+                            {Object.entries(
+                                selectedWords.reduce((acc, word) => {
+                                    const cat = word.SYNT || 'AUTRE';
+                                    acc[cat] = (acc[cat] || 0) + 1;
+                                    return acc;
+                                }, {} as Record<string, number>)
+                            ).map(([cat, count]) => (
+                                <span key={cat} className="px-1.5 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
+                                    {count} {cat}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* List Content (Sandwich: Flexible) */}
@@ -61,8 +129,8 @@ export function SelectionTray() {
                 )}
             </div>
 
-            {/* Footer Action (Sandwich: Fixed) */}
-            <div className="flex-none p-4 pb-8 bg-white/80 backdrop-blur-md border-t border-border">
+            {/* Footer Action (Sandwich: Fixed at bottom) */}
+            <div className="flex-none p-4 bg-white border-t border-border">
                 <Button
                     className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20 group bg-primary hover:bg-primary/90 text-primary-foreground"
                     disabled={selectedWords.length === 0}

@@ -40,7 +40,7 @@ export function WordBank({ words }: WordBankProps) {
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-8 pb-32">
+                    <div className="space-y-8 pb-12">
                         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                             {currentWords.map((word) => (
                                 <WordCard
