@@ -46,7 +46,7 @@ export function WordDisplay({ word }: WordDisplayProps) {
         <div className="h-full w-full relative bg-white overflow-hidden">
             <div
                 className={cn(containerClasses, "absolute left-1/2 -translate-x-1/2 -translate-y-1/2")}
-                style={{ ...fontStyles, top: '40%' }}
+                style={{ ...fontStyles, top: '30%' }}
             >
                 {segments.map((seg, idx) => {
                     const isVowel = VOWEL_GRAPHEMES.has(seg.toLowerCase());
