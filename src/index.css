@@ -1,3 +1,5 @@
+@import url('https://cdn.clarkhacks.com/OpenDyslexic/v3/OpenDyslexic.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -78,7 +80,9 @@
     @apply border-border;
   }
 
-  html, body, #root {
+  html,
+  body,
+  #root {
     @apply h-full overflow-hidden;
   }
 

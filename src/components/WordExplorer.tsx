@@ -25,6 +25,7 @@ const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 
 import { WordBank } from "./WordBank";
 import { SelectionTray } from "./SelectionTray";
+import { Tachistoscope } from "./tachistoscope/Tachistoscope";
 
 export function WordExplorer() {
     return (
@@ -100,8 +101,8 @@ function WordExplorerContent() {
             {/* Zone C: My List - Destination (Sandwich) */}
             <SelectionTray />
 
-            {/* Focus Frame Overlay (Slideshow) */}
-            <FocusFrame
+            {/* Tachistoscope Overlay (Immersive Reader) */}
+            <Tachistoscope
                 words={selectedWords}
                 isOpen={isFocusModeOpen}
                 onClose={() => setIsFocusModeOpen(false)}
