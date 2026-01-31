@@ -34,66 +34,86 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
     .body-lock {
         overflow: hidden !important;
     }
+    /* 2. Invisible au chargement pour éviter le saut */
+    iframe {
+        transition: opacity 0.5s ease-in-out;
+    }
 </style>
 
 <script>
 (function () {
-    const iframe = document.querySelector('iframe'); // Vérifie que c'est bien TON iframe
+    const iframe = document.querySelector('iframe');
     if (!iframe) return;
 
-    // Fonction pour ajuster la hauteur de l'iframe à la fenêtre restante
+    // A. On cache l'iframe le temps du calcul
+    iframe.style.opacity = '0';
+
+    // B. Fonction de calcul PRECIS (Pixel Perfect)
     function fitIframeToViewport() {
         if (iframe.classList.contains('focused-iframe')) return;
-        
-        // METHODE 1 : Calcul précis JS basé sur la position réelle par rapport au viewport
+
         try {
-            const topOffset = iframe.getBoundingClientRect().top;
-            const availableHeight = window.innerHeight - topOffset;
+            // 1. On récupère la position du haut de l'iframe par rapport au viewport
+            const rect = iframe.getBoundingClientRect();
+            const topOffset = rect.top;
             
-            // On laisse 20px de marge de sécurité pour être sûr de voir le bas
-            iframe.style.height = Math.max(availableHeight - 20, 500) + 'px';
+            // 2. On calcule la place restante exacte
+            // window.innerHeight = La hauteur visible du navigateur
+            const availableHeight = window.innerHeight - topOffset;
+
+            // 3. On applique la hauteur (min 500px pour sécurité)
+            // On retire 5px de buffer pour éviter tout scroll externe accidentel
+            const finalHeight = Math.max(availableHeight - 5, 500);
+            
+            iframe.style.height = finalHeight + 'px';
+            
+            // C. On affiche l'iframe une fois la taille calée
+            if (iframe.style.opacity === '0') {
+               requestAnimationFrame(() => {
+                   iframe.style.opacity = '1';
+               });
+            }
+
         } catch (e) {
-            // METHODE 2 : Fallback CSS AGRESSIF (On déduit ~350px pour les 2 headers : Nav + Banner)
-            iframe.style.height = 'calc(100vh - 350px)';
+            console.error("Erreur calcul hauteur", e);
+            iframe.style.height = 'calc(100vh - 300px)'; // Fallback
+            iframe.style.opacity = '1';
         }
     }
 
-    // AUTO-CORRECTION : On vérifie plusieurs fois après le load (Webflow peut charger des images qui décalent tout)
-    const checkTimes = [100, 500, 1000, 2000, 5000];
+    // D. Auto-Correction (Polling rapide au chargement pour gérer les images Webflow)
+    const checkTimes = [50, 100, 300, 500, 1000, 2000];
     checkTimes.forEach(t => setTimeout(fitIframeToViewport, t));
 
+    // E. Gestion des Messages
     window.addEventListener('message', function(event) {
         if (!event.data) return;
 
-        // 1. Resize Dynamique (déclenché par l'App)
         if (event.data.type === 'resize') {
             fitIframeToViewport();
         }
 
-        // 2. Navigation / Scroll
         if (event.data.type === 'scroll_to_offset') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 3. Mode Zen (Plein Écran Manuel) & Mode Diaporama
-        if (event.data.type === 'toggle_zen_mode' || event.data.type === 'focus_mode_change') {
-            const shouldBeOpen = event.data.type === 'toggle_zen_mode' ? event.data.isZenMode : event.data.isOpen;
-            
-            if (shouldBeOpen) {
+        if (event.data.type === 'focus_mode_change') {
+            if (event.data.isOpen) {
                 iframe.classList.add('focused-iframe');
                 document.body.classList.add('body-lock');
             } else {
                 iframe.classList.remove('focused-iframe');
                 document.body.classList.remove('body-lock');
-                setTimeout(fitIframeToViewport, 10);
+                // Petit délai pour recalculer après fermeture
+                setTimeout(fitIframeToViewport, 50);
             }
         }
     });
 
-    // Ajustement sur redimensionnement fenêtre
+    // F. Resize Standard
     window.addEventListener('resize', fitIframeToViewport);
     
-    // Premier tirage
+    // Premier appel
     fitIframeToViewport();
 })();
 </script>
