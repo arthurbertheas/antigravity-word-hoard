@@ -23,20 +23,10 @@ export function WordBank({ words }: WordBankProps) {
 
     return (
         <div className="flex flex-col h-full bg-white">
-            {/* Header (Sandwich: Fixed) */}
-            <div className="flex-none px-6 py-4 border-b border-border bg-white/50 backdrop-blur-sm flex items-center justify-between">
-                <div>
-                    <h2 className="text-xl font-bold tracking-tight text-foreground">
-                        Banque de mots
-                    </h2>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                        {words.length} résultats trouvés
-                    </p>
-                </div>
-            </div>
+            {/* Header Removed (Redundant with Site Banner) */}
 
             {/* Scrollable Content (Sandwich: Flexible) */}
-            <div className="flex-1 overflow-y-auto p-6 scroll-smooth">
+            <div className="flex-1 overflow-y-auto p-6 scroll-smooth pt-2">
                 {words.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center p-12 text-center space-y-4">
                         <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center">

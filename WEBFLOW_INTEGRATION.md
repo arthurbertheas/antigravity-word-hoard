@@ -45,17 +45,24 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
     function fitIframeToViewport() {
         if (iframe.classList.contains('focused-iframe')) return;
         
+    // Fonction pour ajuster la hauteur de l'iframe à la fenêtre restante
+    function fitIframeToViewport() {
+        if (iframe.classList.contains('focused-iframe')) return;
+        
         // METHODE 1 : Calcul précis JS
         try {
             const topOffset = iframe.getBoundingClientRect().top;
             const availableHeight = window.innerHeight - topOffset;
-            // On enlève 20px de marge de sécurité pour éviter que ça touche le bas
-            iframe.style.height = Math.max(availableHeight - 20, 600) + 'px';
+            // On enlève 20px de marge de sécurité
+            iframe.style.height = Math.max(availableHeight - 20, 500) + 'px';
         } catch (e) {
-            // METHODE 2 : Fallback CSS (Hauteur écran - Header approx 120px)
-            iframe.style.height = 'calc(100vh - 120px)';
+            // METHODE 2 : Fallback CSS AGRESSIF (On déduit ~300px pour les 2 headers)
+            iframe.style.height = 'calc(100vh - 300px)';
         }
     }
+
+    const interval = setInterval(fitIframeToViewport, 1000); // Check régulier au cas où le layout bouge
+    setTimeout(() => clearInterval(interval), 10000); // Stop après 10s
 
     window.addEventListener('message', function(event) {
         if (!event.data) return;
