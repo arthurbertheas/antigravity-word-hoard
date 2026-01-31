@@ -33,7 +33,7 @@ export function SettingsPopover() {
                 className="w-72 p-4 bg-neutral-900 border border-white/10 shadow-2xl rounded-xl z-[110] text-white"
                 side="top"
                 align="end"
-                sideOffset={4}
+                sideOffset={18}
             >
                 <div className="space-y-5">
                     {/* Mode Selector (Segmented Control) */}
