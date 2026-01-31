@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ListChecks, ChevronRight, X, Trash2 } from "lucide-react";
 
 export function SelectionTray() {
-    const { selectedWords, clearSelection, removeItem } = useSelection();
+    const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen } = useSelection();
     const [showClearConfirm, setShowClearConfirm] = useState(false);
 
     // Stats calculation
@@ -135,7 +135,7 @@ export function SelectionTray() {
                     className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20 group bg-primary hover:bg-primary/90 text-primary-foreground"
                     disabled={selectedWords.length === 0}
                     onClick={() => {
-                        window.parent.postMessage({ type: 'launch_diaporama' }, '*');
+                        setIsFocusModeOpen(true);
                     }}
                 >
                     Lancer la sélection

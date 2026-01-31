@@ -37,8 +37,7 @@ export function WordExplorer() {
 
 function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
-    const { selectedWords } = useSelection();
-    const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
+    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen } = useSelection();
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);

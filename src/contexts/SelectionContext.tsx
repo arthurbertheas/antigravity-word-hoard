@@ -8,6 +8,8 @@ interface SelectionContextType {
     removeItem: (wordId: string) => void;
     clearSelection: () => void;
     isSelected: (word: Word) => boolean;
+    isFocusModeOpen: boolean;
+    setIsFocusModeOpen: (open: boolean) => void;
 }
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
@@ -19,6 +21,7 @@ export function getWordId(word: Word): string {
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedWords, setSelectedWords] = useState<Word[]>([]);
+    const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
 
     const addItem = (word: Word) => {
         const targetId = getWordId(word);
@@ -82,7 +85,16 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     }, [selectedWords]);
 
     return (
-        <SelectionContext.Provider value={{ selectedWords, toggleSelection, addItem, removeItem, clearSelection, isSelected }}>
+        <SelectionContext.Provider value={{
+            selectedWords,
+            toggleSelection,
+            addItem,
+            removeItem,
+            clearSelection,
+            isSelected,
+            isFocusModeOpen,
+            setIsFocusModeOpen
+        }}>
             {children}
         </SelectionContext.Provider>
     );
