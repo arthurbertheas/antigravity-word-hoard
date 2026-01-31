@@ -29,40 +29,45 @@ export function WordDisplay({ word }: WordDisplayProps) {
     }
 
     const fontStyles: React.CSSProperties = {
-        fontSize: `${settings.fontSize}px`,
+        fontSize: `${settings.fontSize}vmin`,
         letterSpacing: `${settings.letterSpacing}px`,
         fontFamily: settings.fontFamily === 'opendyslexic' ? 'OpenDyslexic, sans-serif' : 'inherit',
     };
 
     const containerClasses = cn(
-        "flex items-center justify-center text-center transition-all duration-200",
+        "flex items-center justify-center text-center transition-all duration-200 w-full",
         settings.fontFamily === 'sans' && "font-sans",
         settings.fontFamily === 'serif' && "font-serif",
         settings.fontFamily === 'mono' && "font-mono",
-        // OpenDyslexic classes should be handled via @font-face and fontStyles
     );
 
     return (
-        <div className="h-full w-full relative bg-white overflow-hidden">
-            <div
-                className={cn(containerClasses, "absolute left-1/2 -translate-x-1/2 -translate-y-1/2")}
-                style={{ ...fontStyles, top: '30%' }}
-            >
-                {segments.map((seg, idx) => {
-                    const isVowel = VOWEL_GRAPHEMES.has(seg.toLowerCase());
-                    return (
-                        <span
-                            key={idx}
-                            className={cn(
-                                "inline-block",
-                                settings.highlightVowels && isVowel && "text-red-500 font-bold"
-                            )}
-                        >
-                            {seg}
-                        </span>
-                    );
-                })}
+        <div className="h-full w-full flex flex-col bg-white overflow-hidden absolute inset-0">
+            {/* STIMULUS ZONE (75% height) */}
+            <div className="flex-[3] flex items-center justify-center p-8 bg-white overflow-hidden">
+                <div
+                    className={containerClasses}
+                    style={fontStyles}
+                >
+                    {segments.map((seg, idx) => {
+                        const isVowel = VOWEL_GRAPHEMES.has(seg.toLowerCase());
+                        return (
+                            <span
+                                key={idx}
+                                className={cn(
+                                    "inline-block",
+                                    settings.highlightVowels && isVowel && "text-red-500 font-bold"
+                                )}
+                            >
+                                {seg}
+                            </span>
+                        );
+                    })}
+                </div>
             </div>
+
+            {/* UI SAFE ZONE (25% height) */}
+            <div className="flex-1 pointer-events-none" />
         </div>
     );
 }

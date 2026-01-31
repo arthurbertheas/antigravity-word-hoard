@@ -39,7 +39,7 @@ interface PlayerContextType {
 const DEFAULT_SETTINGS: PlayerSettings = {
     speedMs: 1000,
     gapMs: 500,
-    fontSize: 64,
+    fontSize: 15,
     fontFamily: 'sans',
     highlightVowels: false,
     letterSpacing: 0,
@@ -55,7 +55,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         const saved = localStorage.getItem('tachistoscope-settings');
-        return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Migration: if fontSize is in the old pixel range (> 50), reset to default vmin level
+            if (parsed.fontSize > 50) {
+                return { ...parsed, fontSize: DEFAULT_SETTINGS.fontSize };
+            }
+            return parsed;
+        }
+        return DEFAULT_SETTINGS;
     });
 
     useEffect(() => {

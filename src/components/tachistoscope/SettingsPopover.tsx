@@ -66,13 +66,13 @@ export function SettingsPopover() {
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-tight">Taille: {settings.fontSize}px</Label>
+                                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-tight">Zoom: {settings.fontSize}</Label>
                             </div>
                             <Slider
                                 value={[settings.fontSize]}
-                                min={24}
-                                max={200}
-                                step={2}
+                                min={5}
+                                max={30}
+                                step={1}
                                 onValueChange={([v]) => updateSettings({ fontSize: v })}
                             />
                         </div>
