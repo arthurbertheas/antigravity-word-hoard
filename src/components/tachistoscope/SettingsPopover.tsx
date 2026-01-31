@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { cn } from '@/lib/utils';
 import { Settings2, Type, Zap, Timer, MousePointer2 } from "lucide-react";
 
 export function SettingsPopover() {
@@ -29,20 +30,42 @@ export function SettingsPopover() {
                 </Button>
             </PopoverTrigger>
             <PopoverContent
-                className="w-80 p-5 bg-[#171717] border border-white/10 shadow-2xl rounded-2xl z-[110]"
+                className="w-72 p-4 bg-neutral-900 border border-white/10 shadow-2xl rounded-xl z-[110] text-white"
                 side="top"
                 align="end"
-                sideOffset={12}
+                sideOffset={4}
             >
-                <div className="space-y-6">
+                <div className="space-y-5">
+                    {/* Mode Selector (Segmented Control) */}
+                    <div className="flex p-1 bg-neutral-800 rounded-lg">
+                        <button
+                            onClick={() => updateSettings({ mode: 'auto' })}
+                            className={cn(
+                                "flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all",
+                                settings.mode === 'auto' ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            Auto
+                        </button>
+                        <button
+                            onClick={() => updateSettings({ mode: 'manual' })}
+                            className={cn(
+                                "flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all",
+                                settings.mode === 'manual' ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            Manuel
+                        </button>
+                    </div>
+
                     {/* Typography Section */}
                     <div className="space-y-4">
-                        <div className="space-y-3">
+                        <div className="space-y-2.5">
                             <div className="flex items-center justify-between">
-                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">
+                                <Label className="text-neutral-400 text-[9px] font-bold uppercase tracking-[0.2em]">
                                     Police
                                 </Label>
-                                <span className="text-white text-[10px] font-mono uppercase opacity-50">
+                                <span className="text-white text-[9px] font-mono uppercase opacity-50">
                                     {settings.fontFamily}
                                 </span>
                             </div>
@@ -64,8 +87,8 @@ export function SettingsPopover() {
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Zoom</Label>
-                                <span className="text-white text-[11px] font-mono">{settings.fontSize}</span>
+                                <Label className="text-neutral-400 text-[9px] font-bold uppercase tracking-[0.2em]">Zoom</Label>
+                                <span className="text-white text-[10px] font-mono">{settings.fontSize}</span>
                             </div>
                             <Slider
                                 value={[settings.fontSize]}
@@ -79,8 +102,8 @@ export function SettingsPopover() {
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Espacement</Label>
-                                <span className="text-white text-[11px] font-mono">{settings.letterSpacing}px</span>
+                                <Label className="text-neutral-400 text-[9px] font-bold uppercase tracking-[0.2em]">Espacement</Label>
+                                <span className="text-white text-[10px] font-mono">{settings.letterSpacing}px</span>
                             </div>
                             <Slider
                                 value={[settings.letterSpacing]}
@@ -95,46 +118,62 @@ export function SettingsPopover() {
 
                     <div className="h-px bg-white/5" />
 
-                    {/* Timing Section */}
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Exposition</Label>
-                                <span className="text-white text-[11px] font-mono">{(settings.speedMs / 1000).toFixed(1)} s</span>
+                    {/* Timing Settings (Only in Auto mode) */}
+                    {settings.mode === 'auto' ? (
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-neutral-400 text-[9px] font-bold uppercase tracking-[0.2em]">Exposition</Label>
+                                    <span className="text-white text-[10px] font-mono">{(settings.speedMs / 1000).toFixed(1)} s</span>
+                                </div>
+                                <Slider
+                                    value={[settings.speedMs]}
+                                    min={100}
+                                    max={5000}
+                                    step={100}
+                                    onValueChange={([v]) => updateSettings({ speedMs: v })}
+                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
+                                />
                             </div>
-                            <Slider
-                                value={[settings.speedMs]}
-                                min={100}
-                                max={5000}
-                                step={100}
-                                onValueChange={([v]) => updateSettings({ speedMs: v })}
-                                className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
-                            />
-                        </div>
 
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Pause Inter-mots</Label>
-                                <span className="text-white text-[11px] font-mono">{(settings.gapMs / 1000).toFixed(1)} s</span>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-neutral-400 text-[9px] font-bold uppercase tracking-[0.2em]">Pause Inter-mots</Label>
+                                    <span className="text-white text-[10px] font-mono">{(settings.gapMs / 1000).toFixed(1)} s</span>
+                                </div>
+                                <Slider
+                                    value={[settings.gapMs]}
+                                    min={100}
+                                    max={5000}
+                                    step={100}
+                                    onValueChange={([v]) => updateSettings({ gapMs: v })}
+                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
+                                />
                             </div>
-                            <Slider
-                                value={[settings.gapMs]}
-                                min={100}
-                                max={5000}
-                                step={100}
-                                onValueChange={([v]) => updateSettings({ gapMs: v })}
-                                className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-none [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_.bg-primary]:bg-white [&_.bg-secondary]:bg-white/10"
-                            />
                         </div>
-                    </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <Label className="text-neutral-400 text-[9px] font-bold uppercase tracking-[0.2em]">Interlude</Label>
+                                    <p className="text-[8px] text-neutral-500 uppercase tracking-widest">Écran blanc entre mots</p>
+                                </div>
+                                <Switch
+                                    checked={settings.manualInterlude}
+                                    onCheckedChange={(v) => updateSettings({ manualInterlude: v })}
+                                    className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     <div className="h-px bg-white/5" />
 
-                    {/* Feature Toggles */}
+                    {/* General Toggles */}
                     <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Voyelles</Label>
-                            <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Mise en exergue</p>
+                            <Label className="text-neutral-400 text-[9px] font-bold uppercase tracking-[0.2em]">Voyelles</Label>
+                            <p className="text-[8px] text-neutral-500 uppercase tracking-widest">Mise en exergue</p>
                         </div>
                         <Switch
                             checked={settings.highlightVowels}

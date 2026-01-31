@@ -10,6 +10,8 @@ export interface PlayerSettings {
     fontFamily: 'arial' | 'verdana' | 'mdi-ecole' | 'sans' | 'serif' | 'mono' | 'opendyslexic';
     highlightVowels: boolean;
     letterSpacing: number;
+    mode: 'auto' | 'manual';
+    manualInterlude: boolean;
 }
 
 export interface SessionLog {
@@ -43,6 +45,8 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     fontFamily: 'arial',
     highlightVowels: false,
     letterSpacing: 0,
+    mode: 'auto',
+    manualInterlude: true,
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -71,7 +75,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, [settings]);
 
     const updateSettings = useCallback((newSettings: Partial<PlayerSettings>) => {
-        setSettings(prev => ({ ...prev, ...newSettings }));
+        setSettings(prev => {
+            const next = { ...prev, ...newSettings };
+            if (next.mode === 'manual') setIsPlaying(false);
+            return next;
+        });
     }, []);
 
     const logResult = useCallback((wordId: string, status: 'success' | 'failed' | 'skipped') => {
@@ -82,9 +90,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const nextWord = useCallback(() => {
-        setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
-        setPhase('gap');
-    }, [queue.length]);
+        if (settings.mode === 'manual' && settings.manualInterlude) {
+            if (phase === 'display') {
+                setPhase('gap');
+            } else {
+                setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
+                setPhase('display');
+            }
+        } else {
+            setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
+            setPhase('gap');
+        }
+    }, [queue.length, settings.mode, settings.manualInterlude, phase]);
 
     const prevWord = useCallback(() => {
         setCurrentIndex(prev => (prev > 0 ? prev - 1 : prev));

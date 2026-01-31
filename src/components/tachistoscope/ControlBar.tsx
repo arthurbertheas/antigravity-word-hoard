@@ -18,8 +18,11 @@ export function ControlBar() {
         currentIndex,
         queue,
         nextWord,
-        prevWord
+        prevWord,
+        settings
     } = usePlayer();
+
+    const isManual = settings.mode === 'manual';
 
     const [isVisible, setIsVisible] = useState(true);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -67,8 +70,12 @@ export function ControlBar() {
                     <Button
                         variant="secondary"
                         size="icon"
-                        className="w-12 h-12 rounded-full bg-white text-black hover:bg-white/90 shadow-lg scale-110"
-                        onClick={() => setIsPlaying(!isPlaying)}
+                        className={cn(
+                            "w-12 h-12 rounded-full bg-white text-black hover:bg-white/90 shadow-lg scale-110 transition-opacity",
+                            isManual && "opacity-30 pointer-events-none"
+                        )}
+                        onClick={() => !isManual && setIsPlaying(!isPlaying)}
+                        disabled={isManual}
                     >
                         {isPlaying ? (
                             <Pause className="w-6 h-6 fill-current" />
