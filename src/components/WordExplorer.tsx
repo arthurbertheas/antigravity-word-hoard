@@ -73,9 +73,9 @@ function WordExplorerContent() {
 
     return (
         <div className="flex bg-white h-full w-full overflow-hidden">
-            {/* Zone A: Sidebar - Filters (Scrollable) */}
-            <aside className="w-72 shrink-0 border-r border-border bg-card/5 overflow-y-auto h-full">
-                <div className="p-4 pb-20">
+            {/* Zone A: Sidebar - Filters (Sandwich-ready container) */}
+            <aside className="w-72 shrink-0 border-r border-border bg-card/5 flex flex-col h-full overflow-hidden">
+                <div className="flex-1 overflow-y-auto p-4 pb-20">
                     <FilterPanel
                         filters={filters}
                         updateFilter={handleFilterChange}
@@ -92,12 +92,12 @@ function WordExplorerContent() {
                 </div>
             </aside>
 
-            {/* Zone B: Results - Source (Scrollable) */}
-            <main className="flex-1 min-w-0 bg-white overflow-y-auto h-full border-r border-border">
+            {/* Zone B: Results - Source (Sandwich) */}
+            <main className="flex-1 min-w-0 bg-white h-full border-r border-border overflow-hidden">
                 <WordBank words={words} />
             </main>
 
-            {/* Zone C: My List - Destination (Scrollable) */}
+            {/* Zone C: My List - Destination (Sandwich) */}
             <SelectionTray />
 
             {/* Focus Frame Overlay (Slideshow) */}

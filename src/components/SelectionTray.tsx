@@ -7,8 +7,8 @@ export function SelectionTray() {
 
     return (
         <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300">
-            {/* Header */}
-            <div className="p-4 border-b border-border bg-white/80 backdrop-blur-md sticky top-0 z-10">
+            {/* Header (Sandwich: Fixed) */}
+            <div className="flex-none p-4 border-b border-border bg-white/80 backdrop-blur-md">
                 <div className="flex items-center justify-between mb-1">
                     <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                         <ListChecks className="w-4 h-4 text-primary" />
@@ -29,7 +29,7 @@ export function SelectionTray() {
                 </div>
             </div>
 
-            {/* List Content */}
+            {/* List Content (Sandwich: Flexible) */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-transparent to-card/5">
                 {selectedWords.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 opacity-40">
@@ -61,8 +61,8 @@ export function SelectionTray() {
                 )}
             </div>
 
-            {/* Footer Action */}
-            <div className="p-4 bg-white/80 backdrop-blur-md border-t border-border mt-auto">
+            {/* Footer Action (Sandwich: Fixed) */}
+            <div className="flex-none p-4 bg-white/80 backdrop-blur-md border-t border-border">
                 <Button
                     className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20 group bg-primary hover:bg-primary/90 text-primary-foreground"
                     disabled={selectedWords.length === 0}

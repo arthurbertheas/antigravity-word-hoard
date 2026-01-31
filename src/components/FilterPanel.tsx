@@ -67,9 +67,9 @@ export function FilterPanel({
         filters.maxLetters !== 20;
 
     return (
-        <div className="h-full flex flex-col">
-            {/* Header */}
-            <div className="p-4 border-b border-border">
+        <div className="h-full flex flex-col overflow-hidden">
+            {/* Header (Sandwich: Fixed) */}
+            <div className="flex-none p-4 border-b border-border">
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="font-semibold text-foreground">Filtres</h2>
                     {hasActiveFilters && (

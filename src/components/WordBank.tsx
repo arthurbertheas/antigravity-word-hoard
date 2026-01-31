@@ -23,8 +23,8 @@ export function WordBank({ words }: WordBankProps) {
 
     return (
         <div className="flex flex-col h-full bg-white">
-            {/* Header */}
-            <div className="px-6 py-4 border-b border-border bg-white/50 backdrop-blur-sm sticky top-0 z-10 flex items-center justify-between">
+            {/* Header (Sandwich: Fixed) */}
+            <div className="flex-none px-6 py-4 border-b border-border bg-white/50 backdrop-blur-sm flex items-center justify-between">
                 <div>
                     <h2 className="text-xl font-bold tracking-tight text-foreground">
                         Banque de mots
@@ -35,7 +35,7 @@ export function WordBank({ words }: WordBankProps) {
                 </div>
             </div>
 
-            {/* Scrollable Content */}
+            {/* Scrollable Content (Sandwich: Flexible) */}
             <div className="flex-1 overflow-y-auto p-6 scroll-smooth">
                 {words.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center p-12 text-center space-y-4">
