@@ -8,20 +8,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 @layer base {
-  @font-face {
-    font-family: 'MDI Ecole';
-    src: url('/MDIecole-Regular.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-  }
-
-  @font-face {
-    font-family: 'MDI Ecole';
-    src: url('/MDIecole-Bold.otf') format('opentype');
-    font-weight: bold;
-    font-style: normal;
-  }
-
   :root {
     /* Light theme - Matching matériel orthophonie SaaS */
     --background: 0 0% 100%;

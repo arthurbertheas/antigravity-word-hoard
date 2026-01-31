@@ -10,8 +10,6 @@ export interface PlayerSettings {
     fontFamily: 'arial' | 'verdana' | 'mdi-ecole' | 'sans' | 'serif' | 'mono' | 'opendyslexic';
     highlightVowels: boolean;
     letterSpacing: number;
-    mode: 'auto' | 'manual';
-    manualInterlude: boolean;
 }
 
 export interface SessionLog {
@@ -45,8 +43,6 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     fontFamily: 'arial',
     highlightVowels: false,
     letterSpacing: 0,
-    mode: 'manual',
-    manualInterlude: true,
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -59,18 +55,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         const saved = localStorage.getItem('tachistoscope-settings');
-        const initial = saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
-
-        // Ensure all required fields exist (merge with defaults)
-        const merged = { ...DEFAULT_SETTINGS, ...initial };
-
-        // Migration: if fontSize is in the old pixel range (> 50), reset to default vmin level
-        // and ensure mode is manual if it was not explicitly set before
-        if (merged.fontSize > 50) {
-            merged.fontSize = DEFAULT_SETTINGS.fontSize;
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Migration: if fontSize is in the old pixel range (> 50), reset to default vmin level
+            if (parsed.fontSize > 50) {
+                return { ...parsed, fontSize: DEFAULT_SETTINGS.fontSize };
+            }
+            return parsed;
         }
-
-        return merged;
+        return DEFAULT_SETTINGS;
     });
 
     useEffect(() => {
@@ -78,11 +71,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, [settings]);
 
     const updateSettings = useCallback((newSettings: Partial<PlayerSettings>) => {
-        setSettings(prev => {
-            const next = { ...prev, ...newSettings };
-            if (next.mode === 'manual') setIsPlaying(false);
-            return next;
-        });
+        setSettings(prev => ({ ...prev, ...newSettings }));
     }, []);
 
     const logResult = useCallback((wordId: string, status: 'success' | 'failed' | 'skipped') => {
@@ -93,18 +82,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const nextWord = useCallback(() => {
-        if (settings.mode === 'manual' && settings.manualInterlude) {
-            if (phase === 'display') {
-                setPhase('gap');
-            } else {
-                setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
-                setPhase('display');
-            }
-        } else {
-            setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
-            setPhase('gap');
-        }
-    }, [queue.length, settings.mode, settings.manualInterlude, phase]);
+        setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
+        setPhase('gap');
+    }, [queue.length]);
 
     const prevWord = useCallback(() => {
         setCurrentIndex(prev => (prev > 0 ? prev - 1 : prev));

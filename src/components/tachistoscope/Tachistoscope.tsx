@@ -22,7 +22,7 @@ function PlayerEngine() {
     } = usePlayer();
 
     useEffect(() => {
-        if (!isPlaying || settings.mode === 'manual') return;
+        if (!isPlaying) return;
 
         let timer: NodeJS.Timeout;
 
@@ -61,8 +61,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         prevWord,
         logResult,
         setQueue,
-        resetSession,
-        settings
+        resetSession
     } = usePlayer();
 
     // Initialize queue
@@ -77,7 +76,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
             switch (e.code) {
                 case 'Space':
                     e.preventDefault();
-                    if (settings.mode === 'auto') setIsPlaying(!isPlaying);
+                    setIsPlaying(!isPlaying);
                     break;
                 case 'ArrowRight':
                     e.preventDefault();
