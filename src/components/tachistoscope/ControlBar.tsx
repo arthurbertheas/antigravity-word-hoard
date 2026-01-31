@@ -45,7 +45,7 @@ export function ControlBar() {
 
     return (
         <div className={cn(
-            "fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] transition-all duration-500",
+            "fixed bottom-[8%] left-1/2 -translate-x-1/2 z-[60] transition-all duration-500",
             isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0 pointer-events-none"
         )}>
             <div className="flex items-center gap-6 px-6 py-3 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">

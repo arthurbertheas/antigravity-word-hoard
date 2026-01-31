@@ -43,10 +43,10 @@ export function WordDisplay({ word }: WordDisplayProps) {
     );
 
     return (
-        <div className={cn("h-full w-full flex items-center justify-center bg-white overflow-hidden")}>
+        <div className="h-full w-full relative bg-white overflow-hidden">
             <div
-                className={containerClasses}
-                style={fontStyles}
+                className={cn(containerClasses, "absolute left-1/2 -translate-x-1/2 -translate-y-1/2")}
+                style={{ ...fontStyles, top: '40%' }}
             >
                 {segments.map((seg, idx) => {
                     const isVowel = VOWEL_GRAPHEMES.has(seg.toLowerCase());

@@ -28,7 +28,12 @@ export function SettingsPopover() {
                     <Settings2 className="w-5 h-5" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-6 bg-white/95 backdrop-blur-md border-border shadow-2xl z-[110]" side="top" align="end">
+            <PopoverContent
+                className="w-80 p-6 bg-white border border-border/50 shadow-xl rounded-xl z-[110]"
+                side="top"
+                align="end"
+                sideOffset={12}
+            >
                 <div className="space-y-6">
                     <div className="flex items-center gap-2 border-b pb-2">
                         <Settings2 className="w-4 h-4 text-muted-foreground" />
@@ -93,14 +98,14 @@ export function SettingsPopover() {
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <Label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-tight">
-                                    <Zap className="w-3.5 h-3.5" /> Exposition: {settings.speedMs}ms
+                                    <Zap className="w-3.5 h-3.5" /> Exposition: {(settings.speedMs / 1000).toFixed(1)} s
                                 </Label>
                             </div>
                             <Slider
                                 value={[settings.speedMs]}
-                                min={50}
-                                max={3000}
-                                step={50}
+                                min={100}
+                                max={5000}
+                                step={100}
                                 onValueChange={([v]) => updateSettings({ speedMs: v })}
                             />
                         </div>
@@ -108,14 +113,14 @@ export function SettingsPopover() {
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <Label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-tight">
-                                    <Timer className="w-3.5 h-3.5" /> Temps Inter-mots: {settings.gapMs}ms
+                                    <Timer className="w-3.5 h-3.5" /> Temps Inter-mots: {(settings.gapMs / 1000).toFixed(1)} s
                                 </Label>
                             </div>
                             <Slider
                                 value={[settings.gapMs]}
-                                min={50}
-                                max={3000}
-                                step={50}
+                                min={100}
+                                max={5000}
+                                step={100}
                                 onValueChange={([v]) => updateSettings({ gapMs: v })}
                             />
                         </div>
