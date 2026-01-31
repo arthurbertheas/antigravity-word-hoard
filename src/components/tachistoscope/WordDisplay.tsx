@@ -34,7 +34,7 @@ export function WordDisplay({ word }: WordDisplayProps) {
         fontFamily: settings.fontFamily === 'opendyslexic' ? 'OpenDyslexic, sans-serif' :
             settings.fontFamily === 'arial' ? 'Arial, sans-serif' :
                 settings.fontFamily === 'verdana' ? 'Verdana, sans-serif' :
-                    settings.fontFamily === 'mdi-ecole' ? '"MDI Ecole", cursive' : 'inherit',
+                    settings.fontFamily === 'mdi-ecole' ? "'MDI Ecole', sans-serif" : 'inherit',
     };
 
     const containerClasses = cn(
