@@ -45,29 +45,27 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
     function fitIframeToViewport() {
         if (iframe.classList.contains('focused-iframe')) return;
         
-    // Fonction pour ajuster la hauteur de l'iframe à la fenêtre restante
-    function fitIframeToViewport() {
-        if (iframe.classList.contains('focused-iframe')) return;
-        
-        // METHODE 1 : Calcul précis JS
+        // METHODE 1 : Calcul précis JS basé sur la position réelle par rapport au viewport
         try {
             const topOffset = iframe.getBoundingClientRect().top;
             const availableHeight = window.innerHeight - topOffset;
-            // On enlève 20px de marge de sécurité
+            
+            // On laisse 20px de marge de sécurité pour être sûr de voir le bas
             iframe.style.height = Math.max(availableHeight - 20, 500) + 'px';
         } catch (e) {
-            // METHODE 2 : Fallback CSS AGRESSIF (On déduit ~300px pour les 2 headers)
-            iframe.style.height = 'calc(100vh - 300px)';
+            // METHODE 2 : Fallback CSS AGRESSIF (On déduit ~350px pour les 2 headers : Nav + Banner)
+            iframe.style.height = 'calc(100vh - 350px)';
         }
     }
 
-    const interval = setInterval(fitIframeToViewport, 1000); // Check régulier au cas où le layout bouge
-    setTimeout(() => clearInterval(interval), 10000); // Stop après 10s
+    // AUTO-CORRECTION : On vérifie plusieurs fois après le load (Webflow peut charger des images qui décalent tout)
+    const checkTimes = [100, 500, 1000, 2000, 5000];
+    checkTimes.forEach(t => setTimeout(fitIframeToViewport, t));
 
     window.addEventListener('message', function(event) {
         if (!event.data) return;
 
-        // 1. Resize Dynamique
+        // 1. Resize Dynamique (déclenché par l'App)
         if (event.data.type === 'resize') {
             fitIframeToViewport();
         }
@@ -77,7 +75,7 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 3. Mode Diaporama (Fullscreen)
+        // 3. Mode Diaporama (Fullscreen Promotion)
         if (event.data.type === 'focus_mode_change') {
             if (event.data.isOpen) {
                 iframe.classList.add('focused-iframe');
@@ -90,9 +88,11 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
         }
     });
 
-    // Ajustement initial et lors du redimensionnement de la fenêtre
-    fitIframeToViewport();
+    // Ajustement sur redimensionnement fenêtre
     window.addEventListener('resize', fitIframeToViewport);
+    
+    // Premier tirage
+    fitIframeToViewport();
 })();
 </script>
 ```
