@@ -62,7 +62,7 @@ export function SelectionTray() {
             </div>
 
             {/* Footer Action (Sandwich: Fixed) */}
-            <div className="flex-none p-4 bg-white/80 backdrop-blur-md border-t border-border">
+            <div className="flex-none p-4 pb-8 bg-white/80 backdrop-blur-md border-t border-border">
                 <Button
                     className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20 group bg-primary hover:bg-primary/90 text-primary-foreground"
                     disabled={selectedWords.length === 0}
