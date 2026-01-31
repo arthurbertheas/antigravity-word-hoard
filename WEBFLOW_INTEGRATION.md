@@ -75,9 +75,11 @@ Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 3. Mode Diaporama (Fullscreen Promotion)
-        if (event.data.type === 'focus_mode_change') {
-            if (event.data.isOpen) {
+        // 3. Mode Zen (Plein Écran Manuel) & Mode Diaporama
+        if (event.data.type === 'toggle_zen_mode' || event.data.type === 'focus_mode_change') {
+            const shouldBeOpen = event.data.type === 'toggle_zen_mode' ? event.data.isZenMode : event.data.isOpen;
+            
+            if (shouldBeOpen) {
                 iframe.classList.add('focused-iframe');
                 document.body.classList.add('body-lock');
             } else {

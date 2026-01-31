@@ -16,7 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { LayoutGrid, List, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutGrid, List, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 import { useIframeResize } from "@/hooks/useIframeResize";
 
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
@@ -38,6 +38,17 @@ function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
     const { selectedWords } = useSelection();
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
+    const [isZenMode, setIsZenMode] = useState(false);
+
+    // Zen Mode Toggle Logic
+    const toggleZenMode = () => {
+        const newState = !isZenMode;
+        setIsZenMode(newState);
+        window.parent.postMessage({
+            type: 'toggle_zen_mode',
+            isZenMode: newState
+        }, '*');
+    };
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);
@@ -93,7 +104,23 @@ function WordExplorerContent() {
             </aside>
 
             {/* Zone B: Results - Source (Sandwich) */}
-            <main className="flex-1 min-w-0 bg-white h-full border-r border-border overflow-hidden">
+            <main className="flex-1 min-w-0 bg-white h-full border-r border-border overflow-hidden relative">
+                {/* Zen Mode Toggle Button */}
+                <div className="absolute top-4 right-6 z-20">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleZenMode}
+                        className="bg-white/80 backdrop-blur-md hover:bg-primary/10 hover:text-primary shadow-sm border border-border/50 rounded-full w-8 h-8"
+                        title={isZenMode ? "Réduire" : "Plein écran"}
+                    >
+                        {isZenMode ? (
+                            <Minimize2 className="w-4 h-4" />
+                        ) : (
+                            <Maximize2 className="w-4 h-4" />
+                        )}
+                    </Button>
+                </div>
                 <WordBank words={words} />
             </main>
 
