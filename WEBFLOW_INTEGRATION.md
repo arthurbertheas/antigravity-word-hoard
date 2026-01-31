@@ -13,34 +13,74 @@ To make the page scroll back up to the "Tous les outils" or section header speci
 ### 📍 Where to add?
 Go to **Page Settings** > **Custom Code** > **Footer Code (Before </body> tag)**.
 
-### 📜 Script to Copy (Dashboard Mode):
+### 📜 Script "Zen & Robust" (Split View Compatible)
+Ce script gère à la fois l'ajustement automatique de la hauteur (pour voir les boutons du bas) et le mode plein écran pour le Diaporama. Il remplace avantageusement ton ancien code.
+
 ```html
+<style>
+    /* 1. Fullscreen Promotion (Mode Diaporama) */
+    .focused-iframe {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 10000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: #fafafa !important;
+    }
+    .body-lock {
+        overflow: hidden !important;
+    }
+</style>
+
 <script>
-window.addEventListener('message', function(event) {
-    const iframe = document.querySelector('iframe'); // Ensure this selects YOUR iframe
+(function () {
+    const iframe = document.querySelector('iframe'); // Vérifie que c'est bien TON iframe
     if (!iframe) return;
 
-    // 1. Handle Scroll to Top
-    if (event.data.type === 'scroll_to_offset') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // 2. Dashboard Mode Resize (Fills the available viewport)
-    // We calculate the remaining height from the top of the iframe to the bottom of the screen.
+    // Fonction pour ajuster la hauteur de l'iframe à la fenêtre restante
     function fitIframeToViewport() {
+        if (iframe.classList.contains('focused-iframe')) return;
+        
         const topOffset = iframe.getBoundingClientRect().top;
         const availableHeight = window.innerHeight - topOffset;
-        // Limit to a reasonable minimum height
+        
+        // On donne à l'iframe toute la place jusqu'en bas de l'écran (min 600px)
         iframe.style.height = Math.max(availableHeight, 600) + 'px';
     }
 
-    if (event.data.type === 'resize') {
-        fitIframeToViewport();
-    }
-    
-    // Also fit initially and on window resize
+    window.addEventListener('message', function(event) {
+        if (!event.data) return;
+
+        // 1. Resize Dynamique
+        if (event.data.type === 'resize') {
+            fitIframeToViewport();
+        }
+
+        // 2. Navigation / Scroll
+        if (event.data.type === 'scroll_to_offset') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 3. Mode Diaporama (Fullscreen)
+        if (event.data.type === 'focus_mode_change') {
+            if (event.data.isOpen) {
+                iframe.classList.add('focused-iframe');
+                document.body.classList.add('body-lock');
+            } else {
+                iframe.classList.remove('focused-iframe');
+                document.body.classList.remove('body-lock');
+                setTimeout(fitIframeToViewport, 10);
+            }
+        }
+    });
+
+    // Ajustement initial et lors du redimensionnement de la fenêtre
     fitIframeToViewport();
     window.addEventListener('resize', fitIframeToViewport);
-});
+})();
 </script>
 ```

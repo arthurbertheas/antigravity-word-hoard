@@ -63,6 +63,14 @@ function WordExplorerContent() {
         return () => window.removeEventListener('message', handleMessage);
     }, [selectedWords]);
 
+    // Send Focus Mode state to parent for fullscreen promotion
+    useEffect(() => {
+        window.parent.postMessage({
+            type: 'focus_mode_change',
+            isOpen: isFocusModeOpen
+        }, '*');
+    }, [isFocusModeOpen]);
+
     return (
         <div className="flex bg-white h-full w-full overflow-hidden">
             {/* Zone A: Sidebar - Filters (Scrollable) */}
