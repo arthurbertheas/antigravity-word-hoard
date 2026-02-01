@@ -25,7 +25,7 @@ export function SelectionTray() {
             <div className="flex-none p-4 border-b border-border bg-white">
                 <div className="flex items-center justify-between mb-1 relative min-h-[24px]">
                     {/* Centered Title */}
-                    <h2 className="absolute left-1/2 -translate-x-1/2 text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 whitespace-nowrap pointer-events-none">
+                    <h2 className="absolute inset-0 flex items-center justify-center text-sm font-bold uppercase tracking-wider text-muted-foreground gap-2 whitespace-nowrap pointer-events-none">
                         <ListChecks className="w-4 h-4 text-primary" />
                         Ma Liste
                     </h2>
