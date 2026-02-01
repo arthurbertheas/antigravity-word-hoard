@@ -142,6 +142,18 @@ export function SettingsPopover() {
                             className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
                         />
                     </div>
+
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Point de Fixation</Label>
+                            <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Afficher + pendant pause</p>
+                        </div>
+                        <Switch
+                            checked={settings.showFocusPoint}
+                            onCheckedChange={(v) => updateSettings({ showFocusPoint: v })}
+                            className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
+                        />
+                    </div>
                 </div>
             </PopoverContent>
         </Popover>

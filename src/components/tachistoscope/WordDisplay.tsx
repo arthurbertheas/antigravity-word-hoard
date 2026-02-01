@@ -25,7 +25,16 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     }, [word.GSEG]);
 
     if (phase === 'gap' && !forceVisible) {
-        return <div className="h-full w-full bg-white" />;
+        return (
+            <div className="h-full w-full flex items-center justify-center bg-white">
+                {settings.showFocusPoint && (
+                    <div className="relative w-8 h-8 flex items-center justify-center opacity-30">
+                        <div className="absolute w-[2px] h-4 bg-neutral-900" />
+                        <div className="absolute w-4 h-[2px] bg-neutral-900" />
+                    </div>
+                )}
+            </div>
+        );
     }
 
     const fontStyles: React.CSSProperties = {

@@ -10,6 +10,7 @@ export interface PlayerSettings {
     fontFamily: 'arial' | 'verdana' | 'mdi-ecole' | 'sans' | 'serif' | 'mono' | 'opendyslexic';
     highlightVowels: boolean;
     letterSpacing: number;
+    showFocusPoint: boolean;
 }
 
 export interface SessionLog {
@@ -44,6 +45,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     fontFamily: 'arial',
     highlightVowels: false,
     letterSpacing: 0,
+    showFocusPoint: true,
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
