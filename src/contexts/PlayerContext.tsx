@@ -60,12 +60,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         const saved = localStorage.getItem('tachistoscope-settings');
         if (saved) {
-            const parsed = JSON.parse(saved);
-            // Migration: if fontSize is in the old pixel range (> 50), reset to default vmin level
-            if (parsed.fontSize > 50) {
-                return { ...parsed, fontSize: DEFAULT_SETTINGS.fontSize };
+            try {
+                const parsed = JSON.parse(saved);
+                // Merge defaults with saved settings to handle new keys (like showFocusPoint)
+                return { ...DEFAULT_SETTINGS, ...parsed };
+            } catch (e) {
+                return DEFAULT_SETTINGS;
             }
-            return parsed;
         }
         return DEFAULT_SETTINGS;
     });
