@@ -41,9 +41,10 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     if (phase === 'gap' && !forceVisible) {
         return renderContent(
             settings.showFocusPoint ? (
-                <div className="relative w-24 h-24 flex items-center justify-center translate-y-[-2px]">
-                    <div className="absolute w-[4px] h-10 bg-zinc-400 rounded-full" />
-                    <div className="absolute w-10 h-[4px] bg-zinc-400 rounded-full" />
+                <div className="relative w-24 h-24 flex items-center justify-center">
+                    {/* Thicker and darker lines for high visibility */}
+                    <div className="absolute w-[6px] h-16 bg-zinc-900 rounded-full" />
+                    <div className="absolute w-16 h-[6px] bg-zinc-900 rounded-full" />
                 </div>
             ) : null
         );

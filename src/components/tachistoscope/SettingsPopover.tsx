@@ -149,7 +149,7 @@ export function SettingsPopover() {
                             <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Afficher + pendant pause</p>
                         </div>
                         <Switch
-                            checked={settings.showFocusPoint}
+                            checked={!!settings.showFocusPoint}
                             onCheckedChange={(v) => updateSettings({ showFocusPoint: v })}
                             className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
                         />

@@ -47,7 +47,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     highlightVowels: false,
     letterSpacing: 0,
     showFocusPoint: true,
-    version: 1,
+    version: 2,
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -60,26 +60,23 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [hasStarted, setHasStarted] = useState(false);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
     const [settings, setSettings] = useState<PlayerSettings>(() => {
-        const saved = localStorage.getItem('tachistoscope-settings');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                const merged = { ...DEFAULT_SETTINGS, ...parsed };
+        try {
+            const saved = localStorage.getItem('tachistoscope-settings');
+            const parsed = saved ? JSON.parse(saved) : {};
 
-                // Migration Strategy: 
-                // If the user has an old config (no version or version < 1), 
-                // we force showFocusPoint to true to ensure they see the new feature.
-                if (!merged.version || merged.version < 1) {
-                    merged.showFocusPoint = true;
-                    merged.version = 1;
-                }
+            // Simple merge: defaults + saved choices
+            const merged = { ...DEFAULT_SETTINGS, ...parsed };
 
-                return merged;
-            } catch (e) {
-                return DEFAULT_SETTINGS;
+            // Migration: Version 2 forces activation to fix initial rollout issues
+            if ((merged.version || 0) < 2) {
+                merged.showFocusPoint = true;
+                merged.version = 2;
             }
+
+            return merged;
+        } catch (e) {
+            return DEFAULT_SETTINGS;
         }
-        return DEFAULT_SETTINGS;
     });
 
     useEffect(() => {
