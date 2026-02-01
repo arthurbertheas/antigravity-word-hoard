@@ -10,7 +10,7 @@ export function SessionPanel() {
     return (
         <aside
             className={cn(
-                "fixed top-0 right-0 h-full w-80 bg-neutral-900 border-l border-white/10 shadow-2xl z-[150] transition-transform duration-300 ease-in-out flex flex-col",
+                "fixed inset-y-0 right-0 w-80 bg-neutral-900 border-l border-white/10 shadow-2xl z-[150] transition-transform duration-300 ease-in-out flex flex-col",
                 isPanelOpen ? "translate-x-0" : "translate-x-full"
             )}
         >
