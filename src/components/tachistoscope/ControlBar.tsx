@@ -89,10 +89,25 @@ export function ControlBar() {
                 </div>
 
                 {/* Center: Info */}
+                {/* Center: Info */}
                 <div className="px-4 border-x border-white/10 flex flex-col items-center min-w-[100px]">
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-0.5">Progress</span>
                     <span className="text-sm font-black text-white tabular-nums tracking-widest">
-                        {currentIndex + 1} <span className="text-white/30">/</span> {queue.length}
+                        {(() => {
+                            const lastWord = queue[queue.length - 1];
+                            const hasFin = lastWord?.ORTHO === 'FIN';
+                            const totalRealWords = hasFin ? queue.length - 1 : queue.length;
+
+                            if (hasFin && currentIndex >= totalRealWords) {
+                                return "FIN";
+                            }
+
+                            return (
+                                <>
+                                    {currentIndex + 1} <span className="text-white/30">/</span> {totalRealWords}
+                                </>
+                            );
+                        })()}
                     </span>
                 </div>
 
