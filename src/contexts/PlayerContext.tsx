@@ -85,10 +85,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     // Start next next word (also used for skip)
     const nextWord = useCallback(() => {
-        setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
-        setPhase('display'); // Always start new word in display phase
-        setHasStarted(true);
-    }, [queue.length]);
+        if (!hasStarted) {
+            setHasStarted(true);
+            setPhase('display');
+            // Do NOT increment index, just "Start" on current (0)
+        } else {
+            setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
+            setPhase('display'); // Always start new word in display phase
+        }
+    }, [queue.length, hasStarted]);
 
     // Go to previous step (Gap -> Display -> Prev Gap)
     const prevWord = useCallback(() => {
