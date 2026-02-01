@@ -16,12 +16,21 @@ function PlayerEngine() {
     const {
         isPlaying,
         currentIndex,
+        queue,
         settings,
         setPhase,
-        nextWord
+        nextWord,
+        setIsPlaying
     } = usePlayer();
 
     useEffect(() => {
+        // If we reached the end (FIN word) in auto-play mode, stop.
+        if (isPlaying && currentIndex >= queue.length - 1) {
+            setIsPlaying(false);
+            setPhase('display');
+            return;
+        }
+
         if (!isPlaying) return;
 
         let timer: NodeJS.Timeout;
@@ -47,7 +56,7 @@ function PlayerEngine() {
         return () => {
             if (timer) clearTimeout(timer);
         };
-    }, [isPlaying, currentIndex, settings.speedMs, settings.gapMs, setPhase, nextWord]);
+    }, [isPlaying, currentIndex, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
 
     return null; // Headless component
 }
@@ -64,11 +73,22 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         resetSession
     } = usePlayer();
 
-    // Initialize queue
+    const FIN_WORD = React.useMemo(() => ({
+        ORTHO: "FIN",
+        GSEG: "F.I.N",
+        PHON: "fɛ̃",
+        SYNT: "NC",
+        "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
+        "code structure": "a", "code graphèmes": "", NBLET: "", NBPHON: "",
+        NBGRAPH: "", PSEG: "", GPMATCH: ""
+    } as unknown as Word), []);
+
+    // Initialize queue with FIN word appended
     useEffect(() => {
-        setQueue(words);
+        const effectiveWords = [...words, FIN_WORD];
+        setQueue(effectiveWords);
         return () => resetSession();
-    }, [words, setQueue, resetSession]);
+    }, [words, FIN_WORD, setQueue, resetSession]);
 
     // Keyboard Mapping
     useEffect(() => {
@@ -88,14 +108,18 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     break;
                 case 'ArrowUp': // Success
                     e.preventDefault();
-                    if (words[currentIndex]) {
-                        logResult(words[currentIndex].ORTHO, 'success');
-                        // Visual feedback could be added to ControlBar
+                    if (words[currentIndex]) { // Only log for real words
+                        // Check implies we shouldn't log for FIN_WORD ideally, or index check
+                        // words[currentIndex] works because words doesn't have FIN_WORD
+                        // So if currentIndex == words.length (which is FIN_WORD index), words[currentIndex] is undefined.
+                        if (currentIndex < words.length) {
+                            logResult(words[currentIndex].ORTHO, 'success');
+                        }
                     }
                     break;
                 case 'ArrowDown': // Fail + Skip
                     e.preventDefault();
-                    if (words[currentIndex]) {
+                    if (currentIndex < words.length) {
                         logResult(words[currentIndex].ORTHO, 'failed');
                         nextWord();
                     }
@@ -128,6 +152,17 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
     const showPreview = !isPlaying && currentIndex === 0;
 
+    // Use queue from context to get the FIN word for display?
+    // WordDisplay uses words[currentIndex].
+    // Note: The parent `Tachistoscope` passes `words` prop.
+    // But `queue` in context has `words + FIN`.
+    // We should use `queue` for display source if possible, OR construct effectiveWords for display.
+    // BUT `usePlayer` provides `queue`. We should probably use `queue[currentIndex]` for `WordDisplay`.
+    // However, `TachistoscopeContent` here uses `words` prop for `WordDisplay`.
+
+    // Let's grab `queue` from usePlayer to be safe and consistent with the appended word.
+    const { queue } = usePlayer();
+
     return (
         <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
             {/* Close Button */}
@@ -142,8 +177,8 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
             {/* Main Reading Area */}
             <WordDisplay
-                word={showPreview ? PREVIEW_WORD : words[currentIndex]}
-                forceVisible={showPreview}
+                word={showPreview ? PREVIEW_WORD : queue[currentIndex]}
+                forceVisible={showPreview || currentIndex >= words.length} // Force visible for FIN word (index >= original length)
             />
 
             {/* Logic Hub */}
