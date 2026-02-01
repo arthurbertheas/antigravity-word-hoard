@@ -79,10 +79,8 @@ function PlayerEngine() {
             // Reset resume state
             remainingRef.current = 0;
 
-            // If manual transition happened, just note it.
-            // Special case: New Word start -> Force 'display' if needed? 
-            // prevWord logic sets correct phase. nextWord sets 'gap'.
-            // We just start timer for CURRENT phase.
+            // Logic for forcing display is now handled by nextWord/prevWord directly setting phase.
+            // We purely react to the new state here.
         }
 
         // Determine Duration

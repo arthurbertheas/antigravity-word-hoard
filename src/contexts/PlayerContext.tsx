@@ -52,7 +52,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [queue, setQueue] = useState<Word[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [phase, setPhase] = useState<PlayerPhase>('gap');
+    const [phase, setPhase] = useState<PlayerPhase>('display'); // Default to display to ensure first word shows
     const [hasStarted, setHasStarted] = useState(false);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
     const [settings, setSettings] = useState<PlayerSettings>(() => {
@@ -86,7 +86,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     // Start next next word (also used for skip)
     const nextWord = useCallback(() => {
         setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
-        setPhase('gap');
+        setPhase('display'); // Always start new word in display phase
         setHasStarted(true);
     }, [queue.length]);
 
@@ -109,7 +109,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 setPhase('gap');
             } else {
                 // Return to Ready Loop (Index 0)
-                setPhase('gap'); // Reset phase to default
+                setPhase('display'); // Reset to display (Ready screen handles visibility)
                 setHasStarted(false);
                 setIsPlaying(false);
             }
@@ -120,7 +120,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         setSessionLog([]);
         setCurrentIndex(0);
         setIsPlaying(false);
-        setPhase('gap');
+        setPhase('display'); // Reset to display
         setHasStarted(false);
     }, []);
 
