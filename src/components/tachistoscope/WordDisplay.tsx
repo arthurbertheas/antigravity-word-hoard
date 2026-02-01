@@ -16,6 +16,7 @@ const VOWEL_GRAPHEMES = new Set([
 ]);
 
 export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & { forceVisible?: boolean }) {
+    // If not word and not forcing, return null. Note: on 'gap', word might be present but phase is gap.
     if (!word || !word.GSEG) return null;
     const { settings, phase } = usePlayer();
 
@@ -26,13 +27,18 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
     if (phase === 'gap' && !forceVisible) {
         return (
-            <div className="h-full w-full flex items-center justify-center bg-white">
-                {settings.showFocusPoint && (
-                    <div className="relative w-8 h-8 flex items-center justify-center opacity-30">
-                        <div className="absolute w-[2px] h-4 bg-neutral-900" />
-                        <div className="absolute w-4 h-[2px] bg-neutral-900" />
-                    </div>
-                )}
+            <div className="h-full w-full flex flex-col bg-white overflow-hidden absolute inset-0">
+                {/* SAME STIMULUS ZONE (75% height) to align exactly with word center */}
+                <div className="flex-[3] flex items-center justify-center p-8 bg-white overflow-hidden">
+                    {settings.showFocusPoint && (
+                        <div className="relative w-16 h-16 flex items-center justify-center opacity-80">
+                            <div className="absolute w-[3px] h-8 bg-neutral-800" />
+                            <div className="absolute w-8 h-[3px] bg-neutral-800" />
+                        </div>
+                    )}
+                </div>
+                {/* UI SAFE ZONE */}
+                <div className="flex-1 pointer-events-none" />
             </div>
         );
     }
