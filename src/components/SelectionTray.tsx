@@ -20,7 +20,7 @@ export function SelectionTray() {
     };
 
     return (
-        <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300">
+        <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300 rounded-tl-2xl overflow-hidden">
             {/* Header (Sandwich: Fixed) */}
             <div className="flex-none p-4 border-b border-border bg-white">
                 <div className="flex items-center justify-between mb-1">
