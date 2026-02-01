@@ -23,42 +23,47 @@ export function SelectionTray() {
         <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300 rounded-tl-2xl overflow-hidden">
             {/* Header (Sandwich: Fixed) */}
             <div className="flex-none p-4 border-b border-border bg-white">
-                <div className="flex items-center justify-between mb-1">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <div className="flex items-center justify-between mb-1 relative min-h-[24px]">
+                    {/* Centered Title */}
+                    <h2 className="absolute left-1/2 -translate-x-1/2 text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 whitespace-nowrap pointer-events-none">
                         <ListChecks className="w-4 h-4 text-primary" />
                         Ma Liste
                     </h2>
-                    {selectedWords.length > 0 && (
-                        <div className="flex items-center gap-2">
-                            {showClearConfirm ? (
-                                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+
+                    {/* Right Actions */}
+                    <div className="ml-auto flex items-center gap-2 z-10">
+                        {selectedWords.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                {showClearConfirm ? (
+                                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+                                        <button
+                                            onClick={() => setShowClearConfirm(false)}
+                                            className="text-[10px] font-bold text-muted-foreground hover:text-foreground"
+                                        >
+                                            Annuler
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                clearSelection();
+                                                setShowClearConfirm(false);
+                                            }}
+                                            className="text-[10px] font-bold text-destructive hover:underline"
+                                        >
+                                            Confirmer
+                                        </button>
+                                    </div>
+                                ) : (
                                     <button
-                                        onClick={() => setShowClearConfirm(false)}
-                                        className="text-[10px] font-bold text-muted-foreground hover:text-foreground"
+                                        onClick={handleClearRequest}
+                                        className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group"
                                     >
-                                        Annuler
+                                        <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
+                                        Vider
                                     </button>
-                                    <button
-                                        onClick={() => {
-                                            clearSelection();
-                                            setShowClearConfirm(false);
-                                        }}
-                                        className="text-[10px] font-bold text-destructive hover:underline"
-                                    >
-                                        Confirmer
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={handleClearRequest}
-                                    className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group"
-                                >
-                                    <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
-                                    Vider
-                                </button>
-                            )}
-                        </div>
-                    )}
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="flex items-baseline gap-2">
                     <div className="text-2xl font-black text-foreground">
