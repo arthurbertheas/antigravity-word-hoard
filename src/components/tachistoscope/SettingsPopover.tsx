@@ -32,7 +32,7 @@ export function SettingsPopover() {
                 className="w-80 p-5 bg-[#171717] border border-white/10 shadow-2xl rounded-2xl z-[110]"
                 side="top"
                 align="end"
-                sideOffset={6}
+                sideOffset={20}
             >
                 <div className="space-y-6">
                     {/* Typography Section */}
