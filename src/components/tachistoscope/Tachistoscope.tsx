@@ -53,6 +53,13 @@ function PlayerEngine() {
                 const elapsed = Date.now() - startTimeRef.current;
                 const totalDuration = phase === 'display' ? settings.speedMs : settings.gapMs;
                 remainingRef.current = Math.max(0, totalDuration - elapsed);
+            } else {
+                // Already paused. Check if we navigated manually.
+                const indexChanged = currentIndex !== lastIndexRef.current;
+                const phaseChanged = phase !== lastPhaseRef.current;
+                if (indexChanged || phaseChanged) {
+                    remainingRef.current = 0; // Clear stale timing
+                }
             }
             // Update state
             wasPlayingRef.current = false;
