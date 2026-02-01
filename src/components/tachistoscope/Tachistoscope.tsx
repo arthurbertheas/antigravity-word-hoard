@@ -171,11 +171,10 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                         }
                     }
                     break;
-                case 'ArrowDown': // Fail + Skip
+                case 'ArrowDown': // Fail (No Skip)
                     e.preventDefault();
                     if (currentIndex < words.length) {
                         logResult(words[currentIndex].ORTHO, 'failed');
-                        nextWord();
                     }
                     break;
                 case 'Escape':
