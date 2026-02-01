@@ -18,7 +18,8 @@ export function ControlBar() {
         currentIndex,
         queue,
         nextWord,
-        prevWord
+        prevWord,
+        hasStarted
     } = usePlayer();
 
     const [isVisible, setIsVisible] = useState(true);
@@ -59,7 +60,7 @@ export function ControlBar() {
                         size="icon"
                         className="text-white hover:bg-white/10"
                         onClick={prevWord}
-                        disabled={currentIndex === 0}
+                        disabled={!hasStarted}
                     >
                         <SkipBack className="w-5 h-5 fill-white" />
                     </Button>
