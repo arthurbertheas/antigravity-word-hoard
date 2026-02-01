@@ -11,7 +11,6 @@ export interface PlayerSettings {
     highlightVowels: boolean;
     letterSpacing: number;
     showFocusPoint: boolean;
-    version: number;
 }
 
 export interface SessionLog {
@@ -39,6 +38,8 @@ interface PlayerContextType {
     resetSession: () => void;
 }
 
+const STORAGE_KEY = 'antigravity-tachistoscope-v5';
+
 const DEFAULT_SETTINGS: PlayerSettings = {
     speedMs: 1000,
     gapMs: 500,
@@ -47,9 +48,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     highlightVowels: false,
     letterSpacing: 0,
     showFocusPoint: true,
-    version: 4,
 };
-const STORAGE_KEY = 'tachistoscope-settings-v4';
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
@@ -57,29 +56,25 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [queue, setQueue] = useState<Word[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [phase, setPhase] = useState<PlayerPhase>('display'); // Default to display to ensure first word shows
+    const [phase, setPhase] = useState<PlayerPhase>('display');
     const [hasStarted, setHasStarted] = useState(false);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
+
+    // Simplified Initialization: Start fresh with v5 key to guarantee defaults
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            const parsed = saved ? JSON.parse(saved) : {};
-
-            // Re-merge with new defaults
-            const merged = { ...DEFAULT_SETTINGS, ...parsed };
-
-            // Migration v4: Definitive reset of focus point for all users
-            if ((merged.version || 0) < 4) {
-                merged.showFocusPoint = true;
-                merged.version = 4;
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                return { ...DEFAULT_SETTINGS, ...parsed };
             }
-
-            return merged;
         } catch (e) {
-            return DEFAULT_SETTINGS;
+            console.error("Failed to load settings", e);
         }
+        return DEFAULT_SETTINGS;
     });
 
+    // Consistent Saving
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }, [settings]);
@@ -95,16 +90,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         ]);
     }, []);
 
-    // Start next next word (also used for skip)
     const nextWord = useCallback(() => {
         if (!hasStarted) {
             setHasStarted(true);
             setPhase('display');
-            // Do NOT increment index, just "Start" on current (0)
         } else {
-            // Granular navigation:
-            // Display -> Gap
-            // Gap -> Next Word Display
             if (phase === 'display') {
                 setPhase('gap');
             } else {
@@ -114,26 +104,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
     }, [queue.length, hasStarted, phase]);
 
-    // Go to previous step (Gap -> Display -> Prev Gap)
     const prevWord = useCallback(() => {
-        // We need to access current phase and index. 
-        // Since we are inside a provider, we can rely on state values if we didn't use functional updates, 
-        // but here we might have stale closures if we don't allow dependencies.
-        // Actually, `phase` and `currentIndex` are state variables in this scope.
-        // We need to add them to dependencies.
-
         if (phase === 'gap') {
-            // If in Gap, go to Display of SAME word
             setPhase('display');
         } else {
-            // If function is 'display'
             if (currentIndex > 0) {
-                // Go to Gap of PREVIOUS word
                 setCurrentIndex(currentIndex - 1);
                 setPhase('gap');
             } else {
-                // Return to Ready Loop (Index 0)
-                setPhase('display'); // Reset to display (Ready screen handles visibility)
+                setPhase('display');
                 setHasStarted(false);
                 setIsPlaying(false);
             }
@@ -144,11 +123,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         setSessionLog([]);
         setCurrentIndex(0);
         setIsPlaying(false);
-        setPhase('display'); // Reset to display
+        setPhase('display');
         setHasStarted(false);
     }, []);
 
-    // Wrapper for setIsPlaying to trigger start
     const handleSetIsPlaying = useCallback((playing: boolean) => {
         setIsPlaying(playing);
         if (playing) {
