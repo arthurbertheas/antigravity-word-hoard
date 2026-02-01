@@ -47,8 +47,9 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     highlightVowels: false,
     letterSpacing: 0,
     showFocusPoint: true,
-    version: 3,
+    version: 4,
 };
+const STORAGE_KEY = 'tachistoscope-settings-v4';
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
@@ -61,19 +62,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         try {
-            const saved = localStorage.getItem('tachistoscope-settings');
+            const saved = localStorage.getItem(STORAGE_KEY);
             const parsed = saved ? JSON.parse(saved) : {};
 
-            // Simple merge: defaults + saved choices
+            // Re-merge with new defaults
             const merged = { ...DEFAULT_SETTINGS, ...parsed };
 
-            // Safety: Reset font size if coming from very old pixel-based versions
-            if (merged.fontSize > 50) merged.fontSize = DEFAULT_SETTINGS.fontSize;
-
-            // Migration: Version 3 forces activation to resolve persistent rollout issues
-            if ((merged.version || 0) < 3) {
+            // Migration v4: Definitive reset of focus point for all users
+            if ((merged.version || 0) < 4) {
                 merged.showFocusPoint = true;
-                merged.version = 3;
+                merged.version = 4;
             }
 
             return merged;
@@ -83,7 +81,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     });
 
     useEffect(() => {
-        localStorage.setItem('tachistoscope-settings', JSON.stringify(settings));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }, [settings]);
 
     const updateSettings = useCallback((newSettings: Partial<PlayerSettings>) => {
