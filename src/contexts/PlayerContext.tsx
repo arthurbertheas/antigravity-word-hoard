@@ -90,10 +90,17 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             setPhase('display');
             // Do NOT increment index, just "Start" on current (0)
         } else {
-            setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
-            setPhase('display'); // Always start new word in display phase
+            // Granular navigation:
+            // Display -> Gap
+            // Gap -> Next Word Display
+            if (phase === 'display') {
+                setPhase('gap');
+            } else {
+                setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
+                setPhase('display');
+            }
         }
-    }, [queue.length, hasStarted]);
+    }, [queue.length, hasStarted, phase]);
 
     // Go to previous step (Gap -> Display -> Prev Gap)
     const prevWord = useCallback(() => {
