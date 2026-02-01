@@ -93,42 +93,43 @@ export function ControlBar() {
                     </Button>
                 </div>
 
-                {/* Center: Info */}
-                {/* Center: Info */}
-                <div className="px-4 border-x border-white/10 flex flex-col items-center min-w-[100px]">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-0.5">Progress</span>
-                    <span className="text-sm font-black text-white tabular-nums tracking-widest">
-                        {(() => {
-                            const lastWord = queue[queue.length - 1];
-                            const hasFin = lastWord?.ORTHO === 'FIN';
-                            const totalRealWords = hasFin ? queue.length - 1 : queue.length;
+                {/* Center: Info & Fiber Optic Feedback */}
+                <div className="flex items-center">
+                    <div className="px-4 border-l border-white/10 flex flex-col items-center min-w-[100px]">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-0.5">Progress</span>
+                        <span className="text-sm font-black text-white tabular-nums tracking-widest">
+                            {(() => {
+                                const lastWord = queue[queue.length - 1];
+                                const hasFin = lastWord?.ORTHO === 'FIN';
+                                const totalRealWords = hasFin ? queue.length - 1 : queue.length;
 
-                            if (!hasStarted) {
-                                return "PRÊT";
-                            }
+                                if (!hasStarted) {
+                                    return "PRÊT";
+                                }
 
-                            if (hasFin && currentIndex >= totalRealWords) {
-                                return "FIN";
-                            }
+                                if (hasFin && currentIndex >= totalRealWords) {
+                                    return "FIN";
+                                }
 
-                            return (
-                                <>
-                                    {currentIndex + 1} <span className="text-white/30">/</span> {totalRealWords}
-                                </>
-                            );
-                        })()}
-                    </span>
+                                return (
+                                    <>
+                                        {currentIndex + 1} <span className="text-white/30">/</span> {totalRealWords}
+                                    </>
+                                );
+                            })()}
+                        </span>
+                    </div>
+
+                    {/* Fiber Optic Separator (Dynamic Feedback) */}
+                    <div
+                        className={cn(
+                            "w-px h-8 transition-all duration-300 ease-out",
+                            feedback === 'success' ? "bg-purple-200 shadow-[0_0_12px_2px_rgba(168,85,247,0.8)] z-10" :
+                                feedback === 'error' ? "bg-black/50 opacity-30 shadow-none" :
+                                    "bg-white/10 shadow-none"
+                        )}
+                    />
                 </div>
-
-                {/* Micro-Feedback: Status Dot */}
-                <div
-                    className={cn(
-                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out",
-                        feedback === 'success' ? "bg-white shadow-[0_0_8px_rgba(168,85,247,0.8)]" :
-                            feedback === 'error' ? "bg-neutral-800" :
-                                "bg-purple-500"
-                    )}
-                />
 
                 {/* Right: Settings & List */}
                 <div className="flex items-center gap-2">
