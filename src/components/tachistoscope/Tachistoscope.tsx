@@ -4,6 +4,7 @@ import { Word } from '@/types/word';
 import { WordDisplay } from './WordDisplay';
 import { ControlBar } from './ControlBar';
 import { SessionPanel } from './SessionPanel';
+import { FeedbackBadge, FeedbackType } from './FeedbackBadge';
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
@@ -128,6 +129,12 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         hasStarted
     } = usePlayer();
 
+    const [feedback, setFeedback] = React.useState<{ type: FeedbackType; id: number } | null>(null);
+
+    const triggerFeedback = React.useCallback((type: FeedbackType) => {
+        setFeedback({ type, id: Date.now() });
+    }, []);
+
     const FIN_WORD = React.useMemo(() => ({
         ORTHO: "FIN",
         GSEG: "F.I.N",
@@ -163,19 +170,16 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     break;
                 case 'ArrowUp': // Success
                     e.preventDefault();
-                    if (words[currentIndex]) { // Only log for real words
-                        // Check implies we shouldn't log for FIN_WORD ideally, or index check
-                        // words[currentIndex] works because words doesn't have FIN_WORD
-                        // So if currentIndex == words.length (which is FIN_WORD index), words[currentIndex] is undefined.
-                        if (currentIndex < words.length) {
-                            logResult(words[currentIndex].ORTHO, 'success');
-                        }
+                    if (currentIndex < words.length) {
+                        logResult(words[currentIndex].ORTHO, 'success');
+                        triggerFeedback('success');
                     }
                     break;
                 case 'ArrowDown': // Fail (No Skip)
                     e.preventDefault();
                     if (currentIndex < words.length) {
                         logResult(words[currentIndex].ORTHO, 'failed');
+                        triggerFeedback('error');
                     }
                     break;
                 case 'Escape':
@@ -186,7 +190,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isPlaying, currentIndex, words, setIsPlaying, nextWord, prevWord, logResult, onClose]);
+    }, [isPlaying, currentIndex, words, setIsPlaying, nextWord, prevWord, logResult, onClose, triggerFeedback]);
 
     useEffect(() => {
         console.log("TachistoscopeContent mounted with", words.length, "words");
@@ -243,6 +247,9 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
             {/* Side Panel Overlay */}
             <SessionPanel />
+
+            {/* Feedback Badge */}
+            <FeedbackBadge feedback={feedback} />
         </div>
     );
 }
