@@ -16,7 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Settings2, Type, Zap, Timer, MousePointer2 } from "lucide-react";
+import { Settings2, Type, Zap, Timer, MousePointer2, Volume2 } from "lucide-react";
 
 export function SettingsPopover() {
     const { settings, updateSettings } = usePlayer();
@@ -151,6 +151,18 @@ export function SettingsPopover() {
                         <Switch
                             checked={settings.showFocusPoint}
                             onCheckedChange={(v) => updateSettings({ showFocusPoint: v })}
+                            className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Son</Label>
+                            <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Bip à chaque mot</p>
+                        </div>
+                        <Switch
+                            checked={settings.enableSound}
+                            onCheckedChange={(v) => updateSettings({ enableSound: v })}
                             className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
                         />
                     </div>

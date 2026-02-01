@@ -12,6 +12,7 @@ export interface PlayerSettings {
     highlightVowels: boolean;
     letterSpacing: number;
     showFocusPoint: boolean;
+    enableSound: boolean;
 }
 
 export interface SessionLog {
@@ -53,6 +54,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     highlightVowels: false,
     letterSpacing: 0,
     showFocusPoint: true,
+    enableSound: false,
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);

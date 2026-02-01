@@ -6,6 +6,7 @@ import { ControlBar } from './ControlBar';
 import { SessionPanel } from './SessionPanel';
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { playBeep } from '@/utils/audio';
 
 interface TachistoscopeProps {
     words: Word[];
@@ -22,7 +23,8 @@ function PlayerEngine() {
         settings,
         setPhase,
         nextWord,
-        setIsPlaying
+        setIsPlaying,
+        hasStarted
     } = usePlayer();
 
     // Refs for precise timing and state tracking
@@ -111,6 +113,13 @@ function PlayerEngine() {
             if (timerRef.current) clearTimeout(timerRef.current);
         };
     }, [isPlaying, currentIndex, phase, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
+
+    // Audio Feedback Trigger
+    useEffect(() => {
+        if (phase === 'display' && hasStarted && settings.enableSound) {
+            playBeep();
+        }
+    }, [phase, hasStarted, settings.enableSound]);
 
     return null;
 }
