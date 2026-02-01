@@ -26,15 +26,16 @@ export function SessionPanel() {
         }
     }, [currentIndex, isPanelOpen]);
 
-    // Stats calculations
-    const totalWords = queue.length;
+    // Exclude "FIN" for visual representaiton and stats
+    const visualQueue = queue.filter(w => w.ORTHO !== 'FIN');
+    const totalWords = visualQueue.length;
     const successCount = sessionLog.filter(log => log.status === 'success').length;
     const progressPercentage = totalWords > 0 ? ((currentIndex + 1) / totalWords) * 100 : 0;
 
     return (
         <aside
             className={cn(
-                "fixed inset-y-0 right-0 w-80 bg-neutral-900 border-l border-white/10 shadow-2xl z-[150] transition-transform duration-300 ease-in-out flex flex-col rounded-tl-xl",
+                "fixed inset-y-0 right-0 w-80 bg-neutral-900 border-l border-white/10 shadow-2xl z-[150] transition-transform duration-300 ease-in-out flex flex-col rounded-tl-2xl overflow-hidden",
                 isPanelOpen ? "translate-x-0" : "translate-x-full"
             )}
         >
@@ -80,13 +81,13 @@ export function SessionPanel() {
 
             {/* Body (Scroll Area) */}
             <div className="flex-1 overflow-y-auto custom-scrollbar">
-                {queue.length === 0 ? (
+                {visualQueue.length === 0 ? (
                     <div className="flex items-center justify-center h-full text-neutral-600 italic text-sm">
                         Aucun mot dans la session
                     </div>
                 ) : (
                     <ul className="p-2 space-y-1">
-                        {queue.map((word, index) => {
+                        {visualQueue.map((word, index) => {
                             const isActive = index === currentIndex;
                             const isPast = index < currentIndex;
                             const isFuture = index > currentIndex;

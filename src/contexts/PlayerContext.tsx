@@ -95,10 +95,17 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const logResult = useCallback((wordId: string, status: 'success' | 'failed' | 'skipped') => {
-        setSessionLog(prev => [
-            ...prev,
-            { wordId, status, timestamp: Date.now() }
-        ]);
+        setSessionLog(prev => {
+            const existingIndex = prev.findIndex(log => log.wordId === wordId);
+            if (existingIndex > -1) {
+                // Update existing
+                const next = [...prev];
+                next[existingIndex] = { ...next[existingIndex], status, timestamp: Date.now() };
+                return next;
+            }
+            // Add new
+            return [...prev, { wordId, status, timestamp: Date.now() }];
+        });
     }, []);
 
     const nextWord = useCallback(() => {
