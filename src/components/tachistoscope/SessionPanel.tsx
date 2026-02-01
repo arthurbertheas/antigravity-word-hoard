@@ -15,18 +15,25 @@ export function SessionPanel() {
             )}
         >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/5">
-                <h2 className="text-xs font-bold text-neutral-400 uppercase tracking-[0.15em]">
-                    Session en cours
-                </h2>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
-                    onClick={() => setIsPanelOpen(false)}
-                >
-                    <X className="w-4 h-4" />
-                </Button>
+            <div className="flex items-center p-4 border-b border-white/5 relative min-h-[64px]">
+                {/* Centered Title */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <h2 className="text-xs font-bold text-neutral-400 uppercase tracking-[0.15em]">
+                        Session en cours
+                    </h2>
+                </div>
+
+                {/* Right Actions */}
+                <div className="ml-auto z-10">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
+                        onClick={() => setIsPanelOpen(false)}
+                    >
+                        <X className="w-4 h-4" />
+                    </Button>
+                </div>
             </div>
 
             {/* Body - Placeholder for word list */}
