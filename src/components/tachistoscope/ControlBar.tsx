@@ -128,24 +128,23 @@ export function ControlBar() {
                                 "bg-purple-500"
                     )}
                 />
-            </div>
 
-            {/* Right: Settings & List */}
-            <div className="flex items-center gap-2">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                        "text-white hover:bg-white/10 transition-colors",
-                        isPanelOpen && "bg-white/20"
-                    )}
-                    onClick={() => setIsPanelOpen(!isPanelOpen)}
-                >
-                    <List className="w-5 h-5" />
-                </Button>
-                <SettingsPopover />
+                {/* Right: Settings & List */}
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                            "text-white hover:bg-white/10 transition-colors",
+                            isPanelOpen && "bg-white/20"
+                        )}
+                        onClick={() => setIsPanelOpen(!isPanelOpen)}
+                    >
+                        <List className="w-5 h-5" />
+                    </Button>
+                    <SettingsPopover />
+                </div>
             </div>
         </div>
-        </div >
     );
 }
