@@ -23,12 +23,14 @@ export function SelectionTray() {
         <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300 rounded-tl-2xl overflow-hidden">
             {/* Header (Sandwich: Fixed) */}
             <div className="flex-none p-4 border-b border-border bg-white">
-                <div className="flex items-center justify-between mb-1 relative min-h-[24px]">
+                <div className="flex items-center w-full mb-1 relative min-h-[24px]">
                     {/* Centered Title */}
-                    <h2 className="absolute inset-0 flex items-center justify-center text-sm font-bold uppercase tracking-wider text-muted-foreground gap-2 whitespace-nowrap pointer-events-none">
-                        <ListChecks className="w-4 h-4 text-primary" />
-                        Ma Liste
-                    </h2>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 whitespace-nowrap">
+                            <ListChecks className="w-4 h-4 text-primary" />
+                            Ma Liste
+                        </h2>
+                    </div>
 
                     {/* Right Actions */}
                     <div className="ml-auto flex items-center gap-2 z-10">
