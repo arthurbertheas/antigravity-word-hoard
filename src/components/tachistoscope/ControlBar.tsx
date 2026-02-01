@@ -99,6 +99,10 @@ export function ControlBar() {
                             const hasFin = lastWord?.ORTHO === 'FIN';
                             const totalRealWords = hasFin ? queue.length - 1 : queue.length;
 
+                            if (!hasStarted) {
+                                return "PRÊT";
+                            }
+
                             if (hasFin && currentIndex >= totalRealWords) {
                                 return "FIN";
                             }
