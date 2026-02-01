@@ -32,6 +32,8 @@ interface PlayerContextType {
     setIsPlaying: (playing: boolean) => void;
     setPhase: (phase: PlayerPhase) => void;
     updateSettings: (settings: Partial<PlayerSettings>) => void;
+    isPanelOpen: boolean;
+    setIsPanelOpen: (open: boolean) => void;
     logResult: (wordId: string, status: 'success' | 'failed' | 'skipped') => void;
     nextWord: () => void;
     prevWord: () => void;
@@ -58,6 +60,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [phase, setPhase] = useState<PlayerPhase>('display');
     const [hasStarted, setHasStarted] = useState(false);
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
 
     // Simple & Clean initialization
@@ -133,9 +136,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <PlayerContext.Provider value={{
-            queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog,
+            queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog, isPanelOpen,
             setQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
-            logResult, nextWord, prevWord, resetSession
+            setIsPanelOpen, logResult, nextWord, prevWord, resetSession
         }}>
             {children}
         </PlayerContext.Provider>

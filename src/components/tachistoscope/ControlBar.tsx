@@ -6,7 +6,8 @@ import {
     Pause,
     SkipBack,
     SkipForward,
-    Maximize2
+    Maximize2,
+    List
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { SettingsPopover } from './SettingsPopover';
@@ -19,7 +20,9 @@ export function ControlBar() {
         queue,
         nextWord,
         prevWord,
-        hasStarted
+        hasStarted,
+        isPanelOpen,
+        setIsPanelOpen
     } = usePlayer();
 
     const [isVisible, setIsVisible] = useState(true);
@@ -116,8 +119,19 @@ export function ControlBar() {
                     </span>
                 </div>
 
-                {/* Right: Settings */}
+                {/* Right: Settings & List */}
                 <div className="flex items-center gap-2">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                            "text-white hover:bg-white/10 transition-colors",
+                            isPanelOpen && "bg-white/20"
+                        )}
+                        onClick={() => setIsPanelOpen(!isPanelOpen)}
+                    >
+                        <List className="w-5 h-5" />
+                    </Button>
                     <SettingsPopover />
                 </div>
             </div>

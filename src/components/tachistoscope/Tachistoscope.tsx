@@ -3,6 +3,7 @@ import { usePlayer, PlayerProvider } from '@/contexts/PlayerContext';
 import { Word } from '@/types/word';
 import { WordDisplay } from './WordDisplay';
 import { ControlBar } from './ControlBar';
+import { SessionPanel } from './SessionPanel';
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
@@ -239,6 +240,9 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
             {/* Controls Overlay */}
             <ControlBar />
+
+            {/* Side Panel Overlay */}
+            <SessionPanel />
         </div>
     );
 }
