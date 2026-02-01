@@ -47,7 +47,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     highlightVowels: false,
     letterSpacing: 0,
     showFocusPoint: true,
-    version: 2,
+    version: 3,
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -67,10 +67,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             // Simple merge: defaults + saved choices
             const merged = { ...DEFAULT_SETTINGS, ...parsed };
 
-            // Migration: Version 2 forces activation to fix initial rollout issues
-            if ((merged.version || 0) < 2) {
+            // Safety: Reset font size if coming from very old pixel-based versions
+            if (merged.fontSize > 50) merged.fontSize = DEFAULT_SETTINGS.fontSize;
+
+            // Migration: Version 3 forces activation to resolve persistent rollout issues
+            if ((merged.version || 0) < 3) {
                 merged.showFocusPoint = true;
-                merged.version = 2;
+                merged.version = 3;
             }
 
             return merged;
