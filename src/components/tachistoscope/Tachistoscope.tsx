@@ -70,7 +70,8 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         prevWord,
         logResult,
         setQueue,
-        resetSession
+        resetSession,
+        hasStarted
     } = usePlayer();
 
     const FIN_WORD = React.useMemo(() => ({
@@ -150,7 +151,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         NBGRAPH: "", PSEG: "", GPMATCH: ""
     } as unknown as Word;
 
-    const showPreview = !isPlaying && currentIndex === 0;
+    const showPreview = !hasStarted;
 
     // Use queue from context to get the FIN word for display?
     // WordDisplay uses words[currentIndex].

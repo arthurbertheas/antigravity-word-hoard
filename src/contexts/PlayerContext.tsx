@@ -23,6 +23,7 @@ interface PlayerContextType {
     currentIndex: number;
     isPlaying: boolean;
     phase: PlayerPhase;
+    hasStarted: boolean;
     settings: PlayerSettings;
     sessionLog: SessionLog[];
     setQueue: (words: Word[]) => void;
@@ -52,6 +53,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [phase, setPhase] = useState<PlayerPhase>('gap');
+    const [hasStarted, setHasStarted] = useState(false);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         const saved = localStorage.getItem('tachistoscope-settings');
@@ -84,11 +86,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const nextWord = useCallback(() => {
         setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
         setPhase('gap');
+        setHasStarted(true);
     }, [queue.length]);
 
     const prevWord = useCallback(() => {
         setCurrentIndex(prev => (prev > 0 ? prev - 1 : prev));
         setPhase('gap');
+        // Note: We don't reset hasStarted logic on prevWord here to keep it simple,
+        // unless we want to go back to "Ready" screen if index hits 0.
+        // For now, "hasStarted" remains true once started.
     }, []);
 
     const resetSession = useCallback(() => {
@@ -96,12 +102,21 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         setCurrentIndex(0);
         setIsPlaying(false);
         setPhase('gap');
+        setHasStarted(false);
+    }, []);
+
+    // Wrapper for setIsPlaying to trigger start
+    const handleSetIsPlaying = useCallback((playing: boolean) => {
+        setIsPlaying(playing);
+        if (playing) {
+            setHasStarted(true);
+        }
     }, []);
 
     return (
         <PlayerContext.Provider value={{
-            queue, currentIndex, isPlaying, phase, settings, sessionLog,
-            setQueue, setCurrentIndex, setIsPlaying, setPhase, updateSettings,
+            queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog,
+            setQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
             logResult, nextWord, prevWord, resetSession
         }}>
             {children}
