@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Word } from '@/types/word';
 
 export type PlayerPhase = 'display' | 'gap';
+export type FeedbackType = 'success' | 'error';
 
 export interface PlayerSettings {
     speedMs: number;
@@ -34,6 +35,8 @@ interface PlayerContextType {
     updateSettings: (settings: Partial<PlayerSettings>) => void;
     isPanelOpen: boolean;
     setIsPanelOpen: (open: boolean) => void;
+    feedback: FeedbackType | null;
+    triggerFeedback: (type: FeedbackType) => void;
     logResult: (wordId: string, status: 'success' | 'failed' | 'skipped') => void;
     nextWord: () => void;
     prevWord: () => void;
@@ -61,6 +64,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [phase, setPhase] = useState<PlayerPhase>('display');
     const [hasStarted, setHasStarted] = useState(false);
     const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [feedback, setFeedback] = useState<FeedbackType | null>(null);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
 
     // Simple & Clean initialization
@@ -81,6 +85,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     const updateSettings = useCallback((newSettings: Partial<PlayerSettings>) => {
         setSettings(prev => ({ ...prev, ...newSettings }));
+    }, []);
+
+    const triggerFeedback = useCallback((type: FeedbackType) => {
+        setFeedback(type);
+        setTimeout(() => setFeedback(null), 200);
     }, []);
 
     const logResult = useCallback((wordId: string, status: 'success' | 'failed' | 'skipped') => {
@@ -137,6 +146,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     return (
         <PlayerContext.Provider value={{
             queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog, isPanelOpen,
+            feedback, triggerFeedback,
             setQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
             setIsPanelOpen, logResult, nextWord, prevWord, resetSession
         }}>

@@ -22,7 +22,8 @@ export function ControlBar() {
         prevWord,
         hasStarted,
         isPanelOpen,
-        setIsPanelOpen
+        setIsPanelOpen,
+        feedback
     } = usePlayer();
 
     const [isVisible, setIsVisible] = useState(true);
@@ -118,6 +119,16 @@ export function ControlBar() {
                         })()}
                     </span>
                 </div>
+
+                {/* Micro-Feedback: Status Dot */}
+                <div
+                    className={cn(
+                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out",
+                        feedback === 'success' ? "bg-white shadow-[0_0_8px_rgba(168,85,247,0.8)]" :
+                            feedback === 'error' ? "bg-neutral-800" :
+                                "bg-purple-500"
+                    )}
+                />
 
                 {/* Right: Settings & List */}
                 <div className="flex items-center gap-2">

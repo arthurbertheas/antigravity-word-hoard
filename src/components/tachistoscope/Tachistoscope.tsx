@@ -4,7 +4,6 @@ import { Word } from '@/types/word';
 import { WordDisplay } from './WordDisplay';
 import { ControlBar } from './ControlBar';
 import { SessionPanel } from './SessionPanel';
-import { FeedbackBadge, FeedbackType } from './FeedbackBadge';
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
@@ -126,14 +125,9 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         logResult,
         setQueue,
         resetSession,
-        hasStarted
+        hasStarted,
+        triggerFeedback
     } = usePlayer();
-
-    const [feedback, setFeedback] = React.useState<{ type: FeedbackType; id: number } | null>(null);
-
-    const triggerFeedback = React.useCallback((type: FeedbackType) => {
-        setFeedback({ type, id: Date.now() });
-    }, []);
 
     const FIN_WORD = React.useMemo(() => ({
         ORTHO: "FIN",
@@ -247,9 +241,6 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
             {/* Side Panel Overlay */}
             <SessionPanel />
-
-            {/* Feedback Badge */}
-            <FeedbackBadge feedback={feedback} />
         </div>
     );
 }
