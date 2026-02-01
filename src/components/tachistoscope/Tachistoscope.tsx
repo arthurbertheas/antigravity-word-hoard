@@ -17,48 +17,98 @@ function PlayerEngine() {
         isPlaying,
         currentIndex,
         queue,
+        phase,
         settings,
         setPhase,
         nextWord,
         setIsPlaying
     } = usePlayer();
 
+    // Refs for precise timing and state tracking
+    const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+    const startTimeRef = React.useRef<number>(0);
+    const remainingRef = React.useRef<number>(0);
+    const wasPlayingRef = React.useRef(isPlaying);
+    const lastIndexRef = React.useRef(currentIndex);
+
     useEffect(() => {
-        // If we reached the end (FIN word) in auto-play mode, stop.
-        if (isPlaying && currentIndex >= queue.length - 1) {
-            setIsPlaying(false);
-            setPhase('display');
+        // 1. Check Fin (Stop if needed)
+        // If we reached the end (FIN word), stop auto-play.
+        if (currentIndex >= queue.length - 1) {
+            if (isPlaying) {
+                setIsPlaying(false);
+                setPhase('display');
+            }
             return;
         }
 
-        if (!isPlaying) return;
+        // 2. Clear previous timer to prevent overlap
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
 
-        let timer: NodeJS.Timeout;
+        // 3. Handle PAUSE
+        if (!isPlaying) {
+            if (wasPlayingRef.current) {
+                // We just paused. Capture remaining time.
+                const elapsed = Date.now() - startTimeRef.current;
+                const totalDuration = phase === 'display' ? settings.speedMs : settings.gapMs;
+                remainingRef.current = Math.max(0, totalDuration - elapsed);
+            }
+            // Update state trackers even when paused
+            wasPlayingRef.current = false;
+            lastIndexRef.current = currentIndex;
+            return;
+        }
 
-        const runLoop = () => {
-            // Phase 1: Display Word
-            setPhase('display');
+        // 4. Handle PLAY (Resume or Continue)
 
-            timer = setTimeout(() => {
-                // Phase 2: Gap
+        // Check for Index Change (New Word Manually or Automatically)
+        if (currentIndex !== lastIndexRef.current) {
+            // New word context. Reset resume state.
+            remainingRef.current = 0;
+
+            // Force 'display' phase for new word logic
+            // Note: If context already set it to gap (via nextWord), we override it here.
+            if (phase !== 'display') {
+                setPhase('display');
+                lastIndexRef.current = currentIndex;
+                wasPlayingRef.current = true;
+                return; // Wait for effect re-run with new phase
+            }
+        }
+
+        // Determine Duration
+        // If remaining > 0, we are resuming an interrupted phase.
+        // Otherwise use full phase duration.
+        const duration = remainingRef.current > 0
+            ? remainingRef.current
+            : (phase === 'display' ? settings.speedMs : settings.gapMs);
+
+        // Start Timer
+        startTimeRef.current = Date.now();
+
+        timerRef.current = setTimeout(() => {
+            remainingRef.current = 0; // Consumed
+
+            if (phase === 'display') {
                 setPhase('gap');
+            } else {
+                nextWord();
+            }
+        }, duration);
 
-                timer = setTimeout(() => {
-                    // Finish gap -> Next word (which restarts the loop via currentIndex dependency)
-                    nextWord();
-                }, settings.gapMs);
-
-            }, settings.speedMs);
-        };
-
-        runLoop();
+        // Update trackers
+        wasPlayingRef.current = true;
+        lastIndexRef.current = currentIndex;
 
         return () => {
-            if (timer) clearTimeout(timer);
+            if (timerRef.current) clearTimeout(timerRef.current);
         };
-    }, [isPlaying, currentIndex, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
+    }, [isPlaying, currentIndex, phase, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
 
-    return null; // Headless component
+    return null;
 }
 
 function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: Word[] }) {
