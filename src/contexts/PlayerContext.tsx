@@ -38,7 +38,7 @@ interface PlayerContextType {
     resetSession: () => void;
 }
 
-const STORAGE_KEY = 'antigravity-tachistoscope-v5';
+const STORAGE_KEY = 'tachistoscope-settings';
 
 const DEFAULT_SETTINGS: PlayerSettings = {
     speedMs: 1000,
@@ -60,21 +60,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [hasStarted, setHasStarted] = useState(false);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
 
-    // Simplified Initialization: Start fresh with v5 key to guarantee defaults
+    // Simple & Clean initialization
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                return { ...DEFAULT_SETTINGS, ...parsed };
-            }
+            const parsed = saved ? JSON.parse(saved) : {};
+            // Merge defaults (for focus point) with saved choices
+            return { ...DEFAULT_SETTINGS, ...parsed };
         } catch (e) {
-            console.error("Failed to load settings", e);
+            return DEFAULT_SETTINGS;
         }
-        return DEFAULT_SETTINGS;
     });
 
-    // Consistent Saving
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }, [settings]);
