@@ -25,21 +25,27 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         return word.GSEG.split('.').filter(s => s.length > 0);
     }, [word.GSEG]);
 
-    if (phase === 'gap' && !forceVisible) {
-        return (
-            <div className="h-full w-full flex flex-col bg-white overflow-hidden absolute inset-0">
-                {/* SAME STIMULUS ZONE (75% height) to align exactly with word center */}
-                <div className="flex-[3] flex items-center justify-center p-8 bg-white overflow-hidden">
-                    {settings.showFocusPoint && (
-                        <div className="relative w-16 h-16 flex items-center justify-center opacity-80">
-                            <div className="absolute w-[3px] h-8 bg-neutral-800" />
-                            <div className="absolute w-8 h-[3px] bg-neutral-800" />
-                        </div>
-                    )}
-                </div>
-                {/* UI SAFE ZONE */}
-                <div className="flex-1 pointer-events-none" />
+    // SAME CONTAINER STRUCTURE for both word and gap to ensure perfect alignment
+    const renderContent = (content: React.ReactNode) => (
+        <div className="h-full w-full flex flex-col bg-white overflow-hidden absolute inset-0">
+            {/* STIMULUS ZONE (75% height) */}
+            <div className="flex-[3] flex items-center justify-center p-8 bg-white overflow-hidden">
+                {content}
             </div>
+
+            {/* UI SAFE ZONE (25% height) */}
+            <div className="flex-1 pointer-events-none" />
+        </div>
+    );
+
+    if (phase === 'gap' && !forceVisible) {
+        return renderContent(
+            settings.showFocusPoint ? (
+                <div className="relative w-24 h-24 flex items-center justify-center translate-y-[-2px]">
+                    <div className="absolute w-[4px] h-10 bg-zinc-400 rounded-full" />
+                    <div className="absolute w-10 h-[4px] bg-zinc-400 rounded-full" />
+                </div>
+            ) : null
         );
     }
 
@@ -59,33 +65,25 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         settings.fontFamily === 'mono' && "font-mono",
     );
 
-    return (
-        <div className="h-full w-full flex flex-col bg-white overflow-hidden absolute inset-0">
-            {/* STIMULUS ZONE (75% height) */}
-            <div className="flex-[3] flex items-center justify-center p-8 bg-white overflow-hidden">
-                <div
-                    className={containerClasses}
-                    style={fontStyles}
-                >
-                    {segments.map((seg, idx) => {
-                        const isVowel = VOWEL_GRAPHEMES.has(seg.toLowerCase());
-                        return (
-                            <span
-                                key={idx}
-                                className={cn(
-                                    "inline-block",
-                                    settings.highlightVowels && isVowel && "text-red-500 font-bold"
-                                )}
-                            >
-                                {seg}
-                            </span>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* UI SAFE ZONE (25% height) */}
-            <div className="flex-1 pointer-events-none" />
+    return renderContent(
+        <div
+            className={containerClasses}
+            style={fontStyles}
+        >
+            {segments.map((seg, idx) => {
+                const isVowel = VOWEL_GRAPHEMES.has(seg.toLowerCase());
+                return (
+                    <span
+                        key={idx}
+                        className={cn(
+                            "inline-block",
+                            settings.highlightVowels && isVowel && "text-red-500 font-bold"
+                        )}
+                    >
+                        {seg}
+                    </span>
+                );
+            })}
         </div>
     );
 }
