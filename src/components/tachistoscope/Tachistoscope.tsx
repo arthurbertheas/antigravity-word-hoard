@@ -116,6 +116,18 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
     if (words.length === 0) return null;
 
+    const PREVIEW_WORD = {
+        ORTHO: "PRÊT ?",
+        GSEG: "P.R.Ê.T. ?",
+        PHON: "pʀɛ",
+        SYNT: "NC",
+        "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
+        "code structure": "a", "code graphèmes": "", NBLET: "", NBPHON: "",
+        NBGRAPH: "", PSEG: "", GPMATCH: ""
+    } as unknown as Word;
+
+    const showPreview = !isPlaying && currentIndex === 0;
+
     return (
         <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
             {/* Close Button */}
@@ -129,7 +141,10 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
             </Button>
 
             {/* Main Reading Area */}
-            <WordDisplay word={words[currentIndex]} />
+            <WordDisplay
+                word={showPreview ? PREVIEW_WORD : words[currentIndex]}
+                forceVisible={showPreview}
+            />
 
             {/* Logic Hub */}
             <PlayerEngine />

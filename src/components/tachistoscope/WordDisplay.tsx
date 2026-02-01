@@ -15,7 +15,7 @@ const VOWEL_GRAPHEMES = new Set([
     'oin', 'ien', 'ian', 'ion'
 ]);
 
-export function WordDisplay({ word }: WordDisplayProps) {
+export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & { forceVisible?: boolean }) {
     if (!word || !word.GSEG) return null;
     const { settings, phase } = usePlayer();
 
@@ -24,7 +24,7 @@ export function WordDisplay({ word }: WordDisplayProps) {
         return word.GSEG.split('.').filter(s => s.length > 0);
     }, [word.GSEG]);
 
-    if (phase === 'gap') {
+    if (phase === 'gap' && !forceVisible) {
         return <div className="h-full w-full bg-white" />;
     }
 
