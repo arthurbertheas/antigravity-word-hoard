@@ -93,60 +93,59 @@ export function ControlBar() {
                     </Button>
                 </div>
 
-                {/* Center: Info & Fiber Optic Feedback */}
-                <div className="flex items-center">
-                    <div className="px-4 border-l border-white/10 flex flex-col items-center min-w-[100px]">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-0.5">Progress</span>
-                        <span className="text-sm font-black text-white tabular-nums tracking-widest">
-                            {(() => {
-                                const lastWord = queue[queue.length - 1];
-                                const hasFin = lastWord?.ORTHO === 'FIN';
-                                const totalRealWords = hasFin ? queue.length - 1 : queue.length;
+                {/* Center: Info */}
+                <div className="px-4 border-x border-white/10 flex flex-col items-center min-w-[100px]">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-0.5">Progress</span>
+                    <span className="text-sm font-black text-white tabular-nums tracking-widest">
+                        {(() => {
+                            const lastWord = queue[queue.length - 1];
+                            const hasFin = lastWord?.ORTHO === 'FIN';
+                            const totalRealWords = hasFin ? queue.length - 1 : queue.length;
 
-                                if (!hasStarted) {
-                                    return "PRÊT";
-                                }
+                            if (!hasStarted) {
+                                return "PRÊT";
+                            }
 
-                                if (hasFin && currentIndex >= totalRealWords) {
-                                    return "FIN";
-                                }
+                            if (hasFin && currentIndex >= totalRealWords) {
+                                return "FIN";
+                            }
 
-                                return (
-                                    <>
-                                        {currentIndex + 1} <span className="text-white/30">/</span> {totalRealWords}
-                                    </>
-                                );
-                            })()}
-                        </span>
-                    </div>
-
-                    {/* Fiber Optic Separator (Dynamic Feedback) */}
-                    <div
-                        className={cn(
-                            "w-px h-8 transition-all duration-300 ease-out",
-                            feedback === 'success' ? "bg-neutral-200 shadow-none z-10" :
-                                feedback === 'error' ? "bg-black/50 opacity-30 shadow-none" :
-                                    "bg-white/10 shadow-none"
-                        )}
-                    />
+                            return (
+                                <>
+                                    {currentIndex + 1} <span className="text-white/30">/</span> {totalRealWords}
+                                </>
+                            );
+                        })()}
+                    </span>
                 </div>
 
-                {/* Right: Settings & List */}
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "text-white hover:bg-white/10 transition-colors",
-                            isPanelOpen && "bg-white/20"
-                        )}
-                        onClick={() => setIsPanelOpen(!isPanelOpen)}
-                    >
-                        <List className="w-5 h-5" />
-                    </Button>
-                    <SettingsPopover />
-                </div>
+                {/* Micro-Feedback: Status Dot */}
+                <div
+                    className={cn(
+                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out",
+                        feedback === 'success' ? "bg-white shadow-[0_0_8px_rgba(168,85,247,0.8)]" :
+                            feedback === 'error' ? "bg-neutral-800" :
+                                "bg-purple-500"
+                    )}
+                />
+            </div>
+
+            {/* Right: Settings & List */}
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                        "text-white hover:bg-white/10 transition-colors",
+                        isPanelOpen && "bg-white/20"
+                    )}
+                    onClick={() => setIsPanelOpen(!isPanelOpen)}
+                >
+                    <List className="w-5 h-5" />
+                </Button>
+                <SettingsPopover />
             </div>
         </div>
+        </div >
     );
 }
