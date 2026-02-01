@@ -30,19 +30,17 @@ function PlayerEngine() {
     const remainingRef = React.useRef<number>(0);
     const wasPlayingRef = React.useRef(isPlaying);
     const lastIndexRef = React.useRef(currentIndex);
+    const lastPhaseRef = React.useRef(phase);
 
     useEffect(() => {
         // 1. Check Fin (Stop if needed)
-        // If we reached the end (FIN word), stop auto-play.
-        if (currentIndex >= queue.length - 1) {
-            if (isPlaying) {
-                setIsPlaying(false);
-                setPhase('display');
-            }
+        if (currentIndex >= queue.length - 1 && isPlaying) {
+            setIsPlaying(false);
+            setPhase('display');
             return;
         }
 
-        // 2. Clear previous timer to prevent overlap
+        // 2. Clear previous timer
         if (timerRef.current) {
             clearTimeout(timerRef.current);
             timerRef.current = null;
@@ -51,37 +49,36 @@ function PlayerEngine() {
         // 3. Handle PAUSE
         if (!isPlaying) {
             if (wasPlayingRef.current) {
-                // We just paused. Capture remaining time.
+                // Just paused
                 const elapsed = Date.now() - startTimeRef.current;
                 const totalDuration = phase === 'display' ? settings.speedMs : settings.gapMs;
                 remainingRef.current = Math.max(0, totalDuration - elapsed);
             }
-            // Update state trackers even when paused
+            // Update state
             wasPlayingRef.current = false;
             lastIndexRef.current = currentIndex;
+            lastPhaseRef.current = phase;
             return;
         }
 
         // 4. Handle PLAY (Resume or Continue)
 
-        // Check for Index Change (New Word Manually or Automatically)
-        if (currentIndex !== lastIndexRef.current) {
-            // New word context. Reset resume state.
+        // Check for State Change (Index OR Phase changed manually or naturally)
+        // If Index changed OR Phase changed manually (e.g. via Prev btn), we treat as fresh step.
+        const indexChanged = currentIndex !== lastIndexRef.current;
+        const phaseChanged = phase !== lastPhaseRef.current;
+
+        if (indexChanged || phaseChanged) {
+            // Reset resume state
             remainingRef.current = 0;
 
-            // Force 'display' phase for new word logic
-            // Note: If context already set it to gap (via nextWord), we override it here.
-            if (phase !== 'display') {
-                setPhase('display');
-                lastIndexRef.current = currentIndex;
-                wasPlayingRef.current = true;
-                return; // Wait for effect re-run with new phase
-            }
+            // If manual transition happened, just note it.
+            // Special case: New Word start -> Force 'display' if needed? 
+            // prevWord logic sets correct phase. nextWord sets 'gap'.
+            // We just start timer for CURRENT phase.
         }
 
         // Determine Duration
-        // If remaining > 0, we are resuming an interrupted phase.
-        // Otherwise use full phase duration.
         const duration = remainingRef.current > 0
             ? remainingRef.current
             : (phase === 'display' ? settings.speedMs : settings.gapMs);
@@ -102,6 +99,7 @@ function PlayerEngine() {
         // Update trackers
         wasPlayingRef.current = true;
         lastIndexRef.current = currentIndex;
+        lastPhaseRef.current = phase;
 
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);

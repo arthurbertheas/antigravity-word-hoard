@@ -83,19 +83,38 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         ]);
     }, []);
 
+    // Start next next word (also used for skip)
     const nextWord = useCallback(() => {
         setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
         setPhase('gap');
         setHasStarted(true);
     }, [queue.length]);
 
+    // Go to previous step (Gap -> Display -> Prev Gap)
     const prevWord = useCallback(() => {
-        setCurrentIndex(prev => (prev > 0 ? prev - 1 : prev));
-        setPhase('gap');
-        // Note: We don't reset hasStarted logic on prevWord here to keep it simple,
-        // unless we want to go back to "Ready" screen if index hits 0.
-        // For now, "hasStarted" remains true once started.
-    }, []);
+        // We need to access current phase and index. 
+        // Since we are inside a provider, we can rely on state values if we didn't use functional updates, 
+        // but here we might have stale closures if we don't allow dependencies.
+        // Actually, `phase` and `currentIndex` are state variables in this scope.
+        // We need to add them to dependencies.
+
+        if (phase === 'gap') {
+            // If in Gap, go to Display of SAME word
+            setPhase('display');
+        } else {
+            // If function is 'display'
+            if (currentIndex > 0) {
+                // Go to Gap of PREVIOUS word
+                setCurrentIndex(currentIndex - 1);
+                setPhase('gap');
+            } else {
+                // Return to Ready Loop (Index 0)
+                setPhase('gap'); // Reset phase to default
+                setHasStarted(false);
+                setIsPlaying(false);
+            }
+        }
+    }, [phase, currentIndex]);
 
     const resetSession = useCallback(() => {
         setSessionLog([]);
