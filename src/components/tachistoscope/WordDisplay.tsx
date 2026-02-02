@@ -15,10 +15,18 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
     // Parse GPMATCH for precise grapheme-phoneme mapping
     const parsedGraphemes = useMemo(() => {
-        if (word.GPMATCH) {
-            return parseGPMATCH(word.GPMATCH);
+        try {
+            if (word.GPMATCH) {
+                return parseGPMATCH(word.GPMATCH);
+            }
+        } catch (e) {
+            console.error("Error parsing GPMATCH:", e);
         }
-        // Fallback to GSEG if no GPMATCH
+
+        // Fallback to GSEG (if parse fails or no GPMATCH)
+        // Check if GSEG exists first
+        if (!word.GSEG) return [];
+
         return word.GSEG.split('.').filter(s => s.length > 0).map(seg => ({
             grapheme: seg,
             phoneme: '',
