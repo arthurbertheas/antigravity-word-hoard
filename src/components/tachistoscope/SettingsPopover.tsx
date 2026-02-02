@@ -232,9 +232,8 @@ export function SettingsPopover() {
                     )}
                 </div>
 
-                {/* BOTTOM GLOW ACCENT */}
-                <div className="h-1.5 w-full bg-gradient-to-r from-white via-blue-100 to-white"></div>
-            </PopoverContent>
-        </Popover>
+            </div>
+        </PopoverContent>
+        </Popover >
     );
 }
