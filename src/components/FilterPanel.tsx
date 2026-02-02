@@ -1,25 +1,11 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Search, RotateCcw } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
     WordFilters,
-    SyntCategory,
-    SYNT_LABELS,
     STRUCTURE_LABELS,
     GRAPHEME_LABELS,
-    FREQUENCY_LABELS
 } from "@/types/word";
 
 interface FilterPanelProps {
@@ -40,294 +26,271 @@ interface FilterPanelProps {
     totalCount: number;
 }
 
+// Level color mapping for structure codes
+const STRUCTURE_LEVEL_COLORS: Record<string, string> = {
+    'a': 'level-1',
+    'b': 'level-2',
+    'c': 'level-3',
+    'd': 'level-3',
+    'e': 'level-4',
+    'f': 'level-5',
+    'g': 'level-6',
+};
+
+// Level color mapping for grapheme codes
+const GRAPHEME_LEVEL_COLORS: Record<string, string> = {
+    '1': 'level-1',
+    '2': 'level-2',
+    '3': 'level-3',
+    '4': 'level-4',
+    '5': 'level-5',
+    '6': 'level-6',
+    '7': 'level-7',
+    '8': 'level-8',
+    '9': 'level-1',
+    '10': 'level-2',
+    '11': 'level-3',
+    '12': 'level-4',
+    '13': 'level-5',
+};
+
+// Level badge color classes
+const LEVEL_COLORS: Record<string, string> = {
+    'level-1': 'bg-[rgb(var(--level-1-bg))] text-[rgb(var(--level-1-text))]',
+    'level-2': 'bg-[rgb(var(--level-2-bg))] text-[rgb(var(--level-2-text))]',
+    'level-3': 'bg-[rgb(var(--level-3-bg))] text-[rgb(var(--level-3-text))]',
+    'level-4': 'bg-[rgb(var(--level-4-bg))] text-[rgb(var(--level-4-text))]',
+    'level-5': 'bg-[rgb(var(--level-5-bg))] text-[rgb(var(--level-5-text))]',
+    'level-6': 'bg-[rgb(var(--level-6-bg))] text-[rgb(var(--level-6-text))]',
+    'level-7': 'bg-[rgb(var(--level-7-bg))] text-[rgb(var(--level-7-text))]',
+    'level-8': 'bg-[rgb(var(--level-8-bg))] text-[rgb(var(--level-8-text))]',
+};
+
+interface FilterOptionProps {
+    code: string;
+    label: string;
+    description?: string;
+    isActive: boolean;
+    onToggle: () => void;
+    levelColor: string;
+}
+
+function FilterOption({ code, label, description, isActive, onToggle, levelColor }: FilterOptionProps) {
+    return (
+        <div
+            className={cn(
+                "flex items-start gap-[10px] p-[7px_10px] rounded-[6px] cursor-pointer transition-all",
+                "hover:bg-[rgb(var(--filter-surface-hover))]",
+                isActive && "bg-[rgb(var(--filter-accent-light))]"
+            )}
+            onClick={onToggle}
+        >
+            {/* Custom Radio */}
+            <div className={cn(
+                "mt-[3px] w-4 h-4 min-w-4 border-2 rounded-full flex items-center justify-center transition-all",
+                isActive
+                    ? "border-[rgb(var(--filter-accent))] bg-[rgb(var(--filter-accent))]"
+                    : "border-[rgb(var(--filter-border))] bg-white"
+            )}>
+                <div className={cn(
+                    "w-[6px] h-[6px] rounded-full bg-white transition-opacity",
+                    isActive ? "opacity-100" : "opacity-0"
+                )} />
+            </div>
+
+            {/* Level Badge */}
+            <span className={cn(
+                "inline-flex items-center justify-center w-5 h-5 min-w-5 rounded-[6px] text-[11px] font-bold font-['Sora']",
+                LEVEL_COLORS[levelColor]
+            )}>
+                {code}
+            </span>
+
+            {/* Text */}
+            <div className="flex-1">
+                <div className={cn(
+                    "text-[13px] font-medium transition-all",
+                    isActive
+                        ? "text-[rgb(var(--filter-accent))] font-semibold"
+                        : "text-[rgb(var(--filter-text-primary))]"
+                )}>
+                    {label}
+                </div>
+                {description && (
+                    <div className="text-[11px] text-[rgb(var(--filter-text-muted))] mt-[1px]">
+                        {description}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+interface CollapsibleSectionProps {
+    title: string;
+    badge?: number;
+    isOpen: boolean;
+    onToggle: () => void;
+    children: React.ReactNode;
+}
+
+function CollapsibleSection({ title, badge, isOpen, onToggle, children }: CollapsibleSectionProps) {
+    return (
+        <div className="px-[22px] mb-1">
+            <div
+                className="flex items-center gap-2 py-[10px] pb-2 cursor-pointer group"
+                onClick={onToggle}
+            >
+                <span className="font-['Sora'] text-[11px] font-bold uppercase tracking-[1.2px] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
+                    {title}
+                </span>
+                {badge !== undefined && badge > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] bg-[rgb(var(--filter-accent))] text-white text-[10px] font-bold rounded-full">
+                        {badge}
+                    </span>
+                )}
+                <ChevronDown className={cn(
+                    "ml-auto text-[rgb(var(--filter-text-muted))] transition-transform duration-250 w-[14px] h-[14px]",
+                    !isOpen && "-rotate-90"
+                )} />
+            </div>
+            {isOpen && <div className="pb-[6px]">{children}</div>}
+        </div>
+    );
+}
+
 export function FilterPanel({
     filters,
     updateFilter,
     toggleArrayFilter,
-    resetFilters,
     stats,
 }: FilterPanelProps) {
-    const syllables = [1, 2, 3, 4];
     const structures = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
     const graphemeCodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'];
-    const frequencyCodes = ['1', '2', '3', '4'];
 
-    const hasActiveFilters =
-        filters.search !== '' ||
-        filters.phonSearch !== '' ||
-        filters.categories.length > 0 ||
-        filters.syllables.length > 0 ||
-        filters.structures.length > 0 ||
-        filters.graphemes.length > 0 ||
-        filters.frequencies.length > 0 ||
-        filters.minLetters !== 1 ||
-        filters.maxLetters !== 20;
+    // Collapsible state
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        structures: true,
+        graphemes: true,
+    });
+
+    const toggleSection = (section: string) => {
+        setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+    };
+
+    // Extract descriptions from labels
+    const getStructureDescription = (code: string): string | undefined => {
+        const label = STRUCTURE_LABELS[code];
+        if (label.includes('(')) {
+            return label.split('(')[1].replace(')', '');
+        }
+        return undefined;
+    };
+
+    const getStructureLabel = (code: string): string => {
+        const label = STRUCTURE_LABELS[code];
+        return label.split('(')[0].trim();
+    };
+
+    const getGraphemeDescription = (code: string): string | undefined => {
+        const label = GRAPHEME_LABELS[code];
+        if (label.includes('(')) {
+            return label.split('(')[1].replace(')', '');
+        }
+        return undefined;
+    };
+
+    const getGraphemeLabel = (code: string): string => {
+        const label = GRAPHEME_LABELS[code];
+        return label.split('(')[0].trim();
+    };
 
     return (
-        <aside className="w-80 h-full bg-white border-r border-slate-100 flex flex-col font-sans z-10 overflow-hidden">
-            {/* Header (Soft Professional: Fixed) */}
-            <div className="px-6 py-6 pb-4 border-b border-slate-100">
-                <div className="flex items-center justify-between mb-1">
-                    <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Filtres</h2>
-                    {hasActiveFilters && (
-                        <button
-                            onClick={resetFilters}
-                            className="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest flex items-center gap-1"
-                        >
-                            <RotateCcw className="w-3 h-3" />
-                            Reset
-                        </button>
-                    )}
-                </div>
-                <p className="text-xs text-slate-400 font-medium">Affinez votre recherche</p>
+        <aside className="w-[300px] min-w-[300px] h-full bg-[rgb(var(--filter-surface))] border-r border-[rgb(var(--filter-border))] flex flex-col font-['DM_Sans'] z-10 overflow-hidden">
+            {/* Header */}
+            <div className="px-[22px] pt-6 pb-4 border-b border-[rgb(var(--filter-border))]">
+                <h2 className="font-['Sora'] text-lg font-bold text-[rgb(var(--filter-text-primary))] mb-[2px]">
+                    Filtres
+                </h2>
+                <p className="text-xs text-[rgb(var(--filter-text-muted))]">
+                    Affinez votre recherche
+                </p>
             </div>
 
-            {/* Scrollable Content (Soft Professional: Overflow Auto) */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 scrollbar-thin scrollbar-thumb-slate-200">
-                {/* Search Input */}
-                <div className="relative group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                    <Input
-                        type="text"
-                        placeholder="Rechercher un mot..."
-                        value={filters.search}
-                        onChange={(e) => updateFilter('search', e.target.value)}
-                        className="pl-10 bg-slate-50 border-0 rounded-xl h-11 text-sm font-medium text-slate-700 placeholder-slate-400 focus-visible:outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all shadow-none"
-                    />
-                </div>
+            {/* Search */}
+            <div className="p-[14px_22px] relative">
+                <Search className="absolute left-[34px] top-1/2 -translate-y-1/2 h-[15px] w-[15px] text-[rgb(var(--filter-text-muted))] pointer-events-none" />
+                <Input
+                    type="text"
+                    placeholder="Rechercher un mot…"
+                    value={filters.search}
+                    onChange={(e) => updateFilter('search', e.target.value)}
+                    className="w-full pl-[38px] pr-[14px] py-[10px] bg-[rgb(var(--filter-bg))] border-[1.5px] border-[rgb(var(--filter-border))] rounded-[10px] text-[13px] text-[rgb(var(--filter-text-primary))] placeholder:text-[rgb(var(--filter-text-muted))] focus-visible:outline-none focus-visible:border-[rgb(var(--filter-border-focus))] focus-visible:ring-[3px] focus-visible:ring-[rgba(79,70,229,0.12)] transition-all shadow-none h-auto"
+                />
+            </div>
 
-                {/* Recherche phonétique */}
-                <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        Phonétique
-                    </label>
-                    <Input
-                        placeholder="/a/, /ʃ/..."
-                        value={filters.phonSearch}
-                        onChange={(e) => updateFilter('phonSearch', e.target.value)}
-                        className="font-mono bg-white border border-slate-200 rounded-xl h-10 text-sm focus-visible:ring-blue-100"
-                    />
-                </div>
+            {/* Phonetic */}
+            <div className="px-[22px] pb-4">
+                <label className="block text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--filter-text-muted))] mb-[6px]">
+                    Phonétique
+                </label>
+                <Input
+                    type="text"
+                    placeholder="/a/, /l/…"
+                    value={filters.phonSearch}
+                    onChange={(e) => updateFilter('phonSearch', e.target.value)}
+                    className="w-full px-3 py-2 bg-[rgb(var(--filter-bg))] border-[1.5px] border-[rgb(var(--filter-border))] rounded-[6px] text-[13px] text-[rgb(var(--filter-text-primary))] font-['Sora'] placeholder:text-[rgb(var(--filter-text-muted))] focus-visible:outline-none focus-visible:border-[rgb(var(--filter-border-focus))] transition-all shadow-none h-auto"
+                />
+            </div>
 
-                <div className="space-y-6">
-                    <Separator className="bg-slate-100" />
-
-                    {/* FILTRES SECONDAIRES (STRUCTURE & GRAPHIE) */}
-                    <div>
-                        <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.15em] mb-4">
-                            Structure & Graphie
-                        </h4>
-
-                        <Accordion type="multiple" defaultValue={['structures', 'graphemes']} className="space-y-4">
-                            {/* Structure syllabique */}
-                            <AccordionItem value="structures" className="border-0">
-                                <AccordionTrigger className="py-2 hover:no-underline group">
-                                    <span className="flex items-center gap-2 text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                                        Structure syllabique
-                                        {filters.structures.length > 0 && (
-                                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-1.5 h-4 border-0">
-                                                {filters.structures.length}
-                                            </Badge>
-                                        )}
-                                    </span>
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-2 pt-1">
-                                    <div className="space-y-1">
-                                        {structures.map((struct) => {
-                                            const count = stats.structures[struct] || 0;
-                                            return (
-                                                <div key={struct} className="flex items-start gap-3 py-2 px-2 -mx-2 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors group/item"
-                                                    onClick={() => toggleArrayFilter('structures', struct)}>
-                                                    <Checkbox
-                                                        id={`struct-${struct}`}
-                                                        checked={filters.structures.includes(struct)}
-                                                        onCheckedChange={() => toggleArrayFilter('structures', struct)}
-                                                        className="mt-0.5 border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                                                    />
-                                                    <div className="flex-1 min-w-0 flex items-baseline gap-2">
-                                                        <span className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-50 border border-blue-100 text-blue-700 font-mono font-bold text-[10px] uppercase">
-                                                            {struct}
-                                                        </span>
-                                                        <label
-                                                            htmlFor={`struct-${struct}`}
-                                                            className="text-sm font-medium text-slate-600 group-hover/item:text-slate-900 transition-colors leading-snug cursor-pointer"
-                                                        >
-                                                            {STRUCTURE_LABELS[struct]}
-                                                        </label>
-                                                    </div>
-                                                    <span className="text-[10px] font-medium text-slate-400 tabular-nums shrink-0 mt-0.5">
-                                                        {count}
-                                                    </span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            {/* Complexité graphémique */}
-                            <AccordionItem value="graphemes" className="border-0">
-                                <AccordionTrigger className="py-2 hover:no-underline group">
-                                    <span className="flex items-center gap-2 text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                                        Complexité graphémique
-                                        {filters.graphemes.length > 0 && (
-                                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-1.5 h-4 border-0">
-                                                {filters.graphemes.length}
-                                            </Badge>
-                                        )}
-                                    </span>
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-2 pt-1">
-                                    <div className="space-y-1">
-                                        {graphemeCodes.map((code) => {
-                                            const count = stats.graphemes[code] || 0;
-                                            return (
-                                                <div key={code} className="flex items-start gap-3 py-2 px-2 -mx-2 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors group/item"
-                                                    onClick={() => toggleArrayFilter('graphemes', code)}>
-                                                    <Checkbox
-                                                        id={`graph-${code}`}
-                                                        checked={filters.graphemes.includes(code)}
-                                                        onCheckedChange={() => toggleArrayFilter('graphemes', code)}
-                                                        className="mt-0.5 border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                                                    />
-                                                    <div className="flex-1 min-w-0 flex items-baseline gap-2">
-                                                        <span className="shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-md bg-blue-50 border border-blue-100 text-blue-700 font-mono font-bold text-[10px] uppercase">
-                                                            {code}
-                                                        </span>
-                                                        <label
-                                                            htmlFor={`graph-${code}`}
-                                                            className="text-sm font-medium text-slate-600 group-hover/item:text-slate-900 transition-colors leading-snug cursor-pointer"
-                                                            title={GRAPHEME_LABELS[code]}
-                                                        >
-                                                            {GRAPHEME_LABELS[code]}
-                                                        </label>
-                                                    </div>
-                                                    <span className="text-[10px] font-medium text-slate-400 tabular-nums shrink-0 mt-0.5">
-                                                        {count}
-                                                    </span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
+            {/* Scrollable Sections */}
+            <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
+                {/* Structure syllabique */}
+                <CollapsibleSection
+                    title="Structure syllabique"
+                    badge={filters.structures.length}
+                    isOpen={openSections.structures}
+                    onToggle={() => toggleSection('structures')}
+                >
+                    <div className="space-y-0">
+                        {structures.map((code) => (
+                            <FilterOption
+                                key={code}
+                                code={code}
+                                label={getStructureLabel(code)}
+                                description={getStructureDescription(code)}
+                                isActive={filters.structures.includes(code)}
+                                onToggle={() => toggleArrayFilter('structures', code)}
+                                levelColor={STRUCTURE_LEVEL_COLORS[code]}
+                            />
+                        ))}
                     </div>
+                </CollapsibleSection>
 
-                    <Separator className="bg-slate-100" />
+                {/* Divider */}
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
 
-                    {/* AUTRES CRITÈRES */}
-                    <div>
-                        <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.15em] mb-4">
-                            Autres critères
-                        </h4>
-
-                        <Accordion type="multiple" defaultValue={[]} className="space-y-4">
-                            {/* Nombre de syllabes */}
-                            <AccordionItem value="syllables" className="border-0">
-                                <AccordionTrigger className="py-2 hover:no-underline group">
-                                    <span className="flex items-center gap-2 text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                                        Nombre de syllabes
-                                        {filters.syllables.length > 0 && (
-                                            <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 h-4 border-blue-100">
-                                                {filters.syllables.length}
-                                            </Badge>
-                                        )}
-                                    </span>
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-3">
-                                    <div className="flex flex-wrap gap-2">
-                                        {syllables.map((syll) => {
-                                            const isActive = filters.syllables.includes(syll);
-                                            return (
-                                                <button
-                                                    key={syll}
-                                                    onClick={() => toggleArrayFilter('syllables', syll)}
-                                                    className={cn(
-                                                        "flex items-center justify-center w-9 h-9 rounded-xl text-xs font-bold transition-all border-2",
-                                                        isActive
-                                                            ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
-                                                            : "bg-white border-slate-100 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                                                    )}
-                                                >
-                                                    {syll}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            {/* Fréquence */}
-                            <AccordionItem value="frequency" className="border-0">
-                                <AccordionTrigger className="py-2 hover:no-underline group">
-                                    <span className="flex items-center gap-2 text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                                        Fréquence
-                                        {filters.frequencies.length > 0 && (
-                                            <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 h-4 border-blue-100">
-                                                {filters.frequencies.length}
-                                            </Badge>
-                                        )}
-                                    </span>
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-3">
-                                    <div className="flex flex-wrap gap-2">
-                                        {frequencyCodes.map((code) => {
-                                            const isActive = filters.frequencies.includes(code);
-                                            return (
-                                                <button
-                                                    key={code}
-                                                    onClick={() => toggleArrayFilter('frequencies', code)}
-                                                    className={cn(
-                                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-2",
-                                                        isActive
-                                                            ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
-                                                            : "bg-white border-slate-100 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                                                    )}
-                                                >
-                                                    {FREQUENCY_LABELS[code]}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-
-                            {/* Longueur */}
-                            <AccordionItem value="length" className="border-0">
-                                <AccordionTrigger className="py-2 hover:no-underline group">
-                                    <span className="flex items-center gap-2 text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
-                                        Longueur (lettres)
-                                        {(filters.minLetters !== 1 || filters.maxLetters !== 20) && (
-                                            <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 h-4 border-blue-100">
-                                                {filters.minLetters}-{filters.maxLetters}
-                                            </Badge>
-                                        )}
-                                    </span>
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-3">
-                                    <div className="space-y-4 px-2">
-                                        <Slider
-                                            value={[filters.minLetters, filters.maxLetters]}
-                                            min={1}
-                                            max={20}
-                                            step={1}
-                                            onValueChange={([min, max]) => {
-                                                updateFilter('minLetters', min);
-                                                updateFilter('maxLetters', max);
-                                            }}
-                                            className="w-full"
-                                        />
-                                        <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wide">
-                                            <span>{filters.minLetters} lettres</span>
-                                            <span>{filters.maxLetters} lettres</span>
-                                        </div>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
+                {/* Complexité graphémique */}
+                <CollapsibleSection
+                    title="Complexité graphique"
+                    badge={filters.graphemes.length}
+                    isOpen={openSections.graphemes}
+                    onToggle={() => toggleSection('graphemes')}
+                >
+                    <div className="space-y-0">
+                        {graphemeCodes.map((code) => (
+                            <FilterOption
+                                key={code}
+                                code={code}
+                                label={getGraphemeLabel(code)}
+                                description={getGraphemeDescription(code)}
+                                isActive={filters.graphemes.includes(code)}
+                                onToggle={() => toggleArrayFilter('graphemes', code)}
+                                levelColor={GRAPHEME_LEVEL_COLORS[code]}
+                            />
+                        ))}
                     </div>
-                </div>
+                </CollapsibleSection>
             </div>
         </aside>
     );

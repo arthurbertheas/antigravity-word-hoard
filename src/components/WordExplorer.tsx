@@ -26,6 +26,7 @@ const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 import { WordBank } from "./WordBank";
 import { SelectionTray } from "./SelectionTray";
 import { Tachistoscope } from "./tachistoscope/Tachistoscope";
+import { ActiveFiltersBar } from "./ActiveFiltersBar";
 
 export function WordExplorer() {
     return (
@@ -76,28 +77,43 @@ function WordExplorerContent() {
 
     return (
         <div className="flex bg-white h-full w-full overflow-hidden">
-            {/* Zone A: Sidebar - Filters (Sandwich-ready container) */}
-            <aside className="w-72 shrink-0 border-r border-border bg-card/5 flex flex-col h-full overflow-hidden">
-                <div className="flex-1 overflow-y-auto p-4 pb-20">
-                    <FilterPanel
-                        filters={filters}
-                        updateFilter={handleFilterChange}
-                        toggleArrayFilter={(key, value) => {
-                            toggleArrayFilter(key, value);
-                        }}
-                        resetFilters={() => {
-                            resetFilters();
-                        }}
-                        stats={stats}
-                        resultCount={words.length}
-                        totalCount={totalWords}
-                    />
-                </div>
-            </aside>
+            {/* Zone A: Sidebar - Filters */}
+            <FilterPanel
+                filters={filters}
+                updateFilter={handleFilterChange}
+                toggleArrayFilter={(key, value) => {
+                    toggleArrayFilter(key, value);
+                }}
+                resetFilters={() => {
+                    resetFilters();
+                }}
+                stats={stats}
+                resultCount={words.length}
+                totalCount={totalWords}
+            />
 
             {/* Zone B: Results - Source (Sandwich) */}
-            <main className="flex-1 min-w-0 bg-white h-full border-r border-border overflow-hidden">
-                <WordBank words={words} />
+            <main className="flex-1 min-w-0 bg-white h-full border-r border-border overflow-hidden flex flex-col">
+                {/* Active Filters Bar */}
+                <ActiveFiltersBar
+                    filters={filters}
+                    onRemoveFilter={(filterType, value) => {
+                        // Remove specific filter
+                        const currentFilters = filters[filterType] as any[];
+                        if (Array.isArray(currentFilters)) {
+                            const newFilters = currentFilters.filter(v => v !== value);
+                            updateFilter(filterType, newFilters as any);
+                        }
+                    }}
+                    onClearAll={() => {
+                        resetFilters();
+                    }}
+                />
+
+                {/* Word Bank */}
+                <div className="flex-1 overflow-hidden">
+                    <WordBank words={words} />
+                </div>
             </main>
 
             {/* Zone C: My List - Destination (Sandwich) */}
