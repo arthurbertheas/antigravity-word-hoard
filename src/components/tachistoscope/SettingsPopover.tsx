@@ -31,11 +31,6 @@ export function SettingsPopover() {
         { id: 'sound', label: 'Son' },
     ];
 
-    const handleReset = () => {
-        // Reset logic if needed, or just a placeholder for the UI
-        console.log('Resetting settings...');
-    };
-
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -53,12 +48,6 @@ export function SettingsPopover() {
                 <div className="pt-6 px-6 pb-4 bg-gradient-to-b from-white/5 to-transparent">
                     <div className="flex justify-between items-baseline mb-5">
                         <h2 className="text-lg font-medium tracking-tight text-white">Réglages</h2>
-                        <button
-                            onClick={handleReset}
-                            className="text-[10px] font-bold text-white/30 hover:text-white transition-colors uppercase tracking-widest"
-                        >
-                            Reset
-                        </button>
                     </div>
 
                     {/* NAVIGATION CAPSULE */}
@@ -70,7 +59,7 @@ export function SettingsPopover() {
                                 className={cn(
                                     "flex-1 py-1.5 text-xs transition-all duration-300 rounded-full",
                                     activeTab === tab.id
-                                        ? "font-bold text-black bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]"
+                                        ? "font-bold text-white bg-primary shadow-[0_0_15px_rgba(37,99,235,0.4)]"
                                         : "font-medium text-white/40 hover:text-white"
                                 )}
                             >
@@ -107,7 +96,7 @@ export function SettingsPopover() {
                             <div className="space-y-3">
                                 <div className="flex justify-between items-end">
                                     <label className="text-sm font-medium text-slate-300">Zoom</label>
-                                    <span className="text-xs font-bold text-emerald-400">{settings.fontSize}x</span>
+                                    <span className="text-xs font-bold text-primary">{settings.fontSize}x</span>
                                 </div>
                                 <Slider
                                     value={[settings.fontSize]}
@@ -115,7 +104,7 @@ export function SettingsPopover() {
                                     max={30}
                                     step={1}
                                     onValueChange={([v]) => updateSettings({ fontSize: v })}
-                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-emerald-500 [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-emerald-600 [&_.bg-primary]:to-emerald-400 [&_.bg-primary]:shadow-[0_0_12px_rgba(52,211,153,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
+                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-primary [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-primary [&_.bg-primary]:shadow-[0_0_12px_rgba(37,99,235,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
                                 />
                             </div>
 
@@ -123,7 +112,7 @@ export function SettingsPopover() {
                             <div className="space-y-3">
                                 <div className="flex justify-between items-end">
                                     <label className="text-sm font-medium text-slate-300">Espacement</label>
-                                    <span className="text-xs font-bold text-emerald-400">{settings.letterSpacing}px</span>
+                                    <span className="text-xs font-bold text-primary">{settings.letterSpacing}px</span>
                                 </div>
                                 <Slider
                                     value={[settings.letterSpacing]}
@@ -131,7 +120,7 @@ export function SettingsPopover() {
                                     max={50}
                                     step={1}
                                     onValueChange={([v]) => updateSettings({ letterSpacing: v })}
-                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-emerald-500 [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-emerald-600 [&_.bg-primary]:to-emerald-400 [&_.bg-primary]:shadow-[0_0_12px_rgba(52,211,153,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
+                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-primary [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-primary [&_.bg-primary]:shadow-[0_0_12px_rgba(37,99,235,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
                                 />
                             </div>
                         </div>
@@ -143,7 +132,7 @@ export function SettingsPopover() {
                             <div className="space-y-3">
                                 <div className="flex justify-between items-end">
                                     <label className="text-sm font-medium text-slate-300">Exposition</label>
-                                    <span className="text-xs font-bold text-emerald-400">{(settings.speedMs / 1000).toFixed(1)}s</span>
+                                    <span className="text-xs font-bold text-primary">{(settings.speedMs / 1000).toFixed(1)}s</span>
                                 </div>
                                 <Slider
                                     value={[settings.speedMs]}
@@ -151,7 +140,7 @@ export function SettingsPopover() {
                                     max={5000}
                                     step={100}
                                     onValueChange={([v]) => updateSettings({ speedMs: v })}
-                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-emerald-500 [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-emerald-600 [&_.bg-primary]:to-emerald-400 [&_.bg-primary]:shadow-[0_0_12px_rgba(52,211,153,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
+                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-primary [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-primary [&_.bg-primary]:shadow-[0_0_12px_rgba(37,99,235,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
                                 />
                             </div>
 
@@ -159,7 +148,7 @@ export function SettingsPopover() {
                             <div className="space-y-3">
                                 <div className="flex justify-between items-end">
                                     <label className="text-sm font-medium text-slate-300">Pause Inter-mots</label>
-                                    <span className="text-xs font-bold text-emerald-400">{(settings.gapMs / 1000).toFixed(1)}s</span>
+                                    <span className="text-xs font-bold text-primary">{(settings.gapMs / 1000).toFixed(1)}s</span>
                                 </div>
                                 <Slider
                                     value={[settings.gapMs]}
@@ -167,7 +156,7 @@ export function SettingsPopover() {
                                     max={5000}
                                     step={100}
                                     onValueChange={([v]) => updateSettings({ gapMs: v })}
-                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-emerald-500 [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-emerald-600 [&_.bg-primary]:to-emerald-400 [&_.bg-primary]:shadow-[0_0_12px_rgba(52,211,153,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
+                                    className="[&_[role=slider]]:bg-white [&_[role=slider]]:border-2 [&_[role=slider]]:border-primary [&_[role=slider]]:h-3.5 [&_[role=slider]]:w-3.5 [&_[role=slider]]:shadow-lg [&_[role=slider]]:transition-transform hover:[&_[role=slider]]:scale-110 [&_.bg-primary]:bg-primary [&_.bg-primary]:shadow-[0_0_12px_rgba(37,99,235,0.4)] [&_.bg-secondary]:bg-white/10 h-1.5"
                                 />
                             </div>
                         </div>
@@ -186,7 +175,7 @@ export function SettingsPopover() {
                                     <Switch
                                         checked={settings.highlightVowels}
                                         onCheckedChange={(v) => updateSettings({ highlightVowels: v })}
-                                        className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-white/10"
+                                        className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-white/10"
                                     />
                                 </div>
 
@@ -198,7 +187,7 @@ export function SettingsPopover() {
                                     <Switch
                                         checked={settings.highlightSilent}
                                         onCheckedChange={(v) => updateSettings({ highlightSilent: v })}
-                                        className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-white/10"
+                                        className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-white/10"
                                     />
                                 </div>
 
@@ -210,7 +199,7 @@ export function SettingsPopover() {
                                     <Switch
                                         checked={settings.showFocusPoint}
                                         onCheckedChange={(v) => updateSettings({ showFocusPoint: v })}
-                                        className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-white/10"
+                                        className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-white/10"
                                     />
                                 </div>
                             </div>
@@ -229,7 +218,7 @@ export function SettingsPopover() {
                                 <Switch
                                     checked={settings.enableSound}
                                     onCheckedChange={(v) => updateSettings({ enableSound: v })}
-                                    className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-white/10"
+                                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-white/10"
                                 />
                             </div>
                         </div>
@@ -237,7 +226,7 @@ export function SettingsPopover() {
                 </div>
 
                 {/* BOTTOM GLOW ACCENT */}
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
             </PopoverContent>
         </Popover>
     );
