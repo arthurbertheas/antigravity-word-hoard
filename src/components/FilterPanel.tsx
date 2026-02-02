@@ -6,6 +6,7 @@ import {
     WordFilters,
     STRUCTURE_LABELS,
     GRAPHEME_LABELS,
+    FREQUENCY_LABELS,
 } from "@/types/word";
 
 interface FilterPanelProps {
@@ -100,7 +101,7 @@ function FilterOption({ code, label, description, isActive, onToggle, levelColor
 
             {/* Level Badge */}
             <span className={cn(
-                "inline-flex items-center justify-center w-5 h-5 min-w-5 rounded-[6px] text-[11px] font-bold font-['Sora']",
+                "inline-flex items-center justify-center w-5 h-5 min-w-5 rounded-[6px] text-[11px] font-bold font-sora",
                 LEVEL_COLORS[levelColor]
             )}>
                 {code}
@@ -141,7 +142,7 @@ function CollapsibleSection({ title, badge, isOpen, onToggle, children }: Collap
                 className="flex items-center gap-2 py-[10px] pb-2 cursor-pointer group"
                 onClick={onToggle}
             >
-                <span className="font-['Sora'] text-[11px] font-bold uppercase tracking-[1.2px] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
+                <span className="font-sora text-[11px] font-bold uppercase tracking-[1.2px] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
                     {title}
                 </span>
                 {badge !== undefined && badge > 0 && (
@@ -209,7 +210,7 @@ export function FilterPanel({
         <aside className="w-[300px] min-w-[300px] h-full bg-[rgb(var(--filter-surface))] border-r border-[rgb(var(--filter-border))] flex flex-col font-['DM_Sans'] z-10 overflow-hidden">
             {/* Header */}
             <div className="px-[22px] pt-6 pb-4 border-b border-[rgb(var(--filter-border))]">
-                <h2 className="font-['Sora'] text-lg font-bold text-[rgb(var(--filter-text-primary))] mb-[2px]">
+                <h2 className="font-sora text-lg font-bold text-[rgb(var(--filter-text-primary))] mb-[2px]">
                     Filtres
                 </h2>
                 <p className="text-xs text-[rgb(var(--filter-text-muted))]">
@@ -239,7 +240,7 @@ export function FilterPanel({
                     placeholder="/a/, /l/…"
                     value={filters.phonSearch}
                     onChange={(e) => updateFilter('phonSearch', e.target.value)}
-                    className="w-full px-3 py-2 bg-[rgb(var(--filter-bg))] border-[1.5px] border-[rgb(var(--filter-border))] rounded-[6px] text-[13px] text-[rgb(var(--filter-text-primary))] font-['Sora'] placeholder:text-[rgb(var(--filter-text-muted))] focus-visible:outline-none focus-visible:border-[rgb(var(--filter-border-focus))] transition-all shadow-none h-auto"
+                    className="w-full px-3 py-2 bg-[rgb(var(--filter-bg))] border-[1.5px] border-[rgb(var(--filter-border))] rounded-[6px] text-[13px] text-[rgb(var(--filter-text-primary))] font-sora placeholder:text-[rgb(var(--filter-text-muted))] focus-visible:outline-none focus-visible:border-[rgb(var(--filter-border-focus))] transition-all shadow-none h-auto"
                 />
             </div>
 
@@ -289,6 +290,106 @@ export function FilterPanel({
                                 levelColor={GRAPHEME_LEVEL_COLORS[code]}
                             />
                         ))}
+                    </div>
+                </CollapsibleSection>
+
+                {/* Divider */}
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
+
+                {/* AUTRES CRITÈRES */}
+                <div className="px-[22px] mb-1">
+                    <div className="py-[10px] pb-2">
+                        <span className="font-sora text-[11px] font-bold uppercase tracking-[1.2px] text-[rgb(var(--filter-text-secondary))]">
+                            Autres critères
+                        </span>
+                    </div>
+                </div>
+
+                {/* Nombre de syllabes */}
+                <CollapsibleSection
+                    title="Nombre de syllabes"
+                    badge={filters.syllables.length}
+                    isOpen={openSections.syllables || false}
+                    onToggle={() => toggleSection('syllables')}
+                >
+                    <div className="flex flex-wrap gap-2 px-2">
+                        {[1, 2, 3, 4].map((syll) => {
+                            const isActive = filters.syllables.includes(syll);
+                            return (
+                                <button
+                                    key={syll}
+                                    onClick={() => toggleArrayFilter('syllables', syll)}
+                                    className={cn(
+                                        "flex items-center justify-center w-9 h-9 rounded-xl text-xs font-bold transition-all border-2",
+                                        isActive
+                                            ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-md shadow-[rgba(79,70,229,0.3)]"
+                                            : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[rgb(var(--filter-text-secondary))] hover:bg-[rgb(var(--filter-surface-hover))]"
+                                    )}
+                                >
+                                    {syll}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </CollapsibleSection>
+
+                {/* Fréquence */}
+                <CollapsibleSection
+                    title="Fréquence"
+                    badge={filters.frequencies.length}
+                    isOpen={openSections.frequencies || false}
+                    onToggle={() => toggleSection('frequencies')}
+                >
+                    <div className="flex flex-wrap gap-2 px-2">
+                        {['1', '2', '3', '4'].map((code) => {
+                            const isActive = filters.frequencies.includes(code);
+                            const label = FREQUENCY_LABELS[code];
+                            return (
+                                <button
+                                    key={code}
+                                    onClick={() => toggleArrayFilter('frequencies', code)}
+                                    className={cn(
+                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-2 whitespace-nowrap",
+                                        isActive
+                                            ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-md shadow-[rgba(79,70,229,0.3)]"
+                                            : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[rgb(var(--filter-text-secondary))] hover:bg-[rgb(var(--filter-surface-hover))]"
+                                    )}
+                                >
+                                    {label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </CollapsibleSection>
+
+                {/* Longueur */}
+                <CollapsibleSection
+                    title="Longueur (lettres)"
+                    badge={(filters.minLetters !== 1 || filters.maxLetters !== 20) ? 1 : 0}
+                    isOpen={openSections.length || false}
+                    onToggle={() => toggleSection('length')}
+                >
+                    <div className="space-y-4 px-2">
+                        <input
+                            type="range"
+                            min="1"
+                            max="20"
+                            value={filters.minLetters}
+                            onChange={(e) => updateFilter('minLetters', parseInt(e.target.value))}
+                            className="w-full h-2 bg-[rgb(var(--filter-bg))] rounded-lg appearance-none cursor-pointer accent-[rgb(var(--filter-accent))]"
+                        />
+                        <input
+                            type="range"
+                            min="1"
+                            max="20"
+                            value={filters.maxLetters}
+                            onChange={(e) => updateFilter('maxLetters', parseInt(e.target.value))}
+                            className="w-full h-2 bg-[rgb(var(--filter-bg))] rounded-lg appearance-none cursor-pointer accent-[rgb(var(--filter-accent))]"
+                        />
+                        <div className="flex justify-between text-[10px] font-bold text-[rgb(var(--filter-text-muted))] uppercase tracking-wide">
+                            <span>{filters.minLetters} lettres</span>
+                            <span>{filters.maxLetters} lettres</span>
+                        </div>
                     </div>
                 </CollapsibleSection>
             </div>

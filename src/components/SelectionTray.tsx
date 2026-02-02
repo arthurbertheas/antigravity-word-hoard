@@ -26,8 +26,8 @@ export function SelectionTray() {
                 <div className="flex items-center w-full mb-1 relative min-h-[24px]">
                     {/* Left-aligned Title */}
                     <div className="flex items-center gap-2">
-                        <ListChecks className="w-4 h-4 text-blue-600" />
-                        <h2 className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-slate-400">
+                        <ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />
+                        <h2 className="font-sora text-sm font-bold text-[rgb(var(--filter-text-primary))]">
                             Ma Liste
                         </h2>
                     </div>

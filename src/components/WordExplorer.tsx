@@ -27,6 +27,7 @@ import { WordBank } from "./WordBank";
 import { SelectionTray } from "./SelectionTray";
 import { Tachistoscope } from "./tachistoscope/Tachistoscope";
 import { ActiveFiltersBar } from "./ActiveFiltersBar";
+import { ResultsHeader } from "./ResultsHeader";
 
 export function WordExplorer() {
     return (
@@ -38,7 +39,7 @@ export function WordExplorer() {
 
 function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
-    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen } = useSelection();
+    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems } = useSelection();
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);
@@ -94,6 +95,24 @@ function WordExplorerContent() {
 
             {/* Zone B: Results - Source (Sandwich) */}
             <main className="flex-1 min-w-0 bg-white h-full border-r border-border overflow-hidden flex flex-col">
+                {/* Results Header */}
+                <ResultsHeader
+                    words={words}
+                    isAllSelected={words.length > 0 && words.every(word =>
+                        selectedWords.some(sw => sw.ORTHO === word.ORTHO)
+                    )}
+                    onToggleSelectAll={() => {
+                        const isAllSelected = words.length > 0 && words.every(word =>
+                            selectedWords.some(sw => sw.ORTHO === word.ORTHO)
+                        );
+                        if (isAllSelected) {
+                            removeItems(words);
+                        } else {
+                            addItems(words);
+                        }
+                    }}
+                />
+
                 {/* Active Filters Bar */}
                 <ActiveFiltersBar
                     filters={filters}
