@@ -139,7 +139,7 @@ export function SessionPanel() {
                                             <span className={cn(
                                                 "text-base font-semibold transition-colors",
                                                 status === 'success' ? "text-slate-700 group-hover:text-emerald-700" :
-                                                    status === 'failed' ? "text-slate-700 group-hover:text-rose-700" :
+                                                    status === 'failed' ? "text-rose-600 font-bold group-hover:text-rose-700" :
                                                         isActive ? "text-slate-800" : "text-slate-400"
                                             )}>
                                                 {word.ORTHO}
