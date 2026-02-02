@@ -44,8 +44,8 @@ export function WordBank({ words }: WordBankProps) {
                     </div>
                 ) : (
                     <div className="space-y-8 pb-12 text-slate-900">
-                        {/* Refined Ceramic Toolbar */}
-                        <div className="flex items-center justify-between py-3 px-1 border-b border-slate-100 mb-6">
+                        {/* Refined Ceramic Toolbar - Edge-to-edge divider */}
+                        <div className="flex items-center justify-between py-3 px-6 -mx-6 border-b border-slate-100 mb-6">
                             <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.15em]">
                                 {words.length} {words.length > 1 ? "mots" : "mot"}
                             </span>

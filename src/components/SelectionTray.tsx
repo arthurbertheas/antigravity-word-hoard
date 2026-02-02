@@ -22,12 +22,12 @@ export function SelectionTray() {
     return (
         <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300 rounded-tl-2xl overflow-hidden">
             {/* Header (Sandwich: Fixed) */}
-            <div className="flex-none p-4 border-b border-border bg-white">
+            <div className="flex-none p-4 border-b border-slate-100 bg-white">
                 <div className="flex items-center w-full mb-1 relative min-h-[24px]">
-                    {/* Centered Title */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 whitespace-nowrap">
-                            <ListChecks className="w-4 h-4 text-primary" />
+                    {/* Left-aligned Title */}
+                    <div className="flex items-center gap-2">
+                        <ListChecks className="w-4 h-4 text-blue-600" />
+                        <h2 className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-slate-400">
                             Ma Liste
                         </h2>
                     </div>
