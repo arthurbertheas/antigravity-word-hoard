@@ -10,6 +10,7 @@ export interface PlayerSettings {
     fontSize: number;
     fontFamily: 'arial' | 'verdana' | 'mdi-ecole' | 'sans' | 'serif' | 'mono' | 'opendyslexic';
     highlightVowels: boolean;
+    highlightSilent: boolean;
     letterSpacing: number;
     showFocusPoint: boolean;
     enableSound: boolean;
@@ -52,6 +53,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     fontSize: 15,
     fontFamily: 'arial',
     highlightVowels: false,
+    highlightSilent: false,
     letterSpacing: 0,
     showFocusPoint: true,
     enableSound: false,

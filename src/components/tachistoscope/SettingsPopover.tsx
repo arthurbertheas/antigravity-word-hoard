@@ -134,11 +134,23 @@ export function SettingsPopover() {
                     <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                             <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Voyelles</Label>
-                            <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Mise en exergue</p>
+                            <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Mise en exergue (rouge)</p>
                         </div>
                         <Switch
                             checked={settings.highlightVowels}
                             onCheckedChange={(v) => updateSettings({ highlightVowels: v })}
+                            className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <Label className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.15em]">Lettres Muettes</Label>
+                            <p className="text-[9px] text-neutral-500 uppercase tracking-widest">Mise en exergue (gris)</p>
+                        </div>
+                        <Switch
+                            checked={settings.highlightSilent}
+                            onCheckedChange={(v) => updateSettings({ highlightSilent: v })}
                             className="data-[state=checked]:bg-white data-[state=unchecked]:bg-neutral-800 [&_span]:bg-neutral-100 data-[state=checked]:[&_span]:bg-neutral-900"
                         />
                     </div>

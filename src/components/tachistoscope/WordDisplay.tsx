@@ -84,14 +84,12 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 // Determine styling based on grapheme type and settings
                 let colorClass = '';
 
-                if (settings.highlightVowels) {
-                    if (parsed.type === 'muette') {
-                        colorClass = 'text-gray-400'; // Silent letters in gray
-                    } else if (parsed.type === 'voyelle') {
-                        colorClass = 'text-red-500 font-bold'; // Vowels in red
-                    }
-                    // Consonants keep default color (black)
+                if (settings.highlightVowels && parsed.type === 'voyelle') {
+                    colorClass = 'text-red-500 font-bold'; // Vowels in red
+                } else if (settings.highlightSilent && parsed.type === 'muette') {
+                    colorClass = 'text-gray-400'; // Silent letters in gray
                 }
+                // Consonants keep default color (black)
 
                 return (
                     <span
