@@ -3,6 +3,8 @@ import { Word } from "@/types/word";
 import { Search, PlusCircle } from "lucide-react";
 import { WordCard } from "./WordCard";
 import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
+import { useSelection } from "@/contexts/SelectionContext";
 
 interface WordBankProps {
     words: Word[];
@@ -12,6 +14,7 @@ const INITIAL_PAGE_SIZE = 48;
 const PAGE_INCREMENT = 48;
 
 export function WordBank({ words }: WordBankProps) {
+    const { addItems } = useSelection();
     const [displayLimit, setDisplayLimit] = useState(INITIAL_PAGE_SIZE);
 
     const hasMore = words.length > displayLimit;
@@ -41,6 +44,22 @@ export function WordBank({ words }: WordBankProps) {
                     </div>
                 ) : (
                     <div className="space-y-8 pb-12">
+                        {/* High Visibility Toolbar */}
+                        <div className="flex items-center justify-between mb-4 px-1 mt-2">
+                            <span className="text-sm font-medium text-slate-500">
+                                {words.length} {words.length > 1 ? "mots affichés" : "mot affiché"}
+                            </span>
+
+                            <button
+                                className="group flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold text-blue-600 transition-all hover:bg-blue-50 hover:text-blue-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={() => addItems(words)}
+                                disabled={words.length === 0}
+                            >
+                                <CheckCircle className="w-4 h-4 transition-transform group-hover:scale-110" />
+                                <span>Tout sélectionner</span>
+                            </button>
+                        </div>
+
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
                             {currentWords.map((word) => (
                                 <WordCard
