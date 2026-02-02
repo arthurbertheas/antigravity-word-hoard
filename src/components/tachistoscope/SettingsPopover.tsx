@@ -232,8 +232,7 @@ export function SettingsPopover() {
                     )}
                 </div>
 
-            </div>
-        </PopoverContent>
+            </PopoverContent>
         </Popover >
     );
 }
