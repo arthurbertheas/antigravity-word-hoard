@@ -58,9 +58,9 @@
     --shadow-card: 0 4px 20px -2px rgb(0 0 0 / 0.08);
 
     /* Typography */
-    /* CircularStd is the proprietary font from Webflow. DM Sans is the fallback. */
-    --font-display: 'CircularStd', 'DM Sans', sans-serif;
-    --font-body: 'CircularStd', 'DM Sans', sans-serif;
+    /* DM Sans is the primary font for body text, Sora for headers/titles */
+    --font-display: 'DM Sans', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
     --font-mono: 'IBM Plex Mono', monospace;
 
     /* Sidebar tokens */
@@ -136,6 +136,13 @@
     /* #e0e7ff - indigo-200 */
     --level-8-text: 79 70 229;
     /* #4f46e5 - indigo-600 */
+  }
+
+  /* Global body font */
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
   }
 }
 
