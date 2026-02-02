@@ -48,13 +48,6 @@ export function SettingsPopover() {
                 <div className="pt-6 px-6 pb-4">
                     <div className="flex justify-between items-baseline mb-5">
                         <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Réglages</h2>
-                        <Button
-                            variant="ghost"
-                            className="text-[11px] font-bold text-slate-400 hover:text-blue-700 transition-colors uppercase tracking-widest p-0 h-auto"
-                            onClick={() => { }} // Reset logic if needed
-                        >
-                            Reset
-                        </Button>
                     </div>
 
                     {/* NAVIGATION CAPSULE */}
