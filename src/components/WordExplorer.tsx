@@ -25,7 +25,6 @@ const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 
 import { WordBank } from "./WordBank";
 import { SelectionTray } from "./SelectionTray";
-import { SelectionToggle } from "./SelectionToggle";
 import { Tachistoscope } from "./tachistoscope/Tachistoscope";
 
 export function WordExplorer() {
@@ -101,9 +100,8 @@ function WordExplorerContent() {
                 <WordBank words={words} />
             </main>
 
-            {/* Zone C: My List - Destination (Now Overlay) */}
+            {/* Zone C: My List - Destination (Sandwich) */}
             <SelectionTray />
-            <SelectionToggle />
 
             {/* Tachistoscope Overlay (Immersive Reader) */}
             <Tachistoscope
