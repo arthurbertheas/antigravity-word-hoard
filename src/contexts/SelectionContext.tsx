@@ -10,6 +10,8 @@ interface SelectionContextType {
     isSelected: (word: Word) => boolean;
     isFocusModeOpen: boolean;
     setIsFocusModeOpen: (open: boolean) => void;
+    isTrayOpen: boolean;
+    setIsTrayOpen: (open: boolean) => void;
 }
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export function getWordId(word: Word): string {
 export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedWords, setSelectedWords] = useState<Word[]>([]);
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
+    const [isTrayOpen, setIsTrayOpen] = useState(false);
 
     const addItem = (word: Word) => {
         const targetId = getWordId(word);
@@ -93,7 +96,9 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             clearSelection,
             isSelected,
             isFocusModeOpen,
-            setIsFocusModeOpen
+            setIsFocusModeOpen,
+            isTrayOpen,
+            setIsTrayOpen
         }}>
             {children}
         </SelectionContext.Provider>

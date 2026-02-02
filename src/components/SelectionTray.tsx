@@ -1,157 +1,174 @@
 import { useState } from "react";
 import { useSelection, getWordId } from "@/contexts/SelectionContext";
 import { Button } from "@/components/ui/button";
-import { ListChecks, ChevronRight, X, Trash2 } from "lucide-react";
+import { Check, X, Trash2, X as XClose } from "lucide-react";
+import { Word } from "@/types/word";
+import { cn } from "@/lib/utils";
 
-export function SelectionTray() {
-    const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen } = useSelection();
-    const [showClearConfirm, setShowClearConfirm] = useState(false);
-
-    // Stats calculation
-    const totalSyllables = selectedWords.reduce((acc, word) => acc + Number(word.SYLL || 0), 0);
-    const avgSyllables = selectedWords.length > 0 ? (totalSyllables / selectedWords.length).toFixed(1) : 0;
-
-    const handleClearRequest = () => {
-        if (selectedWords.length > 5) {
-            setShowClearConfirm(true);
-        } else {
-            clearSelection();
-        }
-    };
+// --- WordRow Component (Hover Reveal) ---
+function WordRow({
+    word,
+    index,
+    onRemove,
+    status,
+    onStatusChange
+}: {
+    word: Word,
+    index: number,
+    onRemove: () => void,
+    status?: 'success' | 'failed' | 'neutral',
+    onStatusChange: (status: 'success' | 'failed' | 'neutral') => void
+}) {
+    const currentStatus = status || 'neutral';
 
     return (
-        <aside className="w-80 shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-all duration-300 rounded-tl-2xl overflow-hidden">
-            {/* Header (Sandwich: Fixed) */}
-            <div className="flex-none p-4 border-b border-border bg-white">
-                <div className="flex items-center w-full mb-1 relative min-h-[24px]">
-                    {/* Centered Title */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 whitespace-nowrap">
-                            <ListChecks className="w-4 h-4 text-primary" />
-                            Ma Liste
-                        </h2>
-                    </div>
+        <li className="group flex items-center justify-between p-3 rounded-md hover:bg-neutral-50 transition-colors cursor-pointer border-b border-dashed border-neutral-100 last:border-0">
+            {/* GAUCHE : Indicateur + Mot */}
+            <div className="flex items-center gap-4">
+                {/* Barre de couleur dynamique */}
+                <div className={cn(
+                    "w-1 h-8 rounded-full transition-colors",
+                    currentStatus === 'success' ? 'bg-emerald-500' :
+                        currentStatus === 'failed' ? 'bg-rose-500' : 'bg-neutral-200'
+                )} />
 
-                    {/* Right Actions */}
-                    <div className="ml-auto flex items-center gap-2 z-10">
-                        {selectedWords.length > 0 && (
-                            <div className="flex items-center gap-2">
-                                {showClearConfirm ? (
-                                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
-                                        <button
-                                            onClick={() => setShowClearConfirm(false)}
-                                            className="text-[10px] font-bold text-muted-foreground hover:text-foreground"
-                                        >
-                                            Annuler
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                clearSelection();
-                                                setShowClearConfirm(false);
-                                            }}
-                                            className="text-[10px] font-bold text-destructive hover:underline"
-                                        >
-                                            Confirmer
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <button
-                                        onClick={handleClearRequest}
-                                        className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group"
-                                    >
-                                        <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
-                                        Vider
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="flex items-baseline gap-2">
-                    <div className="text-2xl font-black text-foreground">
-                        {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
-                    </div>
-                </div>
-
-                {/* Micro Stats Bar */}
-                {selectedWords.length > 0 && (
-                    <div className="mt-3 space-y-2">
-                        <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
-                            <div className="flex items-center gap-1">
-                                <span className="text-primary">{totalSyllables}</span> Syllabes
-                            </div>
-                            <div className="w-1 h-1 rounded-full bg-border" />
-                            <div className="flex items-center gap-1">
-                                Moy. <span className="text-primary">{avgSyllables}</span>
-                            </div>
-                        </div>
-
-                        {/* Category Tags */}
-                        <div className="flex flex-wrap gap-1">
-                            {Object.entries(
-                                selectedWords.reduce((acc, word) => {
-                                    const cat = word.SYNT || 'AUTRE';
-                                    acc[cat] = (acc[cat] || 0) + 1;
-                                    return acc;
-                                }, {} as Record<string, number>)
-                            ).map(([cat, count]) => (
-                                <span key={cat} className="px-1.5 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
-                                    {count} {cat}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <span className="text-neutral-700 font-medium select-none">
+                    {word.ORTHO}
+                </span>
             </div>
 
-            {/* List Content (Sandwich: Flexible) */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-transparent to-card/5">
-                {selectedWords.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 opacity-40">
-                        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                            <ListChecks className="w-8 h-8 text-muted-foreground" />
-                        </div>
-                        <p className="text-xs font-medium text-muted-foreground italic max-w-[150px]">
-                            Cliquez sur un mot pour l'ajouter à votre liste.
-                        </p>
-                    </div>
-                ) : (
-                    <div className="space-y-2">
-                        {selectedWords.map((word, i) => (
-                            <div
-                                key={getWordId(word)}
-                                className="group p-3 bg-white rounded-xl border border-border shadow-sm text-sm flex items-center justify-between hover:border-primary/30 hover:shadow-md transition-all duration-200"
-                            >
-                                <span className="font-medium text-foreground">{word.ORTHO}</span>
-                                <button
-                                    onClick={() => removeItem(getWordId(word))}
-                                    className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
-                                    title="Supprimer"
-                                >
-                                    <X className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+            {/* DROITE : Actions (Visible uniquement au hover) */}
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 
-            {/* Footer Action (Sandwich: Fixed at bottom) */}
-            <div className="flex-none p-4 bg-white border-t border-border">
-                <Button
-                    className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20 group bg-primary hover:bg-primary/90 text-primary-foreground"
-                    disabled={selectedWords.length === 0}
-                    onClick={() => {
-                        setIsFocusModeOpen(true);
-                    }}
+                {/* Actions de Scoring */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); onStatusChange('success'); }}
+                    className={cn(
+                        "p-1.5 rounded transition-colors",
+                        currentStatus === 'success' ? "text-emerald-500 bg-emerald-50" : "text-neutral-300 hover:text-emerald-500 hover:bg-emerald-50"
+                    )}
+                    title="Valider"
                 >
-                    Lancer la sélection
-                    <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase tracking-tighter font-semibold">
-                    Appuyez sur Entrée pour valider
-                </p>
+                    <Check className="w-5 h-5" />
+                </button>
+
+                <button
+                    onClick={(e) => { e.stopPropagation(); onStatusChange('failed'); }}
+                    className={cn(
+                        "p-1.5 rounded transition-colors",
+                        currentStatus === 'failed' ? "text-rose-500 bg-rose-50" : "text-neutral-300 hover:text-rose-500 hover:bg-rose-50"
+                    )}
+                    title="Raté"
+                >
+                    <X className="w-5 h-5" />
+                </button>
+
+                {/* Séparateur visuel */}
+                <div className="w-px h-4 bg-neutral-200 mx-1"></div>
+
+                {/* Action Delete */}
+                <button
+                    onClick={(e) => { e.stopPropagation(); onRemove(); }}
+                    className="p-1.5 hover:bg-red-50 rounded text-neutral-300 hover:text-red-600 transition-colors"
+                    title="Supprimer le mot"
+                >
+                    <Trash2 className="w-4 h-4 ml-1" />
+                </button>
             </div>
-        </aside>
+        </li>
+    );
+}
+
+// --- Main Panel Component ---
+export function SelectionTray() {
+    const { selectedWords, clearSelection, removeItem, isTrayOpen, setIsTrayOpen, setIsFocusModeOpen } = useSelection();
+    // Local state for word statuses (simple map for demo purposes, reset on reload)
+    // In a real app, this should likely be in context or persisted if it matters before "Launch".
+    const [wordStatuses, setWordStatuses] = useState<Record<string, 'success' | 'failed' | 'neutral'>>({});
+
+    const handleStatusChange = (wordId: string, status: 'success' | 'failed' | 'neutral') => {
+        setWordStatuses(prev => ({ ...prev, [wordId]: status }));
+    };
+
+    if (!isTrayOpen) return null;
+
+    return (
+        <>
+            {/* Backdrop */}
+            <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60]"
+                onClick={() => setIsTrayOpen(false)}
+            />
+
+            {/* Clean List Panel */}
+            <aside className="fixed right-0 top-0 h-full w-[400px] z-[70] bg-white shadow-2xl flex flex-col font-sans animate-in slide-in-from-right duration-300">
+
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-neutral-100">
+                    <div>
+                        <h2 className="text-xl font-bold text-neutral-900 tracking-tight">Ma Liste</h2>
+                        <p className="text-sm text-neutral-500 mt-1">{selectedWords.length} mots sélectionnés</p>
+                    </div>
+
+                    <button
+                        onClick={() => setIsTrayOpen(false)}
+                        className="p-2 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-neutral-700 transition-colors"
+                    >
+                        <XClose className="w-6 h-6" />
+                    </button>
+                </div>
+
+                {/* Content List */}
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                    {selectedWords.length === 0 ? (
+                        <div className="h-full flex flex-col items-center justify-center text-center opacity-40 space-y-4">
+                            <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center">
+                                <span className="text-xl">📝</span>
+                            </div>
+                            <p className="text-sm text-neutral-500">Votre liste est vide.</p>
+                        </div>
+                    ) : (
+                        <ul className="space-y-1">
+                            {selectedWords.map((word, i) => {
+                                const id = getWordId(word);
+                                return (
+                                    <WordRow
+                                        key={id}
+                                        index={i + 1}
+                                        word={word}
+                                        onRemove={() => removeItem(id)}
+                                        status={wordStatuses[id]}
+                                        onStatusChange={(status) => handleStatusChange(id, status)}
+                                    />
+                                );
+                            })}
+                        </ul>
+                    )}
+                </div>
+
+                {/* Footer Actions */}
+                <div className="p-6 bg-white border-t border-neutral-100 space-y-3">
+                    <Button
+                        onClick={() => {
+                            setIsTrayOpen(false);
+                            setIsFocusModeOpen(true);
+                        }}
+                        disabled={selectedWords.length === 0}
+                        className="w-full h-12 rounded-lg bg-neutral-900 text-white font-medium hover:bg-neutral-800 transition-colors shadow-lg shadow-neutral-200"
+                    >
+                        Lancer l'entraînement
+                    </Button>
+
+                    {selectedWords.length > 0 && (
+                        <button
+                            onClick={clearSelection}
+                            className="w-full text-center text-xs font-semibold text-neutral-400 hover:text-rose-500 uppercase tracking-wider py-2 transition-colors"
+                        >
+                            Tout effacer
+                        </button>
+                    )}
+                </div>
+            </aside>
+        </>
     );
 }
