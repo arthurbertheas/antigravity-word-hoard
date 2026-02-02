@@ -73,7 +73,7 @@ export function ControlBar() {
                         variant="secondary"
                         size="icon"
                         className="w-14 h-14 rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:scale-105 transition-all duration-200"
-                        onClick={() => setIsPlaying(!isPlaying)}
+                        onClick={() => setIsPlaying((p: boolean) => !p)}
                     >
                         {isPlaying ? (
                             <Pause className="w-6 h-6 fill-current" />
@@ -121,22 +121,18 @@ export function ControlBar() {
                     </span>
                 </div>
 
-                <div className="w-px h-8 bg-slate-200 mx-1"></div>
-
                 {/* Micro-Feedback: Status Dot (Hidden or integrated subtly) */}
                 <div
                     className={cn(
-                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out mx-1",
+                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out ml-2 mr-1",
                         feedback === 'success' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" :
                             feedback === 'error' ? "bg-red-500" :
                                 "bg-slate-200"
                     )}
                 />
 
-                <div className="w-px h-8 bg-slate-200 mx-1"></div>
-
                 {/* Right: Settings & List */}
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0.5">
                     <Button
                         variant="ghost"
                         size="icon"

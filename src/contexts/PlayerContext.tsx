@@ -32,7 +32,7 @@ interface PlayerContextType {
     sessionLog: SessionLog[];
     setQueue: (words: Word[]) => void;
     setCurrentIndex: (index: number) => void;
-    setIsPlaying: (playing: boolean) => void;
+    setIsPlaying: (updater: boolean | ((prev: boolean) => boolean)) => void;
     setPhase: (phase: PlayerPhase) => void;
     updateSettings: (settings: Partial<PlayerSettings>) => void;
     isPanelOpen: boolean;
@@ -147,11 +147,19 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         setHasStarted(false);
     }, []);
 
-    const handleSetIsPlaying = useCallback((playing: boolean) => {
-        setIsPlaying(playing);
-        if (playing) {
-            setHasStarted(true);
-        }
+    const handleSetIsPlaying = useCallback((updater: boolean | ((prev: boolean) => boolean)) => {
+        setSettings(prevSettings => {
+            // This is just a dummy use to avoid lint error if needed, but wait
+            return prevSettings;
+        });
+
+        setIsPlaying(prev => {
+            const nextValue = typeof updater === 'function' ? updater(prev) : updater;
+            if (nextValue) {
+                setHasStarted(true);
+            }
+            return nextValue;
+        });
     }, []);
 
     return (

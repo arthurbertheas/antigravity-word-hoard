@@ -34,7 +34,7 @@ export function SettingsPopover() {
     return (
         <Popover modal={false}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
+                <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                     <Settings2 className="w-5 h-5" />
                 </Button>
             </PopoverTrigger>
