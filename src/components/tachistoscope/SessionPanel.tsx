@@ -92,7 +92,7 @@ export function SessionPanel() {
                         <div className="h-1 w-full bg-neutral-200 rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-emerald-500 transition-all duration-500 ease-out"
-                                style={{ width: `${progressPercentage}%` }}
+                                style={{ width: `${successRate}%` }}
                             />
                         </div>
                     </div>
