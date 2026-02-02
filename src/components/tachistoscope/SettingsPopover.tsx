@@ -39,10 +39,10 @@ export function SettingsPopover() {
                 </Button>
             </PopoverTrigger>
             <PopoverContent
-                className="w-[360px] p-0 bg-white/95 backdrop-blur-xl border border-slate-100/50 rounded-3xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.1)] text-slate-800 overflow-hidden z-[110]"
+                className="w-[360px] h-[480px] p-0 bg-white/95 backdrop-blur-xl border border-slate-100/50 rounded-3xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.1)] text-slate-800 overflow-hidden z-[110]"
                 side="top"
                 align="end"
-                sideOffset={20}
+                sideOffset={26}
             >
                 {/* HEADER : Titre + Navigation Pill */}
                 <div className="pt-6 px-6 pb-4">
