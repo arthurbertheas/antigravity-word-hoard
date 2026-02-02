@@ -46,7 +46,7 @@ export function SessionPanel() {
             {/* Side Panel */}
             <aside
                 className={cn(
-                    "fixed right-0 top-0 h-full w-[400px] bg-white shadow-2xl z-50 transition-transform duration-300 ease-in-out flex flex-col",
+                    "fixed right-0 top-0 h-full w-[400px] bg-white shadow-2xl z-50 transition-transform duration-300 ease-in-out flex flex-col rounded-tl-2xl",
                     isPanelOpen ? "translate-x-0" : "translate-x-full"
                 )}
             >
