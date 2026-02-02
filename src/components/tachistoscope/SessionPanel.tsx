@@ -1,8 +1,8 @@
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from "@/components/ui/button";
-import { X, CheckCircle, XCircle } from "lucide-react";
+import { X, Check, X as XMark, Trash2 } from "lucide-react";
 import { cn } from '@/lib/utils';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function SessionPanel() {
     const {
@@ -11,7 +11,10 @@ export function SessionPanel() {
         queue,
         currentIndex,
         sessionLog,
-        setCurrentIndex
+        setCurrentIndex,
+        logResult,
+        triggerFeedback,
+        setQueue
     } = usePlayer();
 
     const activeItemRef = useRef<HTMLLIElement>(null);
@@ -32,108 +35,146 @@ export function SessionPanel() {
     const successCount = sessionLog.filter(log => log.status === 'success').length;
     const progressPercentage = totalWords > 0 ? ((currentIndex + 1) / totalWords) * 100 : 0;
 
-    return (
-        <aside
-            className={cn(
-                "fixed inset-y-0 right-0 w-80 bg-neutral-900 border-l border-white/10 shadow-2xl z-[150] transition-transform duration-300 ease-in-out flex flex-col rounded-tl-2xl overflow-hidden",
-                isPanelOpen ? "translate-x-0" : "translate-x-full"
-            )}
-        >
-            {/* Header (Sticky Top) */}
-            <div className="flex-none p-4 pb-0 border-b border-white/5 relative min-h-[64px] bg-neutral-900/80 backdrop-blur-md sticky top-0 z-20">
-                <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-xs font-bold text-neutral-400 uppercase tracking-[0.15em]">
-                        Session en cours
-                    </h2>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
-                        onClick={() => setIsPanelOpen(false)}
-                    >
-                        <X className="w-4 h-4" />
-                    </Button>
-                </div>
+    const handleDelete = (wordId: string) => {
+        const newQueue = queue.filter(w => w.id !== wordId);
+        setQueue(newQueue);
+        // Adjust index if needed
+        if (currentIndex >= newQueue.length && newQueue.length > 0) {
+            setCurrentIndex(newQueue.length - 1);
+        }
+    };
 
-                <div className="space-y-3 mb-4">
-                    <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">
-                            RÉSUMÉ SESSION
-                        </span>
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-neutral-400">
-                                {successCount} <span className="text-[10px] opacity-50">/ {totalWords} Succès</span>
-                            </span>
-                            <span className="text-[10px] font-bold text-neutral-500">
-                                {Math.round(progressPercentage)}%
-                            </span>
-                        </div>
+    return (
+        <>
+            {/* Backdrop */}
+            <div
+                className={cn(
+                    "fixed inset-0 bg-black/60 backdrop-blur-sm z-[140] transition-opacity duration-300",
+                    isPanelOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                )}
+                onClick={() => setIsPanelOpen(false)}
+            />
+
+            <aside
+                className={cn(
+                    "fixed right-0 top-0 h-full w-[400px] bg-white shadow-2xl z-[150] transition-transform duration-300 ease-in-out flex flex-col",
+                    isPanelOpen ? "translate-x-0" : "translate-x-full"
+                )}
+            >
+                {/* Header (Sticky Top) */}
+                <div className="flex-none pt-6 px-6 relative bg-white sticky top-0 z-20">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
+                            SESSION EN COURS
+                        </h2>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+                            onClick={() => setIsPanelOpen(false)}
+                        >
+                            <X className="w-4 h-4" />
+                        </Button>
                     </div>
-                    {/* Progress Bar */}
-                    <div className="h-1 w-full bg-neutral-700 rounded-full overflow-hidden">
+
+                    {/* Fine Progress Line */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-neutral-100">
                         <div
                             className="h-full bg-emerald-500 transition-all duration-500 ease-out"
                             style={{ width: `${progressPercentage}%` }}
                         />
                     </div>
                 </div>
-            </div>
 
-            {/* Body (Scroll Area) */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
-                {visualQueue.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-neutral-600 italic text-sm">
-                        Aucun mot dans la session
-                    </div>
-                ) : (
-                    <ul className="p-2 space-y-1">
-                        {visualQueue.map((word, index) => {
-                            const isActive = index === currentIndex;
-                            const isPast = index < currentIndex;
-                            const isFuture = index > currentIndex;
+                {/* Body (Scroll Area) */}
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                    {visualQueue.length === 0 ? (
+                        <div className="flex items-center justify-center h-full text-neutral-400 italic text-sm">
+                            Aucun mot dans la session
+                        </div>
+                    ) : (
+                        <ul className="space-y-1">
+                            {visualQueue.map((word, index) => {
+                                const isActive = index === currentIndex;
+                                // Find log for this word/index
+                                const log = sessionLog.find(l => l.wordId === word.id);
+                                const status = log?.status || 'pending';
 
-                            // Find log for this index/word (simplified for now)
-                            const log = sessionLog.find(l => l.wordId === word.id); // This might need refinement if wordId is not unique in queue
-                            const status = log?.status;
-
-                            return (
-                                <li
-                                    key={`${word.id}-${index}`}
-                                    ref={isActive ? activeItemRef : null}
-                                    onClick={() => setCurrentIndex(index)}
-                                    className={cn(
-                                        "flex items-center justify-between p-3 rounded-md text-sm transition-all cursor-pointer group",
-                                        isActive ? "bg-white/5 text-white font-semibold border-l-2 border-purple-500 pl-2.5" : "hover:bg-white/5",
-                                        isPast && "text-neutral-400",
-                                        isFuture && "text-neutral-600"
-                                    )}
-                                >
-                                    <span className="truncate pr-2">
-                                        <span className="text-[10px] tabular-nums opacity-30 mr-2 w-4 inline-block">
-                                            {index + 1}
-                                        </span>
-                                        {word.ORTHO}
-                                    </span>
-
-                                    <div className="flex-none">
-                                        {isPast && status === 'success' && (
-                                            <CheckCircle className="w-4 h-4 text-emerald-500" />
+                                return (
+                                    <li
+                                        key={`${word.id}-${index}`}
+                                        ref={isActive ? activeItemRef : null}
+                                        className={cn(
+                                            "group flex items-center justify-between p-3 rounded-lg transition-colors cursor-default",
+                                            isActive ? "bg-neutral-50 ring-1 ring-neutral-200" : "hover:bg-neutral-50"
                                         )}
-                                        {isPast && status === 'failed' && (
-                                            <XCircle className="w-4 h-4 text-rose-500" />
-                                        )}
-                                        {isFuture && (
-                                            <span className="text-[10px] font-bold text-neutral-800 group-hover:text-neutral-700 transition-colors">
-                                                {index + 1}
+                                    >
+                                        {/* ZONE GAUCHE : Indicateur + Texte */}
+                                        <div className="flex items-center gap-4 min-w-0">
+                                            {/* Status Pill */}
+                                            <div className={cn(
+                                                "w-1.5 h-5 rounded-full transition-colors shrink-0",
+                                                status === 'success' ? 'bg-emerald-500' :
+                                                    status === 'failed' ? 'bg-rose-500' :
+                                                        'bg-neutral-200'
+                                            )} />
+
+                                            <span
+                                                onClick={() => setCurrentIndex(index)}
+                                                className={cn(
+                                                    "text-sm font-medium transition-colors cursor-pointer truncate",
+                                                    status === 'pending' ? 'text-neutral-400' : 'text-neutral-700',
+                                                    isActive && "text-neutral-900 font-bold"
+                                                )}
+                                            >
+                                                {word.ORTHO}
                                             </span>
-                                        )}
-                                    </div>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                )}
-            </div>
-        </aside>
+                                        </div>
+
+                                        {/* ZONE DROITE : Actions (Visible on Hover only) */}
+                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0">
+                                            {/* Actions de Scoring */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    logResult(word.id, 'success');
+                                                    triggerFeedback('success');
+                                                }}
+                                                className="p-1.5 rounded-md hover:bg-emerald-50 text-neutral-300 hover:text-emerald-500 transition-colors"
+                                                title="Valider"
+                                            >
+                                                <Check className="w-5 h-5" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    logResult(word.id, 'failed');
+                                                    triggerFeedback('error');
+                                                }}
+                                                className="p-1.5 rounded-md hover:bg-rose-50 text-neutral-300 hover:text-rose-500 transition-colors"
+                                                title="Marquer comme raté"
+                                            >
+                                                <XMark className="w-5 h-5" />
+                                            </button>
+                                            <div className="w-px h-4 bg-neutral-200 mx-2" />
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(word.id);
+                                                }}
+                                                className="p-1.5 rounded-md hover:bg-red-50 text-neutral-300 hover:text-red-600 transition-colors"
+                                                title="Supprimer le mot"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                </div>
+            </aside>
+        </>
     );
 }
