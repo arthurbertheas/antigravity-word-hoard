@@ -99,14 +99,13 @@ export function SessionPanel() {
                             Aucun mot dans la session
                         </div>
                     ) : (
-                        <ul className="space-y-1">
+                        <ul className="space-y-2 p-2">
                             {visualQueue.map((word, index) => {
                                 const isActive = index === currentIndex;
                                 const isPast = index < currentIndex;
-                                const isFuture = index > currentIndex;
 
-                                // Find log for this index/word (simplified for now)
-                                const log = sessionLog.find(l => l.wordId === word.id); // This might need refinement if wordId is not unique in queue
+                                // Find log for this index/word
+                                const log = sessionLog.find(l => l.wordId === word.id);
                                 const status = log?.status;
 
                                 return (
@@ -115,34 +114,23 @@ export function SessionPanel() {
                                         ref={isActive ? activeItemRef : null}
                                         onClick={() => setCurrentIndex(index)}
                                         className={cn(
-                                            "flex items-center justify-between p-3 rounded-lg text-sm transition-all cursor-pointer group",
-                                            isActive ? "bg-neutral-100 text-neutral-900 font-semibold ring-1 ring-neutral-200" : "hover:bg-neutral-50",
-                                            isPast && "text-neutral-500",
-                                            isFuture && "text-neutral-600"
+                                            "flex items-center p-3 bg-white rounded-lg shadow-sm border-l-4 border border-neutral-200/60 transition-all cursor-pointer group relative",
+                                            // Status Borders
+                                            status === 'success' ? "border-l-emerald-500" :
+                                                status === 'failed' ? "border-l-rose-500" :
+                                                    "border-l-transparent hover:border-l-neutral-200",
+                                            // Active State
+                                            isActive && "ring-1 ring-neutral-900/5 bg-neutral-50/50"
                                         )}
                                     >
-                                        <div className="flex items-center gap-3 overflow-hidden">
-                                            <span className="text-[10px] tabular-nums text-neutral-300 w-4 inline-block shrink-0">
-                                                {index + 1}
-                                            </span>
-                                            <span className="truncate">
-                                                {word.ORTHO}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex-none ml-2">
-                                            {isPast && status === 'success' && (
-                                                <CheckCircle className="w-4 h-4 text-emerald-500" />
-                                            )}
-                                            {isPast && status === 'failed' && (
-                                                <XCircle className="w-4 h-4 text-rose-500" />
-                                            )}
-                                            {isFuture && (
-                                                <span className="text-[10px] font-bold text-neutral-300 group-hover:text-neutral-400 transition-colors">
-
-                                                </span>
-                                            )}
-                                        </div>
+                                        <span className={cn(
+                                            "font-medium ml-3 text-sm flex items-center gap-3",
+                                            status === 'failed' ? "text-neutral-700" : "text-neutral-900",
+                                            isPast && !status && "text-neutral-400"
+                                        )}>
+                                            <span className="text-neutral-400 font-normal text-xs">{index + 1}</span>
+                                            {word.ORTHO}
+                                        </span>
                                     </li>
                                 );
                             })}
