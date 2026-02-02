@@ -83,7 +83,7 @@ export function SettingsPopover() {
                                     <SelectTrigger className="w-full bg-white/5 hover:bg-white/10 text-sm text-white py-6 px-4 rounded-xl border border-white/5 outline-none transition-colors cursor-pointer focus:ring-0 focus:ring-offset-0">
                                         <SelectValue placeholder="Choisir une police" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#0A0A0A] border-white/10 text-white backdrop-blur-xl">
+                                    <SelectContent className="bg-[#0A0A0A] border-white/10 text-white backdrop-blur-xl z-[200]">
                                         <SelectItem value="arial" className="focus:bg-white/10 focus:text-white">Arial</SelectItem>
                                         <SelectItem value="verdana" className="focus:bg-white/10 focus:text-white">Verdana</SelectItem>
                                         <SelectItem value="mdi-ecole" className="focus:bg-white/10 focus:text-white">MDI École</SelectItem>
