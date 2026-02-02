@@ -56,23 +56,23 @@ export function ControlBar() {
             )}
             style={{ bottom: '8%' }}
         >
-            <div className="flex items-center gap-6 px-6 py-3 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
+            <div className="flex items-center gap-2 px-3 py-3 bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                 {/* Left: Navigation */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="text-white hover:bg-white/10"
+                        className="w-10 h-10 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
                         onClick={prevWord}
                         disabled={!hasStarted}
                     >
-                        <SkipBack className="w-5 h-5 fill-white" />
+                        <SkipBack className="w-5 h-5 fill-current" />
                     </Button>
 
                     <Button
                         variant="secondary"
                         size="icon"
-                        className="w-12 h-12 rounded-full bg-white text-black hover:bg-white/90 shadow-lg scale-110"
+                        className="w-14 h-14 rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:scale-105 transition-all duration-200"
                         onClick={() => setIsPlaying(!isPlaying)}
                     >
                         {isPlaying ? (
@@ -85,18 +85,20 @@ export function ControlBar() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="text-white hover:bg-white/10"
+                        className="w-10 h-10 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
                         onClick={nextWord}
                         disabled={currentIndex === queue.length - 1}
                     >
-                        <SkipForward className="w-5 h-5 fill-white" />
+                        <SkipForward className="w-5 h-5 fill-current" />
                     </Button>
                 </div>
 
+                <div className="w-px h-8 bg-slate-200 mx-1"></div>
+
                 {/* Center: Info */}
-                <div className="px-4 border-x border-white/10 flex flex-col items-center min-w-[100px]">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-0.5">Progress</span>
-                    <span className="text-sm font-black text-white tabular-nums tracking-widest">
+                <div className="flex flex-col items-center px-2 min-w-[80px] select-none">
+                    <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Progress</span>
+                    <span className="text-sm font-bold text-slate-800 tabular-nums">
                         {(() => {
                             const lastWord = queue[queue.length - 1];
                             const hasFin = lastWord?.ORTHO === 'FIN';
@@ -112,31 +114,35 @@ export function ControlBar() {
 
                             return (
                                 <>
-                                    {currentIndex + 1} <span className="text-white/30">/</span> {totalRealWords}
+                                    {currentIndex + 1} <span className="text-slate-300">/</span> {totalRealWords}
                                 </>
                             );
                         })()}
                     </span>
                 </div>
 
-                {/* Micro-Feedback: Status Dot */}
+                <div className="w-px h-8 bg-slate-200 mx-1"></div>
+
+                {/* Micro-Feedback: Status Dot (Hidden or integrated subtly) */}
                 <div
                     className={cn(
-                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out",
-                        feedback === 'success' ? "bg-neutral-300 shadow-[0_0_8px_rgba(255,255,255,0.2)]" :
-                            feedback === 'error' ? "bg-neutral-800" :
-                                "bg-neutral-600"
+                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out mx-1",
+                        feedback === 'success' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" :
+                            feedback === 'error' ? "bg-red-500" :
+                                "bg-slate-200"
                     )}
                 />
 
+                <div className="w-px h-8 bg-slate-200 mx-1"></div>
+
                 {/* Right: Settings & List */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     <Button
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            "text-white hover:bg-white/10 transition-colors",
-                            isPanelOpen && "bg-white/20"
+                            "w-10 h-10 rounded-full text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors",
+                            isPanelOpen && "bg-blue-50 text-blue-600"
                         )}
                         onClick={() => setIsPanelOpen(!isPanelOpen)}
                     >
