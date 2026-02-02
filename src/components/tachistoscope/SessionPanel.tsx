@@ -1,6 +1,6 @@
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from "@/components/ui/button";
-import { X, CheckCircle, XCircle } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { useEffect, useRef } from 'react';
 
