@@ -2,28 +2,29 @@ import React, { useMemo } from 'react';
 import { Word } from '@/types/word';
 import { cn } from '@/lib/utils';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { parseGPMATCH } from '@/utils/cgp-parser';
 
 interface WordDisplayProps {
     word: Word;
 }
-
-// List of vowel graphemes in French (including basic and complex)
-const VOWEL_GRAPHEMES = new Set([
-    'a', 'à', 'â', 'e', 'é', 'è', 'ê', 'ë', 'i', 'î', 'ï', 'o', 'ô', 'u', 'û', 'ù', 'y',
-    'ai', 'ei', 'au', 'eau', 'eu', 'ou', 'oi', 'oeu', 'oe',
-    'on', 'om', 'an', 'am', 'en', 'em', 'in', 'im', 'un', 'um', 'ain', 'ein', 'aim',
-    'oin', 'ien', 'ian', 'ion'
-]);
 
 export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & { forceVisible?: boolean }) {
     // If not word and not forcing, return null. Note: on 'gap', word might be present but phase is gap.
     if (!word || !word.GSEG) return null;
     const { settings, phase } = usePlayer();
 
-    const segments = useMemo(() => {
-        // GSEG format: ".b.u.r.eau" or ".a.cc.i.d.en.t"
-        return word.GSEG.split('.').filter(s => s.length > 0);
-    }, [word.GSEG]);
+    // Parse GPMATCH for precise grapheme-phoneme mapping
+    const parsedGraphemes = useMemo(() => {
+        if (word.GPMATCH) {
+            return parseGPMATCH(word.GPMATCH);
+        }
+        // Fallback to GSEG if no GPMATCH
+        return word.GSEG.split('.').filter(s => s.length > 0).map(seg => ({
+            grapheme: seg,
+            phoneme: '',
+            type: 'unknown' as const
+        }));
+    }, [word.GPMATCH, word.GSEG]);
 
     // SAME CONTAINER STRUCTURE for both word and gap to ensure perfect alignment
     const renderContent = (content: React.ReactNode) => (
@@ -71,17 +72,25 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
             className={containerClasses}
             style={fontStyles}
         >
-            {segments.map((seg, idx) => {
-                const isVowel = VOWEL_GRAPHEMES.has(seg.toLowerCase());
+            {parsedGraphemes.map((parsed, idx) => {
+                // Determine styling based on grapheme type and settings
+                let colorClass = '';
+
+                if (settings.highlightVowels) {
+                    if (parsed.type === 'muette') {
+                        colorClass = 'text-gray-400'; // Silent letters in gray
+                    } else if (parsed.type === 'voyelle') {
+                        colorClass = 'text-red-500 font-bold'; // Vowels in red
+                    }
+                    // Consonants keep default color (black)
+                }
+
                 return (
                     <span
                         key={idx}
-                        className={cn(
-                            "inline-block",
-                            settings.highlightVowels && isVowel && "text-red-500 font-bold"
-                        )}
+                        className={cn("inline-block", colorClass)}
                     >
-                        {seg}
+                        {parsed.grapheme}
                     </span>
                 );
             })}

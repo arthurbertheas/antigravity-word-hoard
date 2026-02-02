@@ -1,0 +1,382 @@
+{
+  "consonnes": {
+    ".f": {
+      "phoneme": "/f/",
+      "graphemes": [
+        "f",
+        "ph"
+      ]
+    },
+    ".v": {
+      "phoneme": "/v/",
+      "graphemes": [
+        "v"
+      ]
+    },
+    ".s": {
+      "phoneme": "/s/",
+      "graphemes": [
+        "s",
+        "ss",
+        "c",
+        "ç"
+      ]
+    },
+    ".z": {
+      "phoneme": "/z/",
+      "graphemes": [
+        "s",
+        "z"
+      ]
+    },
+    ".ʃ": {
+      "phoneme": "/ʃ/",
+      "graphemes": [
+        "ch"
+      ]
+    },
+    ".ʒ": {
+      "phoneme": "/ʒ/",
+      "graphemes": [
+        "j",
+        "g",
+        "ge"
+      ]
+    },
+    ".p": {
+      "phoneme": "/p/",
+      "graphemes": [
+        "p"
+      ]
+    },
+    ".b": {
+      "phoneme": "/b/",
+      "graphemes": [
+        "b"
+      ]
+    },
+    ".t": {
+      "phoneme": "/t/",
+      "graphemes": [
+        "t"
+      ]
+    },
+    ".d": {
+      "phoneme": "/d/",
+      "graphemes": [
+        "d"
+      ]
+    },
+    ".k": {
+      "phoneme": "/k/",
+      "graphemes": [
+        "c",
+        "qu",
+        "k"
+      ]
+    },
+    ".g": {
+      "phoneme": "/g/",
+      "graphemes": [
+        "g",
+        "gu"
+      ]
+    },
+    ".m": {
+      "phoneme": "/m/",
+      "graphemes": [
+        "m"
+      ]
+    },
+    ".n": {
+      "phoneme": "/n/",
+      "graphemes": [
+        "n"
+      ]
+    },
+    ".ɲ": {
+      "phoneme": "/ɲ/",
+      "graphemes": [
+        "gn"
+      ]
+    },
+    ".R": {
+      "phoneme": "/R/",
+      "graphemes": [
+        "r"
+      ]
+    },
+    ".l": {
+      "phoneme": "/l/",
+      "graphemes": [
+        "l"
+      ]
+    }
+  },
+  "voyelles": {
+    ".a": {
+      "phoneme": "/a/",
+      "graphemes": [
+        "a"
+      ]
+    },
+    ".y": {
+      "phoneme": "/y/",
+      "graphemes": [
+        "u"
+      ]
+    },
+    ".u": {
+      "phoneme": "/u/",
+      "graphemes": [
+        "ou"
+      ]
+    },
+    ".i": {
+      "phoneme": "/i/",
+      "graphemes": [
+        "i",
+        "y"
+      ]
+    },
+    ".o": {
+      "phoneme": "/o/, /ɔ/",
+      "graphemes": [
+        "o",
+        "au",
+        "eau"
+      ]
+    },
+    ".e": {
+      "phoneme": "/e/",
+      "graphemes": [
+        "é",
+        "_er",
+        "_ez"
+      ]
+    },
+    ".œ": {
+      "phoneme": "/œ/",
+      "graphemes": [
+        "e",
+        "eu",
+        "oe",
+        "oeu"
+      ]
+    },
+    ".ø": {
+      "phoneme": "/ø/",
+      "graphemes": [
+        "e",
+        "eu",
+        "oe",
+        "oeu"
+      ]
+    },
+    ".ɛ": {
+      "phoneme": "/ɛ/",
+      "graphemes": [
+        "è",
+        "ê",
+        "ai",
+        "ei",
+        "_et",
+        "e:",
+        "ë"
+      ]
+    },
+    ".wa": {
+      "phoneme": "/w/",
+      "graphemes": [
+        "oi"
+      ]
+    },
+    ".ɥi": {
+      "phoneme": "/ɥ/",
+      "graphemes": [
+        "ui"
+      ]
+    },
+    ".õ": {
+      "phoneme": "/õ/",
+      "graphemes": [
+        "on",
+        "om"
+      ]
+    },
+    ".ã": {
+      "phoneme": "/ã/",
+      "graphemes": [
+        "an",
+        "am",
+        "en",
+        "em"
+      ]
+    },
+    ".ɛ̃": {
+      "phoneme": "/ɛ̃/, /œ̃/",
+      "graphemes": [
+        "in",
+        "im",
+        "ain",
+        "aim",
+        "ein",
+        "yn",
+        "ym"
+      ]
+    },
+    ".œ̃": {
+      "phoneme": "",
+      "graphemes": [
+        "un",
+        "um"
+      ]
+    },
+    ".wɛ̃": {
+      "phoneme": "",
+      "graphemes": [
+        "oin"
+      ]
+    },
+    ".jɛ̃": {
+      "phoneme": "",
+      "graphemes": [
+        "ien"
+      ]
+    },
+    ".ij": {
+      "phoneme": "/j/",
+      "graphemes": [
+        "ill"
+      ]
+    },
+    ".aj": {
+      "phoneme": "",
+      "graphemes": [
+        "aill",
+        "_ail"
+      ]
+    },
+    ".uj": {
+      "phoneme": "",
+      "graphemes": [
+        "ouill",
+        "_ouil"
+      ]
+    },
+    ".œj": {
+      "phoneme": "",
+      "graphemes": [
+        "euill",
+        "_euil"
+      ]
+    },
+    "ɛj": {
+      "phoneme": "",
+      "graphemes": [
+        "eill",
+        "_eil",
+        "ay"
+      ]
+    },
+    ".waj": {
+      "phoneme": "",
+      "graphemes": [
+        "oy"
+      ]
+    },
+    ".ɥij": {
+      "phoneme": "",
+      "graphemes": [
+        "uy"
+      ]
+    }
+  },
+  "muettes": [
+    "h muet",
+    "e final",
+    "consonnes muettes"
+  ],
+  "graphemeToType": {
+    "f": "consonne",
+    "ph": "consonne",
+    "v": "consonne",
+    "s": "consonne",
+    "ss": "consonne",
+    "c": "consonne",
+    "ç": "consonne",
+    "z": "consonne",
+    "ch": "consonne",
+    "j": "consonne",
+    "g": "consonne",
+    "ge": "consonne",
+    "p": "consonne",
+    "b": "consonne",
+    "t": "consonne",
+    "d": "consonne",
+    "qu": "consonne",
+    "k": "consonne",
+    "gu": "consonne",
+    "m": "consonne",
+    "n": "consonne",
+    "gn": "consonne",
+    "r": "consonne",
+    "l": "consonne",
+    "a": "voyelle",
+    "u": "voyelle",
+    "ou": "voyelle",
+    "i": "voyelle",
+    "y": "voyelle",
+    "o": "voyelle",
+    "au": "voyelle",
+    "eau": "voyelle",
+    "é": "voyelle",
+    "_er": "voyelle",
+    "_ez": "voyelle",
+    "e": "voyelle",
+    "eu": "voyelle",
+    "oe": "voyelle",
+    "oeu": "voyelle",
+    "è": "voyelle",
+    "ê": "voyelle",
+    "ai": "voyelle",
+    "ei": "voyelle",
+    "_et": "voyelle",
+    "e:": "voyelle",
+    "ë": "voyelle",
+    "oi": "voyelle",
+    "ui": "voyelle",
+    "on": "voyelle",
+    "om": "voyelle",
+    "an": "voyelle",
+    "am": "voyelle",
+    "en": "voyelle",
+    "em": "voyelle",
+    "in": "voyelle",
+    "im": "voyelle",
+    "ain": "voyelle",
+    "aim": "voyelle",
+    "ein": "voyelle",
+    "yn": "voyelle",
+    "ym": "voyelle",
+    "un": "voyelle",
+    "um": "voyelle",
+    "oin": "voyelle",
+    "ien": "voyelle",
+    "ill": "voyelle",
+    "aill": "voyelle",
+    "_ail": "voyelle",
+    "ouill": "voyelle",
+    "_ouil": "voyelle",
+    "euill": "voyelle",
+    "_euil": "voyelle",
+    "eill": "voyelle",
+    "_eil": "voyelle",
+    "ay": "voyelle",
+    "oy": "voyelle",
+    "uy": "voyelle",
+    "h muet": "muette",
+    "e final": "muette",
+    "consonnes muettes": "muette"
+  }
+}
