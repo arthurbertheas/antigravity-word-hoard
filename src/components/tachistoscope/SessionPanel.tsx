@@ -105,7 +105,7 @@ export function SessionPanel() {
                                 const isPast = index < currentIndex;
 
                                 // Find log for this index/word
-                                const log = sessionLog.find(l => l.wordId === word.id);
+                                const log = sessionLog.find(l => l.wordId === word.ORTHO);
                                 const status = log?.status;
 
                                 return (
