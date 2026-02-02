@@ -1,3 +1,4 @@
+// Lovable Build Trigger: Restoring stable version of SessionPanel
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
