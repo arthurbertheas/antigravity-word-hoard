@@ -32,7 +32,7 @@ export function SettingsPopover() {
     ];
 
     return (
-        <Popover>
+        <Popover modal={false}>
             <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
                     <Settings2 className="w-5 h-5" />
@@ -80,7 +80,7 @@ export function SettingsPopover() {
                                     value={settings.fontFamily}
                                     onValueChange={(v: any) => updateSettings({ fontFamily: v })}
                                 >
-                                    <SelectTrigger className="w-full bg-white/5 hover:bg-white/10 text-sm text-white py-6 px-4 rounded-xl border border-white/5 outline-none transition-colors cursor-pointer focus:ring-0 focus:ring-offset-0">
+                                    <SelectTrigger className="w-full bg-white/5 hover:bg-white/10 text-sm text-white h-12 px-4 rounded-xl border border-white/5 outline-none transition-colors cursor-pointer focus:ring-0 focus:ring-offset-0">
                                         <SelectValue placeholder="Choisir une police" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-[#0A0A0A] border-white/10 text-white backdrop-blur-xl z-[200]">
