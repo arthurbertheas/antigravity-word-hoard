@@ -7,6 +7,7 @@ interface SelectionContextType {
     addItem: (word: Word) => void;
     addItems: (words: Word[]) => void;
     removeItem: (wordId: string) => void;
+    removeItems: (words: Word[]) => void;
     clearSelection: () => void;
     isSelected: (word: Word) => boolean;
     isFocusModeOpen: boolean;
@@ -45,6 +46,11 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
     const removeItem = (wordId: string) => {
         setSelectedWords(prev => prev.filter(w => getWordId(w) !== wordId));
+    };
+
+    const removeItems = (words: Word[]) => {
+        const idsToRemove = new Set(words.map(w => getWordId(w)));
+        setSelectedWords(prev => prev.filter(w => !idsToRemove.has(getWordId(w))));
     };
 
     const toggleSelection = (word: Word) => {
@@ -102,6 +108,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             addItem,
             addItems,
             removeItem,
+            removeItems,
             clearSelection,
             isSelected,
             isFocusModeOpen,
