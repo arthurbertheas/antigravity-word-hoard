@@ -106,43 +106,41 @@ export function FilterPanel({
                     </div>
                 </div>
 
-                <ScrollArea className="flex-1">
-                    <div className="p-4 space-y-1">
+                <div className="space-y-6">
 
-                        {/* Recherche phonétique */}
-                        <div className="mb-4">
-                            <Label className="text-xs text-muted-foreground mb-2 block">Phonème</Label>
-                            <Input
-                                placeholder="/a/, /ʃ/..."
-                                value={filters.phonSearch}
-                                onChange={(e) => updateFilter('phonSearch', e.target.value)}
-                                className="bg-white font-mono text-sm"
-                            />
-                        </div>
+                    {/* Recherche phonétique */}
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phonétique</label>
+                        <Input
+                            placeholder="/a/, /ʃ/..."
+                            value={filters.phonSearch}
+                            onChange={(e) => updateFilter('phonSearch', e.target.value)}
+                            className="bg-white font-mono text-sm border-slate-200 focus-visible:ring-blue-50/50"
+                        />
+                    </div>
 
-                        <Separator className="mb-4" />
+                    <Separator className="bg-slate-100" />
 
-                        {/* FILTRES PRIMAIRES */}
-                        <div className="mb-2">
-                            <h4 className="text-xs font-semibold text-primary uppercase tracking-wide mb-3 pl-1">
-                                Structure & Graphie
-                            </h4>
-                        </div>
+                    {/* FILTRES PRIMAIRES */}
+                    <div>
+                        <h4 className="text-[10px] font-bold text-slate-900 uppercase tracking-widest mb-4">
+                            Structure & Graphie
+                        </h4>
 
-                        <Accordion type="multiple" defaultValue={['structures', 'graphemes']} className="space-y-1 mb-6">
+                        <Accordion type="multiple" defaultValue={['structures', 'graphemes']} className="space-y-4">
                             {/* Structure syllabique */}
                             <AccordionItem value="structures" className="border-0">
-                                <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium group">
+                                <AccordionTrigger className="hover:no-underline py-1 text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors group">
                                     <span className="flex items-center gap-2">
                                         Structure syllabique
                                         {filters.structures.length > 0 && (
-                                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-1.5 h-4">
+                                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-1.5 h-4 border-0">
                                                 {filters.structures.length}
                                             </Badge>
                                         )}
                                     </span>
                                 </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-1">
+                                <AccordionContent className="pb-2 pt-3">
                                     <div className="space-y-1">
                                         {structures.map((struct) => {
                                             const count = stats.structures[struct] || 0;
@@ -153,7 +151,7 @@ export function FilterPanel({
                                                         id={`struct-${struct}`}
                                                         checked={filters.structures.includes(struct)}
                                                         onCheckedChange={() => toggleArrayFilter('structures', struct)}
-                                                        className="mt-0.5 is-structure-checkbox"
+                                                        className="mt-0.5 border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                                                     />
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-baseline flex-wrap gap-1.5">
@@ -180,18 +178,18 @@ export function FilterPanel({
 
                             {/* Complexité graphémique */}
                             <AccordionItem value="graphemes" className="border-0">
-                                <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium group">
+                                <AccordionTrigger className="hover:no-underline py-1 text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors group">
                                     <span className="flex items-center gap-2">
                                         Complexité graphémique
                                         {filters.graphemes.length > 0 && (
-                                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-1.5 h-4">
+                                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-1.5 h-4 border-0">
                                                 {filters.graphemes.length}
                                             </Badge>
                                         )}
                                     </span>
                                 </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-1">
-                                    <div className="space-y-1 max-h-48 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
+                                <AccordionContent className="pb-2 pt-3">
+                                    <div className="space-y-1 max-h-64 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
                                         {graphemeCodes.map((code) => {
                                             const count = stats.graphemes[code] || 0;
                                             return (
@@ -201,7 +199,7 @@ export function FilterPanel({
                                                         id={`graph-${code}`}
                                                         checked={filters.graphemes.includes(code)}
                                                         onCheckedChange={() => toggleArrayFilter('graphemes', code)}
-                                                        className="mt-0.5"
+                                                        className="mt-0.5 border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                                                     />
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-baseline flex-wrap gap-1.5">
@@ -227,29 +225,29 @@ export function FilterPanel({
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
+                    </div>
 
 
-                        <Separator className="mb-4" />
+                    <Separator className="bg-slate-100" />
 
-                        {/* FILTRES SECONDAIRES */}
-                        <div className="mb-2">
-                            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 pl-1">
-                                Autres critères
-                            </h4>
-                        </div>
+                    {/* FILTRES SECONDAIRES */}
+                    <div>
+                        <h4 className="text-[10px] font-bold text-slate-900 uppercase tracking-widest mb-4">
+                            Autres critères
+                        </h4>
 
-                        <Accordion type="multiple" defaultValue={[]} className="space-y-1">
+                        <Accordion type="multiple" defaultValue={[]} className="space-y-4">
                             {/* Nombre de syllabes */}
                             <AccordionItem value="syllables" className="border-0">
-                                <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                                <AccordionTrigger className="hover:no-underline py-1 text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">
                                     Nombre de syllabes
                                     {filters.syllables.length > 0 && (
-                                        <Badge className="ml-2 bg-secondary text-secondary-foreground text-xs px-1.5 py-0">
+                                        <Badge className="ml-2 bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 h-4 border-blue-100">
                                             {filters.syllables.length}
                                         </Badge>
                                     )}
                                 </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-1">
+                                <AccordionContent className="pb-3 pt-3">
                                     <div className="flex flex-wrap gap-2">
                                         {syllables.map((syll) => {
                                             const isActive = filters.syllables.includes(syll);
@@ -257,10 +255,12 @@ export function FilterPanel({
                                                 <button
                                                     key={syll}
                                                     onClick={() => toggleArrayFilter('syllables', syll)}
-                                                    className={`
-                                                  pill text-xs font-mono h-8 w-8 flex items-center justify-center
-                                                  ${isActive ? 'pill-active' : 'pill-default'}
-                                                `}
+                                                    className={cn(
+                                                        "flex items-center justify-center w-8 h-8 rounded-lg text-xs font-bold transition-all border-2",
+                                                        isActive
+                                                            ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
+                                                            : "bg-white border-slate-100 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                                    )}
                                                 >
                                                     {syll}
                                                 </button>
@@ -272,15 +272,15 @@ export function FilterPanel({
 
                             {/* Fréquence */}
                             <AccordionItem value="frequency" className="border-0">
-                                <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                                <AccordionTrigger className="hover:no-underline py-1 text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">
                                     Fréquence
                                     {filters.frequencies.length > 0 && (
-                                        <Badge className="ml-2 bg-secondary text-secondary-foreground text-xs px-1.5 py-0">
+                                        <Badge className="ml-2 bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 h-4 border-blue-100">
                                             {filters.frequencies.length}
                                         </Badge>
                                     )}
                                 </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-1">
+                                <AccordionContent className="pb-3 pt-3">
                                     <div className="flex flex-wrap gap-2">
                                         {frequencyCodes.map((code) => {
                                             const isActive = filters.frequencies.includes(code);
@@ -288,10 +288,12 @@ export function FilterPanel({
                                                 <button
                                                     key={code}
                                                     onClick={() => toggleArrayFilter('frequencies', code)}
-                                                    className={`
-                                                  pill text-xs px-3 py-1
-                                                  ${isActive ? 'pill-active' : 'pill-default'}
-                                                `}
+                                                    className={cn(
+                                                        "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-2",
+                                                        isActive
+                                                            ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
+                                                            : "bg-white border-slate-100 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                                    )}
                                                 >
                                                     {FREQUENCY_LABELS[code]}
                                                 </button>
@@ -303,15 +305,15 @@ export function FilterPanel({
 
                             {/* Longueur */}
                             <AccordionItem value="length" className="border-0">
-                                <AccordionTrigger className="hover:no-underline py-2 text-sm font-medium">
+                                <AccordionTrigger className="hover:no-underline py-1 text-sm font-bold text-slate-800 hover:text-blue-600 transition-colors">
                                     Longueur (lettres)
                                     {(filters.minLetters !== 1 || filters.maxLetters !== 20) && (
-                                        <Badge className="ml-2 bg-secondary text-secondary-foreground text-xs px-1.5 py-0">
+                                        <Badge className="ml-2 bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 h-4 border-blue-100">
                                             {filters.minLetters}-{filters.maxLetters}
                                         </Badge>
                                     )}
                                 </AccordionTrigger>
-                                <AccordionContent className="pb-3 pt-1">
+                                <AccordionContent className="pb-3 pt-3">
                                     <div className="space-y-4 px-1">
                                         <Slider
                                             value={[filters.minLetters, filters.maxLetters]}
@@ -324,7 +326,7 @@ export function FilterPanel({
                                             }}
                                             className="w-full"
                                         />
-                                        <div className="flex justify-between text-xs text-muted-foreground">
+                                        <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wide">
                                             <span>{filters.minLetters} lettres</span>
                                             <span>{filters.maxLetters} lettres</span>
                                         </div>
@@ -332,10 +334,8 @@ export function FilterPanel({
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
-
                     </div>
-                </ScrollArea>
-            </div>
+                </div>
         </aside>
     );
 }
