@@ -121,6 +121,8 @@ export function ControlBar() {
                     </span>
                 </div>
 
+                <div className="w-px h-8 bg-slate-200 mx-1"></div>
+
                 {/* Micro-Feedback: Status Dot (Hidden or integrated subtly) */}
                 <div
                     className={cn(
