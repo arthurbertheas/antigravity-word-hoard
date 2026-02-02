@@ -1,19 +1,28 @@
 import cgpTokensData from '@/data/cgp-tokens.json';
 import type { CGPTokens, ParsedGrapheme, GraphemeType } from '@/types/cgp';
 
-const cgpTokens = cgpTokensData as CGPTokens;
+const cgpTokens = (cgpTokensData || { voyelles: {}, consonnes: {}, muettes: [], graphemeToType: {} }) as CGPTokens;
 
 // Build a comprehensive set of vowel graphemes from the CGP data
 const VOWEL_GRAPHEMES = new Set<string>();
-const SILENT_MARKERS = new Set(['#', '*']); // Phonemes indicating silent letters
+const SILENT_MARKERS = new Set(['#', '*']);
 
-for (const tokenData of Object.values(cgpTokens.voyelles)) {
-    for (const g of tokenData.graphemes) {
-        VOWEL_GRAPHEMES.add(g.toLowerCase());
-        // Also add without underscores (e.g., "_er" -> "er")
-        if (g.startsWith('_')) {
-            VOWEL_GRAPHEMES.add(g.slice(1).toLowerCase());
+// Safety check before iterating
+if (cgpTokens && cgpTokens.voyelles) {
+    try {
+        for (const tokenData of Object.values(cgpTokens.voyelles)) {
+            if (tokenData && tokenData.graphemes) {
+                for (const g of tokenData.graphemes) {
+                    VOWEL_GRAPHEMES.add(g.toLowerCase());
+                    // Also add without underscores (e.g., "_er" -> "er")
+                    if (g.startsWith('_')) {
+                        VOWEL_GRAPHEMES.add(g.slice(1).toLowerCase());
+                    }
+                }
+            }
         }
+    } catch (e) {
+        console.error("Error initializing VOWEL_GRAPHEMES:", e);
     }
 }
 
