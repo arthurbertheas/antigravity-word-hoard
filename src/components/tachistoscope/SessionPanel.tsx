@@ -1,7 +1,7 @@
 // Lovable Build Trigger: Restoring stable version of SessionPanel
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { useEffect, useRef } from 'react';
 
@@ -115,23 +115,46 @@ export function SessionPanel() {
                                         ref={isActive ? activeItemRef : null}
                                         onClick={() => setCurrentIndex(index)}
                                         className={cn(
-                                            "flex items-center p-3 bg-white rounded-lg shadow-sm border-l-4 border border-neutral-200/60 transition-all cursor-pointer group relative",
-                                            // Status Borders
-                                            status === 'success' ? "border-l-emerald-500" :
-                                                status === 'failed' ? "border-l-rose-500" :
-                                                    "border-l-transparent hover:border-l-neutral-200",
+                                            "group flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl transition-all duration-300 cursor-pointer relative",
+                                            "shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_16px_-4px_rgba(0,0,0,0.08)]",
+                                            // Status Glow
+                                            status === 'success' ? "border-l-4 border-l-emerald-500 hover:border-emerald-100" :
+                                                status === 'failed' ? "border-l-4 border-l-rose-500 hover:border-rose-100" :
+                                                    "border-l-4 border-l-transparent hover:border-slate-200",
                                             // Active State
-                                            isActive && "ring-1 ring-neutral-900/5 bg-neutral-50/50"
+                                            isActive && "ring-2 ring-slate-900/5 bg-slate-50/30"
                                         )}
                                     >
-                                        <span className={cn(
-                                            "font-medium ml-3 text-sm flex items-center gap-3",
-                                            status === 'failed' ? "text-neutral-700" : "text-neutral-900",
-                                            isPast && !status && "text-neutral-400"
-                                        )}>
-                                            <span className="text-neutral-400 font-normal text-xs">{index + 1}</span>
-                                            {word.ORTHO}
-                                        </span>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-xs font-bold text-slate-300 w-4 tabular-nums">
+                                                {(index + 1).toString().padStart(2, '0')}
+                                            </span>
+                                            <span className={cn(
+                                                "text-base font-semibold transition-colors",
+                                                status === 'success' ? "text-slate-700 group-hover:text-emerald-700" :
+                                                    status === 'failed' ? "text-slate-700 group-hover:text-rose-700" :
+                                                        isActive ? "text-slate-800" : "text-slate-400"
+                                            )}>
+                                                {word.ORTHO}
+                                            </span>
+                                        </div>
+
+                                        {/* Circular Status Icon */}
+                                        <div className="flex-none transition-transform duration-300 group-hover:scale-110">
+                                            {status === 'success' && (
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 shadow-sm border border-emerald-100">
+                                                    <Check className="w-5 h-5 stroke-[2.5]" />
+                                                </div>
+                                            )}
+                                            {status === 'failed' && (
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-rose-50 text-rose-500 shadow-sm border border-rose-100">
+                                                    <X className="w-5 h-5 stroke-[2.5]" />
+                                                </div>
+                                            )}
+                                            {!status && (
+                                                <div className="w-8 h-8 rounded-full border-2 border-slate-100 group-hover:border-slate-300 transition-colors" />
+                                            )}
+                                        </div>
                                     </li>
                                 );
                             })}
