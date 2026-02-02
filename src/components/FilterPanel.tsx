@@ -336,6 +336,7 @@ export function FilterPanel({
                         </Accordion>
                     </div>
                 </div>
+            </div>
         </aside>
     );
 }
