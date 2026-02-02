@@ -1,7 +1,8 @@
+// Lovable Build Trigger 2: Applying Subtle Status Glow design
 // Lovable Build Trigger: Restoring stable version of SessionPanel
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from "@/components/ui/button";
-import { X, Check } from "lucide-react";
+import { X, Check, ArrowRight } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { useEffect, useRef } from 'react';
 
@@ -12,7 +13,8 @@ export function SessionPanel() {
         queue,
         currentIndex,
         sessionLog,
-        setCurrentIndex
+        setCurrentIndex,
+        resetSession
     } = usePlayer();
 
     const activeItemRef = useRef<HTMLLIElement>(null);
@@ -160,6 +162,23 @@ export function SessionPanel() {
                             })}
                         </ul>
                     )}
+                </div>
+
+                {/* Sticky Footer CTA */}
+                <div className="flex-none p-6 border-t border-slate-100 bg-white">
+                    <button
+                        onClick={() => {
+                            resetSession();
+                            setIsPanelOpen(false);
+                        }}
+                        className="w-full py-4 px-6 bg-[#3B82F6] text-white font-bold rounded-2xl hover:bg-blue-600 transition-all duration-300 shadow-[0_8px_20px_-4px_rgba(59,130,246,0.3)] flex items-center justify-center gap-2 group active:scale-[0.98]"
+                    >
+                        Terminer la session
+                        <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    </button>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.15em] text-center mt-4">
+                        Appuyez sur Entrée pour valider
+                    </p>
                 </div>
             </aside>
         </>
