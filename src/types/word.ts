@@ -25,11 +25,17 @@ export interface Word {
     GPMATCH: string;         // Correspondance graphème-phonème
 
     // Colonnes optionnelles
-    "tri simple": string;
-    "structure phonétique": string;
-    "régularité graphotactique": string;
-    "image associée": string;
-    PUORTHO: string;
+    "tri simple"?: string;
+    "structure phonétique"?: string;
+    "régularité graphotactique"?: string;
+    "image associée"?: string;
+    PUORTHO?: string;
+
+    // Nouveaux champs orthophoniste (v3)
+    "structure C.V"?: string;       // Pattern CV (ex: "VCVCVCV")
+    "consonne double"?: string;     // "oui" | "non"
+    "groupe CC"?: string;           // Type de cluster consonantique
+    "groupe VV"?: string;           // Type de cluster vocalique
 
     // Statistiques homophones
     NBHPTY: string;
