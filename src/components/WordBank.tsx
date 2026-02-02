@@ -43,19 +43,19 @@ export function WordBank({ words }: WordBankProps) {
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-8 pb-12">
-                        {/* High Visibility Toolbar */}
-                        <div className="flex items-center justify-between mb-4 px-1 mt-2">
-                            <span className="text-sm font-medium text-slate-500">
-                                {words.length} {words.length > 1 ? "mots affichés" : "mot affiché"}
+                    <div className="space-y-8 pb-12 text-slate-900">
+                        {/* Refined Ceramic Toolbar */}
+                        <div className="flex items-center justify-between py-3 px-1 border-b border-slate-100 mb-6">
+                            <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.15em]">
+                                {words.length} {words.length > 1 ? "mots" : "mot"}
                             </span>
 
                             <button
-                                className="group flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold text-blue-600 transition-all hover:bg-blue-50 hover:text-blue-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50/80 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-wider transition-all duration-200 ease-out hover:bg-blue-100 hover:border-blue-200 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
                                 onClick={() => addItems(words)}
                                 disabled={words.length === 0}
                             >
-                                <CheckCircle className="w-4 h-4 transition-transform group-hover:scale-110" />
+                                <CheckCircle className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
                                 <span>Tout sélectionner</span>
                             </button>
                         </div>
