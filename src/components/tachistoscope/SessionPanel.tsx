@@ -32,8 +32,13 @@ export function SessionPanel() {
     // Exclude "FIN" for visual representaiton and stats
     const visualQueue = queue.filter(w => w.ORTHO !== 'FIN');
     const totalWords = visualQueue.length;
+
+    // Performance stats based on attempted words (sessionLog)
+    const totalAttempted = sessionLog.length;
     const successCount = sessionLog.filter(log => log.status === 'success').length;
-    const progressPercentage = totalWords > 0 ? ((currentIndex + 1) / totalWords) * 100 : 0;
+
+    // Calculate success rate percentage (based on words played)
+    const successRate = totalAttempted > 0 ? Math.round((successCount / totalAttempted) * 100) : 0;
 
     return (
         <>
@@ -76,10 +81,10 @@ export function SessionPanel() {
                             </span>
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-medium text-neutral-500">
-                                    {successCount} <span className="text-[10px] opacity-70">/ {totalWords} Succès</span>
+                                    {successCount} <span className="text-[10px] opacity-70">/ {totalAttempted} Succès</span>
                                 </span>
                                 <span className="text-[10px] font-bold text-neutral-900">
-                                    {Math.round(progressPercentage)}%
+                                    {successRate}%
                                 </span>
                             </div>
                         </div>
