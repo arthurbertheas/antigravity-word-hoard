@@ -125,9 +125,9 @@ export function ControlBar() {
                 <div
                     className={cn(
                         "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out ml-2 mr-1",
-                        feedback === 'success' ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" :
-                            feedback === 'error' ? "bg-red-500" :
-                                "bg-slate-200"
+                        feedback === 'success' ? "bg-neutral-300 shadow-[0_0_8px_rgba(255,255,255,0.2)]" :
+                            feedback === 'error' ? "bg-neutral-800" :
+                                "bg-neutral-600"
                     )}
                 />
 
