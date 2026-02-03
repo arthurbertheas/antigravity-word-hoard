@@ -234,18 +234,29 @@ export function SidePanel() {
                 panelMode === 'session' && (
                     <>
                         {/* Stats */}
-                        <div className="px-8 py-5 border-b border-border">
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="bg-muted p-3.5 rounded-[10px] text-center">
-                                    <div className="text-2xl font-bold font-sora text-primary mb-1">0</div >
-                                    <div className="text-[11px] text-muted-foreground uppercase tracking-wide">Succès</div>
-                                </div >
-                                <div className="bg-muted p-3.5 rounded-[10px] text-center">
-                                    < div className="text-2xl font-bold font-sora text-primary mb-1">0%</div>
-                                    < div className="text-[11px] text-muted-foreground uppercase tracking-wide">Taux</div>
-                                </div >
-                            </div >
-                        </div >
+                        {(() => {
+                            // Calculate statistics from wordStatuses
+                            const totalWords = queue.filter(w => w.ORTHO !== 'FIN').length;
+                            const validatedCount = Array.from(wordStatuses.values()).filter(s => s === 'validated').length;
+                            const failedCount = Array.from(wordStatuses.values()).filter(s => s === 'failed').length;
+                            const answeredCount = validatedCount + failedCount;
+                            const successRate = answeredCount > 0 ? Math.round((validatedCount / answeredCount) * 100) : 0;
+
+                            return (
+                                <div className="px-8 py-5 border-b border-border">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-muted p-3.5 rounded-[10px] text-center">
+                                            <div className="text-2xl font-bold font-sora text-primary mb-1">{validatedCount}</div>
+                                            <div className="text-[11px] text-muted-foreground uppercase tracking-wide">Succès</div>
+                                        </div>
+                                        <div className="bg-muted p-3.5 rounded-[10px] text-center">
+                                            <div className="text-2xl font-bold font-sora text-primary mb-1">{successRate}%</div>
+                                            <div className="text-[11px] text-muted-foreground uppercase tracking-wide">Taux</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
                         {/* Actions */}
                         < div className="px-8 py-5 border-b border-border flex flex-col gap-2.5">
