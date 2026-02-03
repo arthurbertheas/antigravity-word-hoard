@@ -11,13 +11,58 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List } from "lucide-react";
+import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List } from "lucide-react";
 import { cn } from '@/lib/utils';
+import { usePdfExport } from '@/hooks/usePdfExport';
+import { NewListModal } from './NewListModal';
+import { useToast } from "@/hooks/use-toast"
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
 export function SidePanel() {
-    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus, startTime } = usePlayer();
+    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus, startTime, resetSession } = usePlayer();
     const [activeTab, setActiveTab] = useState<TabType>('visual');
+    const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
+    const { generatePdf } = usePdfExport();
+    const { toast } = useToast();
+
+    const handleDownloadPdf = () => {
+        try {
+            const fileName = generatePdf({ queue, wordStatuses, startTime });
+            toast({
+                title: "PDF Téléchargé",
+                description: `Le rapport ${fileName} a été généré avec succès.`,
+            });
+        } catch (error) {
+            console.error("PDF generation failed:", error);
+            toast({
+                variant: "destructive",
+                title: "Erreur",
+                description: "Impossible de générer le PDF.",
+            });
+        }
+    };
+
+    const handleNewList = () => {
+        setIsNewListModalOpen(true);
+    };
+
+    const handleNewListConfirm = () => {
+        handleDownloadPdf();
+        resetSession();
+        setIsNewListModalOpen(false);
+        setIsPanelOpen(false); // Close panel or stay? Usually close or go to config. Let's close for now or keep in session mode (empty).
+        // Actually "Nouvelle liste" usually implies picking a new file, so maybe we should go to a "Selection" state?
+        // But for now, resetSession clears the queue, so the UI will probably show empty state or "Prêt".
+        // Let's toggle to 'config' or just close. The previous prompt said "Redirects directly".
+        togglePanelMode('config'); // Go back to config to drag new file?
+    };
+
+    const handleNewListExit = () => {
+        resetSession();
+        setIsNewListModalOpen(false);
+        togglePanelMode('config');
+    };
 
     if (!isPanelOpen) return null;
 
@@ -295,7 +340,10 @@ export function SidePanel() {
 
                         {/* Actions */}
                         < div className="px-8 py-5 border-b border-border flex flex-col gap-2.5">
-                            < Button className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto">
+                            <Button
+                                className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto"
+                                onClick={handleDownloadPdf}
+                            >
                                 < Download className="w-4 h-4" />
                                 < span > Enregistrer PDF</span >
                             </Button >
@@ -309,11 +357,17 @@ export function SidePanel() {
                                 </div>
                                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                             </Button>
-                            <Button className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto">
+                            <Button
+                                className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto"
+                                onClick={() => resetSession()}
+                            >
                                 < RotateCcw className="w-4 h-4" />
                                 < span > Relancer la liste</span >
                             </Button >
-                            <Button className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto">
+                            <Button
+                                className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto"
+                                onClick={handleNewList}
+                            >
                                 < FilePlus className="w-4 h-4" />
                                 < span > Nouvelle liste</span >
                             </Button >
@@ -465,7 +519,10 @@ export function SidePanel() {
 
                                     {/* Export */}
                                     <div className="pt-5 border-t border-border">
-                                        <Button className="w-full justify-center gap-2 px-5 py-3.5 bg-primary text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-primary/90 transition-all shadow-[0_4px_12px_rgba(79,70,229,0.25)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.35)] hover:-translate-y-px h-auto">
+                                        <Button
+                                            className="w-full justify-center gap-2 px-5 py-3.5 bg-primary text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-primary/90 transition-all shadow-[0_4px_12px_rgba(79,70,229,0.25)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.35)] hover:-translate-y-px h-auto"
+                                            onClick={handleDownloadPdf}
+                                        >
                                             <Download className="w-4.5 h-4.5" />
                                             Télécharger le PDF
                                         </Button>
@@ -476,6 +533,13 @@ export function SidePanel() {
                     </div>
                 )
             }
+
+            <NewListModal
+                isOpen={isNewListModalOpen}
+                onClose={() => setIsNewListModalOpen(false)}
+                onDownloadAndContinue={handleNewListConfirm}
+                onContinueWithoutSaving={handleNewListExit}
+            />
         </aside >
     );
 }
