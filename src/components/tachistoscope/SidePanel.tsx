@@ -323,7 +323,7 @@ export function SidePanel() {
 
                         {/* Footer */}
                         < div className="px-8 py-5 border-t border-border">
-                            < Button className="w-full justify-center gap-2 px-5 py-3.5 bg-destructive text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-destructive/90 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(239,68,68,0.3)] transition-all h-auto">
+                            < Button className="w-full justify-center gap-2 px-5 py-3.5 bg-destructive text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-destructive/90 transition-all h-auto">
                                 < Square className="w-4 h-4" />
                                 Terminer la session
                             </Button >
