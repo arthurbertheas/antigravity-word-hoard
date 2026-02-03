@@ -17,10 +17,11 @@ export function WordCard({ word, onClick }: WordCardProps) {
             onClick={() => toggleSelection(word)}
             title={`${word.ORTHO} - ${word.NBSYLL} syll.`}
             className={cn(
-                "relative flex items-center justify-center px-3 py-2 rounded-md border cursor-pointer transition-all select-none h-11 text-center",
+                "relative flex items-center justify-center px-4 py-2.5 rounded-lg border-[1.5px] cursor-pointer select-none h-[50px] text-center transition-all duration-200",
+                "hover:border-primary hover:shadow-md hover:-translate-y-0.5",
                 selected
-                    ? "border-blue-500 bg-blue-50 text-blue-700 shadow-sm"
-                    : "border-gray-200 bg-white hover:border-blue-300 hover:bg-gray-50 hover:shadow-sm"
+                    ? "border-primary bg-primary/10 text-primary font-bold shadow-sm"
+                    : "border-gray-200 bg-white hover:bg-white"
             )}
         >
             {/* Le Mot */}

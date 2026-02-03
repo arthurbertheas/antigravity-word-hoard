@@ -32,8 +32,8 @@ const STRUCTURE_LEVEL_COLORS: Record<string, string> = {
     'a': 'level-1',
     'b': 'level-2',
     'c': 'level-3',
-    'd': 'level-3',
-    'e': 'level-4',
+    'd': 'level-4',
+    'e': 'level-4b',
     'f': 'level-5',
     'g': 'level-6',
 };
@@ -56,15 +56,17 @@ const GRAPHEME_LEVEL_COLORS: Record<string, string> = {
 };
 
 // Level badge color classes
+// Level badge color classes (matching ticket requirements)
 const LEVEL_COLORS: Record<string, string> = {
-    'level-1': 'bg-[rgb(var(--level-1-bg))] text-[rgb(var(--level-1-text))]',
-    'level-2': 'bg-[rgb(var(--level-2-bg))] text-[rgb(var(--level-2-text))]',
-    'level-3': 'bg-[rgb(var(--level-3-bg))] text-[rgb(var(--level-3-text))]',
-    'level-4': 'bg-[rgb(var(--level-4-bg))] text-[rgb(var(--level-4-text))]',
-    'level-5': 'bg-[rgb(var(--level-5-bg))] text-[rgb(var(--level-5-text))]',
-    'level-6': 'bg-[rgb(var(--level-6-bg))] text-[rgb(var(--level-6-text))]',
-    'level-7': 'bg-[rgb(var(--level-7-bg))] text-[rgb(var(--level-7-text))]',
-    'level-8': 'bg-[rgb(var(--level-8-bg))] text-[rgb(var(--level-8-text))]',
+    'level-1': 'bg-green-100 text-green-700',
+    'level-2': 'bg-green-50 text-green-600',
+    'level-3': 'bg-yellow-100 text-yellow-700',
+    'level-4': 'bg-orange-100 text-orange-600',
+    'level-4b': 'bg-orange-200 text-orange-700',
+    'level-5': 'bg-red-100 text-red-600',
+    'level-6': 'bg-purple-100 text-purple-600',
+    'level-7': 'bg-blue-100 text-blue-600',
+    'level-8': 'bg-indigo-100 text-indigo-600',
 };
 
 interface FilterOptionProps {
@@ -80,7 +82,7 @@ function FilterOption({ code, label, description, isActive, onToggle, levelColor
     return (
         <div
             className={cn(
-                "flex items-start gap-[10px] p-[7px_10px] rounded-[6px] cursor-pointer transition-all",
+                "flex items-start gap-[10px] px-3 py-2 rounded-lg cursor-pointer transition-all mb-1",
                 "hover:bg-[rgb(var(--filter-surface-hover))]",
                 isActive && "bg-[rgb(var(--filter-accent-light))]"
             )}
@@ -101,7 +103,7 @@ function FilterOption({ code, label, description, isActive, onToggle, levelColor
 
             {/* Level Badge */}
             <span className={cn(
-                "inline-flex items-center justify-center w-5 h-5 min-w-5 rounded-[6px] text-[11px] font-bold font-sora",
+                "inline-flex items-center justify-center w-6 h-6 min-w-6 rounded-[6px] text-xs font-bold font-sora",
                 LEVEL_COLORS[levelColor]
             )}>
                 {code}

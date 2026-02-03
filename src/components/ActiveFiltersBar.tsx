@@ -33,30 +33,30 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
     if (activeFilters.length === 0) return null;
 
     return (
-        <div className="px-8 py-[10px] bg-[rgb(var(--filter-surface))] border-b border-[rgb(var(--filter-border))] flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-semibold text-[rgb(var(--filter-text-muted))] uppercase tracking-[0.8px] mr-1">
+        <div className="px-8 py-2.5 bg-background border-b border-border flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mr-1">
                 Actifs :
             </span>
             {activeFilters.map((filter, i) => (
                 <span
                     key={`${filter.type}-${filter.value}-${i}`}
-                    className="inline-flex items-center gap-[6px] px-[10px] py-1 bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-tag-active-border))] rounded-full text-xs font-semibold text-[rgb(var(--filter-accent))]"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full text-xs font-semibold text-primary"
                 >
                     {filter.label}
-                    <span
-                        className="cursor-pointer text-sm leading-none opacity-60 hover:opacity-100 transition-opacity"
+                    <button
+                        className="hover:opacity-70 transition-opacity ml-0.5"
                         onClick={() => onRemoveFilter(filter.type, filter.value)}
                     >
-                        ×
-                    </span>
+                        <X className="w-3 h-3" />
+                    </button>
                 </span>
             ))}
-            <span
-                className="text-xs text-[rgb(var(--filter-text-muted))] cursor-pointer ml-1 hover:text-[#ef4444] transition-colors"
+            <button
+                className="text-xs text-muted-foreground hover:text-destructive ml-1 transition-colors"
                 onClick={onClearAll}
             >
                 Effacer tout
-            </span>
+            </button>
         </div>
     );
 }
