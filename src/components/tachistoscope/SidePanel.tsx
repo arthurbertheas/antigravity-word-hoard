@@ -11,7 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List } from "lucide-react";
-import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List } from "lucide-react";
+
 import { cn } from '@/lib/utils';
 import { usePdfExport } from '@/hooks/usePdfExport';
 import { NewListModal } from './NewListModal';
