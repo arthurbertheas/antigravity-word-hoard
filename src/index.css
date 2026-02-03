@@ -5,8 +5,7 @@
 /* MDI École Font */
 @font-face {
   font-family: 'MDI Ecole';
-  src: url('./fonts/MDIecole-Regular.otf') format('opentype'),
-    url('/fonts/MDIecole-Regular.otf') format('opentype');
+  src: url('/fonts/MDIecole-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -14,8 +13,7 @@
 
 @font-face {
   font-family: 'MDI Ecole';
-  src: url('./fonts/MDIecole-Bold.otf') format('opentype'),
-    url('/fonts/MDIecole-Bold.otf') format('opentype');
+  src: url('/fonts/MDIecole-Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
