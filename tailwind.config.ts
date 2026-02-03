@@ -14,10 +14,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["DM Sans", "sans-serif"],
-        display: ["var(--font-display)", "sans-serif"],
-        body: ["var(--font-body)", "sans-serif"],
+        sans: ["DM Sans", "CircularStd", "sans-serif"],
+        display: ["Sora", "CircularStd", "DM Sans", "sans-serif"],
+        body: ["DM Sans", "CircularStd", "sans-serif"],
         sora: ["Sora", "sans-serif"],
+        mono: ["IBM Plex Mono", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
