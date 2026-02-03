@@ -29,7 +29,7 @@ export function SidePanel() {
     ];
 
     return (
-        <aside className="w-[360px] bg-card border-l border-border flex flex-col overflow-hidden">
+        <aside className="fixed right-0 top-0 h-screen w-[360px] bg-card border-l border-border flex flex-col overflow-hidden z-40 shadow-2xl">
             {/* Header */}
             <div className="px-8 py-7 pb-6 border-b border-border">
                 < div className="text-lg font-bold font-sora text-foreground mb-1">
