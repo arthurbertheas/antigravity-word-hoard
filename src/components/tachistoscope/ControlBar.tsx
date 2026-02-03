@@ -73,7 +73,7 @@ export function ControlBar() {
                     </div>
                     <span className="text-sm font-bold font-sora text-primary tabular-nums min-w-[50px] text-right">
                         {
-                            !hasStarted ? "PRÊT" : (hasFin && currentIndex >= totalRealWords) ? "FIN" : `${currentIndex + 1}/${totalRealWords}`}
+                            !hasStarted ? "Prêt ?" : (hasFin && currentIndex >= totalRealWords) ? "FIN" : `${currentIndex + 1}/${totalRealWords}`}
                     </span >
                 </div >
 
