@@ -138,19 +138,24 @@ export function SelectionTray() {
 
             {/* Footer Action (Sandwich: Fixed at bottom) */}
             <div className="flex-none p-4 bg-white border-t border-border">
-                <Button
-                    className="w-full h-12 rounded-xl font-bold shadow-lg shadow-primary/20 group bg-primary hover:bg-primary/90 text-primary-foreground"
+                <button
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white border-none rounded-[14px] font-sora font-bold text-[15px] shadow-lg shadow-primary/30 transition-all hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none group"
                     disabled={selectedWords.length === 0}
                     onClick={() => {
                         setIsFocusModeOpen(true);
                     }}
                 >
                     Lancer la sélection
-                    <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase tracking-tighter font-semibold">
-                    Appuyez sur Entrée pour valider
-                </p>
+                    <svg
+                        className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                    >
+                        <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
             </div>
         </aside>
     );
