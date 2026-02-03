@@ -10,13 +10,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Download, BarChart3, RotateCcw, FilePlus, Square } from "lucide-react";
+import { Download, BarChart3, RotateCcw, FilePlus, Square, X } from "lucide-react";
 import { cn } from '@/lib/utils';
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
 export function SidePanel() {
-    const { isPanelOpen, panelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus } = usePlayer();
+    const { isPanelOpen, setIsPanelOpen, panelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus } = usePlayer();
     const [activeTab, setActiveTab] = useState<TabType>('visual');
 
     if (!isPanelOpen) return null;
@@ -32,13 +32,28 @@ export function SidePanel() {
         <aside className="fixed right-0 top-0 h-screen w-[360px] bg-card border-l border-border flex flex-col overflow-hidden z-40 shadow-2xl">
             {/* Header */}
             <div className="px-8 py-7 pb-6 border-b border-border">
-                < div className="text-lg font-bold font-sora text-foreground mb-1">
-                    {panelMode === 'config' ? 'Configuration' : 'Session en cours'}
-                </div >
-                <div className="text-xs text-muted-foreground">
-                    {panelMode === 'config' ? 'Réglages d\'affichage' : 'Liste et actions'}
-                </div >
-            </div >
+                <div className="flex items-start justify-between">
+                    <div>
+                        <div className="text-lg font-bold font-sora text-foreground mb-1">
+                            {panelMode === 'config' ? 'Configuration' : 'Session en cours'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                            {panelMode === 'config' ? 'Réglages d\'affichage' : 'Liste et actions'}
+                        </div>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted -mt-1 -mr-2"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsPanelOpen(false);
+                        }}
+                    >
+                        <X className="w-4 h-4" />
+                    </Button>
+                </div>
+            </div>
 
             {/* MODE CONFIG */}
             {
