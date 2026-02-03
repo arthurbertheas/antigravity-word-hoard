@@ -22,7 +22,7 @@ export interface SessionLog {
     timestamp: number;
 }
 
-export type PanelMode = 'config' | 'session';
+export type PanelMode = 'config' | 'session' | 'stats';
 export type WordStatus = 'neutral' | 'current' | 'validated' | 'failed';
 
 interface PlayerContextType {
@@ -139,7 +139,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
     }, [isPanelOpen, panelMode]);
 
-        const setWordStatus = useCallback((index: number, status: WordStatus) => {
+    const setWordStatus = useCallback((index: number, status: WordStatus) => {
         setWordStatuses(prev => {
             const newMap = new Map(prev);
             if (status === 'neutral') {
