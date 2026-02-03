@@ -1,11 +1,11 @@
-@import url('https://cdn.clarkhacks.com/OpenDyslexic/v3/OpenDyslexic.css');
+@import url("https://cdn.clarkhacks.com/OpenDyslexic/v3/OpenDyslexic.css");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Premium Typography - DM Sans + Sora for filter sidebar */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* Premium Typography */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap");
 
 @layer base {
   :root {
@@ -58,10 +58,9 @@
     --shadow-card: 0 4px 20px -2px rgb(0 0 0 / 0.08);
 
     /* Typography */
-    /* DM Sans is the primary font for body text, Sora for headers/titles */
-    --font-display: 'Sora', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
+    --font-display: "Sora", "CircularStd", "DM Sans", sans-serif;
+    --font-body: "DM Sans", "CircularStd", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
 
     /* Sidebar tokens */
     --sidebar-background: 210 40% 98%;
@@ -72,77 +71,6 @@
     --sidebar-accent-foreground: 222 47% 20%;
     --sidebar-border: 214 32% 91%;
     --sidebar-ring: 217 91% 55%;
-
-    /* New Filter Sidebar Design Tokens (from HTML reference) */
-    --filter-bg: 244 245 247;
-    /* #f4f5f7 */
-    --filter-surface: 255 255 255;
-    /* #ffffff */
-    --filter-surface-hover: 240 241 244;
-    /* #f0f1f4 */
-    --filter-border: 228 230 235;
-    /* #e4e6eb */
-    --filter-border-focus: 199 210 254;
-    /* #c7d2fe */
-    --filter-text-primary: 26 28 35;
-    /* #1a1c23 */
-    --filter-text-secondary: 107 114 128;
-    /* #6b7280 */
-    --filter-text-muted: 156 163 175;
-    /* #9ca3af */
-    --filter-accent: 79 70 229;
-    /* #4f46e5 - Indigo */
-    --filter-accent-light: 238 242 255;
-    /* #eef2ff */
-    --filter-accent-hover: 67 56 202;
-    /* #4338ca */
-    --filter-tag-bg: 240 241 244;
-    /* #f0f1f4 */
-    --filter-tag-active-bg: 238 242 255;
-    /* #eef2ff */
-    --filter-tag-active-border: 199 210 254;
-    /* #c7d2fe */
-
-    /* Level badge colors (for structure/grapheme difficulty) */
-    --level-1-bg: 220 252 231;
-    /* #dcfce7 - green-100 */
-    --level-1-text: 22 163 74;
-    /* #16a34a - green-600 */
-    --level-2-bg: 187 247 208;
-    /* #bbf7d0 - green-200 */
-    --level-2-text: 21 128 61;
-    /* #15803d - green-700 */
-    --level-3-bg: 254 249 195;
-    /* #fef9c3 - yellow-100 */
-    --level-3-text: 202 138 4;
-    /* #ca8a04 - yellow-700 */
-    --level-4-bg: 254 215 170;
-    /* #fed7aa - orange-200 */
-    --level-4-text: 234 88 12;
-    /* #ea580c - orange-600 */
-    --level-5-bg: 254 202 202;
-    /* #fecaca - red-200 */
-    --level-5-text: 220 38 38;
-    /* #dc2626 - red-600 */
-    --level-6-bg: 233 213 255;
-    /* #e9d5ff - purple-200 */
-    --level-6-text: 147 51 234;
-    /* #9333ea - purple-600 */
-    --level-7-bg: 219 234 254;
-    /* #dbeafe - blue-200 */
-    --level-7-text: 37 99 235;
-    /* #2563eb - blue-600 */
-    --level-8-bg: 224 231 255;
-    /* #e0e7ff - indigo-200 */
-    --level-8-text: 79 70 229;
-    /* #4f46e5 - indigo-600 */
-  }
-
-  /* Global body font */
-  body {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
   }
 }
 
@@ -194,7 +122,6 @@
 }
 
 @layer utilities {
-
   /* Gradient text */
   .gradient-text {
     background: var(--gradient-primary);
@@ -223,62 +150,64 @@
   }
 
   /* Staggered animations for list items */
-  .stagger-fade-in>* {
+  .stagger-fade-in > * {
     opacity: 0;
     animation: fade-in-up 0.4s ease-out forwards;
   }
 
-  .stagger-fade-in>*:nth-child(1) {
+  .stagger-fade-in > *:nth-child(1) {
     animation-delay: 0ms;
   }
 
-  .stagger-fade-in>*:nth-child(2) {
+  .stagger-fade-in > *:nth-child(2) {
     animation-delay: 40ms;
   }
 
-  .stagger-fade-in>*:nth-child(3) {
+  .stagger-fade-in > *:nth-child(3) {
     animation-delay: 80ms;
   }
 
-  .stagger-fade-in>*:nth-child(4) {
+  .stagger-fade-in > *:nth-child(4) {
     animation-delay: 120ms;
   }
 
-  .stagger-fade-in>*:nth-child(5) {
+  .stagger-fade-in > *:nth-child(5) {
     animation-delay: 160ms;
   }
 
-  .stagger-fade-in>*:nth-child(6) {
+  .stagger-fade-in > *:nth-child(6) {
     animation-delay: 200ms;
   }
 
-  .stagger-fade-in>*:nth-child(7) {
+  .stagger-fade-in > *:nth-child(7) {
     animation-delay: 240ms;
   }
 
-  .stagger-fade-in>*:nth-child(8) {
+  .stagger-fade-in > *:nth-child(8) {
     animation-delay: 280ms;
   }
 
-  .stagger-fade-in>*:nth-child(9) {
+  .stagger-fade-in > *:nth-child(9) {
     animation-delay: 320ms;
   }
 
-  .stagger-fade-in>*:nth-child(10) {
+  .stagger-fade-in > *:nth-child(10) {
     animation-delay: 360ms;
   }
 
-  .stagger-fade-in>*:nth-child(11) {
+  .stagger-fade-in > *:nth-child(11) {
     animation-delay: 400ms;
   }
 
-  .stagger-fade-in>*:nth-child(12) {
+  .stagger-fade-in > *:nth-child(12) {
     animation-delay: 440ms;
   }
 
   /* Hover lift effect */
   .hover-lift {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .hover-lift:hover {
