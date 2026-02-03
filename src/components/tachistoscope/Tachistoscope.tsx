@@ -143,9 +143,9 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
     } = usePlayer();
 
     const FIN_WORD = React.useMemo(() => ({
-        ORTHO: "FIN",
-        GSEG: "F.I.N",
-        PHON: "fɛ̃",
+        ORTHO: "Bravo !",
+        GSEG: "B.r.a.v.o. .!",
+        PHON: "bʀavo",
         SYNT: "NC",
         "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
         "code structure": "a", "code graphèmes": "", NBLET: "", NBPHON: "",
