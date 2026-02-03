@@ -21,10 +21,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium Typography - Lexend for better readability */
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap");
-
-/* Premium Typography - Lexend for better readability */
+/* Premium Typography */
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap");
 
 @layer base {
@@ -78,7 +75,6 @@
     --shadow-card: 0 4px 20px -2px rgb(0 0 0 / 0.08);
 
     /* Typography */
-    /* CircularStd is the proprietary font from Webflow. DM Sans is the fallback. */
     --font-display: "Sora", "CircularStd", "DM Sans", sans-serif;
     --font-body: "DM Sans", "CircularStd", sans-serif;
     --font-mono: "IBM Plex Mono", monospace;
