@@ -40,7 +40,7 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
             {activeFilters.map((filter, i) => (
                 <span
                     key={`${filter.type}-${filter.value}-${i}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/30 rounded-full text-xs font-semibold text-primary"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#eef2ff] border border-[#c7d2fe] rounded-full text-xs font-semibold text-[#4f46e5]"
                 >
                     {filter.label}
                     <button

@@ -27,22 +27,24 @@ export function ResultsHeader({ words, isAllSelected, onToggleSelectAll }: Resul
                 onClick={onToggleSelectAll}
                 disabled={words.length === 0}
                 className={cn(
-                    "group flex items-center gap-2 px-4 py-2.5 bg-white border-2 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed",
+                    "group flex items-center gap-2 px-4 py-2 bg-white border rounded-[10px] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed",
                     isAllSelected
-                        ? "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
-                        : "border-slate-100 hover:border-blue-200 hover:bg-blue-50/50"
+                        ? "border-[#4f46e5] bg-[#f5f7ff]"
+                        : "border-[#d1d5db] hover:border-[#9ca3af]"
                 )}
             >
                 {isAllSelected ? (
-                    <XCircle className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
+                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-[#4f46e5] text-white">
+                        <CheckCircle className="w-3.5 h-3.5" strokeWidth={3} />
+                    </div>
                 ) : (
-                    <CheckCircle className="w-5 h-5 text-blue-500 group-hover:text-blue-600" />
+                    <div className="w-5 h-5 rounded-full border-2 border-[#9ca3af] group-hover:border-[#6b7280] transition-colors" />
                 )}
                 <span className={cn(
-                    "text-sm font-bold",
+                    "text-sm font-semibold",
                     isAllSelected
-                        ? "text-slate-500 group-hover:text-slate-800"
-                        : "text-slate-600 group-hover:text-blue-700"
+                        ? "text-[#4f46e5]"
+                        : "text-[#4b5563] group-hover:text-[#1f2937]"
                 )}>
                     {isAllSelected ? "Tout désélectionner" : "Tout sélectionner"}
                 </span>
