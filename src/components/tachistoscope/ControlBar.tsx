@@ -123,8 +123,8 @@ disabled = { currentIndex === queue.length - 1}
 className = {
     cn(
         "w-2.5 h-2.5 rounded-full transition-all duration-200 ease-out",
-        feedback === 'success' ?"bg-[hsl(var(--dot-positive))]" :
-feedback === 'error' ?"bg-[hsl(var(--dot-negative))]" :
+        feedback === 'positive' ?"bg-[hsl(var(--dot-positive))]" :
+feedback === 'negative' ?"bg-[hsl(var(--dot-negative))]" :
 "bg-[hsl(var(--dot-neutral))]"
                         )}
                     />
