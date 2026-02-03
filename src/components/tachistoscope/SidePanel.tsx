@@ -274,7 +274,7 @@ export function SidePanel() {
                             </div >
                             <div className="space-y-2">
                                 {
-                                    queue.map((word, index) => {
+                                    queue.filter(word => word.ORTHO !== 'FIN').map((word, index) => {
                                         const status = index === currentIndex ? 'current' : (wordStatuses.get(index) || 'neutral');
                                         const isClickable = status !== 'current';
 
