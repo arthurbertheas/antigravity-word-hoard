@@ -83,7 +83,7 @@ export function ControlBar() {
             < Button
         variant ="ghost"
         size ="icon"
-        className ="w-11 h-11 rounded-full border-[1.5px] border-border bg-surface text-text-secondary hover:border-primary hover:text-primary hover:scale-105 transition-all"
+        className ="w-11 h-11 rounded-full border-[1.5px] border-border bg-white text-muted-foreground hover:border-primary/60 hover:text-primary hover:bg-primary/5  transition-all"
         onClick = { prevWord }
         disabled = {!hasStarted
     }
@@ -94,7 +94,7 @@ export function ControlBar() {
         <Button
             variant="secondary"
     size ="icon"
-    className ="w-14 h-14 rounded-full bg-primary text-white hover:bg-primary-hover shadow-[0_4px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_24px_rgba(79,70,229,0.4)] hover:scale-105 transition-all duration-200"
+    className ="w-14 h-14 rounded-full bg-primary text-white hover:bg-primary-hover shadow-[0_4px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_24px_rgba(79,70,229,0.4)]  transition-all duration-200"
     onClick = {() => setIsPlaying((p: boolean) => !p)
 }
                         >
@@ -110,7 +110,7 @@ export function ControlBar() {
     <Button
         variant="ghost"
 size ="icon"
-className ="w-11 h-11 rounded-full border-[1.5px] border-border bg-surface text-text-secondary hover:border-primary hover:text-primary hover:scale-105 transition-all"
+className ="w-11 h-11 rounded-full border-[1.5px] border-border bg-white text-muted-foreground hover:border-primary/60 hover:text-primary hover:bg-primary/5  transition-all"
 onClick = { nextWord }
 disabled = { currentIndex === queue.length - 1}
                         >
@@ -136,7 +136,7 @@ variant ="ghost"
 size ="icon"
 className = {
     cn(
-        "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-surface text-text-secondary hover:bg-background hover:border-primary hover:text-primary transition-all",
+        "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-white text-muted-foreground hover:bg-background hover:border-primary/60 hover:text-primary hover:bg-primary/5 transition-all",
         panelMode === 'config' && "bg-primary border-primary text-white hover:bg-primary-hover"
                             )}
 onClick = {() => togglePanelMode('config')}
@@ -150,7 +150,7 @@ title ="Configuration (C)"
 size ="icon"
 className = {
     cn(
-        "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-surface text-text-secondary hover:bg-background hover:border-primary hover:text-primary transition-all",
+        "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-white text-muted-foreground hover:bg-background hover:border-primary/60 hover:text-primary hover:bg-primary/5 transition-all",
         panelMode === 'session' && "bg-primary border-primary text-white hover:bg-primary-hover"
                             )}
 onClick = {() => togglePanelMode('session')}
