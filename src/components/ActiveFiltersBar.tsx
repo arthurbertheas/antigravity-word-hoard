@@ -1,15 +1,15 @@
-import { WordFilters, STRUCTURE_LABELS, GRAPHEME_LABELS } from "@/types/word";
+import { WordFilters, STRUCTURE_LABELS, GRAPHEME_LABELS, FREQUENCY_LABELS } from "@/types/word";
 import { X } from "lucide-react";
 
 interface ActiveFiltersBarProps {
     filters: WordFilters;
-    onRemoveFilter: (filterType: keyof WordFilters, value: string | number) => void;
+    onRemoveFilter: (filterType: keyof WordFilters, value: any) => void;
     onClearAll: () => void;
 }
 
 export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: ActiveFiltersBarProps) {
     // Build list of active filters
-    const activeFilters: Array<{ type: keyof WordFilters; value: string | number; label: string }> = [];
+    const activeFilters: Array<{ type: keyof WordFilters; value: any; label: string }> = [];
 
     // Structures
     filters.structures.forEach(s => {
@@ -28,6 +28,33 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
             label: GRAPHEME_LABELS[g]
         });
     });
+
+    // Syllabes
+    filters.syllables.forEach(s => {
+        activeFilters.push({
+            type: 'syllables',
+            value: s,
+            label: `${s} syllabe${s > 1 ? 's' : ''}`
+        });
+    });
+
+    // Fréquences
+    filters.frequencies.forEach(f => {
+        activeFilters.push({
+            type: 'frequencies',
+            value: f,
+            label: FREQUENCY_LABELS[f]
+        });
+    });
+
+    // Longueur (si différent des valeurs par défaut 1-20)
+    if (filters.minLetters !== 1 || filters.maxLetters !== 20) {
+        activeFilters.push({
+            type: 'minLetters', // On utilise minLetters comme pivot pour la suppression de la longueur
+            value: 'reset',
+            label: `Longueur: ${filters.minLetters}-${filters.maxLetters}`
+        });
+    }
 
     // If no active filters, don't render
     if (activeFilters.length === 0) return null;

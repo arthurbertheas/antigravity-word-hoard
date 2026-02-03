@@ -117,10 +117,16 @@ function WordExplorerContent() {
                 <ActiveFiltersBar
                     filters={filters}
                     onRemoveFilter={(filterType, value) => {
-                        // Remove specific filter
-                        const currentFilters = filters[filterType] as any[];
+                        if (filterType === 'minLetters' && value === 'reset') {
+                            updateFilter('minLetters', 1);
+                            updateFilter('maxLetters', 20);
+                            return;
+                        }
+
+                        // Remove specific filter from array
+                        const currentFilters = filters[filterType];
                         if (Array.isArray(currentFilters)) {
-                            const newFilters = currentFilters.filter(v => v !== value);
+                            const newFilters = (currentFilters as any[]).filter(v => v !== value);
                             updateFilter(filterType, newFilters as any);
                         }
                     }}
