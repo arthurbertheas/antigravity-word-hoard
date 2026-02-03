@@ -62,6 +62,36 @@
     --font-body: "DM Sans", "CircularStd", sans-serif;
     --font-mono: "IBM Plex Mono", monospace;
 
+    /* New Filter Sidebar Design Tokens (from HTML reference) */
+    --filter-bg: 244 245 247;
+    /* #f4f5f7 */
+    --filter-surface: 255 255 255;
+    /* #ffffff */
+    --filter-surface-hover: 240 241 244;
+    /* #f0f1f4 */
+    --filter-border: 228 230 235;
+    /* #e4e6eb */
+    --filter-border-focus: 199 210 254;
+    /* #c7d2fe */
+    --filter-text-primary: 26 28 35;
+    /* #1a1c23 */
+    --filter-text-secondary: 107 114 128;
+    /* #6b7280 */
+    --filter-text-muted: 156 163 175;
+    /* #9ca3af */
+    --filter-accent: 79 70 229;
+    /* #4f46e5 - Indigo */
+    --filter-accent-light: 238 242 255;
+    /* #eef2ff */
+    --filter-accent-hover: 67 56 202;
+    /* #4338ca */
+    --filter-tag-bg: 240 241 244;
+    /* #f0f1f4 */
+    --filter-tag-active-bg: 238 242 255;
+    /* #eef2ff */
+    --filter-tag-active-border: 199 210 254;
+    /* #c7d2fe */
+
     /* Sidebar tokens */
     --sidebar-background: 210 40% 98%;
     --sidebar-foreground: 222 47% 20%;
@@ -122,6 +152,7 @@
 }
 
 @layer utilities {
+
   /* Gradient text */
   .gradient-text {
     background: var(--gradient-primary);
@@ -150,56 +181,56 @@
   }
 
   /* Staggered animations for list items */
-  .stagger-fade-in > * {
+  .stagger-fade-in>* {
     opacity: 0;
     animation: fade-in-up 0.4s ease-out forwards;
   }
 
-  .stagger-fade-in > *:nth-child(1) {
+  .stagger-fade-in>*:nth-child(1) {
     animation-delay: 0ms;
   }
 
-  .stagger-fade-in > *:nth-child(2) {
+  .stagger-fade-in>*:nth-child(2) {
     animation-delay: 40ms;
   }
 
-  .stagger-fade-in > *:nth-child(3) {
+  .stagger-fade-in>*:nth-child(3) {
     animation-delay: 80ms;
   }
 
-  .stagger-fade-in > *:nth-child(4) {
+  .stagger-fade-in>*:nth-child(4) {
     animation-delay: 120ms;
   }
 
-  .stagger-fade-in > *:nth-child(5) {
+  .stagger-fade-in>*:nth-child(5) {
     animation-delay: 160ms;
   }
 
-  .stagger-fade-in > *:nth-child(6) {
+  .stagger-fade-in>*:nth-child(6) {
     animation-delay: 200ms;
   }
 
-  .stagger-fade-in > *:nth-child(7) {
+  .stagger-fade-in>*:nth-child(7) {
     animation-delay: 240ms;
   }
 
-  .stagger-fade-in > *:nth-child(8) {
+  .stagger-fade-in>*:nth-child(8) {
     animation-delay: 280ms;
   }
 
-  .stagger-fade-in > *:nth-child(9) {
+  .stagger-fade-in>*:nth-child(9) {
     animation-delay: 320ms;
   }
 
-  .stagger-fade-in > *:nth-child(10) {
+  .stagger-fade-in>*:nth-child(10) {
     animation-delay: 360ms;
   }
 
-  .stagger-fade-in > *:nth-child(11) {
+  .stagger-fade-in>*:nth-child(11) {
     animation-delay: 400ms;
   }
 
-  .stagger-fade-in > *:nth-child(12) {
+  .stagger-fade-in>*:nth-child(12) {
     animation-delay: 440ms;
   }
 
