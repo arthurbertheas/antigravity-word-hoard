@@ -50,11 +50,11 @@
     --radius: 0.75rem;
 
     /* Feedback Dot Colors */
-    --dot-neutral: 156 163 175;
+    --dot-neutral: 215 16.3% 65.1%;
     /* #9ca3af */
-    --dot-positive: 110 231 183;
+    --dot-positive: 156.2 71.6% 66.9%;
     /* #6ee7b7 */
-    --dot-negative: 248 113 113;
+    --dot-negative: 0 90.6% 70.8%;
     /* #f87171 */
 
     /* Custom design tokens */
