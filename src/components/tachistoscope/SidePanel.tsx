@@ -10,13 +10,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Download, BarChart3, RotateCcw, FilePlus, Square, X } from "lucide-react";
+import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft } from "lucide-react";
 import { cn } from '@/lib/utils';
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
 export function SidePanel() {
-    const { isPanelOpen, setIsPanelOpen, panelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus } = usePlayer();
+    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus } = usePlayer();
     const [activeTab, setActiveTab] = useState<TabType>('visual');
 
     if (!isPanelOpen) return null;
@@ -29,18 +29,38 @@ export function SidePanel() {
     ];
 
     return (
-        <aside className="fixed right-0 top-0 h-screen w-[360px] bg-card border-l border-border flex flex-col overflow-hidden z-40 shadow-2xl">
+        <aside className={cn(
+            "fixed right-0 top-0 h-screen bg-card border-l border-border flex flex-col overflow-hidden z-40 shadow-2xl transition-[width] duration-300 ease-in-out",
+            panelMode === 'stats' ? "w-[520px]" : "w-[360px]"
+        )}>
             {/* Header */}
-            <div className="px-8 py-7 pb-6 border-b border-border">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <div className="text-lg font-bold font-sora text-foreground mb-1">
-                            {panelMode === 'config' ? 'Configuration' : 'Session en cours'}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                            {panelMode === 'config' ? 'Réglages d\'affichage' : 'Liste et actions'}
-                        </div>
+            <div className={cn(
+                "px-8 py-7 pb-6 border-b border-border flex items-center gap-4",
+                panelMode === 'stats' ? "justify-start" : "justify-between"
+            )}>
+                {panelMode === 'stats' && (
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-9 w-9 rounded-full border-[1.5px] border-border bg-background hover:bg-muted hover:text-primary hover:border-primary transition-all shrink-0"
+                        onClick={() => togglePanelMode('session')}
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                    </Button>
+                )}
+
+                <div className="flex-1">
+                    <div className="text-lg font-bold font-sora text-foreground mb-1">
+                        {panelMode === 'config' ? 'Configuration' :
+                            panelMode === 'stats' ? 'Statistiques' : 'Session en cours'}
                     </div>
+                    <div className="text-xs text-muted-foreground">
+                        {panelMode === 'config' ? 'Réglages d\'affichage' :
+                            panelMode === 'stats' ? 'Résumé de la session' : 'Liste et actions'}
+                    </div>
+                </div>
+
+                {panelMode !== 'stats' && (
                     <Button
                         variant="ghost"
                         size="icon"
@@ -52,7 +72,7 @@ export function SidePanel() {
                     >
                         <X className="w-4 h-4" />
                     </Button>
-                </div>
+                )}
             </div>
 
             {/* MODE CONFIG */}
@@ -279,10 +299,16 @@ export function SidePanel() {
                                 < Download className="w-4 h-4" />
                                 < span > Enregistrer PDF</span >
                             </Button >
-                            <Button className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto">
-                                < BarChart3 className="w-4 h-4" />
-                                < span > Voir statistiques</span >
-                            </Button >
+                            <Button
+                                className="w-full justify-between gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto group"
+                                onClick={() => togglePanelMode('stats')}
+                            >
+                                <div className="flex items-center gap-2.5">
+                                    <BarChart3 className="w-4 h-4" />
+                                    <span>Voir statistiques</span>
+                                </div>
+                                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                            </Button>
                             <Button className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto">
                                 < RotateCcw className="w-4 h-4" />
                                 < span > Relancer la liste</span >
@@ -344,6 +370,17 @@ export function SidePanel() {
                             </Button >
                         </div >
                     </>
+                )
+            }
+
+            {/* MODE STATS */}
+            {
+                panelMode === 'stats' && (
+                    <div className="flex-1 overflow-y-auto px-8 py-6">
+                        <div className="text-center text-muted-foreground">
+                            Contenu statistiques à venir...
+                        </div>
+                    </div>
                 )
             }
         </aside >

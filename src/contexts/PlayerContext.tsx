@@ -243,7 +243,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog, isPanelOpen,
             panelMode, togglePanelMode,
             feedback, triggerFeedback, flashFeedback,
-            wordStatuses, cycleWordStatus, setWordStatus, setWordStatus,
+            wordStatuses, cycleWordStatus, setWordStatus,
             setQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
             setIsPanelOpen, logResult, nextWord, prevWord, resetSession
         }}>
