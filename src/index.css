@@ -20,8 +20,13 @@
     --popover-foreground: 222 47% 20%;
 
     /* Primary blue matching the SaaS branding */
-    --primary: 217 91% 55%;
-    --primary-hover: 217 91% 50%;
+    /* Primary - Indigo */
+    --primary: 243 75% 59%;
+    /* #4f46e5 */
+    --primary-hover: 245 57% 51%;
+    /* #4338ca */
+    --primary-active: 244 54% 41%;
+    /* #3730a3 */
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - soft blue */

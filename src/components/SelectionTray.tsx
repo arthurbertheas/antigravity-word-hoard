@@ -139,7 +139,7 @@ export function SelectionTray() {
             {/* Footer Action (Sandwich: Fixed at bottom) */}
             <div className="flex-none p-4 bg-white border-t border-border">
                 <button
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white border-none rounded-[14px] font-sora font-bold text-[15px] shadow-lg shadow-primary/30 transition-all hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none group"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white border-none rounded-[14px] font-sora font-bold text-[15px] shadow-lg shadow-primary/30 transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.98] active:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none group"
                     disabled={selectedWords.length === 0}
                     onClick={() => {
                         setIsFocusModeOpen(true);
@@ -147,7 +147,7 @@ export function SelectionTray() {
                 >
                     Lancer la sélection
                     <svg
-                        className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                        className="w-4 h-4 transition-transform duration-250 ease-out group-hover:translate-x-[3px]"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
