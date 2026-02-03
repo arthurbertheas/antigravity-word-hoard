@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast"
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
 export function SidePanel() {
+    // Click-outside logic implemented
     const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus, startTime, resetSession } = usePlayer();
     const [activeTab, setActiveTab] = useState<TabType>('visual');
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
