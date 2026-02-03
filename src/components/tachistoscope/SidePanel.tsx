@@ -80,7 +80,7 @@ export function SidePanel() {
                                                 <SelectTrigger className="w-full bg-card text-sm font-medium text-foreground h-[52px] px-4 rounded-[10px] border-[1.5px] border-border hover:border-primary/30 transition-colors">
                                                     < SelectValue placeholder="Choisir une police" />
                                                 </SelectTrigger >
-                                                <SelectContent className="bg-card border-border">
+                                                <SelectContent className="bg-card border-border z-[200]">
                                                     < SelectItem value="arial">Arial</SelectItem>
                                                     < SelectItem value="verdana">Verdana</SelectItem>
                                                     < SelectItem value="mdi-ecole">MDI École</SelectItem>
