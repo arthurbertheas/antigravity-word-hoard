@@ -31,6 +31,7 @@ interface PlayerContextType {
     isPlaying: boolean;
     phase: PlayerPhase;
     hasStarted: boolean;
+    startTime: number | null;
     settings: PlayerSettings;
     sessionLog: SessionLog[];
     setQueue: (words: Word[]) => void;
@@ -94,9 +95,20 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
     });
 
+    const [startTime, setStartTime] = useState<number | null>(null);
+
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }, [settings]);
+
+    // Set start time when hasStarted becomes true
+    useEffect(() => {
+        if (hasStarted && !startTime) {
+            setStartTime(Date.now());
+        } else if (!hasStarted) {
+            setStartTime(null);
+        }
+    }, [hasStarted, startTime]);
 
     // Map font family setting to actual font name for preloading
     const getFontName = (family: string): string | null => {
@@ -240,7 +252,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <PlayerContext.Provider value={{
-            queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog, isPanelOpen,
+            queue, currentIndex, isPlaying, phase, hasStarted, startTime, settings, sessionLog, isPanelOpen,
             panelMode, togglePanelMode,
             feedback, triggerFeedback, flashFeedback,
             wordStatuses, cycleWordStatus, setWordStatus,

@@ -10,13 +10,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft } from "lucide-react";
+import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List } from "lucide-react";
 import { cn } from '@/lib/utils';
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
 export function SidePanel() {
-    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus } = usePlayer();
+    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus, startTime } = usePlayer();
     const [activeTab, setActiveTab] = useState<TabType>('visual');
 
     if (!isPanelOpen) return null;
@@ -377,9 +377,102 @@ export function SidePanel() {
             {
                 panelMode === 'stats' && (
                     <div className="flex-1 overflow-y-auto px-8 py-6">
-                        <div className="text-center text-muted-foreground">
-                            Contenu statistiques à venir...
-                        </div>
+                        {(() => {
+                            const visualQueue = queue.filter(w => w.ORTHO !== 'FIN');
+                            // Calculate stats
+                            const totalWords = visualQueue.length;
+                            const validatedCount = Array.from(wordStatuses.values()).filter(s => s === 'validated').length;
+                            const failedCount = Array.from(wordStatuses.values()).filter(s => s === 'failed').length;
+                            const answeredCount = validatedCount + failedCount;
+                            const successRate = answeredCount > 0 ? Math.round((validatedCount / answeredCount) * 100) : 0;
+
+                            // Calculate duration
+                            const now = Date.now();
+                            const durationMs = startTime ? now - startTime : 0;
+                            const durationSeconds = Math.floor(durationMs / 1000);
+                            const minutes = Math.floor(durationSeconds / 60);
+                            const seconds = durationSeconds % 60;
+                            const durationText = `${minutes}m ${seconds}s`;
+
+                            return (
+                                <>
+                                    {/* Résumé global */}
+                                    <div className="mb-8">
+                                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                            <BarChart3 className="w-3.5 h-3.5" />
+                                            Résumé global
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div className="bg-muted p-5 rounded-[10px] text-center">
+                                                <div className="text-[32px] font-bold font-sora text-primary mb-1.5 leading-none">{validatedCount}/{totalWords}</div>
+                                                <div className="text-[11px] text-muted-foreground uppercase tracking-wide">Réussis</div>
+                                            </div>
+                                            <div className="bg-muted p-5 rounded-[10px] text-center">
+                                                <div className="text-[32px] font-bold font-sora text-primary mb-1.5 leading-none">{successRate}%</div>
+                                                <div className="text-[11px] text-muted-foreground uppercase tracking-wide">Taux</div>
+                                            </div>
+                                            <div className="bg-muted p-5 rounded-[10px] text-center">
+                                                <div className="text-[32px] font-bold font-sora text-primary mb-1.5 leading-none leading-tight tracking-tight whitespace-nowrap text-[28px]">{durationText}</div>
+                                                <div className="text-[11px] text-muted-foreground uppercase tracking-wide">Durée</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Détail par mot */}
+                                    <div className="mb-8">
+                                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                            <List className="w-3.5 h-3.5" />
+                                            Détail par mot
+                                        </div>
+                                        <div className="space-y-2">
+                                            {visualQueue.map((word, index) => {
+                                                const status = wordStatuses.get(index) || 'neutral';
+
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className={cn(
+                                                            "flex items-center gap-3.5 px-4 py-3 bg-muted rounded-[10px] border-l-[3px]",
+                                                            status === 'validated' ? "bg-emerald-400/10 border-emerald-400" :
+                                                                status === 'failed' ? "bg-rose-400/10 border-rose-400" :
+                                                                    "border-transparent"
+                                                        )}
+                                                    >
+                                                        <span className={cn(
+                                                            "text-xs font-bold font-sora min-w-[28px]",
+                                                            status === 'validated' ? "text-emerald-500" :
+                                                                status === 'failed' ? "text-rose-500" :
+                                                                    "text-muted-foreground"
+                                                        )}>
+                                                            {String(index + 1).padStart(2, '0')}
+                                                        </span>
+                                                        <span className="flex-1 text-[15px] font-medium text-foreground">
+                                                            {word.ORTHO}
+                                                        </span>
+                                                        <div className={cn(
+                                                            "w-6 h-6 rounded-full flex items-center justify-center text-sm",
+                                                            status === 'validated' ? "bg-emerald-400 text-white" :
+                                                                status === 'failed' ? "bg-rose-400 text-white" :
+                                                                    "bg-slate-200 text-muted-foreground"
+                                                        )}>
+                                                            {status === 'validated' ? "✓" : status === 'failed' ? "✗" : "—"}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Export */}
+                                    <div className="pt-5 border-t border-border">
+                                        <Button className="w-full justify-center gap-2 px-5 py-3.5 bg-primary text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-primary/90 transition-all shadow-[0_4px_12px_rgba(79,70,229,0.25)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.35)] hover:-translate-y-px h-auto">
+                                            <Download className="w-4.5 h-4.5" />
+                                            Télécharger le PDF
+                                        </Button>
+                                    </div>
+                                </>
+                            );
+                        })()}
                     </div>
                 )
             }
