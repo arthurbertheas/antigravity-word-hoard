@@ -1,22 +1,5 @@
 @import url("https://cdn.clarkhacks.com/OpenDyslexic/v3/OpenDyslexic.css");
 
-/* MDI École - Police locale */
-@font-face {
-  font-family: "MDI École";
-  src: url("/fonts/MDIecole-Regular") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "MDI École";
-  src: url("/fonts/MDIecole-Bold") format("truetype");
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
