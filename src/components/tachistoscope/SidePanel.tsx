@@ -246,7 +246,7 @@ export function SidePanel() {
                                 <div className="px-8 py-5 border-b border-border">
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="bg-muted p-3.5 rounded-[10px] text-center">
-                                            <div className="text-2xl font-bold font-sora text-primary mb-1">{validatedCount}</div>
+                                            <div className="text-2xl font-bold font-sora text-primary mb-1">{validatedCount}<span className="text-lg text-muted-foreground font-medium">/{totalWords}</span></div>
                                             <div className="text-[11px] text-muted-foreground uppercase tracking-wide">Succès</div>
                                         </div>
                                         <div className="bg-muted p-3.5 rounded-[10px] text-center">
