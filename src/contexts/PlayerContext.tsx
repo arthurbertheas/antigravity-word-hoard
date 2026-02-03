@@ -98,7 +98,22 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }, [settings]);
 
+    // Map font family setting to actual font name for preloading
+    const getFontName = (family: string): string | null => {
+        switch (family) {
+            case 'mdi-ecole': return 'MDI Ecole';
+            case 'opendyslexic': return 'OpenDyslexic';
+            default: return null;
+        }
+    };
+
     const updateSettings = useCallback((newSettings: Partial<PlayerSettings>) => {
+        if (newSettings.fontFamily) {
+            const fontName = getFontName(newSettings.fontFamily);
+            if (fontName && document.fonts) {
+                document.fonts.load(`1em "${fontName}"`).catch(console.warn);
+            }
+        }
         setSettings(prev => ({ ...prev, ...newSettings }));
     }, []);
 
