@@ -137,7 +137,8 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         hasStarted,
         triggerFeedback,
         flashFeedback,
-        togglePanelMode
+        togglePanelMode,
+        setWordStatus
     } = usePlayer();
 
     const FIN_WORD = React.useMemo(() => ({
@@ -178,6 +179,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     if (currentIndex < words.length) {
                         logResult(words[currentIndex].ORTHO, 'success');
                         flashFeedback('positive');
+                        setWordStatus(currentIndex, 'validated');
                     }
                     break;
                 case 'ArrowDown': // Fail (No Skip)
@@ -185,6 +187,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     if (currentIndex < words.length) {
                         logResult(words[currentIndex].ORTHO, 'failed');
                         flashFeedback('negative');
+                        setWordStatus(currentIndex, 'failed');
                     }
                     break;
                 case 'KeyC': // Config panel
@@ -196,6 +199,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     togglePanelMode('session');
                     break;
                 case 'Escape':
+                    // e.preventDefault();
                     onClose();
                     break;
             }
@@ -203,7 +207,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isPlaying, currentIndex, words, setIsPlaying, nextWord, prevWord, logResult, onClose, flashFeedback, togglePanelMode]);
+    }, [isPlaying, currentIndex, words, setIsPlaying, nextWord, prevWord, logResult, onClose, flashFeedback, togglePanelMode, setWordStatus]);
 
     useEffect(() => {
         console.log("TachistoscopeContent mounted with", words.length, "words");

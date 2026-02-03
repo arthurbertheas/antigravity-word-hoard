@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Word } from '@/types/word';
 
 export type PlayerPhase = 'display' | 'gap';
-export type FeedbackType = 'success' | 'error';
+export type FeedbackType = 'positive' | 'negative';
 
 export interface PlayerSettings {
     speedMs: number;
@@ -45,6 +45,7 @@ interface PlayerContextType {
     feedback: FeedbackType | null;
     triggerFeedback: (type: FeedbackType) => void;
     flashFeedback: (type: 'positive' | 'negative') => void;
+    setWordStatus: (index: number, status: WordStatus) => void;
     wordStatuses: Map<number, WordStatus>;
     cycleWordStatus: (index: number) => void;
     logResult: (wordId: string, status: 'success' | 'failed' | 'skipped') => void;
@@ -107,8 +108,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const flashFeedback = useCallback((type: 'positive' | 'negative') => {
-        const feedbackType: FeedbackType = type === 'positive' ? 'success' : 'error';
-        setFeedback(feedbackType);
+        setFeedback(type);
         setTimeout(() => setFeedback(null), 200);
     }, []);
 
@@ -123,6 +123,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             setPanelMode(mode);
         }
     }, [isPanelOpen, panelMode]);
+
+        const setWordStatus = useCallback((index: number, status: WordStatus) => {
+        setWordStatuses(prev => {
+            const newMap = new Map(prev);
+            if (status === 'neutral') {
+                newMap.delete(index);
+            } else {
+                newMap.set(index, status);
+            }
+            return newMap;
+        });
+    }, []);
 
     const cycleWordStatus = useCallback((index: number) => {
         setWordStatuses(prev => {
@@ -216,7 +228,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog, isPanelOpen,
             panelMode, togglePanelMode,
             feedback, triggerFeedback, flashFeedback,
-            wordStatuses, cycleWordStatus,
+            wordStatuses, cycleWordStatus, setWordStatus, setWordStatus,
             setQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
             setIsPanelOpen, logResult, nextWord, prevWord, resetSession
         }}>
