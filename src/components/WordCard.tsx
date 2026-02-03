@@ -33,11 +33,7 @@ export function WordCard({ word, onClick }: WordCardProps) {
             </span>
 
             {/* Indicateur de sélection (Check) - Absolute positioned to avoid text shift */}
-            {selected && (
-                <div className="absolute right-2 top-2 flex items-center">
-                    <Check className="w-4 h-4 text-[#4f46e5]" />
-                </div>
-            )}
+
         </div>
     );
 }
