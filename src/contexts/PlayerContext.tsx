@@ -101,6 +101,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     }, [settings]);
 
+    // Toggle body class for floating bar visibility
+    useEffect(() => {
+        if (isPanelOpen) {
+            document.body.classList.add('panel-open');
+        } else {
+            document.body.classList.remove('panel-open');
+        }
+    }, [isPanelOpen]);
+
     // Set start time when hasStarted becomes true
     useEffect(() => {
         if (hasStarted && !startTime) {

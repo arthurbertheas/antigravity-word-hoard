@@ -420,7 +420,20 @@
   background: rgba(110, 231, 183, 0.08);
 }
 
-.word-list-item.failed {
-  border-left-color: #f87171;
-  background: rgba(248, 113, 113, 0.08);
+
+/* Floating Bar Interactions */
+.floating-bar {
+  /* Animation states */
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hidden state when panel is open */
+body.panel-open .floating-bar {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(20px) !important;
+  /* Force override local transform if needed */
 }
