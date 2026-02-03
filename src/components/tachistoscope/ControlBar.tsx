@@ -12,6 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 
 export function ControlBar() {
+    // Playback state and method
     const {
         isPlaying,
         setIsPlaying,
