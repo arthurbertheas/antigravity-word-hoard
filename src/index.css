@@ -1,4 +1,4 @@
-@import url("https://cdn.clarkhacks.com/OpenDyslexic/v3/OpenDyslexic.css");
+﻿@import url("https://cdn.clarkhacks.com/OpenDyslexic/v3/OpenDyslexic.css");
 
 @tailwind base;
 @tailwind components;
@@ -48,6 +48,14 @@
     --ring: 217 91% 55%;
 
     --radius: 0.75rem;
+
+    /* Feedback Dot Colors */
+    --dot-neutral: 156 163 175;
+    /* #9ca3af */
+    --dot-positive: 110 231 183;
+    /* #6ee7b7 */
+    --dot-negative: 248 113 113;
+    /* #f87171 */
 
     /* Custom design tokens */
     --glow-primary: 217 91% 55%;
@@ -371,4 +379,29 @@
 ::selection {
   background: hsl(var(--primary) / 0.2);
   color: hsl(var(--foreground));
+}
+
+/* Word List Status States */
+.word-list-item {
+  transition: all 0.2s ease-out;
+}
+
+.word-list-item.neutral {
+  border-left-color: transparent;
+}
+
+.word-list-item.current {
+  border-left-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.1);
+  cursor: default;
+}
+
+.word-list-item.validated {
+  border-left-color: #6ee7b7;
+  background: rgba(110, 231, 183, 0.08);
+}
+
+.word-list-item.failed {
+  border-left-color: #f87171;
+  background: rgba(248, 113, 113, 0.08);
 }

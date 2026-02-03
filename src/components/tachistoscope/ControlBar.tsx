@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { Button } from "@/components/ui/button";
 import {
@@ -6,11 +6,10 @@ import {
     Pause,
     SkipBack,
     SkipForward,
-    Maximize2,
+    Settings2,
     List
 } from "lucide-react";
 import { cn } from '@/lib/utils';
-import { SettingsPopover } from './SettingsPopover';
 
 export function ControlBar() {
     const {
@@ -21,8 +20,8 @@ export function ControlBar() {
         nextWord,
         prevWord,
         hasStarted,
-        isPanelOpen,
-        setIsPanelOpen,
+        panelMode,
+        togglePanelMode,
         feedback
     } = usePlayer();
 
@@ -48,107 +47,121 @@ export function ControlBar() {
         };
     }, [isPlaying]);
 
+    // Calculate progress
+    const lastWord = queue[queue.length - 1];
+    const hasFin = lastWord?.ORTHO === 'FIN';
+    const totalRealWords = hasFin ? queue.length - 1 : queue.length;
+    const current = currentIndex + 1;
+
     return (
         <div
             className={cn(
                 "fixed left-1/2 -translate-x-1/2 z-[60] transition-all duration-500",
                 isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0 pointer-events-none"
             )}
-            style={{ bottom: '8%' }}
+            style={{ bottom: '32px' }}
         >
-            <div className="flex items-center gap-2 px-3 py-3 bg-white/95 backdrop-blur-md border border-slate-200/60 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-                {/* Left: Navigation */}
-                <div className="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-10 h-10 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
-                        onClick={prevWord}
-                        disabled={!hasStarted}
-                    >
-                        <SkipBack className="w-5 h-5 fill-current" />
-                    </Button>
+            <div className="flex flex-col gap-4 px-8 py-5 bg-white/98 backdrop-blur-[20px] border border-border rounded-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] min-w-[520px]">
+                {/* Progress Bar */}
+                <div className="flex items-center gap-4">
+                    <div className="flex-1 h-1 bg-primary/10 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full bg-primary rounded-full transition-all duration-300"
+                            style={{ width: `${(current / totalRealWords) * 100}%` }}
+                        />
+                    </div>
+                    <span className="text-sm font-bold font-sora text-primary tabular-nums min-w-[50px] text-right">
+    {
+        !hasStarted ?"PRÊT" : (hasFin && currentIndex >= totalRealWords) ? "FIN" : `${current}/${totalRealWords}`}
+                    </span >
+                </div >
 
-                    <Button
-                        variant="secondary"
-                        size="icon"
-                        className="w-14 h-14 rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:scale-105 transition-all duration-200"
-                        onClick={() => setIsPlaying((p: boolean) => !p)}
-                    >
-                        {isPlaying ? (
-                            <Pause className="w-6 h-6 fill-current" />
-                        ) : (
-                            <Play className="w-6 h-6 fill-current ml-1" />
+            {/* Controls */ }
+            < div className ="flex items-center justify-between gap-5">
+        {/* Left: Playback buttons */ }
+        <div className="flex items-center gap-3">
+            < Button
+        variant ="ghost"
+        size ="icon"
+        className ="w-11 h-11 rounded-full border-[1.5px] border-border bg-surface text-text-secondary hover:border-primary hover:text-primary hover:scale-105 transition-all"
+        onClick = { prevWord }
+        disabled = {!hasStarted
+    }
+                        >
+        <SkipBack className="w-[18px] h-[18px] fill-current" />
+                        </Button >
+
+        <Button
+            variant="secondary"
+    size ="icon"
+    className ="w-14 h-14 rounded-full bg-primary text-white hover:bg-primary-hover shadow-[0_4px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_24px_rgba(79,70,229,0.4)] hover:scale-105 transition-all duration-200"
+    onClick = {() => setIsPlaying((p: boolean) => !p)
+}
+                        >
+{
+    isPlaying?(
+                                <Pause className ="w-5 h-5 fill-current" />
+    ): (
+            <Play className ="w-5 h-5 fill-current ml-0.5" />
+        )
+}
+                        </Button >
+
+    <Button
+        variant="ghost"
+size ="icon"
+className ="w-11 h-11 rounded-full border-[1.5px] border-border bg-surface text-text-secondary hover:border-primary hover:text-primary hover:scale-105 transition-all"
+onClick = { nextWord }
+disabled = { currentIndex === queue.length - 1}
+                        >
+    <SkipForward className="w-[18px] h-[18px] fill-current" />
+                        </Button >
+                    </div >
+
+    {/* Center: Feedback Dot */ }
+    < div
+className = {
+    cn(
+        "w-2.5 h-2.5 rounded-full transition-all duration-200 ease-out",
+        feedback === 'success' ?"bg-[hsl(var(--dot-positive))]" :
+feedback === 'error' ?"bg-[hsl(var(--dot-negative))]" :
+"bg-[hsl(var(--dot-neutral))]"
                         )}
-                    </Button>
+                    />
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-10 h-10 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
-                        onClick={nextWord}
-                        disabled={currentIndex === queue.length - 1}
-                    >
-                        <SkipForward className="w-5 h-5 fill-current" />
-                    </Button>
-                </div>
+{/* Right: Panel toggles */ }
+<div className="flex items-center gap-2">
+    < Button
+variant ="ghost"
+size ="icon"
+className = {
+    cn(
+        "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-surface text-text-secondary hover:bg-background hover:border-primary hover:text-primary transition-all",
+        panelMode === 'config' && "bg-primary border-primary text-white hover:bg-primary-hover"
+                            )}
+onClick = {() => togglePanelMode('config')}
+title ="Configuration (C)"
+    >
+    <Settings2 className="w-4 h-4" />
+                        </Button >
 
-                <div className="w-px h-8 bg-slate-200 mx-1"></div>
-
-                {/* Center: Info */}
-                <div className="flex flex-col items-center px-2 min-w-[80px] select-none">
-                    <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Progress</span>
-                    <span className="text-sm font-bold text-slate-800 tabular-nums">
-                        {(() => {
-                            const lastWord = queue[queue.length - 1];
-                            const hasFin = lastWord?.ORTHO === 'FIN';
-                            const totalRealWords = hasFin ? queue.length - 1 : queue.length;
-
-                            if (!hasStarted) {
-                                return "PRÊT";
-                            }
-
-                            if (hasFin && currentIndex >= totalRealWords) {
-                                return "FIN";
-                            }
-
-                            return (
-                                <>
-                                    {currentIndex + 1} <span className="text-slate-300">/</span> {totalRealWords}
-                                </>
-                            );
-                        })()}
-                    </span>
-                </div>
-
-                <div className="w-px h-8 bg-slate-200 mx-1"></div>
-
-                {/* Micro-Feedback: Status Dot (Hidden or integrated subtly) */}
-                <div
-                    className={cn(
-                        "w-1.5 h-1.5 rounded-full transition-all duration-200 ease-in-out ml-2 mr-1",
-                        feedback === 'success' ? "bg-neutral-300 shadow-[0_0_8px_rgba(255,255,255,0.2)]" :
-                            feedback === 'error' ? "bg-neutral-800" :
-                                "bg-neutral-600"
-                    )}
-                />
-
-                {/* Right: Settings & List */}
-                <div className="flex items-center gap-0.5">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "w-10 h-10 rounded-full text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors",
-                            isPanelOpen && "bg-blue-50 text-blue-600"
-                        )}
-                        onClick={() => setIsPanelOpen(!isPanelOpen)}
-                    >
-                        <List className="w-5 h-5" />
-                    </Button>
-                    <SettingsPopover />
-                </div>
-            </div>
-        </div>
+    <Button
+        variant="ghost"
+size ="icon"
+className = {
+    cn(
+        "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-surface text-text-secondary hover:bg-background hover:border-primary hover:text-primary transition-all",
+        panelMode === 'session' && "bg-primary border-primary text-white hover:bg-primary-hover"
+                            )}
+onClick = {() => togglePanelMode('session')}
+title ="Liste des mots (L)"
+    >
+    <List className="w-4 h-4" />
+                        </Button >
+                    </div >
+                </div >
+            </div >
+        </div >
     );
 }
+

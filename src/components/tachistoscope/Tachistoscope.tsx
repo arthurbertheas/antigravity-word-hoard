@@ -3,7 +3,7 @@ import { usePlayer, PlayerProvider } from '@/contexts/PlayerContext';
 import { Word } from '@/types/word';
 import { WordDisplay } from './WordDisplay';
 import { ControlBar } from './ControlBar';
-import { SessionPanel } from './SessionPanel';
+import { SidePanel } from './SidePanel';
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { playBeep } from '@/utils/audio';
@@ -135,7 +135,9 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         setQueue,
         resetSession,
         hasStarted,
-        triggerFeedback
+        triggerFeedback,
+        flashFeedback,
+        togglePanelMode
     } = usePlayer();
 
     const FIN_WORD = React.useMemo(() => ({
@@ -175,15 +177,23 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     e.preventDefault();
                     if (currentIndex < words.length) {
                         logResult(words[currentIndex].ORTHO, 'success');
-                        triggerFeedback('success');
+                        flashFeedback('positive');
                     }
                     break;
                 case 'ArrowDown': // Fail (No Skip)
                     e.preventDefault();
                     if (currentIndex < words.length) {
                         logResult(words[currentIndex].ORTHO, 'failed');
-                        triggerFeedback('error');
+                        flashFeedback('negative');
                     }
+                    break;
+                case 'KeyC': // Config panel
+                    e.preventDefault();
+                    togglePanelMode('config');
+                    break;
+                case 'KeyL': // Liste panel
+                    e.preventDefault();
+                    togglePanelMode('session');
                     break;
                 case 'Escape':
                     onClose();
@@ -193,7 +203,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isPlaying, currentIndex, words, setIsPlaying, nextWord, prevWord, logResult, onClose, triggerFeedback]);
+    }, [isPlaying, currentIndex, words, setIsPlaying, nextWord, prevWord, logResult, onClose, flashFeedback, togglePanelMode]);
 
     useEffect(() => {
         console.log("TachistoscopeContent mounted with", words.length, "words");
@@ -249,7 +259,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
             <ControlBar />
 
             {/* Side Panel Overlay */}
-            <SessionPanel />
+            <SidePanel />
         </div>
     );
 }

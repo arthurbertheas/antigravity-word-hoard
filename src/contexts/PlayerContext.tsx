@@ -22,6 +22,9 @@ export interface SessionLog {
     timestamp: number;
 }
 
+export type PanelMode = 'config' | 'session';
+export type WordStatus = 'neutral' | 'current' | 'validated' | 'failed';
+
 interface PlayerContextType {
     queue: Word[];
     currentIndex: number;
@@ -37,8 +40,13 @@ interface PlayerContextType {
     updateSettings: (settings: Partial<PlayerSettings>) => void;
     isPanelOpen: boolean;
     setIsPanelOpen: (open: boolean) => void;
+    panelMode: PanelMode;
+    togglePanelMode: (mode: PanelMode) => void;
     feedback: FeedbackType | null;
     triggerFeedback: (type: FeedbackType) => void;
+    flashFeedback: (type: 'positive' | 'negative') => void;
+    wordStatuses: Map<number, WordStatus>;
+    cycleWordStatus: (index: number) => void;
     logResult: (wordId: string, status: 'success' | 'failed' | 'skipped') => void;
     nextWord: () => void;
     prevWord: () => void;
@@ -68,8 +76,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [phase, setPhase] = useState<PlayerPhase>('display');
     const [hasStarted, setHasStarted] = useState(false);
     const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [panelMode, setPanelMode] = useState<PanelMode>('session');
     const [feedback, setFeedback] = useState<FeedbackType | null>(null);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
+    const [wordStatuses, setWordStatuses] = useState<Map<number, WordStatus>>(new Map());
 
     // Simple & Clean initialization
     const [settings, setSettings] = useState<PlayerSettings>(() => {
@@ -94,6 +104,45 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const triggerFeedback = useCallback((type: FeedbackType) => {
         setFeedback(type);
         setTimeout(() => setFeedback(null), 200);
+    }, []);
+
+    const flashFeedback = useCallback((type: 'positive' | 'negative') => {
+        const feedbackType: FeedbackType = type === 'positive' ? 'success' : 'error';
+        setFeedback(feedbackType);
+        setTimeout(() => setFeedback(null), 200);
+    }, []);
+
+    const togglePanelMode = useCallback((mode: PanelMode) => {
+        // Smart tabs logic
+        if (isPanelOpen && panelMode === mode) {
+            // Clicking same mode → close panel
+            setIsPanelOpen(false);
+        } else {
+            // Open panel and switch to requested mode
+            setIsPanelOpen(true);
+            setPanelMode(mode);
+        }
+    }, [isPanelOpen, panelMode]);
+
+    const cycleWordStatus = useCallback((index: number) => {
+        setWordStatuses(prev => {
+            const newMap = new Map(prev);
+            const currentStatus = newMap.get(index) || 'neutral';
+
+            // Cycle: neutral → validated → failed → neutral
+            const nextStatus: WordStatus =
+                currentStatus === 'neutral' ? 'validated' :
+                    currentStatus === 'validated' ? 'failed' :
+                        'neutral';
+
+            if (nextStatus === 'neutral') {
+                newMap.delete(index);
+            } else {
+                newMap.set(index, nextStatus);
+            }
+
+            return newMap;
+        });
     }, []);
 
     const logResult = useCallback((wordId: string, status: 'success' | 'failed' | 'skipped') => {
@@ -165,7 +214,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     return (
         <PlayerContext.Provider value={{
             queue, currentIndex, isPlaying, phase, hasStarted, settings, sessionLog, isPanelOpen,
-            feedback, triggerFeedback,
+            panelMode, togglePanelMode,
+            feedback, triggerFeedback, flashFeedback,
+            wordStatuses, cycleWordStatus,
             setQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
             setIsPanelOpen, logResult, nextWord, prevWord, resetSession
         }}>
