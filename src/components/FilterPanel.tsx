@@ -371,26 +371,71 @@ export function FilterPanel({
                     isOpen={openSections.length || false}
                     onToggle={() => toggleSection('length')}
                 >
-                    <div className="space-y-4 px-2">
-                        <input
-                            type="range"
-                            min="1"
-                            max="20"
-                            value={filters.minLetters}
-                            onChange={(e) => updateFilter('minLetters', parseInt(e.target.value))}
-                            className="w-full h-2 bg-[rgb(var(--filter-bg))] rounded-lg appearance-none cursor-pointer accent-[rgb(var(--filter-accent))]"
-                        />
-                        <input
-                            type="range"
-                            min="1"
-                            max="20"
-                            value={filters.maxLetters}
-                            onChange={(e) => updateFilter('maxLetters', parseInt(e.target.value))}
-                            className="w-full h-2 bg-[rgb(var(--filter-bg))] rounded-lg appearance-none cursor-pointer accent-[rgb(var(--filter-accent))]"
-                        />
-                        <div className="flex justify-between text-[10px] font-bold text-[rgb(var(--filter-text-muted))] uppercase tracking-wide">
-                            <span>{filters.minLetters} lettres</span>
-                            <span>{filters.maxLetters} lettres</span>
+                    <div className="space-y-4 px-3 pb-2 pt-6">
+                        {/* Current values above the sliders */}
+                        <div className="relative h-6 w-full">
+                            <span
+                                className="absolute -translate-x-1/2 text-[12px] font-bold text-[rgb(var(--filter-accent))] whitespace-nowrap transition-all duration-200"
+                                style={{
+                                    left: `${((filters.minLetters - 1) / 19) * 100}%`,
+                                    top: "-8px"
+                                }}
+                            >
+                                {filters.minLetters} lettres
+                            </span>
+                            <span
+                                className="absolute -translate-x-1/2 text-[12px] font-bold text-[rgb(var(--filter-accent))] whitespace-nowrap transition-all duration-200"
+                                style={{
+                                    left: `${((filters.maxLetters - 1) / 19) * 100}%`,
+                                    top: "-8px"
+                                }}
+                            >
+                                {filters.maxLetters} lettres
+                            </span>
+                        </div>
+
+                        {/* Slider Container */}
+                        <div className="relative w-full h-1 bg-[rgb(var(--filter-bg))] rounded-full my-4">
+                            {/* Visual Range Bar */}
+                            <div
+                                className="absolute h-1 bg-[rgb(var(--filter-accent))] rounded-full top-0 pointer-events-none"
+                                style={{
+                                    left: `${((filters.minLetters - 1) / 19) * 100}%`,
+                                    width: `${((filters.maxLetters - filters.minLetters) / 19) * 100}%`
+                                }}
+                            />
+
+                            {/* Min Slider */}
+                            <input
+                                type="range"
+                                min="1"
+                                max="20"
+                                value={filters.minLetters}
+                                onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    updateFilter('minLetters', Math.min(val, filters.maxLetters));
+                                }}
+                                className="absolute top-0 left-0 w-full h-1 bg-transparent appearance-none cursor-pointer accent-[rgb(var(--filter-accent))] pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto z-20"
+                            />
+
+                            {/* Max Slider */}
+                            <input
+                                type="range"
+                                min="1"
+                                max="20"
+                                value={filters.maxLetters}
+                                onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    updateFilter('maxLetters', Math.max(val, filters.minLetters));
+                                }}
+                                className="absolute top-0 left-0 w-full h-1 bg-transparent appearance-none cursor-pointer accent-[rgb(var(--filter-accent))] pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto z-30"
+                            />
+                        </div>
+
+                        {/* Labels below */}
+                        <div className="flex justify-between text-[10px] font-bold text-[rgb(var(--filter-text-muted))] uppercase tracking-[1.5px] mt-2">
+                            <span>MIN</span>
+                            <span>MAX</span>
                         </div>
                     </div>
                 </CollapsibleSection>
