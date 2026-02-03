@@ -546,6 +546,7 @@ export function SidePanel() {
                     onContinueWithoutSaving={handleNewListExit}
                 />
             </aside >
-            );
+        </>
+    );
 }
 
