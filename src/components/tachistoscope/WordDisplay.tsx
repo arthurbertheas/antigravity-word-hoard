@@ -85,7 +85,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 let colorClass = '';
 
                 if (settings.highlightVowels && parsed.type === 'voyelle') {
-                    colorClass = 'text-red-500 font-bold'; // Vowels in red
+                    colorClass = 'text-red-500'; // Vowels in red
                 } else if (settings.highlightSilent && parsed.type === 'muette') {
                     colorClass = 'text-gray-400'; // Silent letters in gray
                 }
