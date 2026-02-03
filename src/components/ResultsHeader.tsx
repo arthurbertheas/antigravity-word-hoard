@@ -10,7 +10,7 @@ interface ResultsHeaderProps {
 
 export function ResultsHeader({ words, isAllSelected, onToggleSelectAll }: ResultsHeaderProps) {
     return (
-        <div className="flex items-end justify-between py-3 px-6 border-b border-slate-100">
+        <div className="flex items-end justify-between py-3 px-6 border-b border-[#e4e6eb]">
             {/* GAUCHE : Compteur */}
             <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest leading-none">
