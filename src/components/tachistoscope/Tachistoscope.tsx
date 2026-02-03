@@ -218,7 +218,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
     const PREVIEW_WORD = {
         ORTHO: "Prêt ?",
-        GSEG: "P.r.ê.t. ?",
+        GSEG: "P.r.ê.t. .?",
         PHON: "pʀɛ",
         SYNT: "NC",
         "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
