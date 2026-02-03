@@ -138,7 +138,8 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         triggerFeedback,
         flashFeedback,
         togglePanelMode,
-        setWordStatus
+        setWordStatus,
+        isPanelOpen
     } = usePlayer();
 
     const FIN_WORD = React.useMemo(() => ({
