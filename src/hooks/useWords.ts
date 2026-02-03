@@ -51,7 +51,11 @@ export function useWords() {
             }
 
             // Filtre par longueur (nombre de lettres)
-            const nbLet = parseInt(word.NBLET, 10);
+            let nbLet = parseInt(word.NBLET, 10);
+            if (isNaN(nbLet)) {
+                nbLet = word.ORTHO.length; // Fallback sur la longueur du mot orthographique
+            }
+
             if (nbLet < filters.minLetters || nbLet > filters.maxLetters) {
                 return false;
             }
