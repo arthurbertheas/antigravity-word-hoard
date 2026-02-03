@@ -240,15 +240,17 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
     return (
         <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
-            {/* Close Button */}
-            <Button
-                variant="ghost"
-                size="icon"
-                className="fixed top-6 right-6 z-[110] hover:bg-zinc-100"
-                onClick={onClose}
-            >
-                <X className="w-6 h-6" />
-            </Button>
+            {/* Close Button - Hidden when SidePanel is open to prevent z-index conflict */}
+            {!isPanelOpen && (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="fixed top-6 right-6 z-[110] hover:bg-zinc-100"
+                    onClick={onClose}
+                >
+                    <X className="w-6 h-6" />
+                </Button>
+            )}
 
             {/* Main Reading Area */}
             <WordDisplay
