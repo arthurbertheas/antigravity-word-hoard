@@ -22,7 +22,7 @@ export function WordBank({ words }: WordBankProps) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-white">
+        <div className="flex flex-col h-full bg-[#f4f5f7]">
             {/* Header Removed (Redundant with Site Banner) */}
 
             {/* Scrollable Content (Sandwich: Flexible) */}

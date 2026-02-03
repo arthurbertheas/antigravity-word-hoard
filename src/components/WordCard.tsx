@@ -17,25 +17,25 @@ export function WordCard({ word, onClick }: WordCardProps) {
             onClick={() => toggleSelection(word)}
             title={`${word.ORTHO} - ${word.NBSYLL} syll.`}
             className={cn(
-                "relative flex items-center justify-center px-4 py-2.5 rounded-lg border-[1.5px] cursor-pointer select-none h-[50px] text-center transition-all duration-200",
-                "hover:border-primary hover:shadow-md hover:-translate-y-0.5",
+                "relative flex items-center justify-center px-5 py-2.5 rounded-[10px] border-[1.5px] cursor-pointer select-none min-h-[50px] text-center transition-all duration-200",
+                "hover:border-[#4f46e5] hover:bg-[#f0f1f4] hover:shadow-[0_2px_8px_rgba(79,70,229,0.12)] hover:-translate-y-px",
                 selected
-                    ? "border-primary bg-primary/10 text-primary font-bold shadow-sm"
-                    : "border-gray-200 bg-white hover:bg-white"
+                    ? "border-[#4f46e5] bg-[#eef2ff] text-[#4f46e5] font-semibold shadow-sm"
+                    : "border-[#e4e6eb] bg-white"
             )}
         >
             {/* Le Mot */}
             <span className={cn(
-                "text-sm font-medium truncate w-full px-4",
-                selected ? "text-blue-700" : "text-foreground"
+                "text-[15px] font-medium w-full break-words px-1",
+                selected ? "text-[#4f46e5] font-semibold" : "text-[#1a1c23]"
             )}>
                 {word.ORTHO}
             </span>
 
             {/* Indicateur de sélection (Check) - Absolute positioned to avoid text shift */}
             {selected && (
-                <div className="absolute right-2 flex items-center">
-                    <Check className="w-3.5 h-3.5 text-blue-500" />
+                <div className="absolute right-2 top-2 flex items-center">
+                    <Check className="w-4 h-4 text-[#4f46e5]" />
                 </div>
             )}
         </div>
