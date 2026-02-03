@@ -30,7 +30,7 @@ export function SessionPanel() {
     }, [currentIndex, isPanelOpen]);
 
     // Exclude "FIN" for visual representaiton and stats
-    const visualQueue = queue.filter(w => w.ORTHO !== 'FIN');
+    const visualQueue = queue.filter(w => w.ORTHO !== 'Bravo !');
     const totalWords = visualQueue.length;
 
     // Performance stats based on attempted words (sessionLog)

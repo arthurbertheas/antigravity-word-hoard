@@ -322,7 +322,7 @@ export function SidePanel() {
                             {/* Stats */}
                             {(() => {
                                 // Calculate statistics from wordStatuses
-                                const totalWords = queue.filter(w => w.ORTHO !== 'FIN').length;
+                                const totalWords = queue.filter(w => w.ORTHO !== 'Bravo !').length;
                                 const validatedCount = Array.from(wordStatuses.values()).filter(s => s === 'validated').length;
                                 const failedCount = Array.from(wordStatuses.values()).filter(s => s === 'failed').length;
                                 const answeredCount = validatedCount + failedCount;
@@ -386,7 +386,7 @@ export function SidePanel() {
                                 </div >
                                 <div className="space-y-2">
                                     {
-                                        queue.filter(word => word.ORTHO !== 'FIN').map((word, index) => {
+                                        queue.filter(word => word.ORTHO !== 'Bravo !').map((word, index) => {
                                             const status = index === currentIndex ? 'current' : (wordStatuses.get(index) || 'neutral');
                                             const isClickable = status !== 'current';
 
@@ -438,7 +438,7 @@ export function SidePanel() {
                     panelMode === 'stats' && (
                         <div className="flex-1 overflow-y-auto px-8 py-6">
                             {(() => {
-                                const visualQueue = queue.filter(w => w.ORTHO !== 'FIN');
+                                const visualQueue = queue.filter(w => w.ORTHO !== 'Bravo !');
                                 // Calculate stats
                                 const totalWords = visualQueue.length;
                                 const validatedCount = Array.from(wordStatuses.values()).filter(s => s === 'validated').length;
