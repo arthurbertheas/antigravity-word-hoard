@@ -23,6 +23,8 @@ interface SaveListModalProps {
         tags: string[];
     };
     mode: 'create' | 'edit';
+    existingLists: Array<{ id: string; name: string }>;
+    currentListId?: string | null;
 }
 
 const SUGGESTED_TAGS = ['CP', 'CE1', 'CE2', 'CM1', 'CM2', 'Phonologie', 'Lecture', 'Orthographe'];
@@ -33,12 +35,15 @@ export function SaveListModal({
     onSave,
     words,
     initialData,
-    mode
+    mode,
+    existingLists,
+    currentListId
 }: SaveListModalProps) {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState<string[]>([]);
     const [tagInput, setTagInput] = useState('');
+    const [nameError, setNameError] = useState('');
 
     useEffect(() => {
         if (initialData) {
@@ -66,8 +71,22 @@ export function SaveListModal({
     };
 
     const handleSubmit = () => {
-        if (!name.trim()) return;
-        onSave(name.trim(), description.trim(), tags);
+        const trimmedName = name.trim();
+        if (!trimmedName) return;
+
+        // Check for duplicate names (excluding current list in edit mode)
+        const isDuplicate = existingLists.some(list =>
+            list.name.toLowerCase() === trimmedName.toLowerCase() &&
+            list.id !== currentListId
+        );
+
+        if (isDuplicate) {
+            setNameError('Une liste avec ce nom existe déjà');
+            return;
+        }
+
+        setNameError('');
+        onSave(trimmedName, description.trim(), tags);
         onClose();
     };
 
@@ -88,10 +107,19 @@ export function SaveListModal({
                         </label>
                         <Input
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => {
+                                setName(e.target.value);
+                                setNameError('');
+                            }}
                             placeholder="Ex: Sons CH + V pour Léo"
                             maxLength={50}
+                            className={nameError ? 'border-red-500' : ''}
                         />
+                        {nameError && (
+                            <span className="text-xs text-red-500 mt-1 block">
+                                {nameError}
+                            </span>
+                        )}
                         <span className="text-xs text-muted-foreground mt-1 block text-right">
                             {name.length}/50
                         </span>

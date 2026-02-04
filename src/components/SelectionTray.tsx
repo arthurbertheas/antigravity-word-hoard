@@ -196,7 +196,10 @@ export function SelectionTray() {
                         ✏️ Liste modifiée
                     </div>
                     <button
-                        onClick={() => setShowSaveModal(true)}
+                        onClick={() => {
+                            setEditingListId(currentListId);
+                            setShowSaveModal(true);
+                        }}
                         className="w-full px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-xs font-bold rounded-lg transition-colors"
                     >
                         Sauvegarder les modifications
@@ -404,6 +407,8 @@ export function SelectionTray() {
                     tags: savedLists.find(l => l.id === editingListId)?.tags || []
                 } : undefined}
                 mode={editingListId ? 'edit' : 'create'}
+                existingLists={savedLists.map(l => ({ id: l.id, name: l.name }))}
+                currentListId={editingListId}
             />
         </aside>
     );
