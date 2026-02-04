@@ -45,26 +45,37 @@ export function SelectionTray() {
             try {
                 // @ts-ignore - Memberstack global
                 const member = await window.$memberstackDOM?.getCurrentMember();
-                if (member?.data?.id) {
-                    setUserId(member.data.id);
+                if (member?.data?.auth?.email) {
+                    // Utiliser l'email Memberstack
+                    setUserId(member.data.auth.email);
                 } else {
-                    // Fallback pour développement - utiliser un ID persistant
-                    let devUserId = localStorage.getItem('dev_user_id');
-                    if (!devUserId) {
-                        devUserId = 'dev-user-' + Date.now();
-                        localStorage.setItem('dev_user_id', devUserId);
+                    // Fallback pour développement - demander l'email
+                    let userEmail = localStorage.getItem('dev_user_email');
+                    if (!userEmail) {
+                        userEmail = prompt('Mode développement : Entrez votre email pour tester les listes sauvegardées');
+                        if (userEmail) {
+                            localStorage.setItem('dev_user_email', userEmail);
+                        } else {
+                            // Si l'utilisateur annule, utiliser un ID temporaire
+                            userEmail = 'dev-user-' + Date.now();
+                        }
                     }
-                    setUserId(devUserId);
+                    setUserId(userEmail);
                 }
             } catch (error) {
                 console.log('Memberstack non disponible, mode dev');
-                // Fallback pour développement - utiliser un ID persistant
-                let devUserId = localStorage.getItem('dev_user_id');
-                if (!devUserId) {
-                    devUserId = 'dev-user-' + Date.now();
-                    localStorage.setItem('dev_user_id', devUserId);
+                // Fallback pour développement - demander l'email
+                let userEmail = localStorage.getItem('dev_user_email');
+                if (!userEmail) {
+                    userEmail = prompt('Mode développement : Entrez votre email pour tester les listes sauvegardées');
+                    if (userEmail) {
+                        localStorage.setItem('dev_user_email', userEmail);
+                    } else {
+                        // Si l'utilisateur annule, utiliser un ID temporaire
+                        userEmail = 'dev-user-' + Date.now();
+                    }
                 }
-                setUserId(devUserId);
+                setUserId(userEmail);
             }
         };
         getMemberstackUser();
