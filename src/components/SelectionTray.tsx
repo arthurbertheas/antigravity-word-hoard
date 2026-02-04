@@ -125,7 +125,7 @@ export function SelectionTray() {
                         <span
                             className={cn(
                                 "bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30 transition-opacity duration-150",
-                                selectedWords.length > 0 ? "opacity-100" : "opacity-0"
+                                (selectedWords.length > 0 && isCollapsed) ? "opacity-100" : "opacity-0"
                             )}
                             style={{
                                 position: 'absolute',
@@ -154,35 +154,42 @@ export function SelectionTray() {
                         </div>
                     </div>
 
-                    {selectedWords.length > 0 && (
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
-                                <div className="flex items-center gap-1">
-                                    <span className="text-primary">{totalSyllables}</span> Syllabes
-                                </div>
-                                <div className="w-1 h-1 rounded-full bg-border" />
-                                <div className="flex items-center gap-1">
-                                    Moy. <span className="text-primary">{avgSyllables}</span>
-                                </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
+                            <div className="flex items-center gap-1">
+                                <span className="text-primary">{totalSyllables}</span> Syllabes
                             </div>
-
-                            <div className="flex flex-wrap gap-1">
-                                {Object.entries(
-                                    selectedWords.reduce((acc, word) => {
-                                        const cat = word.SYNT || 'AUTRE';
-                                        acc[cat] = (acc[cat] || 0) + 1;
-                                        return acc;
-                                    }, {} as Record<string, number>)
-                                ).map(([cat, count]) => (
-                                    <span key={cat} className="px-1.5 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
-                                        {count} {cat}
-                                    </span>
-                                ))}
+                            <div className="w-1 h-1 rounded-full bg-border" />
+                            <div className="flex items-center gap-1">
+                                Moy. <span className="text-primary">{selectedWords.length > 0 ? avgSyllables : 'ØØ'}</span>
                             </div>
                         </div>
-                    )}
+
+                        <div className={cn(
+                            "flex flex-wrap gap-1 meta-conditional transition-all duration-300",
+                            selectedWords.length === 0 && "meta-hidden"
+                        )}>
+                            {Object.entries(
+                                selectedWords.reduce((acc, word) => {
+                                    const cat = word.SYNT || 'AUTRE';
+                                    acc[cat] = (acc[cat] || 0) + 1;
+                                    return acc;
+                                }, {} as Record<string, number>)
+                            ).map(([cat, count]) => (
+                                <span key={cat} className="px-1.5 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
+                                    {count} {cat}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            {/* NOUVEAU : Divider */}
+            <div className={cn(
+                "divider",
+                isCollapsed && "opacity-0"
+            )} />
 
             {/* List Content (Sandwich: Flexible) */}
             <div className={cn(
