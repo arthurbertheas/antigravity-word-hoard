@@ -74,11 +74,23 @@ export function SaveListModal({
         const trimmedName = name.trim();
         if (!trimmedName) return;
 
+        // Debug logging
+        console.log('Validation check:', {
+            trimmedName,
+            currentListId,
+            existingLists,
+            mode
+        });
+
         // Check for duplicate names (excluding current list in edit mode)
-        const isDuplicate = existingLists.some(list =>
-            list.name.toLowerCase() === trimmedName.toLowerCase() &&
-            list.id !== currentListId
-        );
+        const isDuplicate = existingLists.some(list => {
+            const nameMatch = list.name.toLowerCase() === trimmedName.toLowerCase();
+            const isNotCurrentList = list.id !== currentListId;
+            console.log(`Checking "${list.name}":`, { nameMatch, isNotCurrentList, listId: list.id });
+            return nameMatch && isNotCurrentList;
+        });
+
+        console.log('isDuplicate:', isDuplicate);
 
         if (isDuplicate) {
             setNameError('Une liste avec ce nom existe déjà');
