@@ -100,31 +100,54 @@ export function SelectionTray() {
             </div>
 
             {/* Stats Section with Collapsed Indicator */}
-            <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent relative min-h-[100px] flex flex-col justify-center">
-                {/* Collapsed Indicator (Icon + Badge) */}
-                <div className={cn(
-                    "absolute inset-0 flex items-center justify-center transition-all duration-400 delay-200",
-                    isCollapsed ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
-                )}>
-                    <div className="relative w-10 h-10 flex-none flex items-center justify-center" style={{ willChange: 'transform' }}>
-                        <ListChecks className="w-7 h-7 text-muted-foreground flex-none" />
+            <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent relative min-h-[100px]">
+                {/* Collapsed Indicator (Icon + Badge) - FIXED POSITION */}
+                <div
+                    className={cn(
+                        "absolute inset-0 flex items-center justify-center transition-opacity duration-300",
+                        isCollapsed ? "opacity-100" : "opacity-0 pointer-events-none"
+                    )}
+                    style={{ willChange: 'opacity' }}
+                >
+                    {/* Icon container with FIXED dimensions - no flex centering */}
+                    <div style={{ width: '40px', height: '40px', position: 'relative' }}>
+                        <ListChecks
+                            className="text-muted-foreground"
+                            style={{
+                                width: '28px',
+                                height: '28px',
+                                position: 'absolute',
+                                top: '6px',
+                                left: '6px'
+                            }}
+                        />
+                        {/* Badge with fixed offset from container */}
                         <span
                             className={cn(
-                                "absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30 z-10 transition-opacity duration-150",
+                                "bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30 transition-opacity duration-150",
                                 selectedWords.length > 0 ? "opacity-100" : "opacity-0"
                             )}
-                            style={{ willChange: 'contents' }}
+                            style={{
+                                position: 'absolute',
+                                top: '-4px',
+                                right: '-8px',
+                                willChange: 'opacity'
+                            }}
                         >
                             {selectedWords.length || 0}
                         </span>
                     </div>
                 </div>
 
-                {/* Full Stats (fade out) */}
-                <div className={cn(
-                    "transition-all duration-300",
-                    isCollapsed ? "opacity-0 -translate-y-2 pointer-events-none" : "opacity-100 translate-y-0"
-                )}>
+                {/* Full Stats - use absolute when collapsed to remove from flow */}
+                <div
+                    className={cn(
+                        "transition-opacity duration-300",
+                        isCollapsed
+                            ? "opacity-0 pointer-events-none absolute inset-0 p-4"
+                            : "opacity-100"
+                    )}
+                >
                     <div className="flex items-baseline gap-2 mb-2">
                         <div className="text-2xl font-black text-foreground">
                             {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
