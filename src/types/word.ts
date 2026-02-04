@@ -1,6 +1,7 @@
 // Types pour la base de mots Manulex
 
 export interface Word {
+    uid?: string;            // Identifiant unique (pour le shuffle)
     // Données principales
     ORTHO: string;           // Orthographe du mot
     PHON: string;            // Transcription phonétique

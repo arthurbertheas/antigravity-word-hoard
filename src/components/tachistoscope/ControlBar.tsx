@@ -23,11 +23,51 @@ export function ControlBar() {
         hasStarted,
         panelMode,
         togglePanelMode,
-        feedback
+        feedback,
+        isShuffled,
+        toggleShuffle
     } = usePlayer();
 
     const [isVisible, setIsVisible] = useState(true);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Toast Logic
+    const showToast = (message: string) => {
+        const toastEl = document.createElement('div');
+        toastEl.className = 'custom-toast';
+        toastEl.textContent = message;
+        document.body.appendChild(toastEl);
+
+        // Show animation
+        setTimeout(() => toastEl.classList.add('show'), 10);
+
+        // Hide and remove
+        setTimeout(() => {
+            toastEl.classList.remove('show');
+            setTimeout(() => toastEl.remove(), 300);
+        }, 2000);
+    };
+
+    const handleToggleShuffle = () => {
+        toggleShuffle();
+        if (!isShuffled) {
+            showToast('🔀 Liste mélangée');
+        } else {
+            showToast('↩️ Ordre d\'origine restauré');
+        }
+    };
+
+    // Keyboard shortcuts for Shuffle
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === 'KeyS') {
+                e.preventDefault();
+                handleToggleShuffle();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isShuffled, toggleShuffle]); // Re-bind when state changes to have correct toast message
 
     // Auto-hide logic
     useEffect(() => {
@@ -86,8 +126,7 @@ export function ControlBar() {
                             size="icon"
                             className="w-11 h-11 rounded-full border-[1.5px] border-border bg-white text-muted-foreground hover:border-primary/60 hover:text-primary hover:bg-primary/5  transition-all"
                             onClick={prevWord}
-                            disabled={!hasStarted
-                            }
+                            disabled={!hasStarted}
                         >
                             <SkipBack className="w-[18px] h-[18px] fill-current" />
                         </Button >
@@ -96,8 +135,7 @@ export function ControlBar() {
                             variant="secondary"
                             size="icon"
                             className="w-14 h-14 rounded-full bg-primary text-white hover:bg-primary-hover shadow-[0_4px_16px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_24px_rgba(79,70,229,0.4)]  transition-all duration-200"
-                            onClick={() => setIsPlaying((p: boolean) => !p)
-                            }
+                            onClick={() => setIsPlaying((p: boolean) => !p)}
                         >
                             {
                                 isPlaying ? (
@@ -132,7 +170,27 @@ export function ControlBar() {
 
                     {/* Right: Panel toggles */}
                     <div className="flex items-center gap-2">
-                        < Button
+                        {/* Shuffle Button */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn(
+                                "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-white text-muted-foreground hover:bg-background hover:border-primary/60 hover:text-primary hover:bg-primary/5 transition-all",
+                                isShuffled && "bg-primary border-primary text-white hover:bg-primary-hover shadow-[0_2px_8px_rgba(79,70,229,0.3)]"
+                            )}
+                            onClick={handleToggleShuffle}
+                            title="Mélanger (S)"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 3 21 3 21 8"></polyline>
+                                <line x1="4" y1="20" x2="21" y2="3"></line>
+                                <polyline points="21 16 21 21 16 21"></polyline>
+                                <line x1="15 15" y1="15" x2="21" y2="21"></line>
+                                <line x1="4" y1="4" x2="9" y2="9"></line>
+                            </svg>
+                        </Button>
+
+                        <Button
                             variant="ghost"
                             size="icon"
                             className={

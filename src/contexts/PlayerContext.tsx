@@ -46,9 +46,11 @@ interface PlayerContextType {
     feedback: FeedbackType | null;
     triggerFeedback: (type: FeedbackType) => void;
     flashFeedback: (type: 'positive' | 'negative') => void;
-    setWordStatus: (index: number, status: WordStatus) => void;
-    wordStatuses: Map<number, WordStatus>;
-    cycleWordStatus: (index: number) => void;
+    setWordStatus: (uid: string, status: WordStatus) => void;
+    wordStatuses: Map<string, WordStatus>;
+    cycleWordStatus: (uid: string) => void;
+    isShuffled: boolean;
+    toggleShuffle: () => void;
     logResult: (wordId: string, status: 'success' | 'failed' | 'skipped') => void;
     nextWord: () => void;
     prevWord: () => void;
@@ -81,7 +83,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [panelMode, setPanelMode] = useState<PanelMode>('session');
     const [feedback, setFeedback] = useState<FeedbackType | null>(null);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
-    const [wordStatuses, setWordStatuses] = useState<Map<number, WordStatus>>(new Map());
+    const [wordStatuses, setWordStatuses] = useState<Map<string, WordStatus>>(new Map());
+    const [isShuffled, setIsShuffled] = useState(false);
+    const [originalQueue, setOriginalQueue] = useState<Word[] | null>(null);
 
     // Simple & Clean initialization
     const [settings, setSettings] = useState<PlayerSettings>(() => {
@@ -148,6 +152,17 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         setTimeout(() => setFeedback(null), 200);
     }, []);
 
+    const handleSetQueue = useCallback((words: Word[]) => {
+        // Ensure ALL words have a UID
+        const wordsWithIds = words.map((w, idx) => ({
+            ...w,
+            uid: w.uid || `${w.ORTHO}-${idx}-${Math.random().toString(36).substr(2, 9)}`
+        }));
+        setQueue(wordsWithIds);
+        setIsShuffled(false);
+        setOriginalQueue(null);
+    }, []);
+
     const togglePanelMode = useCallback((mode: PanelMode) => {
         // Smart tabs logic
         if (isPanelOpen && panelMode === mode) {
@@ -160,22 +175,69 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
     }, [isPanelOpen, panelMode]);
 
-    const setWordStatus = useCallback((index: number, status: WordStatus) => {
+    const toggleShuffle = useCallback(() => {
+        if (!isShuffled) {
+            // ACTIVATE SHUFFLE
+            const currentWord = queue[currentIndex];
+            const toShuffle = [...queue];
+
+            // Keep the last word (usually "Bravo !") if it's there
+            const hasFin = toShuffle.length > 0 && toShuffle[toShuffle.length - 1].ORTHO === 'Bravo !';
+            const finWord = hasFin ? toShuffle.pop() : null;
+
+            // Fisher-Yates
+            for (let i = toShuffle.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [toShuffle[i], toShuffle[j]] = [toShuffle[j], toShuffle[i]];
+            }
+
+            if (finWord) toShuffle.push(finWord);
+
+            // Save original if not already saved
+            if (!originalQueue) {
+                setOriginalQueue(queue);
+            }
+
+            setQueue(toShuffle);
+            setIsShuffled(true);
+
+            // Maintain current word
+            if (currentWord) {
+                const newIdx = toShuffle.findIndex(w => w.uid === currentWord.uid);
+                if (newIdx !== -1) setCurrentIndex(newIdx);
+            }
+        } else {
+            // DEACTIVATE SHUFFLE
+            if (originalQueue) {
+                const currentWord = queue[currentIndex];
+                setQueue(originalQueue);
+                setIsShuffled(false);
+
+                // Maintain current word
+                if (currentWord) {
+                    const originalIdx = originalQueue.findIndex(w => w.uid === currentWord.uid);
+                    if (originalIdx !== -1) setCurrentIndex(originalIdx);
+                }
+            }
+        }
+    }, [isShuffled, queue, currentIndex, originalQueue]);
+
+    const setWordStatus = useCallback((uid: string, status: WordStatus) => {
         setWordStatuses(prev => {
             const newMap = new Map(prev);
             if (status === 'neutral') {
-                newMap.delete(index);
+                newMap.delete(uid);
             } else {
-                newMap.set(index, status);
+                newMap.set(uid, status);
             }
             return newMap;
         });
     }, []);
 
-    const cycleWordStatus = useCallback((index: number) => {
+    const cycleWordStatus = useCallback((uid: string) => {
         setWordStatuses(prev => {
             const newMap = new Map(prev);
-            const currentStatus = newMap.get(index) || 'neutral';
+            const currentStatus = newMap.get(uid) || 'neutral';
 
             // Cycle: neutral → validated → failed → neutral
             const nextStatus: WordStatus =
@@ -184,9 +246,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                         'neutral';
 
             if (nextStatus === 'neutral') {
-                newMap.delete(index);
+                newMap.delete(uid);
             } else {
-                newMap.set(index, nextStatus);
+                newMap.set(uid, nextStatus);
             }
 
             return newMap;
@@ -238,18 +300,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     const resetSession = useCallback(() => {
         setSessionLog([]);
+        setWordStatuses(new Map());
         setCurrentIndex(0);
         setIsPlaying(false);
         setPhase('display');
         setHasStarted(false);
+        setIsShuffled(false);
+        setOriginalQueue(null);
     }, []);
 
     const handleSetIsPlaying = useCallback((updater: boolean | ((prev: boolean) => boolean)) => {
-        setSettings(prevSettings => {
-            // This is just a dummy use to avoid lint error if needed, but wait
-            return prevSettings;
-        });
-
         setIsPlaying(prev => {
             const nextValue = typeof updater === 'function' ? updater(prev) : updater;
             if (nextValue) {
@@ -265,8 +325,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             panelMode, togglePanelMode,
             feedback, triggerFeedback, flashFeedback,
             wordStatuses, cycleWordStatus, setWordStatus,
-            setQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
-            setIsPanelOpen, logResult, nextWord, prevWord, resetSession
+            setQueue: handleSetQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
+            setIsPanelOpen, logResult, nextWord, prevWord, resetSession,
+            isShuffled, toggleShuffle
         }}>
             {children}
         </PlayerContext.Provider>

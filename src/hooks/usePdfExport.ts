@@ -5,13 +5,13 @@ import { WordStatus } from '@/contexts/PlayerContext';
 
 interface UsePdfExportProps {
     queue: Word[];
-    wordStatuses: Map<number, WordStatus>;
+    wordStatuses: Map<string, WordStatus>;
     startTime: number | null;
 }
 
 export function usePdfExport() {
     const generatePdf = useCallback(({ queue, wordStatuses, startTime }: UsePdfExportProps) => {
-        const visualQueue = queue.filter(w => w.ORTHO !== 'FIN');
+        const visualQueue = queue.filter(w => w.ORTHO !== 'Bravo !');
 
         // Calculate stats
         const totalWords = visualQueue.length;
@@ -86,7 +86,7 @@ export function usePdfExport() {
                 yPos = 20;
             }
 
-            const status = wordStatuses.get(index) || 'neutral';
+            const status = word.uid ? wordStatuses.get(word.uid) || 'neutral' : 'neutral';
             const symbol = status === 'validated' ? '✓' : status === 'failed' ? '✗' : '—';
 
             // Highlight validation

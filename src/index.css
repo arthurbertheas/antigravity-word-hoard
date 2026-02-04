@@ -446,10 +446,34 @@
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Hidden state when panel is open */
-body.panel-open .floating-bar {
+/* Custom Toast Logic */
+.custom-toast {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
   opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10000;
   pointer-events: none;
-  transform: translateX(-50%) translateY(20px) !important;
-  /* Force override local transform if needed */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.word-list-section {
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }

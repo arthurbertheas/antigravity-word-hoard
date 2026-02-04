@@ -323,8 +323,9 @@ export function SidePanel() {
                             {(() => {
                                 // Calculate statistics from wordStatuses
                                 const totalWords = queue.filter(w => w.ORTHO !== 'Bravo !').length;
-                                const validatedCount = Array.from(wordStatuses.values()).filter(s => s === 'validated').length;
-                                const failedCount = Array.from(wordStatuses.values()).filter(s => s === 'failed').length;
+                                const statusValues = Array.from(wordStatuses.values());
+                                const validatedCount = statusValues.filter(s => s === 'validated').length;
+                                const failedCount = statusValues.filter(s => s === 'failed').length;
                                 const answeredCount = validatedCount + failedCount;
                                 const successRate = answeredCount > 0 ? Math.round((validatedCount / answeredCount) * 100) : 0;
 
@@ -387,18 +388,18 @@ export function SidePanel() {
                                 <div className="space-y-2">
                                     {
                                         queue.filter(word => word.ORTHO !== 'Bravo !').map((word, index) => {
-                                            const status = index === currentIndex ? 'current' : (wordStatuses.get(index) || 'neutral');
+                                            const status = index === currentIndex ? 'current' : (word.uid ? wordStatuses.get(word.uid) || 'neutral' : 'neutral');
                                             const isClickable = status !== 'current';
 
                                             return (
                                                 <div
-                                                    key={index}
+                                                    key={word.uid || index}
                                                     className={cn(
-                                                        "flex items-center gap-3 px-3.5 py-2.5 bg-muted rounded-[10px] text-sm border-l-[3px] cursor-pointer transition-all",
+                                                        "flex items-center gap-3.5 px-3.5 py-2.5 bg-muted rounded-[10px] text-sm border-l-[3px] cursor-pointer transition-all",
                                                         "word-list-item",
                                                         status
                                                     )}
-                                                    onClick={() => isClickable && cycleWordStatus(index)}
+                                                    onClick={() => isClickable && word.uid && cycleWordStatus(word.uid)}
                                                 >
                                                     <span className={cn(
                                                         "text-[11px] font-bold font-sora min-w-[24px]",
@@ -419,7 +420,7 @@ export function SidePanel() {
                                             );
                                         })
                                     }
-                                </div >
+                                </div>
                             </div >
 
                             {/* Footer */}
@@ -486,7 +487,7 @@ export function SidePanel() {
                                             </div>
                                             <div className="space-y-2">
                                                 {visualQueue.map((word, index) => {
-                                                    const status = wordStatuses.get(index) || 'neutral';
+                                                    const status = word.uid ? wordStatuses.get(word.uid) || 'neutral' : 'neutral';
 
                                                     return (
                                                         <div

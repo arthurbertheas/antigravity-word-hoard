@@ -177,18 +177,20 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     break;
                 case 'ArrowUp': // Success
                     e.preventDefault();
-                    if (currentIndex < words.length) {
-                        logResult(words[currentIndex].ORTHO, 'success');
+                    if (currentIndex < words.length && queue[currentIndex]) {
+                        const word = queue[currentIndex];
+                        logResult(word.ORTHO, 'success');
                         flashFeedback('positive');
-                        setWordStatus(currentIndex, 'validated');
+                        if (word.uid) setWordStatus(word.uid, 'validated');
                     }
                     break;
                 case 'ArrowDown': // Fail (No Skip)
                     e.preventDefault();
-                    if (currentIndex < words.length) {
-                        logResult(words[currentIndex].ORTHO, 'failed');
+                    if (currentIndex < words.length && queue[currentIndex]) {
+                        const word = queue[currentIndex];
+                        logResult(word.ORTHO, 'failed');
                         flashFeedback('negative');
-                        setWordStatus(currentIndex, 'failed');
+                        if (word.uid) setWordStatus(word.uid, 'failed');
                     }
                     break;
                 case 'KeyC': // Config panel
