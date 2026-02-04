@@ -91,10 +91,10 @@ export const GRAPHEME_LABELS: Record<string, string> = {
     '7': 'Voyelles complexes (oin, ien)',
     '8': 'Graphies complexes',
     '9': 'Voyelles nasales complexes',
-    '10': 'Graphies ail/eil/ouil',
-    '11': 'Graphies conditionnelles (gea, gui)',
-    '12': 'E contextuel',
-    '13': 'Diphtongues rares (oy, uy)'
+    '10': 'Graphies conditionnelles (gea, gui)',
+    '11': 'Graphies ail/eil',
+    '12': 'Diphtongues rares (oy, uy, ay)',
+    '13': 'E contextuel'
 };
 
 export const FREQUENCY_LABELS: Record<string, string> = {
