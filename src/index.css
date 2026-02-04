@@ -479,30 +479,33 @@
 }
 
 /* Collapsible Panel Animations */
-@keyframes badgePop {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-
-  50% {
-    transform: scale(1.2);
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+.transition-width-smooth {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.animate-badge-pop {
-  animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+.easing-smooth {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.transition-width-elastic {
-  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* My List Panel Refinements */
+.divider {
+  height: 1px;
+  background: linear-gradient(to right,
+      transparent,
+      #e4e6eb 15%,
+      #e4e6eb 85%,
+      transparent);
+  margin: 0;
+  flex-shrink: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.easing-elastic {
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+.meta-conditional {
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.meta-conditional.meta-hidden {
+  opacity: 0 !important;
+  transform: translateY(-5px);
+  pointer-events: none;
 }
