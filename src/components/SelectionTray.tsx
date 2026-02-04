@@ -33,7 +33,7 @@ export function SelectionTray() {
 
     return (
         <aside className={cn(
-            "shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-width-elastic rounded-tl-2xl overflow-hidden relative",
+            "shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-width-smooth rounded-tl-2xl overflow-hidden relative",
             isCollapsed ? "w-[64px]" : "w-80"
         )}>
             {/* Header (Sandwich: Fixed) */}
@@ -109,7 +109,7 @@ export function SelectionTray() {
                     <div className="relative">
                         <ListChecks className="w-7 h-7 text-muted-foreground" />
                         {selectedWords.length > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white animate-badge-pop shadow-lg shadow-primary/30">
+                            <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30">
                                 {selectedWords.length}
                             </span>
                         )}
