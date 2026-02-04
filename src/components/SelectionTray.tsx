@@ -170,7 +170,7 @@ export function SelectionTray() {
 
             {/* Saved Lists Dropdown */}
             <div className={cn(
-                "flex-none p-4 border-b border-slate-50 bg-white transition-all duration-300",
+                "flex-none p-4 border-b border-slate-50 bg-white transition-all duration-300 relative z-20",
                 isCollapsed ? "opacity-0 -translate-x-4 pointer-events-none absolute w-full" : "opacity-100 translate-x-0"
             )}>
                 <SavedListsDropdown
