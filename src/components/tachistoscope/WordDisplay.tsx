@@ -81,6 +81,9 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
             style={fontStyles}
         >
             {parsedGraphemes.map((parsed, idx) => {
+                // Skip if already processed (for e: lookahead)
+                if ((parsed as any)._skipRender) return null;
+
                 // Determine styling based on grapheme type and settings
                 let colorClass = '';
 
@@ -90,6 +93,40 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     colorClass = 'text-gray-400'; // Silent letters in gray
                 }
                 // Consonants keep default color (black)
+
+                // Special handling for contextual E (e:)
+                if (parsed.grapheme === 'e:') {
+                    // Collect following consonants to highlight with e:
+                    const consonantsToHighlight = [];
+                    let lookAhead = 1;
+
+                    while (idx + lookAhead < parsedGraphemes.length) {
+                        const nextGrapheme = parsedGraphemes[idx + lookAhead];
+                        if (nextGrapheme.type === 'consonne') {
+                            consonantsToHighlight.push(nextGrapheme);
+                            // Mark as processed to avoid double rendering
+                            (nextGrapheme as any)._skipRender = true;
+                            lookAhead++;
+                        } else {
+                            break; // Stop at next vowel or non-consonant
+                        }
+                    }
+
+                    // Render e: as "e" + consonants
+                    if (settings.highlightVowels) {
+                        return (
+                            <span key={idx} className="inline-block text-red-500">
+                                e{consonantsToHighlight.map(c => c.grapheme).join('')}
+                            </span>
+                        );
+                    } else {
+                        return (
+                            <span key={idx} className="inline-block">
+                                e{consonantsToHighlight.map(c => c.grapheme).join('')}
+                            </span>
+                        );
+                    }
+                }
 
                 // Special handling for graphemes with contextual silent letters
                 const graphemeLower = parsed.grapheme.toLowerCase();
