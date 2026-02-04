@@ -33,7 +33,7 @@ export function SelectionTray() {
 
     return (
         <aside className={cn(
-            "shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-width-smooth rounded-tl-2xl overflow-hidden relative",
+            "shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-width-smooth overflow-hidden relative",
             isCollapsed ? "w-[64px]" : "w-80"
         )}>
             {/* Header (Sandwich: Fixed) */}
@@ -106,10 +106,10 @@ export function SelectionTray() {
                     "absolute inset-0 flex items-center justify-center transition-all duration-400 delay-200",
                     isCollapsed ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
                 )}>
-                    <div className="relative">
-                        <ListChecks className="w-7 h-7 text-muted-foreground" />
+                    <div className="relative w-10 h-10 flex items-center justify-center">
+                        <ListChecks className="w-7 h-7 text-muted-foreground flex-none" />
                         {selectedWords.length > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30">
+                            <span className="absolute top-0 right-0 translate-x-[25%] translate-y-[-25%] bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30 origin-center z-10">
                                 {selectedWords.length}
                             </span>
                         )}
