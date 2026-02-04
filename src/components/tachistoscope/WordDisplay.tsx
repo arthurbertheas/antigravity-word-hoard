@@ -91,6 +91,26 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 }
                 // Consonants keep default color (black)
 
+                // Special handling for graphemes with contextual silent letters
+                const graphemeLower = parsed.grapheme.toLowerCase();
+
+                if (settings.highlightSilent && (graphemeLower === 'qu' || graphemeLower === 'ge' || graphemeLower === 'gu')) {
+                    // Split the grapheme to highlight the silent letter
+                    const firstLetter = parsed.grapheme[0];
+                    const silentLetter = parsed.grapheme[1];
+
+                    return (
+                        <span key={idx} className="inline-block">
+                            <span className={cn(settings.highlightVowels && parsed.type === 'voyelle' ? 'text-red-500' : '')}>
+                                {firstLetter}
+                            </span>
+                            <span className="text-gray-400">
+                                {silentLetter}
+                            </span>
+                        </span>
+                    );
+                }
+
                 return (
                     <span
                         key={idx}
