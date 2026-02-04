@@ -19,6 +19,7 @@ export default {
         body: ["DM Sans", "CircularStd", "sans-serif"],
         sora: ["Sora", "sans-serif"],
         mono: ["IBM Plex Mono", "monospace"],
+        opendyslexic: ["OpenDyslexic", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
