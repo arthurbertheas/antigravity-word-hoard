@@ -47,9 +47,14 @@ export function SelectionTray() {
                 const member = await window.$memberstackDOM?.getCurrentMember();
                 if (member?.data?.auth?.email) {
                     setUserId(member.data.auth.email);
+                } else {
+                    // Mode test : user_id fixe pour développement
+                    setUserId('test-user@example.com');
                 }
             } catch (error) {
                 console.error('Memberstack error:', error);
+                // Mode test : user_id fixe pour développement
+                setUserId('test-user@example.com');
             }
         };
         getMemberstackUser();
