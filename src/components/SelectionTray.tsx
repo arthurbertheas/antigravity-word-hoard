@@ -45,9 +45,9 @@ export function SelectionTray() {
                     title={isCollapsed ? "Ouvrir (C)" : "Réduire (C)"}
                 >
                     {isCollapsed ? (
-                        <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    ) : (
                         <ChevronLeft className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    ) : (
+                        <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" />
                     )}
                 </button>
 
