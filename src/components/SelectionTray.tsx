@@ -227,11 +227,11 @@ export function SelectionTray() {
             </div>
 
             {/* Footer Action (Sandwich: Fixed at bottom) */}
-            <div className="flex-none p-4 bg-white border-t border-border flex items-center justify-center">
+            <div className="flex-none p-4 bg-white border-t border-border flex items-center justify-center relative">
                 <button
                     className={cn(
                         "w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white border-none rounded-[14px] font-sora font-bold text-[15px] shadow-lg shadow-primary/30 transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none group whitespace-nowrap overflow-hidden",
-                        isCollapsed ? "opacity-0 scale-75 pointer-events-none w-0 p-0" : "opacity-100 scale-100"
+                        isCollapsed ? "opacity-0 scale-75 pointer-events-none w-0 p-0 invisible" : "opacity-100 scale-100 visible"
                     )}
                     disabled={selectedWords.length === 0}
                     onClick={() => {
@@ -254,7 +254,7 @@ export function SelectionTray() {
                 <button
                     className={cn(
                         "absolute w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100",
-                        isCollapsed ? "opacity-100 scale-100 delay-200" : "opacity-0 scale-75 pointer-events-none"
+                        isCollapsed ? "opacity-100 scale-100 delay-200 visible" : "opacity-0 scale-75 pointer-events-none invisible"
                     )}
                     disabled={selectedWords.length === 0}
                     onClick={() => setIsFocusModeOpen(true)}
