@@ -49,12 +49,12 @@ export function SavedListsDropdown({
                 <>
                     {/* Backdrop */}
                     <div
-                        className="fixed inset-0 z-40"
+                        className="fixed inset-0 z-[90]"
                         onClick={() => setIsOpen(false)}
                     />
 
                     {/* Dropdown Menu */}
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-border rounded-lg shadow-xl z-50 max-h-[400px] flex flex-col">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-border rounded-lg shadow-xl z-[100] max-h-[400px] flex flex-col">
                         {/* Search */}
                         <div className="p-3 border-b border-border">
                             <div className="relative">
