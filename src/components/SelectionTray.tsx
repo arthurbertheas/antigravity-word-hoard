@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useSelection, getWordId } from "@/contexts/SelectionContext";
 import { Button } from "@/components/ui/button";
-import { ListChecks, ChevronRight, X, Trash2, ChevronLeft } from "lucide-react";
+import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSavedLists } from "@/hooks/useSavedLists";
+import { SavedListsDropdown } from "@/components/saved-lists/SavedListsDropdown";
+import { SaveListModal } from "@/components/saved-lists/SaveListModal";
 
 export function SelectionTray() {
-    const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen } = useSelection();
+    const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen, addItems } = useSelection();
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(() => {
         const saved = localStorage.getItem('maListe_collapsed');
@@ -13,9 +16,55 @@ export function SelectionTray() {
         return window.innerWidth <= 1440;
     });
 
+    // Saved Lists State
+    const [userId, setUserId] = useState<string | null>(null);
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [editingListId, setEditingListId] = useState<string | null>(null);
+
+    // Saved Lists Hook
+    const {
+        savedLists,
+        isLoading,
+        currentListId,
+        isModified,
+        setIsModified,
+        setCurrentListId,
+        saveList,
+        updateList,
+        deleteList,
+        loadList
+    } = useSavedLists(userId);
+
     useEffect(() => {
         localStorage.setItem('maListe_collapsed', String(isCollapsed));
     }, [isCollapsed]);
+
+    // Memberstack User Detection
+    useEffect(() => {
+        const getMemberstackUser = async () => {
+            try {
+                // @ts-ignore - Memberstack global
+                const member = await window.$memberstackDOM?.getCurrentMember();
+                if (member?.data?.id) {
+                    setUserId(member.data.id);
+                } else {
+                    // Fallback pour développement
+                    setUserId('dev-user-' + Date.now());
+                }
+            } catch (error) {
+                console.log('Memberstack non disponible, mode dev');
+                setUserId('dev-user-' + Date.now());
+            }
+        };
+        getMemberstackUser();
+    }, []);
+
+    // Mark as modified when selection changes
+    useEffect(() => {
+        if (currentListId && selectedWords.length > 0) {
+            setIsModified(true);
+        }
+    }, [selectedWords, currentListId]);
 
     const togglePanel = () => setIsCollapsed(!isCollapsed);
 
@@ -29,6 +78,25 @@ export function SelectionTray() {
         } else {
             clearSelection();
         }
+    };
+
+    // Handler pour charger une liste
+    const handleLoadList = async (listId: string) => {
+        const words = await loadList(listId);
+        if (words) {
+            clearSelection();
+            addItems(words);
+        }
+    };
+
+    // Handler pour sauvegarder
+    const handleSaveList = async (name: string, description: string, tags: string[]) => {
+        if (editingListId) {
+            await updateList(editingListId, name, description, selectedWords, tags);
+        } else {
+            await saveList(name, description, selectedWords, tags);
+        }
+        setEditingListId(null);
     };
 
     return (
@@ -98,6 +166,42 @@ export function SelectionTray() {
                     </div>
                 </div>
             </div>
+
+            {/* Saved Lists Dropdown */}
+            <div className={cn(
+                "flex-none p-4 border-b border-slate-50 bg-white transition-all duration-300",
+                isCollapsed ? "opacity-0 -translate-x-4 pointer-events-none absolute w-full" : "opacity-100 translate-x-0"
+            )}>
+                <SavedListsDropdown
+                    lists={savedLists}
+                    currentListId={currentListId}
+                    onLoadList={handleLoadList}
+                    onEditList={(listId) => {
+                        setEditingListId(listId);
+                        setShowSaveModal(true);
+                    }}
+                    onDeleteList={deleteList}
+                    onCreateNew={() => {
+                        setEditingListId(null);
+                        setShowSaveModal(true);
+                    }}
+                />
+            </div>
+
+            {/* Modified Badge */}
+            {isModified && currentListId && !isCollapsed && (
+                <div className="flex-none px-4 py-3 bg-yellow-50 border-b border-yellow-200">
+                    <div className="text-xs text-yellow-800 mb-2 font-medium">
+                        ✏️ Liste modifiée
+                    </div>
+                    <button
+                        onClick={() => setShowSaveModal(true)}
+                        className="w-full px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-xs font-bold rounded-lg transition-colors"
+                    >
+                        Sauvegarder les modifications
+                    </button>
+                </div>
+            )}
 
             {/* Stats Section with Collapsed Indicator */}
             <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent relative min-h-[100px]">
@@ -227,42 +331,79 @@ export function SelectionTray() {
             </div>
 
             {/* Footer Action (Sandwich: Fixed at bottom) */}
-            <div className="flex-none p-4 bg-white border-t border-border flex items-center justify-center relative">
+            <div className="flex-none p-4 bg-white border-t border-border space-y-2">
+                {/* Save Button */}
                 <button
                     className={cn(
-                        "w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white border-none rounded-[14px] font-sora font-bold text-[15px] shadow-lg shadow-primary/30 transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none group whitespace-nowrap overflow-hidden",
-                        isCollapsed ? "opacity-0 scale-75 pointer-events-none w-0 p-0 invisible" : "opacity-100 scale-100 visible"
+                        "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-transparent border border-border text-foreground rounded-lg font-semibold text-sm hover:border-primary hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed",
+                        isCollapsed && "hidden"
                     )}
                     disabled={selectedWords.length === 0}
                     onClick={() => {
-                        setIsFocusModeOpen(true);
+                        setEditingListId(null);
+                        setShowSaveModal(true);
                     }}
                 >
-                    Lancer la sélection
-                    <svg
-                        className="w-4 h-4 transition-transform duration-250 ease-out group-hover:translate-x-[3px]"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                    >
-                        <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <Save className="w-4 h-4" />
+                    Sauvegarder cette liste
                 </button>
 
-                {/* Mini Launch Button */}
-                <button
-                    className={cn(
-                        "absolute w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100",
-                        isCollapsed ? "opacity-100 scale-100 delay-200 visible" : "opacity-0 scale-75 pointer-events-none invisible"
-                    )}
-                    disabled={selectedWords.length === 0}
-                    onClick={() => setIsFocusModeOpen(true)}
-                    title="Lancer la sélection"
-                >
-                    <ChevronRight className="w-6 h-6" />
-                </button>
+                {/* Launch Button */}
+                <div className="relative flex items-center justify-center">
+                    <button
+                        className={cn(
+                            "w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white border-none rounded-[14px] font-sora font-bold text-[15px] shadow-lg shadow-primary/30 transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none group whitespace-nowrap overflow-hidden",
+                            isCollapsed ? "opacity-0 scale-75 pointer-events-none w-0 p-0 invisible" : "opacity-100 scale-100 visible"
+                        )}
+                        disabled={selectedWords.length === 0}
+                        onClick={() => {
+                            setIsFocusModeOpen(true);
+                        }}
+                    >
+                        Lancer la sélection
+                        <svg
+                            className="w-4 h-4 transition-transform duration-250 ease-out group-hover:translate-x-[3px]"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                        >
+                            <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+
+                    {/* Mini Launch Button */}
+                    <button
+                        className={cn(
+                            "absolute w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100",
+                            isCollapsed ? "opacity-100 scale-100 delay-200 visible" : "opacity-0 scale-75 pointer-events-none invisible"
+                        )}
+                        disabled={selectedWords.length === 0}
+                        onClick={() => setIsFocusModeOpen(true)}
+                        title="Lancer la sélection"
+                    >
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
+                </div>
+
             </div>
+
+            {/* Save List Modal */}
+            <SaveListModal
+                isOpen={showSaveModal}
+                onClose={() => {
+                    setShowSaveModal(false);
+                    setEditingListId(null);
+                }}
+                onSave={handleSaveList}
+                words={selectedWords}
+                initialData={editingListId ? {
+                    name: savedLists.find(l => l.id === editingListId)?.name || '',
+                    description: savedLists.find(l => l.id === editingListId)?.description || '',
+                    tags: savedLists.find(l => l.id === editingListId)?.tags || []
+                } : undefined}
+                mode={editingListId ? 'edit' : 'create'}
+            />
         </aside>
     );
 }
