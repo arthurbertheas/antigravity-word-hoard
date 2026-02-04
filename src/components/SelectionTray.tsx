@@ -106,13 +106,17 @@ export function SelectionTray() {
                     "absolute inset-0 flex items-center justify-center transition-all duration-400 delay-200",
                     isCollapsed ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
                 )}>
-                    <div className="relative w-10 h-10 flex-none flex items-center justify-center">
+                    <div className="relative w-10 h-10 flex-none flex items-center justify-center" style={{ willChange: 'transform' }}>
                         <ListChecks className="w-7 h-7 text-muted-foreground flex-none" />
-                        {selectedWords.length > 0 && (
-                            <span className="absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30 z-10">
-                                {selectedWords.length}
-                            </span>
-                        )}
+                        <span
+                            className={cn(
+                                "absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center border-2 border-white shadow-lg shadow-primary/30 z-10 transition-opacity duration-150",
+                                selectedWords.length > 0 ? "opacity-100" : "opacity-0"
+                            )}
+                            style={{ willChange: 'contents' }}
+                        >
+                            {selectedWords.length || 0}
+                        </span>
                     </div>
                 </div>
 
