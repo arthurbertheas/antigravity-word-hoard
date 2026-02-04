@@ -46,36 +46,10 @@ export function SelectionTray() {
                 // @ts-ignore - Memberstack global
                 const member = await window.$memberstackDOM?.getCurrentMember();
                 if (member?.data?.auth?.email) {
-                    // Utiliser l'email Memberstack
                     setUserId(member.data.auth.email);
-                } else {
-                    // Fallback pour développement - demander l'email
-                    let userEmail = localStorage.getItem('dev_user_email');
-                    if (!userEmail) {
-                        userEmail = prompt('Mode développement : Entrez votre email pour tester les listes sauvegardées');
-                        if (userEmail) {
-                            localStorage.setItem('dev_user_email', userEmail);
-                        } else {
-                            // Si l'utilisateur annule, utiliser un ID temporaire
-                            userEmail = 'dev-user-' + Date.now();
-                        }
-                    }
-                    setUserId(userEmail);
                 }
             } catch (error) {
-                console.log('Memberstack non disponible, mode dev');
-                // Fallback pour développement - demander l'email
-                let userEmail = localStorage.getItem('dev_user_email');
-                if (!userEmail) {
-                    userEmail = prompt('Mode développement : Entrez votre email pour tester les listes sauvegardées');
-                    if (userEmail) {
-                        localStorage.setItem('dev_user_email', userEmail);
-                    } else {
-                        // Si l'utilisateur annule, utiliser un ID temporaire
-                        userEmail = 'dev-user-' + Date.now();
-                    }
-                }
-                setUserId(userEmail);
+                console.error('Memberstack error:', error);
             }
         };
         getMemberstackUser();
