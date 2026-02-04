@@ -48,12 +48,23 @@ export function SelectionTray() {
                 if (member?.data?.id) {
                     setUserId(member.data.id);
                 } else {
-                    // Fallback pour développement
-                    setUserId('dev-user-' + Date.now());
+                    // Fallback pour développement - utiliser un ID persistant
+                    let devUserId = localStorage.getItem('dev_user_id');
+                    if (!devUserId) {
+                        devUserId = 'dev-user-' + Date.now();
+                        localStorage.setItem('dev_user_id', devUserId);
+                    }
+                    setUserId(devUserId);
                 }
             } catch (error) {
                 console.log('Memberstack non disponible, mode dev');
-                setUserId('dev-user-' + Date.now());
+                // Fallback pour développement - utiliser un ID persistant
+                let devUserId = localStorage.getItem('dev_user_id');
+                if (!devUserId) {
+                    devUserId = 'dev-user-' + Date.now();
+                    localStorage.setItem('dev_user_id', devUserId);
+                }
+                setUserId(devUserId);
             }
         };
         getMemberstackUser();
