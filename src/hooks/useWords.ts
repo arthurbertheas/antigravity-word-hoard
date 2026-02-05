@@ -51,14 +51,30 @@ export function useWords() {
 
             // [NOUVEAU] Filtre par graphèmes spécifiques (AND logic)
             if (filters.graphemes.length > 0) {
-                if (!word.ORTHO) return false;
-                const ortho = word.ORTHO.toLowerCase();
+                if (!word.GSEG) return false;
+                const gseg = word.GSEG.toLowerCase();
+                // GSEG est de la forme .g.r.a.ph.e
+                const segments = gseg.split('.').filter(Boolean); // ["g", "r", "a", "ph", "e"]
+
                 const allMatch = filters.graphemes.every(tag => {
                     const val = tag.value.toLowerCase();
-                    if (tag.position === 'start') return ortho.startsWith(val);
-                    if (tag.position === 'end') return ortho.endsWith(val);
-                    if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho);
-                    return ortho.includes(val);
+                    if (tag.position === 'start') return segments[0] === val;
+                    if (tag.position === 'end') return segments[segments.length - 1] === val;
+                    if (tag.position === 'middle') {
+                        // Présent mais pas au début ni à la fin
+                        const firstIndex = segments.indexOf(val);
+                        const lastIndex = segments.lastIndexOf(val);
+                        // Doit être présent
+                        if (firstIndex === -1) return false;
+                        // Si l'unique occurrence est au début ou à la fin, ce n'est pas "milieu"
+                        // Mais attention, s'il y a plusieurs occurrences (ex : "t" dans "tente"),
+                        // si l'une d'elles est au milieu, c'est bon ?
+                        // Logic "Middle": Is there ANY occurrence at an index that is NOT 0 and NOT length-1?
+                        return segments.some((seg, index) =>
+                            seg === val && index > 0 && index < segments.length - 1
+                        );
+                    }
+                    return segments.includes(val);
                 });
                 if (!allMatch) return false;
             }
