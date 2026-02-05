@@ -378,6 +378,9 @@ export function FilterPanel({
                     </div>
                 </CollapsibleSection>
 
+                {/* Divider */}
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
+
                 {/* Fréquence */}
                 <CollapsibleSection
                     title="Fréquence"
