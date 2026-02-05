@@ -100,7 +100,9 @@ function PlayerEngine() {
         startTimeRef.current = Date.now();
 
         // Audio Timing Logic: Beep 300ms before end of gap (if gap is long enough)
-        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300) {
+        // Skip beep if the NEXT word is the FIN word (Bravo)
+        const isNextWordFin = currentIndex + 1 >= queue.length - 1;
+        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300 && !isNextWordFin) {
             const beepPreRoll = 300;
             const beepDelay = duration - beepPreRoll;
 
@@ -140,10 +142,13 @@ function PlayerEngine() {
     // Only fires if gap is too short for the pre-roll logic (< 300ms)
     useEffect(() => {
         const isShortGap = settings.gapMs < 300;
-        if (phase === 'display' && hasStarted && settings.enableSound && isShortGap) {
+        // Skip beep if CURRENT word is the FIN word
+        const isFinWord = currentIndex >= queue.length - 1;
+
+        if (phase === 'display' && hasStarted && settings.enableSound && isShortGap && !isFinWord) {
             playBeep();
         }
-    }, [phase, hasStarted, settings.enableSound, settings.gapMs]);
+    }, [phase, hasStarted, settings.enableSound, settings.gapMs, currentIndex, queue.length]);
 
     return null;
 }
