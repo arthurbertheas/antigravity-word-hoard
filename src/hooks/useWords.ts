@@ -4,6 +4,10 @@ import { Word, WordFilters, DEFAULT_FILTERS } from '../types/word';
 
 const words = wordsData as Word[];
 
+function escapeRegExp(string: string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function useWords() {
     const [filters, setFilters] = useState<WordFilters>(DEFAULT_FILTERS);
 
@@ -37,9 +41,35 @@ export function useWords() {
                 return false;
             }
 
-            // Filtre par code graphèmes
-            if (filters.graphemes.length > 0 && !filters.graphemes.includes(word["code graphèmes"])) {
+            // Filtre par code graphèmes (renamed from graphemes to graphemeDisplay in UI)
+            if (filters.graphemeDisplay.length > 0 && !filters.graphemeDisplay.includes(word["code graphèmes"])) {
                 return false;
+            }
+
+            // [NOUVEAU] Filtre par graphèmes spécifiques (AND logic)
+            if (filters.graphemes.length > 0) {
+                const ortho = word.ORTHO.toLowerCase();
+                const allMatch = filters.graphemes.every(tag => {
+                    const val = tag.value.toLowerCase();
+                    if (tag.position === 'start') return ortho.startsWith(val);
+                    if (tag.position === 'end') return ortho.endsWith(val);
+                    if (tag.position === 'middle') return new RegExp(`.+${val}.+`).test(ortho);
+                    return ortho.includes(val);
+                });
+                if (!allMatch) return false;
+            }
+
+            // [NOUVEAU] Filtre par phonèmes spécifiques (AND logic)
+            if (filters.phonemes.length > 0) {
+                const phon = word.PHON.toLowerCase();
+                const allMatch = filters.phonemes.every(tag => {
+                    const val = tag.value.toLowerCase();
+                    if (tag.position === 'start') return phon.startsWith(val);
+                    if (tag.position === 'end') return phon.endsWith(val);
+                    if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(phon);
+                    return phon.includes(val);
+                });
+                if (!allMatch) return false;
             }
 
             // Filtre par code fréquence

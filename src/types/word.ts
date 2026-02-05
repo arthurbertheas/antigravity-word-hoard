@@ -104,6 +104,13 @@ export const FREQUENCY_LABELS: Record<string, string> = {
     '4': 'Rare / Inconnu'
 };
 
+// Filter Tag for Graphemes and Phonemes
+export interface FilterTag {
+    id: string;
+    value: string;
+    position: 'start' | 'end' | 'middle' | 'anywhere';
+}
+
 // Filtres disponibles
 export interface WordFilters {
     search: string;              // Recherche textuelle (ORTHO)
@@ -112,7 +119,9 @@ export interface WordFilters {
     minSyllables: number;        // Nb syllabes min
     maxSyllables: number;        // Nb syllabes max
     structures: string[];        // Codes structure
-    graphemes: string[];         // Codes graphèmes
+    graphemeDisplay: string[];   // Codes graphèmes (Complexité - ex 'graphemes' renamed)
+    graphemes: FilterTag[];      // NOUVEAU: Recherche de graphèmes spécifiques
+    phonemes: FilterTag[];       // NOUVEAU: Recherche de phonèmes spécifiques
     frequencies: string[];       // Codes fréquence
     minLetters: number;          // Longueur min
     maxLetters: number;          // Longueur max
@@ -125,7 +134,9 @@ export const DEFAULT_FILTERS: WordFilters = {
     minSyllables: 1,
     maxSyllables: 5,
     structures: [],
+    graphemeDisplay: [],
     graphemes: [],
+    phonemes: [],
     frequencies: [],
     minLetters: 1,
     maxLetters: 14

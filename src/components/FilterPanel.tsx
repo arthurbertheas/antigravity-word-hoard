@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, Layers, BarChart3 } from "lucide-react";
+import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, Layers, BarChart3, Binary } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import {
@@ -8,7 +8,11 @@ import {
     STRUCTURE_LABELS,
     GRAPHEME_LABELS,
     FREQUENCY_LABELS,
+    FilterTag
 } from "@/types/word";
+import { GraphemeFilter } from "./filters/GraphemeFilter";
+import { PhonemeFilter } from "./filters/PhonemeFilter";
+import { FilterSection } from "./filters/FilterSection";
 
 interface FilterPanelProps {
     filters: WordFilters;
@@ -56,7 +60,6 @@ const GRAPHEME_LEVEL_COLORS: Record<string, string> = {
     '13': 'level-5',
 };
 
-// Level badge color classes
 // Level badge color classes (matching ticket requirements)
 const LEVEL_COLORS: Record<string, string> = {
     'level-1': 'bg-green-100 text-green-700',
@@ -130,47 +133,6 @@ function FilterOption({ code, label, description, isActive, onToggle, levelColor
     );
 }
 
-interface CollapsibleSectionProps {
-    title: string;
-    icon?: React.ReactNode;
-    badge?: number;
-    isOpen: boolean;
-    onToggle: () => void;
-    children: React.ReactNode;
-}
-
-function CollapsibleSection({ title, icon, badge, isOpen, onToggle, children }: CollapsibleSectionProps) {
-    return (
-        <div className="px-[22px] mb-1">
-            <div
-                className="flex items-center gap-2 py-[10px] pb-2 cursor-pointer group"
-                onClick={onToggle}
-            >
-                <div className="flex items-center gap-2.5 flex-1">
-                    {icon && (
-                        <div className="w-7 h-7 rounded-[8px] bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-border))] flex items-center justify-center transition-colors group-hover:bg-[rgb(var(--filter-accent-light))]">
-                            {icon}
-                        </div>
-                    )}
-                    <span className="font-sora text-[11px] font-bold uppercase tracking-[1px] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
-                        {title}
-                    </span>
-                    {badge !== undefined && badge > 0 && (
-                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] bg-[rgb(var(--filter-accent))] text-white text-[10px] font-bold rounded-full ml-1">
-                            {badge}
-                        </span>
-                    )}
-                </div>
-                <ChevronDown className={cn(
-                    "ml-auto text-[rgb(var(--filter-text-muted))] transition-transform duration-250 w-[14px] h-[14px]",
-                    !isOpen && "-rotate-90"
-                )} />
-            </div>
-            {isOpen && <div className="pb-[6px]">{children}</div>}
-        </div>
-    );
-}
-
 export function FilterPanel({
     filters,
     updateFilter,
@@ -183,7 +145,9 @@ export function FilterPanel({
     // Collapsible state
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         structures: true,
-        graphemes: true,
+        graphemeDisplay: false, // Renamed from graphemes
+        graphemes: true, // New text filter
+        phonemes: true, // New text filter
     });
 
     const toggleSection = (section: string) => {
@@ -215,6 +179,22 @@ export function FilterPanel({
     const getGraphemeLabel = (code: string): string => {
         const label = GRAPHEME_LABELS[code];
         return label.split('(')[0].trim();
+    };
+
+    const handleAddGrapheme = (tag: FilterTag) => {
+        updateFilter('graphemes', [...filters.graphemes, tag]);
+    };
+
+    const handleRemoveGrapheme = (id: string) => {
+        updateFilter('graphemes', filters.graphemes.filter(g => g.id !== id));
+    };
+
+    const handleAddPhonemes = (tags: FilterTag[]) => {
+        updateFilter('phonemes', [...filters.phonemes, ...tags]);
+    };
+
+    const handleRemovePhoneme = (id: string) => {
+        updateFilter('phonemes', filters.phonemes.filter(g => g.id !== id));
     };
 
     return (
@@ -257,8 +237,33 @@ export function FilterPanel({
 
             {/* Scrollable Sections */}
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
+
+                {/* [NEW] GRAPHÈMES */}
+                <GraphemeFilter
+                    isOpen={openSections.graphemes || false}
+                    onToggle={() => toggleSection('graphemes')}
+                    graphemes={filters.graphemes}
+                    onAddFilter={handleAddGrapheme}
+                    onRemoveFilter={handleRemoveGrapheme}
+                />
+
+                {/* Divider */}
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+
+                {/* [NEW] PHONÈMES */}
+                <PhonemeFilter
+                    isOpen={openSections.phonemes || false}
+                    onToggle={() => toggleSection('phonemes')}
+                    phonemes={filters.phonemes}
+                    onAddFilter={handleAddPhonemes}
+                    onRemoveFilter={handleRemovePhoneme}
+                />
+
+                {/* Divider */}
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+
                 {/* Structure syllabique */}
-                <CollapsibleSection
+                <FilterSection
                     title="Structures"
                     icon={<Layers className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.structures.length}
@@ -278,18 +283,18 @@ export function FilterPanel({
                             />
                         ))}
                     </div>
-                </CollapsibleSection>
+                </FilterSection>
 
                 {/* Divider */}
                 <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
-                {/* Complexité graphémique */}
-                <CollapsibleSection
-                    title="Graphèmes"
-                    icon={<Pencil className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={filters.graphemes.length}
-                    isOpen={openSections.graphemes}
-                    onToggle={() => toggleSection('graphemes')}
+                {/* Complexité graphémique (RENAMED) */}
+                <FilterSection
+                    title="Complexité (G)"
+                    icon={<Binary className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
+                    badge={filters.graphemeDisplay.length}
+                    isOpen={openSections.graphemeDisplay}
+                    onToggle={() => toggleSection('graphemeDisplay')}
                 >
                     <div className="space-y-0">
                         {graphemeCodes.map((code) => (
@@ -298,19 +303,19 @@ export function FilterPanel({
                                 code={code}
                                 label={getGraphemeLabel(code)}
                                 description={getGraphemeDescription(code)}
-                                isActive={filters.graphemes.includes(code)}
-                                onToggle={() => toggleArrayFilter('graphemes', code)}
+                                isActive={filters.graphemeDisplay.includes(code)}
+                                onToggle={() => toggleArrayFilter('graphemeDisplay', code)}
                                 levelColor={GRAPHEME_LEVEL_COLORS[code]}
                             />
                         ))}
                     </div>
-                </CollapsibleSection>
+                </FilterSection>
 
                 {/* Divider */}
                 <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
                 {/* Lettres (Word Length) */}
-                <CollapsibleSection
+                <FilterSection
                     title="Lettres"
                     icon={<ALargeSmall className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={(filters.minLetters !== 1 || filters.maxLetters !== 14) ? 1 : 0}
@@ -340,13 +345,13 @@ export function FilterPanel({
                             />
                         </div>
                     </div>
-                </CollapsibleSection>
+                </FilterSection>
 
                 {/* Divider */}
                 <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
                 {/* Syllabes */}
-                <CollapsibleSection
+                <FilterSection
                     title="Syllabes"
                     icon={<MessageSquare className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={(filters.minSyllables !== 1 || filters.maxSyllables !== 5) ? 1 : 0}
@@ -376,13 +381,13 @@ export function FilterPanel({
                             />
                         </div>
                     </div>
-                </CollapsibleSection>
+                </FilterSection>
 
                 {/* Divider */}
                 <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
                 {/* Fréquence */}
-                <CollapsibleSection
+                <FilterSection
                     title="Fréquence"
                     icon={<BarChart3 className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.frequencies.length}
@@ -409,7 +414,7 @@ export function FilterPanel({
                             );
                         })}
                     </div>
-                </CollapsibleSection>
+                </FilterSection>
             </div>
         </aside>
     );

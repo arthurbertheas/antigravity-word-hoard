@@ -20,12 +20,32 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
         });
     });
 
-    // Graphemes
-    filters.graphemes.forEach(g => {
+    // Graphemes (Complexity - renamed)
+    filters.graphemeDisplay.forEach(g => {
         activeFilters.push({
-            type: 'graphemes',
+            type: 'graphemeDisplay',
             value: g,
             label: GRAPHEME_LABELS[g]
+        });
+    });
+
+    // Graphèmes (Text)
+    filters.graphemes.forEach(g => {
+        const positionLabel = g.position === 'start' ? 'début' : g.position === 'end' ? 'fin' : g.position === 'middle' ? 'milieu' : '';
+        activeFilters.push({
+            type: 'graphemes',
+            value: g.id, // Using ID for removal
+            label: `${g.value} ${positionLabel ? `(${positionLabel})` : ''}`
+        });
+    });
+
+    // Phonèmes
+    filters.phonemes.forEach(p => {
+        const positionLabel = p.position === 'start' ? 'début' : p.position === 'end' ? 'fin' : p.position === 'middle' ? 'milieu' : '';
+        activeFilters.push({
+            type: 'phonemes',
+            value: p.id,
+            label: `[${p.value}] ${positionLabel ? `(${positionLabel})` : ''}`
         });
     });
 
@@ -72,7 +92,14 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
                     {filter.label}
                     <button
                         className="hover:opacity-70 transition-opacity ml-0.5"
-                        onClick={() => onRemoveFilter(filter.type, filter.value)}
+                        onClick={() => {
+                            if (filter.type === 'graphemes' || filter.type === 'phonemes') {
+                                // For complex filters, value IS the ID, so we pass it directly
+                                onRemoveFilter(filter.type, filter.value);
+                            } else {
+                                onRemoveFilter(filter.type, filter.value);
+                            }
+                        }}
                     >
                         <X className="w-3 h-3" />
                     </button>
