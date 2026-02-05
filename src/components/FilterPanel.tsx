@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, Layers, BarChart3, Binary } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Box, Calculator, Type, Layers, BarChart3 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
 import {
     WordFilters,
     STRUCTURE_LABELS,
@@ -14,6 +13,7 @@ import { GraphemeFilter } from "./filters/GraphemeFilter";
 import { PhonemeFilter } from "./filters/PhonemeFilter";
 import { SearchFilter } from "./filters/SearchFilter";
 import { FilterSection } from "./filters/FilterSection";
+import { FilterGroup } from "./filters/FilterGroup";
 
 interface FilterPanelProps {
     filters: WordFilters;
@@ -23,164 +23,27 @@ interface FilterPanelProps {
         value: WordFilters[K] extends (infer T)[] ? T : never
     ) => void;
     resetFilters: () => void;
-    stats: {
-        categories: Record<string, number>;
-        syllables: Record<number, number>;
-        structures: Record<string, number>;
-        graphemes: Record<string, number>;
-    };
+    stats: any;
     resultCount: number;
     totalCount: number;
 }
 
-// Level color mapping for structure codes
-const STRUCTURE_LEVEL_COLORS: Record<string, string> = {
-    'a': 'level-1',
-    'b': 'level-2',
-    'c': 'level-3',
-    'd': 'level-4',
-    'e': 'level-4b',
-    'f': 'level-5',
-    'g': 'level-6',
-};
-
-// Level color mapping for grapheme codes
-const GRAPHEME_LEVEL_COLORS: Record<string, string> = {
-    '1': 'level-1',
-    '2': 'level-2',
-    '3': 'level-3',
-    '4': 'level-4',
-    '5': 'level-5',
-    '6': 'level-6',
-    '7': 'level-7',
-    '8': 'level-8',
-    '9': 'level-1',
-    '10': 'level-2',
-    '11': 'level-3',
-    '12': 'level-4',
-    '13': 'level-5',
-};
-
-// Level badge color classes (matching ticket requirements)
-const LEVEL_COLORS: Record<string, string> = {
-    'level-1': 'bg-green-100 text-green-700',
-    'level-2': 'bg-green-50 text-green-600',
-    'level-3': 'bg-yellow-100 text-yellow-700',
-    'level-4': 'bg-orange-100 text-orange-600',
-    'level-4b': 'bg-orange-200 text-orange-700',
-    'level-5': 'bg-red-100 text-red-600',
-    'level-6': 'bg-purple-100 text-purple-600',
-    'level-7': 'bg-blue-100 text-blue-600',
-    'level-8': 'bg-indigo-100 text-indigo-600',
-};
-
-interface FilterOptionProps {
-    code: string;
-    label: string;
-    description?: string;
-    isActive: boolean;
-    onToggle: () => void;
-    levelColor: string;
-}
-
-function FilterOption({ code, label, description, isActive, onToggle, levelColor }: FilterOptionProps) {
-    return (
-        <div
-            className={cn(
-                "flex items-start gap-[10px] px-3 py-2 rounded-lg cursor-pointer transition-all mb-1",
-                "hover:bg-[rgb(var(--filter-surface-hover))]",
-                isActive && "bg-[rgb(var(--filter-accent-light))]"
-            )}
-            onClick={onToggle}
-        >
-            {/* Custom Radio */}
-            <div className={cn(
-                "mt-[3px] w-4 h-4 min-w-4 border-2 rounded-full flex items-center justify-center transition-all",
-                isActive
-                    ? "border-[rgb(var(--filter-accent))] bg-[rgb(var(--filter-accent))]"
-                    : "border-[rgb(var(--filter-border))] bg-white"
-            )}>
-                <div className={cn(
-                    "w-[6px] h-[6px] rounded-full bg-white transition-opacity",
-                    isActive ? "opacity-100" : "opacity-0"
-                )} />
-            </div>
-
-            {/* Level Badge */}
-            <span className={cn(
-                "inline-flex items-center justify-center w-6 h-6 min-w-6 rounded-[6px] text-xs font-bold font-sora",
-                LEVEL_COLORS[levelColor]
-            )}>
-                {code}
-            </span>
-
-            {/* Text */}
-            <div className="flex-1">
-                <div className={cn(
-                    "text-[13px] font-medium transition-all",
-                    isActive
-                        ? "text-[rgb(var(--filter-accent))] font-semibold"
-                        : "text-[rgb(var(--filter-text-primary))]"
-                )}>
-                    {label}
-                </div>
-                {description && (
-                    <div className="text-[11px] text-[rgb(var(--filter-text-muted))] mt-[1px]">
-                        {description}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
-
-export function FilterPanel({
-    filters,
-    updateFilter,
-    toggleArrayFilter,
-    stats,
-}: FilterPanelProps) {
-    const structures = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
-    const graphemeCodes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'];
+export function FilterPanel({ filters, updateFilter, toggleArrayFilter, resetFilters, stats, resultCount, totalCount }: FilterPanelProps) {
 
     // Collapsible state
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        search: true, // NEW
+        search: true,
+        graphemes: true,
+        phonemes: false,
         structures: true,
-        graphemeDisplay: false, // Renamed from graphemes
-        graphemes: true, // New text filter
-        phonemes: true, // New text filter
+        graphemeDisplay: false,
+        length: false,
+        syllables: false,
+        frequency: false,
     });
 
-    const toggleSection = (section: string) => {
-        setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
-    };
-
-    // Extract descriptions from labels
-    const getStructureDescription = (code: string): string | undefined => {
-        const label = STRUCTURE_LABELS[code];
-        if (label.includes('(')) {
-            return label.split('(')[1].replace(')', '');
-        }
-        return undefined;
-    };
-
-    const getStructureLabel = (code: string): string => {
-        const label = STRUCTURE_LABELS[code];
-        return label.split('(')[0].trim();
-    };
-
-    const getGraphemeDescription = (code: string): string | undefined => {
-        const label = GRAPHEME_LABELS[code];
-        if (label.includes('(')) {
-            return label.split('(')[1].replace(')', '');
-        }
-        return undefined;
-    };
-
-    const getGraphemeLabel = (code: string): string => {
-        const label = GRAPHEME_LABELS[code];
-        return label.split('(')[0].trim();
+    const toggleSection = (key: string) => {
+        setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
     const handleAddSearch = (tag: FilterTag) => {
@@ -196,222 +59,224 @@ export function FilterPanel({
     };
 
     const handleRemoveGrapheme = (id: string) => {
-        updateFilter('graphemes', filters.graphemes.filter(g => g.id !== id));
+        updateFilter('graphemes', filters.graphemes.filter(t => t.id !== id));
     };
 
-    const handleAddPhonemes = (tags: FilterTag[]) => {
-        updateFilter('phonemes', [...filters.phonemes, ...tags]);
+    const handleAddPhonemes = (tag: FilterTag) => {
+        updateFilter('phonemes', [...filters.phonemes, tag]);
     };
 
     const handleRemovePhoneme = (id: string) => {
-        updateFilter('phonemes', filters.phonemes.filter(g => g.id !== id));
+        updateFilter('phonemes', filters.phonemes.filter(t => t.id !== id));
     };
 
     return (
-        <aside className="w-[300px] min-w-[300px] h-full bg-[rgb(var(--filter-surface))] border-r border-[rgb(var(--filter-border))] flex flex-col font-['DM_Sans'] z-10 overflow-hidden">
+        <aside className="w-[300px] shrink-0 bg-[#f4f5f7] flex flex-col h-full border-r border-[#e4e6eb] shadow-[0_10px_20px_-4px_rgba(0,0,0,0.12)] z-10">
             {/* Header */}
-            <div className="px-[22px] pt-6 pb-4 border-b border-[rgb(var(--filter-border))]">
-                <h2 className="font-sora text-lg font-bold text-[rgb(var(--filter-text-primary))] mb-[2px]">
+            <div className="p-[22px] pb-[14px] bg-white border-b border-[#e4e6eb]">
+                <h2 className="font-display text-[17px] font-bold tracking-[-0.02em] text-[#1a1c23] mb-[2px]">
                     Filtres
                 </h2>
-                <p className="text-xs text-[rgb(var(--filter-text-muted))]">
+                <p className="text-[12px] text-[#9ca3af]">
                     Affinez votre recherche
                 </p>
             </div>
 
-            {/* Scrollable Sections */}
-            <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
+            <ScrollArea className="flex-1 bg-white">
+                <div className="pb-6">
 
-                {/* [NEW] RECHERCHE AVANCÉE */}
-                <SearchFilter
-                    isOpen={openSections.search || false}
-                    onToggle={() => toggleSection('search')}
-                    searchTags={filters.search}
-                    onAddFilter={handleAddSearch}
-                    onRemoveFilter={handleRemoveSearch}
-                />
+                    {/* ═══ GROUP 1: TEXTUEL (Violet) ═══ */}
+                    <FilterGroup label="Textuel" variant="text" />
 
-                {/* Divider - Search / Filters */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
+                    <SearchFilter
+                        isOpen={openSections.search || false}
+                        onToggle={() => toggleSection('search')}
+                        searchTags={filters.search}
+                        onAddFilter={handleAddSearch}
+                        onRemoveFilter={handleRemoveSearch}
+                    />
 
-                {/* [NEW] GRAPHÈMES */}
-                <GraphemeFilter
-                    isOpen={openSections.graphemes || false}
-                    onToggle={() => toggleSection('graphemes')}
-                    graphemes={filters.graphemes}
-                    onAddFilter={handleAddGrapheme}
-                    onRemoveFilter={handleRemoveGrapheme}
-                />
+                    <GraphemeFilter
+                        isOpen={openSections.graphemes || false}
+                        onToggle={() => toggleSection('graphemes')}
+                        graphemes={filters.graphemes}
+                        onAddFilter={handleAddGrapheme}
+                        onRemoveFilter={handleRemoveGrapheme}
+                    />
 
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
+                    <PhonemeFilter
+                        isOpen={openSections.phonemes || false}
+                        onToggle={() => toggleSection('phonemes')}
+                        phonemes={filters.phonemes}
+                        onAddFilter={handleAddPhonemes}
+                        onRemoveFilter={handleRemovePhoneme}
+                    />
 
-                {/* [NEW] PHONÈMES */}
-                <PhonemeFilter
-                    isOpen={openSections.phonemes || false}
-                    onToggle={() => toggleSection('phonemes')}
-                    phonemes={filters.phonemes}
-                    onAddFilter={handleAddPhonemes}
-                    onRemoveFilter={handleRemovePhoneme}
-                />
+                    {/* ═══ GROUP 2: STRUCTURE (Cyan) ═══ */}
+                    <FilterGroup label="Structure" variant="struct" />
 
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
-
-                {/* Structure syllabique */}
-                <FilterSection
-                    title="Structures"
-                    icon={<Layers className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={filters.structures.length}
-                    isOpen={openSections.structures}
-                    onToggle={() => toggleSection('structures')}
-                >
-                    <div className="space-y-0">
-                        {structures.map((code) => (
-                            <FilterOption
-                                key={code}
-                                code={code}
-                                label={getStructureLabel(code)}
-                                description={getStructureDescription(code)}
-                                isActive={filters.structures.includes(code)}
-                                onToggle={() => toggleArrayFilter('structures', code)}
-                                levelColor={STRUCTURE_LEVEL_COLORS[code]}
-                            />
-                        ))}
-                    </div>
-                </FilterSection>
-
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
-
-                {/* Complexité graphémique (RENAMED) */}
-                <FilterSection
-                    title="Complexité (G)"
-                    icon={<Binary className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={filters.graphemeDisplay.length}
-                    isOpen={openSections.graphemeDisplay}
-                    onToggle={() => toggleSection('graphemeDisplay')}
-                >
-                    <div className="space-y-0">
-                        {graphemeCodes.map((code) => (
-                            <FilterOption
-                                key={code}
-                                code={code}
-                                label={getGraphemeLabel(code)}
-                                description={getGraphemeDescription(code)}
-                                isActive={filters.graphemeDisplay.includes(code)}
-                                onToggle={() => toggleArrayFilter('graphemeDisplay', code)}
-                                levelColor={GRAPHEME_LEVEL_COLORS[code]}
-                            />
-                        ))}
-                    </div>
-                </FilterSection>
-
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
-
-                {/* Lettres (Word Length) */}
-                <FilterSection
-                    title="Longueur"
-                    icon={<ALargeSmall className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={(filters.minLetters !== 1 || filters.maxLetters !== 14) ? 1 : 0}
-                    isOpen={openSections.length || false}
-                    onToggle={() => toggleSection('length')}
-                >
-                    <div className="space-y-4 px-1 pb-2 pt-2">
-                        <div className="flex items-center justify-between">
-                            <span className="text-[12px] font-medium text-[rgb(var(--filter-text-secondary))]">
-                                Longueur du mot
-                            </span>
-                            <span className="font-mono text-[12px] font-medium text-[rgb(var(--filter-accent))] bg-[rgb(var(--filter-accent-light))] px-2.5 py-1 rounded-[6px]">
-                                {filters.minLetters} — {filters.maxLetters}
-                            </span>
+                    <FilterSection
+                        title="Structures"
+                        icon={<Box className="w-3.5 h-3.5 text-[rgb(var(--cat-struct))]" />}
+                        badge={filters.structures.length}
+                        isOpen={openSections.structures || false}
+                        onToggle={() => toggleSection('structures')}
+                        variant="struct"
+                    >
+                        <div className="space-y-1">
+                            {Object.entries(STRUCTURE_LABELS).map(([key, label]) => (
+                                <label key={key} className="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.structures.includes(key)}
+                                        onChange={() => toggleArrayFilter('structures', key)}
+                                        className="rounded border-slate-300 text-[rgb(var(--cat-struct))] focus:ring-[rgb(var(--cat-struct))]"
+                                    />
+                                    <span className="text-[12px] text-slate-600 group-hover:text-slate-900">{label}</span>
+                                </label>
+                            ))}
                         </div>
+                    </FilterSection>
 
-                        <div className="px-1 py-4">
-                            <Slider
-                                min={1}
-                                max={14}
-                                step={1}
-                                value={[filters.minLetters, filters.maxLetters]}
-                                onValueChange={([min, max]) => {
-                                    updateFilter('minLetters', min);
-                                    updateFilter('maxLetters', max);
-                                }}
-                            />
+                    <FilterSection
+                        title="Complexité (G)"
+                        icon={<Calculator className="w-3.5 h-3.5 text-[rgb(var(--cat-struct))]" />}
+                        badge={filters.graphemeDisplay.length}
+                        isOpen={openSections.graphemeDisplay || false}
+                        onToggle={() => toggleSection('graphemeDisplay')}
+                        variant="struct"
+                    >
+                        <div className="space-y-1">
+                            {Object.entries(GRAPHEME_LABELS).map(([key, label]) => (
+                                <label key={key} className="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.graphemeDisplay.includes(key)}
+                                        onChange={() => toggleArrayFilter('graphemeDisplay', key)}
+                                        className="rounded border-slate-300 text-[rgb(var(--cat-struct))] focus:ring-[rgb(var(--cat-struct))]"
+                                    />
+                                    <span className="text-[12px] text-slate-600 group-hover:text-slate-900">
+                                        {label.split('(')[0].trim()}
+                                        <span className="text-[10px] text-slate-400 ml-1">
+                                            ({label.split('(')[1]?.replace(')', '')})
+                                        </span>
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    </FilterSection>
+
+                    {/* ═══ GROUP 3: MÉTRIQUES (Ambre) ═══ */}
+                    <FilterGroup label="Métriques" variant="metric" />
+
+                    <FilterSection
+                        title="Longueur"
+                        icon={<Type className="w-3.5 h-3.5 text-[rgb(var(--cat-metric))]" />}
+                        badge={(filters.minLetters !== 1 || filters.maxLetters !== 14) ? 1 : 0}
+                        isOpen={openSections.length || false}
+                        onToggle={() => toggleSection('length')}
+                        variant="metric"
+                    >
+                        <div className="space-y-4 px-1 pb-2 pt-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[12px] font-medium text-[rgb(var(--filter-text-secondary))]">
+                                    Longueur du mot
+                                </span>
+                                <span className="text-[12px] font-bold text-[rgb(var(--filter-text-primary))] bg-[rgb(var(--filter-bg))] px-2 py-0.5 rounded">
+                                    {filters.minLetters === filters.maxLetters
+                                        ? `${filters.minLetters} lettres`
+                                        : `${filters.minLetters} - ${filters.maxLetters}`}
+                                </span>
+                            </div>
+                            <div className="px-2">
+                                {/* Using native range inputs temporarily if slider component needs updating, or check Slider usage */}
+                                <div className="flex gap-4">
+                                    <input
+                                        type="range"
+                                        min={1} max={25}
+                                        value={filters.minLetters}
+                                        onChange={(e) => updateFilter('minLetters', parseInt(e.target.value))}
+                                        className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[rgb(var(--cat-metric))]"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </FilterSection>
+
+                    <FilterSection
+                        title="Syllabes"
+                        icon={<Layers className="w-3.5 h-3.5 text-[rgb(var(--cat-metric))]" />}
+                        badge={(filters.minSyllables !== 1 || filters.maxSyllables !== 8) ? 1 : 0}
+                        isOpen={openSections.syllables || false}
+                        onToggle={() => toggleSection('syllables')}
+                        variant="metric"
+                    >
+                        <div className="space-y-4 px-1 pb-2 pt-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[12px] font-medium text-[rgb(var(--filter-text-secondary))]">
+                                    Nombre de syllabes
+                                </span>
+                                <span className="text-[12px] font-bold text-[rgb(var(--filter-text-primary))] bg-[rgb(var(--filter-bg))] px-2 py-0.5 rounded">
+                                    {filters.minSyllables === filters.maxSyllables
+                                        ? `${filters.minSyllables}`
+                                        : `${filters.minSyllables} - ${filters.maxSyllables}`}
+                                </span>
+                            </div>
+                            <div className="px-2">
+                                <input
+                                    type="range"
+                                    min={1} max={8}
+                                    value={filters.minSyllables}
+                                    onChange={(e) => updateFilter('minSyllables', parseInt(e.target.value))}
+                                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[rgb(var(--cat-metric))]"
+                                />
+                            </div>
+                        </div>
+                    </FilterSection>
+
+                    <FilterSection
+                        title="Fréquence"
+                        icon={<BarChart3 className="w-3.5 h-3.5 text-[rgb(var(--cat-metric))]" />}
+                        badge={filters.frequencies.length}
+                        isOpen={openSections.frequency || false}
+                        onToggle={() => toggleSection('frequency')}
+                        variant="metric"
+                    >
+                        <div className="space-y-1">
+                            {Object.entries(FREQUENCY_LABELS).map(([key, label]) => (
+                                <label key={key} className="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.frequencies.includes(key)}
+                                        onChange={() => toggleArrayFilter('frequencies', key)}
+                                        className="rounded border-slate-300 text-[rgb(var(--cat-metric))] focus:ring-[rgb(var(--cat-metric))]"
+                                    />
+                                    <span className="text-[12px] text-slate-600 group-hover:text-slate-900">{label}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </FilterSection>
+
+                    <div className="h-4" />
+
+                    {/* Legend */}
+                    <div className="mx-[22px] pt-[14px] border-t border-[#e4e6eb] flex gap-[14px]">
+                        <div className="flex items-center gap-[5px] text-[10px] font-medium text-[#9ca3af]">
+                            <div className="w-[7px] h-[7px] rounded-[3px] bg-[rgb(var(--cat-text))]"></div>
+                            Textuel
+                        </div>
+                        <div className="flex items-center gap-[5px] text-[10px] font-medium text-[#9ca3af]">
+                            <div className="w-[7px] h-[7px] rounded-[3px] bg-[rgb(var(--cat-struct))]"></div>
+                            Structure
+                        </div>
+                        <div className="flex items-center gap-[5px] text-[10px] font-medium text-[#9ca3af]">
+                            <div className="w-[7px] h-[7px] rounded-[3px] bg-[rgb(var(--cat-metric))]"></div>
+                            Métriques
                         </div>
                     </div>
-                </FilterSection>
 
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
-
-                {/* Syllabes */}
-                <FilterSection
-                    title="Syllabes"
-                    icon={<MessageSquare className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={(filters.minSyllables !== 1 || filters.maxSyllables !== 5) ? 1 : 0}
-                    isOpen={openSections.syllables || false}
-                    onToggle={() => toggleSection('syllables')}
-                >
-                    <div className="space-y-4 px-1 pb-2 pt-2">
-                        <div className="flex items-center justify-between">
-                            <span className="text-[12px] font-medium text-[rgb(var(--filter-text-secondary))]">
-                                Nombre de syllabes
-                            </span>
-                            <span className="font-mono text-[12px] font-medium text-[rgb(var(--filter-accent))] bg-[rgb(var(--filter-accent-light))] px-2.5 py-1 rounded-[6px]">
-                                {filters.minSyllables} — {filters.maxSyllables}
-                            </span>
-                        </div>
-
-                        <div className="px-1 py-4">
-                            <Slider
-                                min={1}
-                                max={5}
-                                step={1}
-                                value={[filters.minSyllables, filters.maxSyllables]}
-                                onValueChange={([min, max]) => {
-                                    updateFilter('minSyllables', min);
-                                    updateFilter('maxSyllables', max);
-                                }}
-                            />
-                        </div>
-                    </div>
-                </FilterSection>
-
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
-
-                {/* Fréquence */}
-                <FilterSection
-                    title="Fréquence"
-                    icon={<BarChart3 className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={filters.frequencies.length}
-                    isOpen={openSections.frequencies || false}
-                    onToggle={() => toggleSection('frequencies')}
-                >
-                    <div className="flex flex-wrap gap-2 px-1">
-                        {['1', '2', '3', '4'].map((code) => {
-                            const isActive = filters.frequencies.includes(code);
-                            const label = FREQUENCY_LABELS[code];
-                            return (
-                                <button
-                                    key={code}
-                                    onClick={() => toggleArrayFilter('frequencies', code)}
-                                    className={cn(
-                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-2 whitespace-nowrap font-display",
-                                        isActive
-                                            ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-md shadow-[rgba(79,70,229,0.3)]"
-                                            : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[rgb(var(--filter-text-secondary))] hover:bg-[rgb(var(--filter-surface-hover))]"
-                                    )}
-                                >
-                                    {label}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </FilterSection>
-            </div>
+                </div>
+            </ScrollArea>
         </aside>
     );
 }
