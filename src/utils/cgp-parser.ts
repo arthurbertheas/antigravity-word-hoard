@@ -4,7 +4,7 @@ import type { CGPTokens, ParsedGrapheme, GraphemeType } from '@/types/cgp';
 const cgpTokens = (cgpTokensData || { voyelles: {}, consonnes: {}, muettes: [], graphemeToType: {} }) as CGPTokens;
 
 // Build a comprehensive set of vowel graphemes from the CGP data
-const VOWEL_GRAPHEMES = new Set<string>();
+const VOWEL_GRAPHEMES = new Set<string>(['â', 'û', 'î', 'ï', 'ô', 'à', 'è', 'ù', 'ë']);
 const SILENT_MARKERS = new Set(['#', '*']);
 
 // Safety check before iterating

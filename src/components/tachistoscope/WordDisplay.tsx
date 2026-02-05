@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Word } from '@/types/word';
 import { cn } from '@/lib/utils';
 import { usePlayer } from '@/contexts/PlayerContext';
-import { parseGPMATCH } from '@/utils/cgp-parser';
+import { parseGPMATCH, getGraphemeType } from '@/utils/cgp-parser';
 
 interface WordDisplayProps {
     word: Word;
@@ -30,7 +30,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         return word.GSEG.split('.').filter(s => s.length > 0).map(seg => ({
             grapheme: seg,
             phoneme: '',
-            type: 'unknown' as const
+            type: getGraphemeType(seg)
         }));
     }, [word.GPMATCH, word.GSEG]);
 
