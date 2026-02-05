@@ -227,7 +227,7 @@ export function FilterPanel({
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
 
                 {/* Divider - Search / Filters */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* [NEW] GRAPHÈMES */}
                 <GraphemeFilter
@@ -239,7 +239,7 @@ export function FilterPanel({
                 />
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* [NEW] PHONÈMES */}
                 <PhonemeFilter
@@ -251,7 +251,7 @@ export function FilterPanel({
                 />
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* Structure syllabique */}
                 <FilterSection
@@ -277,7 +277,7 @@ export function FilterPanel({
                 </FilterSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* Complexité graphémique (RENAMED) */}
                 <FilterSection
@@ -303,7 +303,7 @@ export function FilterPanel({
                 </FilterSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* Lettres (Word Length) */}
                 <FilterSection
@@ -339,7 +339,7 @@ export function FilterPanel({
                 </FilterSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* Syllabes */}
                 <FilterSection
@@ -375,7 +375,7 @@ export function FilterPanel({
                 </FilterSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* Fréquence */}
                 <FilterSection
