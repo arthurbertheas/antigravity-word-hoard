@@ -105,7 +105,7 @@ function PlayerEngine() {
         const isNextWordFin = currentIndex + 1 >= queue.length - 1;
         const isFirstWord = currentIndex === 0;
 
-        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300 && !isNextWordFin && !isFirstWord) {
+        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300 && !isNextWordFin) {
             const beepPreRoll = 300;
             const beepDelay = duration - beepPreRoll;
 
