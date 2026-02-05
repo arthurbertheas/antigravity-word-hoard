@@ -113,7 +113,7 @@ export interface FilterTag {
 
 // Filtres disponibles
 export interface WordFilters {
-    search: string;              // Recherche textuelle (ORTHO)
+    search: FilterTag[];         // Recherche avancée (ORTHO) - MODIFIÉ
     categories: SyntCategory[];  // Catégories syntaxiques
     minSyllables: number;        // Nb syllabes min
     maxSyllables: number;        // Nb syllabes max
@@ -127,7 +127,7 @@ export interface WordFilters {
 }
 
 export const DEFAULT_FILTERS: WordFilters = {
-    search: '',
+    search: [],
     categories: [],
     minSyllables: 1,
     maxSyllables: 5,

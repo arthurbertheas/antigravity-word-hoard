@@ -12,6 +12,7 @@ import {
 } from "@/types/word";
 import { GraphemeFilter } from "./filters/GraphemeFilter";
 import { PhonemeFilter } from "./filters/PhonemeFilter";
+import { SearchFilter } from "./filters/SearchFilter";
 import { FilterSection } from "./filters/FilterSection";
 
 interface FilterPanelProps {
@@ -144,6 +145,7 @@ export function FilterPanel({
 
     // Collapsible state
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        search: true, // NEW
         structures: true,
         graphemeDisplay: false, // Renamed from graphemes
         graphemes: true, // New text filter
@@ -181,6 +183,14 @@ export function FilterPanel({
         return label.split('(')[0].trim();
     };
 
+    const handleAddSearch = (tag: FilterTag) => {
+        updateFilter('search', [...filters.search, tag]);
+    };
+
+    const handleRemoveSearch = (id: string) => {
+        updateFilter('search', filters.search.filter(t => t.id !== id));
+    };
+
     const handleAddGrapheme = (tag: FilterTag) => {
         updateFilter('graphemes', [...filters.graphemes, tag]);
     };
@@ -209,22 +219,17 @@ export function FilterPanel({
                 </p>
             </div>
 
-            {/* Search */}
-            <div className="p-[14px_22px] relative">
-                <Search className="absolute left-[34px] top-1/2 -translate-y-1/2 h-[15px] w-[15px] text-[rgb(var(--filter-text-muted))] pointer-events-none" />
-                <Input
-                    type="text"
-                    placeholder="Rechercher un mot…"
-                    value={filters.search}
-                    onChange={(e) => updateFilter('search', e.target.value)}
-                    className="w-full pl-[38px] pr-[14px] py-[10px] bg-[rgb(var(--filter-bg))] border-[1.5px] border-[rgb(var(--filter-border))] rounded-[10px] text-[13px] text-[rgb(var(--filter-text-primary))] placeholder:text-[rgb(var(--filter-text-muted))] focus-visible:outline-none focus-visible:border-[rgb(var(--filter-border-focus))] focus-visible:ring-[3px] focus-visible:ring-[rgba(79,70,229,0.12)] transition-all shadow-none h-auto"
-                />
-            </div>
-
-
-
             {/* Scrollable Sections */}
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
+
+                {/* [NEW] RECHERCHE AVANCÉE */}
+                <SearchFilter
+                    isOpen={openSections.search || false}
+                    onToggle={() => toggleSection('search')}
+                    searchTags={filters.search}
+                    onAddFilter={handleAddSearch}
+                    onRemoveFilter={handleRemoveSearch}
+                />
 
                 {/* Divider - Search / Filters */}
                 <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />

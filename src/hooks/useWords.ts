@@ -16,9 +16,18 @@ export function useWords() {
 
     const filteredWords = useMemo(() => {
         return words.filter((word) => {
-            // Recherche textuelle sur l'orthographe
-            if (filters.search && (!word.ORTHO || !word.ORTHO.toLowerCase().includes(filters.search.toLowerCase()))) {
-                return false;
+            // Recherche textuelle avancée (ORTHO) - [MODIFIÉ: Supporte maintenant les tags multiples et positions]
+            if (filters.search.length > 0) {
+                if (!word.ORTHO) return false;
+                const ortho = word.ORTHO.toLowerCase();
+                const allMatch = filters.search.every(tag => {
+                    const val = tag.value.toLowerCase();
+                    if (tag.position === 'start') return ortho.startsWith(val);
+                    if (tag.position === 'end') return ortho.endsWith(val);
+                    if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho);
+                    return ortho.includes(val);
+                });
+                if (!allMatch) return false;
             }
 
             // Filtre par catégorie syntaxique

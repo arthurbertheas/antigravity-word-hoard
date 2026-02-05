@@ -11,6 +11,18 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
     // Build list of active filters
     const activeFilters: Array<{ type: keyof WordFilters; value: any; label: string }> = [];
 
+    // Search (Advanced)
+    filters.search.forEach(s => {
+        const positionLabel = s.position === 'start' ? 'début' : s.position === 'end' ? 'fin' : s.position === 'middle' ? 'milieu' : '';
+        activeFilters.push({
+            type: 'search',
+            value: s.id,
+            label: `${s.value} ${positionLabel ? `(${positionLabel})` : ''}`
+        });
+    });
+
+
+
     // Structures
     filters.structures.forEach(s => {
         activeFilters.push({
@@ -93,7 +105,7 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
                     <button
                         className="hover:opacity-70 transition-opacity ml-0.5"
                         onClick={() => {
-                            if (filter.type === 'graphemes' || filter.type === 'phonemes') {
+                            if (filter.type === 'graphemes' || filter.type === 'phonemes' || filter.type === 'search') {
                                 // For complex filters, value IS the ID, so we pass it directly
                                 onRemoveFilter(filter.type, filter.value);
                             } else {
