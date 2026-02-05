@@ -99,14 +99,14 @@ function PlayerEngine() {
         // Start Timer
         startTimeRef.current = Date.now();
 
-        // Audio Timing Logic: Beep 300ms before end of gap (if gap is long enough)
+        // Audio Timing Logic: Beep 500ms before end of gap (if gap is long enough)
         // Skip beep if the NEXT word is the FIN word (Bravo) OR if it is the FIRST word (index 0)
         // For the first word (index 0), we want to beep ON DISPLAY, not before so we skip pre-roll.
         const isNextWordFin = currentIndex + 1 >= queue.length - 1;
         const isFirstWord = currentIndex === 0;
 
-        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300 && !isNextWordFin) {
-            const beepPreRoll = 300;
+        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 500 && !isNextWordFin) {
+            const beepPreRoll = 500;
             const beepDelay = duration - beepPreRoll;
 
             if (beepDelay >= 0) {
@@ -114,8 +114,8 @@ function PlayerEngine() {
                     playBeep();
                 }, beepDelay);
             } else {
-                // If we resume with less than 300ms left, beep immediately
-                // because the "display" trigger won't fire (since gapMs >= 300)
+                // If we resume with less than 500ms left, beep immediately
+                // because the "display" trigger won't fire (since gapMs >= 500)
                 playBeep();
             }
         }
@@ -142,9 +142,9 @@ function PlayerEngine() {
     }, [isPlaying, currentIndex, phase, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
 
     // Audio Feedback Trigger (On Display)
-    // Only fires if gap is too short for the pre-roll logic (< 300ms) OR if it is the first word
+    // Only fires if gap is too short for the pre-roll logic (< 500ms) OR if it is the first word
     useEffect(() => {
-        const isShortGap = settings.gapMs < 300;
+        const isShortGap = settings.gapMs < 500;
         // Skip beep if CURRENT word is the FIN word
         const isFinWord = currentIndex >= queue.length - 1;
         const isFirstWord = currentIndex === 0;
