@@ -15,7 +15,7 @@ export function FilterSection({ title, icon, badge, isOpen, onToggle, children, 
     return (
         <div className={cn("px-[22px] mb-1", className)}>
             <div
-                className="flex items-center gap-2 py-[10px] pb-2 cursor-pointer group"
+                className="flex items-center gap-2 py-2.5 px-3 -mx-3 cursor-pointer group hover:bg-[rgb(var(--filter-surface-hover))] rounded-lg transition-colors"
                 onClick={onToggle}
             >
                 <div className="flex items-center gap-2.5 flex-1">
