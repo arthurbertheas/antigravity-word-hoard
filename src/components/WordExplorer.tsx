@@ -94,7 +94,7 @@ function WordExplorerContent() {
             />
 
             {/* Zone B: Results - Source (Sandwich) */}
-            <main className="flex-1 min-w-0 bg-white h-full border-r border-border overflow-hidden flex flex-col">
+            <main className="flex-1 min-w-0 bg-white h-full overflow-hidden flex flex-col">
                 {/* Results Header */}
                 <ResultsHeader
                     words={words}

@@ -102,7 +102,7 @@ export function SelectionTray() {
 
     return (
         <aside className={cn(
-            "shrink-0 bg-card/10 flex flex-col h-full border-l border-border transition-width-smooth overflow-hidden relative",
+            "shrink-0 bg-card/10 flex flex-col h-full border-l border-[rgb(var(--filter-border))] transition-width-smooth overflow-hidden relative",
             isCollapsed ? "w-[64px]" : "w-80"
         )}>
             {/* Header (Sandwich: Fixed) */}
