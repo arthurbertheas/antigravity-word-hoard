@@ -14,12 +14,12 @@ export function useWords() {
     const filteredWords = useMemo(() => {
         return words.filter((word) => {
             // Recherche textuelle sur l'orthographe
-            if (filters.search && !word.ORTHO.toLowerCase().includes(filters.search.toLowerCase())) {
+            if (filters.search && (!word.ORTHO || !word.ORTHO.toLowerCase().includes(filters.search.toLowerCase()))) {
                 return false;
             }
 
             // Recherche phonétique
-            if (filters.phonSearch && !word.PHON.toLowerCase().includes(filters.phonSearch.toLowerCase())) {
+            if (filters.phonSearch && (!word.PHON || !word.PHON.toLowerCase().includes(filters.phonSearch.toLowerCase()))) {
                 return false;
             }
 
@@ -48,12 +48,13 @@ export function useWords() {
 
             // [NOUVEAU] Filtre par graphèmes spécifiques (AND logic)
             if (filters.graphemes.length > 0) {
+                if (!word.ORTHO) return false;
                 const ortho = word.ORTHO.toLowerCase();
                 const allMatch = filters.graphemes.every(tag => {
                     const val = tag.value.toLowerCase();
                     if (tag.position === 'start') return ortho.startsWith(val);
                     if (tag.position === 'end') return ortho.endsWith(val);
-                    if (tag.position === 'middle') return new RegExp(`.+${val}.+`).test(ortho);
+                    if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho);
                     return ortho.includes(val);
                 });
                 if (!allMatch) return false;
@@ -61,6 +62,7 @@ export function useWords() {
 
             // [NOUVEAU] Filtre par phonèmes spécifiques (AND logic)
             if (filters.phonemes.length > 0) {
+                if (!word.PHON) return false;
                 const phon = word.PHON.toLowerCase();
                 const allMatch = filters.phonemes.every(tag => {
                     const val = tag.value.toLowerCase();
