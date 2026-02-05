@@ -69,7 +69,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     };
 
     const containerClasses = cn(
-        "flex items-center justify-center text-center transition-all duration-200 w-full",
+        "flex items-center justify-center text-center w-full",
         (settings.fontFamily === 'sans' || settings.fontFamily === 'arial') && "font-sans",
         settings.fontFamily === 'serif' && "font-serif",
         settings.fontFamily === 'mono' && "font-mono",
