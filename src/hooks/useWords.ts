@@ -2,7 +2,10 @@ import { useState, useMemo } from 'react';
 import wordsData from '../data/words.json';
 import { Word, WordFilters, DEFAULT_FILTERS } from '../types/word';
 
-const words = wordsData as Word[];
+const words = (wordsData as any[]).map(w => ({
+    ...w,
+    PHON: w.PHON || (w.PSEG ? w.PSEG.replace(/[.#]/g, '') : '')
+})) as Word[];
 
 function escapeRegExp(string: string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
