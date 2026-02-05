@@ -159,7 +159,7 @@ function PlayerEngine() {
         if (phase === 'display' && hasStarted && settings.enableSound && shouldBeepOnDisplay) {
             playBeep();
         }
-    }, [phase, hasStarted, settings.enableSound, settings.gapMs, currentIndex, queue.length]);
+    }, [phase, hasStarted, settings.enableSound, settings.gapMs, currentIndex, queue.length, isPlaying]);
 
     return null;
 }
