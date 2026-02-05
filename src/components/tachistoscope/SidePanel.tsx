@@ -65,6 +65,13 @@ export function SidePanel() {
         togglePanelMode('config');
     };
 
+    const tabs: { id: TabType; label: string }[] = [
+        { id: 'visual', label: 'Visuel' },
+        { id: 'timing', label: 'Timing' },
+        { id: 'focus', label: 'Focus' },
+        { id: 'sound', label: 'Son' },
+    ];
+
     return (
         <>
             {/* BACKDROP - Always in DOM, animated with classes */}
