@@ -21,11 +21,6 @@ export function useWords() {
                 return false;
             }
 
-            // Recherche phonétique
-            if (filters.phonSearch && (!word.PHON || !word.PHON.toLowerCase().includes(filters.phonSearch.toLowerCase()))) {
-                return false;
-            }
-
             // Filtre par catégorie syntaxique
             if (filters.categories.length > 0 && !filters.categories.includes(word.SYNT as any)) {
                 return false;

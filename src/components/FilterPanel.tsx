@@ -221,19 +221,7 @@ export function FilterPanel({
                 />
             </div>
 
-            {/* Phonetic */}
-            <div className="px-[22px] pb-4">
-                <label className="block text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--filter-text-muted))] mb-[6px]">
-                    Phonétique
-                </label>
-                <Input
-                    type="text"
-                    placeholder="/a/, /l/…"
-                    value={filters.phonSearch}
-                    onChange={(e) => updateFilter('phonSearch', e.target.value)}
-                    className="w-full px-3 py-2 bg-[rgb(var(--filter-bg))] border-[1.5px] border-[rgb(var(--filter-border))] rounded-[6px] text-[13px] text-[rgb(var(--filter-text-primary))] font-sora placeholder:text-[rgb(var(--filter-text-muted))] focus-visible:outline-none focus-visible:border-[rgb(var(--filter-border-focus))] transition-all shadow-none h-auto"
-                />
-            </div>
+
 
             {/* Scrollable Sections */}
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
