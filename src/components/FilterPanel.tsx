@@ -281,7 +281,7 @@ export function FilterPanel({
                 </CollapsibleSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
                 {/* Complexité graphémique */}
                 <CollapsibleSection
@@ -307,7 +307,7 @@ export function FilterPanel({
                 </CollapsibleSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
                 {/* Lettres (Word Length) */}
                 <CollapsibleSection
@@ -343,7 +343,7 @@ export function FilterPanel({
                 </CollapsibleSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
                 {/* Syllabes */}
                 <CollapsibleSection
@@ -379,7 +379,7 @@ export function FilterPanel({
                 </CollapsibleSection>
 
                 {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
 
                 {/* Fréquence */}
                 <CollapsibleSection
