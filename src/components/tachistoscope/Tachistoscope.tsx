@@ -150,10 +150,11 @@ function PlayerEngine() {
         const isFirstWord = currentIndex === 0;
 
         // We beep on display if:
-        // 1. It's a short gap (standard fallback)
-        // 2. OR it's the first word (exception request)
+        // 1. It's manual mode (!isPlaying)
+        // 2. OR it's a short gap in auto mode (standard fallback)
+        // 3. OR it's the first word (exception request)
         // AND it's not the Fin card.
-        const shouldBeepOnDisplay = (isShortGap || isFirstWord) && !isFinWord;
+        const shouldBeepOnDisplay = (!isPlaying || isShortGap || isFirstWord) && !isFinWord;
 
         if (phase === 'display' && hasStarted && settings.enableSound && shouldBeepOnDisplay) {
             playBeep();
