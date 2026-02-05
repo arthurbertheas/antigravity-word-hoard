@@ -226,6 +226,9 @@ export function FilterPanel({
             {/* Scrollable Sections */}
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
 
+                {/* Divider - Search / Filters */}
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 ml-[22px] mr-0" />
+
                 {/* [NEW] GRAPHÈMES */}
                 <GraphemeFilter
                     isOpen={openSections.graphemes || false}
