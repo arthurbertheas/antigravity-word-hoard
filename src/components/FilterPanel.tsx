@@ -307,7 +307,7 @@ export function FilterPanel({
 
                 {/* Lettres (Word Length) */}
                 <FilterSection
-                    title="Lettres"
+                    title="Longueur"
                     icon={<ALargeSmall className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={(filters.minLetters !== 1 || filters.maxLetters !== 14) ? 1 : 0}
                     isOpen={openSections.length || false}
