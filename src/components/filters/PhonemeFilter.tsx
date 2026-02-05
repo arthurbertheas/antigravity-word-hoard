@@ -105,7 +105,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                 )}
 
                 {/* Controls */}
-                <div className="flex gap-2 pt-1 border-t border-border mt-2">
+                <div className="flex gap-2">
                     <div className="relative flex-1">
                         <select
                             value={position}
