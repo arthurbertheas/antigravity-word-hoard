@@ -24,7 +24,7 @@ export function FilterSection({ title, icon, badge, isOpen, onToggle, children, 
                             {icon}
                         </div>
                     )}
-                    <span className="font-sora text-[11px] font-bold uppercase tracking-[1px] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
+                    <span className="font-sora text-[11px] font-medium uppercase tracking-[0] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
                         {title}
                     </span>
                     {badge !== undefined && badge > 0 && (
