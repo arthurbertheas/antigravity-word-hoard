@@ -65,23 +65,25 @@ export function SidePanel() {
         togglePanelMode('config');
     };
 
-    if (!isPanelOpen) return null;
-
-    const tabs: { id: TabType; label: string }[] = [
-        { id: 'visual', label: 'Visuel' },
-        { id: 'timing', label: 'Timing' },
-        { id: 'focus', label: 'Focus' },
-        { id: 'sound', label: 'Son' },
-    ];
-
     return (
         <>
+            {/* BACKDROP - Always in DOM, animated with classes */}
             <div
-                className="fixed inset-0 z-30 transition-opacity duration-300"
+                className={cn(
+                    "fixed inset-0 z-30 transition-opacity bg-background/0 cursor-default",
+                    isPanelOpen
+                        ? "opacity-100 duration-300 pointer-events-auto"
+                        : "opacity-0 duration-0 pointer-events-none"
+                )}
                 onClick={() => setIsPanelOpen(false)}
             />
+
+            {/* PANEL - Always in DOM, animated with classes */}
             <aside className={cn(
-                "fixed right-0 top-0 h-screen bg-card border-l border-border flex flex-col overflow-hidden z-40 shadow-2xl transition-[width] duration-300 ease-in-out",
+                "fixed right-0 top-0 h-screen bg-card border-l border-border flex flex-col overflow-hidden z-40 shadow-2xl transition-all",
+                isPanelOpen
+                    ? "translate-x-0 opacity-100 duration-300 ease-in-out pointer-events-auto"
+                    : "translate-x-full opacity-0 duration-0 pointer-events-none",
                 panelMode === 'stats' ? "w-[520px]" : "w-[360px]"
             )}>
                 {/* Header */}
