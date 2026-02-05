@@ -51,9 +51,9 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         return renderContent(
             settings.showFocusPoint ? (
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                    {/* Thicker and darker lines for high visibility */}
-                    <div className="absolute w-[6px] h-16 bg-zinc-900 rounded-full" />
-                    <div className="absolute w-16 h-[6px] bg-zinc-900 rounded-full" />
+                    {/* Finer cross as requested */}
+                    <div className="absolute w-[2px] h-8 bg-zinc-900 rounded-full" />
+                    <div className="absolute w-8 h-[2px] bg-zinc-900 rounded-full" />
                 </div>
             ) : null
         );
