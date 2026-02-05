@@ -21,9 +21,9 @@ export function FilterGroup({ label, variant, className }: FilterGroupProps) {
             </span>
             <div className={cn(
                 "flex-1 h-[1px]",
-                variant === 'text' && "bg-[rgba(var(--cat-text),0.14)]",
-                variant === 'struct' && "bg-[rgba(var(--cat-struct),0.14)]",
-                variant === 'metric' && "bg-[rgba(var(--cat-metric),0.14)]"
+                variant === 'text' && "bg-[rgb(var(--cat-text)/0.14)]",
+                variant === 'struct' && "bg-[rgb(var(--cat-struct)/0.14)]",
+                variant === 'metric' && "bg-[rgb(var(--cat-metric)/0.14)]"
             )} />
         </div>
     );
