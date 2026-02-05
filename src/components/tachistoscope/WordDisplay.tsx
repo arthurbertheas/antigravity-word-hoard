@@ -108,6 +108,14 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     while (idx + lookAhead < parsedGraphemes.length) {
                         const nextGrapheme = parsedGraphemes[idx + lookAhead];
                         if (nextGrapheme.type === 'consonne') {
+                            // Rule for 'ex': if the first consonant is 'x', we only take ONE more consonant after it.
+                            // e.g. "explosion" -> e-x-p (red), l (black)
+                            if (consonantsToHighlight.length > 0 && consonantsToHighlight[0].grapheme.toLowerCase() === 'x') {
+                                if (consonantsToHighlight.length >= 2) {
+                                    break;
+                                }
+                            }
+
                             consonantsToHighlight.push(nextGrapheme);
                             // Mark as processed to avoid double rendering
                             (nextGrapheme as any)._skipRender = true;
