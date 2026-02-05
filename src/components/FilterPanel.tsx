@@ -349,28 +349,32 @@ export function FilterPanel({
                 <CollapsibleSection
                     title="Syllabes"
                     icon={<MessageSquare className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={filters.syllables.length}
+                    badge={(filters.minSyllables !== 1 || filters.maxSyllables !== 4) ? 1 : 0}
                     isOpen={openSections.syllables || false}
                     onToggle={() => toggleSection('syllables')}
                 >
-                    <div className="flex flex-wrap gap-2 px-1">
-                        {[1, 2, 3, 4].map((syll) => {
-                            const isActive = filters.syllables.includes(syll);
-                            return (
-                                <button
-                                    key={syll}
-                                    onClick={() => toggleArrayFilter('syllables', syll)}
-                                    className={cn(
-                                        "flex items-center justify-center w-9 h-9 rounded-xl text-xs font-bold transition-all border-2",
-                                        isActive
-                                            ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-md shadow-[rgba(79,70,229,0.3)]"
-                                            : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[rgb(var(--filter-text-secondary))] hover:bg-[rgb(var(--filter-surface-hover))]"
-                                    )}
-                                >
-                                    {syll}
-                                </button>
-                            );
-                        })}
+                    <div className="space-y-4 px-1 pb-2 pt-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[12px] font-medium text-[rgb(var(--filter-text-secondary))]">
+                                Nombre de syllabes
+                            </span>
+                            <span className="font-mono text-[12px] font-medium text-[rgb(var(--filter-accent))] bg-[rgb(var(--filter-accent-light))] px-2.5 py-1 rounded-[6px]">
+                                {filters.minSyllables} — {filters.maxSyllables}
+                            </span>
+                        </div>
+
+                        <div className="px-1 py-4">
+                            <Slider
+                                min={1}
+                                max={4}
+                                step={1}
+                                value={[filters.minSyllables, filters.maxSyllables]}
+                                onValueChange={([min, max]) => {
+                                    updateFilter('minSyllables', min);
+                                    updateFilter('maxSyllables', max);
+                                }}
+                            />
+                        </div>
                     </div>
                 </CollapsibleSection>
 

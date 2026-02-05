@@ -29,14 +29,14 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
         });
     });
 
-    // Syllabes
-    filters.syllables.forEach(s => {
+    // Syllabes (range)
+    if (filters.minSyllables !== 1 || filters.maxSyllables !== 4) {
         activeFilters.push({
-            type: 'syllables',
-            value: s,
-            label: `${s} syllabe${s > 1 ? 's' : ''}`
+            type: 'minSyllables',
+            value: 'reset',
+            label: `Syllabes: ${filters.minSyllables}-${filters.maxSyllables}`
         });
-    });
+    }
 
     // Fréquences
     filters.frequencies.forEach(f => {

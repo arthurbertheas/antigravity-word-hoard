@@ -24,10 +24,10 @@ export function useWords() {
                 return false;
             }
 
-            // Filtre par nombre de syllabes
-            if (filters.syllables.length > 0) {
-                const nbSyll = parseInt(word.NBSYLL, 10);
-                if (!filters.syllables.includes(nbSyll)) {
+            // Filtre par nombre de syllabes (range)
+            const nbSyll = parseInt(word.NBSYLL, 10);
+            if (!isNaN(nbSyll)) {
+                if (nbSyll < filters.minSyllables || nbSyll > filters.maxSyllables) {
                     return false;
                 }
             }

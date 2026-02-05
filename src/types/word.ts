@@ -109,7 +109,8 @@ export interface WordFilters {
     search: string;              // Recherche textuelle (ORTHO)
     phonSearch: string;          // Recherche phonétique (PHON)
     categories: SyntCategory[];  // Catégories syntaxiques
-    syllables: number[];         // Nombre de syllabes
+    minSyllables: number;        // Nb syllabes min
+    maxSyllables: number;        // Nb syllabes max
     structures: string[];        // Codes structure
     graphemes: string[];         // Codes graphèmes
     frequencies: string[];       // Codes fréquence
@@ -121,7 +122,8 @@ export const DEFAULT_FILTERS: WordFilters = {
     search: '',
     phonSearch: '',
     categories: [],
-    syllables: [],
+    minSyllables: 1,
+    maxSyllables: 4,
     structures: [],
     graphemes: [],
     frequencies: [],
