@@ -20,8 +20,7 @@ Bienvenue dans le guide simplifié de fonctionnement de votre application. Ce wi
 - **Syllabes et Graphemes** : Les mots ne sont pas affichés lettre par lettre, mais découpés selon les sons (graphemes).
 - **Voyelles en rouge** : Si l'option est activée, les voyelles (a, e, i, o, u, y et leurs variantes accentuées) s'affichent en rouge.
 - **Lettres muettes en gris** : Les lettres qui ne se prononcent pas (comme le 'h' ou les lettres finales silencieuses) s'affichent en gris clair.
-- **Le cas du "e"** : Dans certains mots, si l'option est cochée, le "e" entraîne avec lui les consonnes qui suivent (ex: dans "mer", le 'e' et le 'r' seront rouges).
-- **Règle spéciale "ex"** : Pour les mots commençant par "ex" (comme *expert* ou *explosion*), nous colorions le "e", le "x" et, au maximum, la consonne qui suit.
+- **Le cas du "e"** : Dans certains mots, si l'option est cochée, le "e" entraîne avec lui au maximum **deux** consonnes qui suivent (ex: dans "mer", le 'e' est rouge et le 'r' est marron ; dans "extraterrestre", le 'e' est rouge et 'xt' sont marron).
 - **Combinaisons spéciales** : Pour les lettres comme `qu`, `ge` ou `gu`, l'application est intelligente : elle ne grise que la lettre silencieuse (le 'u' ou le 'e').
 - **Mots protégés** : Les messages "Prêt ?" et "Bravo !" restent toujours en noir pour ne pas perturber l'enfant.
 

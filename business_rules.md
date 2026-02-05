@@ -17,8 +17,7 @@ Ce document récapitule l'ensemble des règles logiques et comportementales impl
     - **Lettres Muettes** : Identifiées par les marqueurs `#` ou `*` dans le `GPMATCH` et colorées en gris.
 - **Exceptions de Coloration** : Les mots de service "Prêt ?" et "Bravo !" ne sont jamais colorés (restent en noir).
 - **Règles Contextuelles Spéciales** :
-    - **Le "e" contextuel (`e:`)** : Si activé, le "e" et toutes les consonnes qui le suivent immédiatement sont colorés comme une voyelle.
-        - *Exception "ex"* : Si le "e" est suivi de "x", la coloration s'arrête après le "x" et au maximum **une seule** consonne supplémentaire (ex: *explosion* -> e-x-p en couleur).
+    - **Le "e" contextuel (`e:`)** : Si activé, le "e" est coloré en **rouge**, et les consonnes qui le suivent (au maximum **deux**) sont colorées en **marron** (bordeaux). Ex: *mer* -> e (rouge) r (marron). *extraterrestre* -> e (rouge) x,t (marron).
     - **Digrammes à lettre muette (`qu`, `ge`, `gu`)** : Seule la deuxième lettre (le 'u' ou le 'e') est colorée en gris muet.
 
 ## 3. Comportement du Tachistoscope (Diaporama)

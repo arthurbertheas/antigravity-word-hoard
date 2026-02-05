@@ -99,23 +99,17 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 }
                 // Consonants keep default color (black)
 
-                // Special handling for contextual E (e:) - only if not excluded
                 if (parsed.grapheme === 'e:' && !isExcluded) {
                     // Collect following consonants to highlight with e:
                     const consonantsToHighlight = [];
                     let lookAhead = 1;
 
                     while (idx + lookAhead < parsedGraphemes.length) {
+                        // General Rule: 'e' never drags more than 2 consonants
+                        if (consonantsToHighlight.length >= 2) break;
+
                         const nextGrapheme = parsedGraphemes[idx + lookAhead];
                         if (nextGrapheme.type === 'consonne') {
-                            // Rule for 'ex': if the first consonant is 'x', we only take ONE more consonant after it.
-                            // e.g. "explosion" -> e-x-p (red), l (black)
-                            if (consonantsToHighlight.length > 0 && consonantsToHighlight[0].grapheme.toLowerCase() === 'x') {
-                                if (consonantsToHighlight.length >= 2) {
-                                    break;
-                                }
-                            }
-
                             consonantsToHighlight.push(nextGrapheme);
                             // Mark as processed to avoid double rendering
                             (nextGrapheme as any)._skipRender = true;
@@ -125,11 +119,16 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                         }
                     }
 
-                    // Render e: as "e" + consonants
+                    // Render e: as "e" (Red) + consonants (Maroon)
                     if (settings.highlightVowels) {
                         return (
-                            <span key={idx} className="inline-block text-red-500">
-                                e{consonantsToHighlight.map(c => c.grapheme).join('')}
+                            <span key={idx} className="inline-block">
+                                <span className="text-red-500">e</span>
+                                {consonantsToHighlight.map((c, i) => (
+                                    <span key={i} className="text-[#800000]">
+                                        {c.grapheme}
+                                    </span>
+                                ))}
                             </span>
                         );
                     } else {
