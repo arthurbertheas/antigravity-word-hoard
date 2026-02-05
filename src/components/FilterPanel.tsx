@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, ALargeSmall } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import {
     WordFilters,
@@ -366,76 +367,43 @@ export function FilterPanel({
 
                 {/* Longueur */}
                 <CollapsibleSection
-                    title="Longueur (lettres)"
+                    title="Lettres"
                     badge={(filters.minLetters !== 1 || filters.maxLetters !== 20) ? 1 : 0}
                     isOpen={openSections.length || false}
                     onToggle={() => toggleSection('length')}
                 >
-                    <div className="space-y-4 px-3 pb-2 pt-6">
-                        {/* Current values above the sliders */}
-                        <div className="relative h-6 w-full">
-                            <span
-                                className="absolute -translate-x-1/2 text-[12px] font-bold text-[rgb(var(--filter-accent))] whitespace-nowrap transition-all duration-200"
-                                style={{
-                                    left: `${((filters.minLetters - 1) / 19) * 100}%`,
-                                    top: "-8px"
-                                }}
-                            >
-                                {filters.minLetters} lettres
-                            </span>
-                            <span
-                                className="absolute -translate-x-1/2 text-[12px] font-bold text-[rgb(var(--filter-accent))] whitespace-nowrap transition-all duration-200"
-                                style={{
-                                    left: `${((filters.maxLetters - 1) / 19) * 100}%`,
-                                    top: "-8px"
-                                }}
-                            >
-                                {filters.maxLetters} lettres
-                            </span>
+                    <div className="space-y-4 px-3 pb-2 pt-2">
+                        {/* Header with Icon and Badge */}
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                                    <ALargeSmall className="w-4 h-4 text-blue-500" strokeWidth={2.5} />
+                                </div>
+                                <span className="font-sora text-[11px] font-bold uppercase tracking-[1.2px] text-zinc-900">
+                                    LETTRES
+                                </span>
+                            </div>
+                            <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[12px] font-bold font-sora">
+                                {filters.minLetters} — {filters.maxLetters}
+                            </div>
                         </div>
 
-                        {/* Slider Container */}
-                        <div className="relative w-full h-1 bg-[rgb(var(--filter-bg))] rounded-full my-4">
-                            {/* Visual Range Bar */}
-                            <div
-                                className="absolute h-1 bg-[rgb(var(--filter-accent))] rounded-full top-0 pointer-events-none"
-                                style={{
-                                    left: `${((filters.minLetters - 1) / 19) * 100}%`,
-                                    width: `${((filters.maxLetters - filters.minLetters) / 19) * 100}%`
-                                }}
-                            />
+                        <div className="px-2">
+                            <p className="text-[13px] font-medium text-zinc-500 mb-6">
+                                Longueur du mot
+                            </p>
 
-                            {/* Min Slider */}
-                            <input
-                                type="range"
-                                min="1"
-                                max="20"
-                                value={filters.minLetters}
-                                onChange={(e) => {
-                                    const val = parseInt(e.target.value);
-                                    updateFilter('minLetters', Math.min(val, filters.maxLetters));
+                            <Slider
+                                min={1}
+                                max={20}
+                                step={1}
+                                value={[filters.minLetters, filters.maxLetters]}
+                                onValueChange={([min, max]) => {
+                                    updateFilter('minLetters', min);
+                                    updateFilter('maxLetters', max);
                                 }}
-                                className="absolute top-0 left-0 w-full h-1 bg-transparent appearance-none cursor-pointer accent-[rgb(var(--filter-accent))] pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto z-20"
+                                className="[&_[role=slider]]:bg-blue-600 [&_[role=slider]]:border-white [&_[role=slider]]:shadow-lg [&_.bg-primary]:bg-blue-600 [&_.bg-secondary]:bg-zinc-100"
                             />
-
-                            {/* Max Slider */}
-                            <input
-                                type="range"
-                                min="1"
-                                max="20"
-                                value={filters.maxLetters}
-                                onChange={(e) => {
-                                    const val = parseInt(e.target.value);
-                                    updateFilter('maxLetters', Math.max(val, filters.minLetters));
-                                }}
-                                className="absolute top-0 left-0 w-full h-1 bg-transparent appearance-none cursor-pointer accent-[rgb(var(--filter-accent))] pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-moz-range-thumb]:pointer-events-auto z-30"
-                            />
-                        </div>
-
-                        {/* Labels below */}
-                        <div className="flex justify-between text-[10px] font-bold text-[rgb(var(--filter-text-muted))] uppercase tracking-[1.5px] mt-2">
-                            <span>MIN</span>
-                            <span>MAX</span>
                         </div>
                     </div>
                 </CollapsibleSection>
