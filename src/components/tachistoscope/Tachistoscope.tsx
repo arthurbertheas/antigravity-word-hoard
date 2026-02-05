@@ -100,9 +100,12 @@ function PlayerEngine() {
         startTimeRef.current = Date.now();
 
         // Audio Timing Logic: Beep 300ms before end of gap (if gap is long enough)
-        // Skip beep if the NEXT word is the FIN word (Bravo)
+        // Skip beep if the NEXT word is the FIN word (Bravo) OR if it is the FIRST word (index 0)
+        // For the first word (index 0), we want to beep ON DISPLAY, not before so we skip pre-roll.
         const isNextWordFin = currentIndex + 1 >= queue.length - 1;
-        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300 && !isNextWordFin) {
+        const isFirstWord = currentIndex === 0;
+
+        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300 && !isNextWordFin && !isFirstWord) {
             const beepPreRoll = 300;
             const beepDelay = duration - beepPreRoll;
 
@@ -139,13 +142,20 @@ function PlayerEngine() {
     }, [isPlaying, currentIndex, phase, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
 
     // Audio Feedback Trigger (On Display)
-    // Only fires if gap is too short for the pre-roll logic (< 300ms)
+    // Only fires if gap is too short for the pre-roll logic (< 300ms) OR if it is the first word
     useEffect(() => {
         const isShortGap = settings.gapMs < 300;
         // Skip beep if CURRENT word is the FIN word
         const isFinWord = currentIndex >= queue.length - 1;
+        const isFirstWord = currentIndex === 0;
 
-        if (phase === 'display' && hasStarted && settings.enableSound && isShortGap && !isFinWord) {
+        // We beep on display if:
+        // 1. It's a short gap (standard fallback)
+        // 2. OR it's the first word (exception request)
+        // AND it's not the Fin card.
+        const shouldBeepOnDisplay = (isShortGap || isFirstWord) && !isFinWord;
+
+        if (phase === 'display' && hasStarted && settings.enableSound && shouldBeepOnDisplay) {
             playBeep();
         }
     }, [phase, hasStarted, settings.enableSound, settings.gapMs, currentIndex, queue.length]);

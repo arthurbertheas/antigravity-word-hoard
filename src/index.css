@@ -436,6 +436,11 @@
   background: rgba(110, 231, 183, 0.08);
 }
 
+.word-list-item.failed {
+  border-left-color: #f87171;
+  background: rgba(248, 113, 113, 0.08);
+}
+
 
 /* Floating Bar Interactions */
 .floating-bar {
