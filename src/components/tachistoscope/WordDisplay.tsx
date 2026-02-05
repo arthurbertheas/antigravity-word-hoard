@@ -84,18 +84,23 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 // Skip if already processed (for e: lookahead)
                 if ((parsed as any)._skipRender) return null;
 
+                // Determine if this word should be excluded from highlighting
+                const isExcluded = ["Prêt ?", "Bravo !"].includes(word.ORTHO);
+
                 // Determine styling based on grapheme type and settings
                 let colorClass = '';
 
-                if (settings.highlightVowels && parsed.type === 'voyelle') {
-                    colorClass = 'text-red-500'; // Vowels in red
-                } else if (settings.highlightSilent && parsed.type === 'muette') {
-                    colorClass = 'text-gray-400'; // Silent letters in gray
+                if (!isExcluded) {
+                    if (settings.highlightVowels && parsed.type === 'voyelle') {
+                        colorClass = 'text-red-500'; // Vowels in red
+                    } else if (settings.highlightSilent && parsed.type === 'muette') {
+                        colorClass = 'text-gray-400'; // Silent letters in gray
+                    }
                 }
                 // Consonants keep default color (black)
 
-                // Special handling for contextual E (e:)
-                if (parsed.grapheme === 'e:') {
+                // Special handling for contextual E (e:) - only if not excluded
+                if (parsed.grapheme === 'e:' && !isExcluded) {
                     // Collect following consonants to highlight with e:
                     const consonantsToHighlight = [];
                     let lookAhead = 1;
@@ -128,10 +133,10 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     }
                 }
 
-                // Special handling for graphemes with contextual silent letters
+                // Special handling for graphemes with contextual silent letters - only if not excluded
                 const graphemeLower = parsed.grapheme.toLowerCase();
 
-                if (settings.highlightSilent && (graphemeLower === 'qu' || graphemeLower === 'ge' || graphemeLower === 'gu')) {
+                if (!isExcluded && settings.highlightSilent && (graphemeLower === 'qu' || graphemeLower === 'ge' || graphemeLower === 'gu')) {
                     // Split the grapheme to highlight the silent letter
                     const firstLetter = parsed.grapheme[0];
                     const silentLetter = parsed.grapheme[1];
