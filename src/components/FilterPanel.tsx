@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronDown, ALargeSmall } from "lucide-react";
+import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, Layers, BarChart3 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import {
@@ -132,27 +132,35 @@ function FilterOption({ code, label, description, isActive, onToggle, levelColor
 
 interface CollapsibleSectionProps {
     title: string;
+    icon?: React.ReactNode;
     badge?: number;
     isOpen: boolean;
     onToggle: () => void;
     children: React.ReactNode;
 }
 
-function CollapsibleSection({ title, badge, isOpen, onToggle, children }: CollapsibleSectionProps) {
+function CollapsibleSection({ title, icon, badge, isOpen, onToggle, children }: CollapsibleSectionProps) {
     return (
         <div className="px-[22px] mb-1">
             <div
                 className="flex items-center gap-2 py-[10px] pb-2 cursor-pointer group"
                 onClick={onToggle}
             >
-                <span className="font-sora text-[11px] font-bold uppercase tracking-[1.2px] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
-                    {title}
-                </span>
-                {badge !== undefined && badge > 0 && (
-                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] bg-[rgb(var(--filter-accent))] text-white text-[10px] font-bold rounded-full">
-                        {badge}
+                <div className="flex items-center gap-2.5 flex-1">
+                    {icon && (
+                        <div className="w-7 h-7 rounded-[8px] bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-border))] flex items-center justify-center transition-colors group-hover:bg-[rgb(var(--filter-accent-light))]">
+                            {icon}
+                        </div>
+                    )}
+                    <span className="font-sora text-[11px] font-bold uppercase tracking-[1px] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
+                        {title}
                     </span>
-                )}
+                    {badge !== undefined && badge > 0 && (
+                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] bg-[rgb(var(--filter-accent))] text-white text-[10px] font-bold rounded-full ml-1">
+                            {badge}
+                        </span>
+                    )}
+                </div>
                 <ChevronDown className={cn(
                     "ml-auto text-[rgb(var(--filter-text-muted))] transition-transform duration-250 w-[14px] h-[14px]",
                     !isOpen && "-rotate-90"
@@ -251,7 +259,8 @@ export function FilterPanel({
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
                 {/* Structure syllabique */}
                 <CollapsibleSection
-                    title="Structure syllabique"
+                    title="Structures"
+                    icon={<Layers className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.structures.length}
                     isOpen={openSections.structures}
                     onToggle={() => toggleSection('structures')}
@@ -276,7 +285,8 @@ export function FilterPanel({
 
                 {/* Complexité graphémique */}
                 <CollapsibleSection
-                    title="Complexité graphique"
+                    title="Graphèmes"
+                    icon={<Pencil className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.graphemes.length}
                     isOpen={openSections.graphemes}
                     onToggle={() => toggleSection('graphemes')}
@@ -299,23 +309,51 @@ export function FilterPanel({
                 {/* Divider */}
                 <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
 
-                {/* AUTRES CRITÈRES */}
-                <div className="px-[22px] mb-1">
-                    <div className="py-[10px] pb-2">
-                        <span className="font-sora text-[11px] font-bold uppercase tracking-[1.2px] text-[rgb(var(--filter-text-secondary))]">
-                            Autres critères
-                        </span>
-                    </div>
-                </div>
-
-                {/* Nombre de syllabes */}
+                {/* Lettres (Word Length) */}
                 <CollapsibleSection
-                    title="Nombre de syllabes"
+                    title="Lettres"
+                    icon={<ALargeSmall className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
+                    badge={(filters.minLetters !== 1 || filters.maxLetters !== 20) ? 1 : 0}
+                    isOpen={openSections.length || false}
+                    onToggle={() => toggleSection('length')}
+                >
+                    <div className="space-y-4 px-1 pb-2 pt-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[12px] font-medium text-[rgb(var(--filter-text-secondary))]">
+                                Longueur du mot
+                            </span>
+                            <span className="font-mono text-[12px] font-medium text-[rgb(var(--filter-accent))] bg-[rgb(var(--filter-accent-light))] px-2.5 py-1 rounded-[6px]">
+                                {filters.minLetters} — {filters.maxLetters}
+                            </span>
+                        </div>
+
+                        <div className="px-1 py-4">
+                            <Slider
+                                min={1}
+                                max={20}
+                                step={1}
+                                value={[filters.minLetters, filters.maxLetters]}
+                                onValueChange={([min, max]) => {
+                                    updateFilter('minLetters', min);
+                                    updateFilter('maxLetters', max);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </CollapsibleSection>
+
+                {/* Divider */}
+                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 mx-[22px]" />
+
+                {/* Syllabes */}
+                <CollapsibleSection
+                    title="Syllabes"
+                    icon={<MessageSquare className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.syllables.length}
                     isOpen={openSections.syllables || false}
                     onToggle={() => toggleSection('syllables')}
                 >
-                    <div className="flex flex-wrap gap-2 px-2">
+                    <div className="flex flex-wrap gap-2 px-1">
                         {[1, 2, 3, 4].map((syll) => {
                             const isActive = filters.syllables.includes(syll);
                             return (
@@ -339,11 +377,12 @@ export function FilterPanel({
                 {/* Fréquence */}
                 <CollapsibleSection
                     title="Fréquence"
+                    icon={<BarChart3 className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.frequencies.length}
                     isOpen={openSections.frequencies || false}
                     onToggle={() => toggleSection('frequencies')}
                 >
-                    <div className="flex flex-wrap gap-2 px-2">
+                    <div className="flex flex-wrap gap-2 px-1">
                         {['1', '2', '3', '4'].map((code) => {
                             const isActive = filters.frequencies.includes(code);
                             const label = FREQUENCY_LABELS[code];
@@ -352,7 +391,7 @@ export function FilterPanel({
                                     key={code}
                                     onClick={() => toggleArrayFilter('frequencies', code)}
                                     className={cn(
-                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-2 whitespace-nowrap",
+                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-2 whitespace-nowrap font-display",
                                         isActive
                                             ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-md shadow-[rgba(79,70,229,0.3)]"
                                             : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[rgb(var(--filter-text-secondary))] hover:bg-[rgb(var(--filter-surface-hover))]"
@@ -362,49 +401,6 @@ export function FilterPanel({
                                 </button>
                             );
                         })}
-                    </div>
-                </CollapsibleSection>
-
-                {/* Longueur */}
-                <CollapsibleSection
-                    title="Lettres"
-                    badge={(filters.minLetters !== 1 || filters.maxLetters !== 20) ? 1 : 0}
-                    isOpen={openSections.length || false}
-                    onToggle={() => toggleSection('length')}
-                >
-                    <div className="space-y-4 px-3 pb-2 pt-2">
-                        {/* Header with Icon and Badge */}
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                    <ALargeSmall className="w-4 h-4 text-blue-500" strokeWidth={2.5} />
-                                </div>
-                                <span className="font-sora text-[11px] font-bold uppercase tracking-[1.2px] text-zinc-900">
-                                    LETTRES
-                                </span>
-                            </div>
-                            <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[12px] font-bold font-sora">
-                                {filters.minLetters} — {filters.maxLetters}
-                            </div>
-                        </div>
-
-                        <div className="px-2">
-                            <p className="text-[13px] font-medium text-zinc-500 mb-6">
-                                Longueur du mot
-                            </p>
-
-                            <Slider
-                                min={1}
-                                max={20}
-                                step={1}
-                                value={[filters.minLetters, filters.maxLetters]}
-                                onValueChange={([min, max]) => {
-                                    updateFilter('minLetters', min);
-                                    updateFilter('maxLetters', max);
-                                }}
-                                className="[&_[role=slider]]:bg-blue-600 [&_[role=slider]]:border-white [&_[role=slider]]:shadow-lg [&_.bg-primary]:bg-blue-600 [&_.bg-secondary]:bg-zinc-100"
-                            />
-                        </div>
                     </div>
                 </CollapsibleSection>
             </div>
