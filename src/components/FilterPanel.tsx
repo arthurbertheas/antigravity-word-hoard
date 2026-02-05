@@ -73,7 +73,7 @@ export function FilterPanel({ filters, updateFilter, toggleArrayFilter, resetFil
     return (
         <aside className="w-[300px] shrink-0 bg-[#f4f5f7] flex flex-col h-full border-r border-[#e4e6eb] shadow-[0_10px_20px_-4px_rgba(0,0,0,0.12)] z-10">
             {/* Header */}
-            <div className="p-[22px] pb-[14px] bg-white border-b border-[#e4e6eb]">
+            <div className="p-[22px] pb-[14px] bg-white">
                 <h2 className="font-display text-[17px] font-bold tracking-[-0.02em] text-[#1a1c23] mb-[2px]">
                     Filtres
                 </h2>

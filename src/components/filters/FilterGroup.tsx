@@ -10,7 +10,7 @@ interface FilterGroupProps {
 
 export function FilterGroup({ label, variant, className }: FilterGroupProps) {
     return (
-        <div className={cn("flex items-center gap-2 px-[22px] pt-[14px] pb-[5px]", className)}>
+        <div className={cn("flex items-center gap-2 pl-[22px] pr-0 pt-[14px] pb-[5px]", className)}>
             <span className={cn(
                 "font-display text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap",
                 variant === 'text' && "text-[rgb(var(--cat-text))]",
