@@ -313,7 +313,7 @@ export function FilterPanel({
                 <CollapsibleSection
                     title="Lettres"
                     icon={<ALargeSmall className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={(filters.minLetters !== 1 || filters.maxLetters !== 20) ? 1 : 0}
+                    badge={(filters.minLetters !== 1 || filters.maxLetters !== 14) ? 1 : 0}
                     isOpen={openSections.length || false}
                     onToggle={() => toggleSection('length')}
                 >
@@ -330,7 +330,7 @@ export function FilterPanel({
                         <div className="px-1 py-4">
                             <Slider
                                 min={1}
-                                max={20}
+                                max={14}
                                 step={1}
                                 value={[filters.minLetters, filters.maxLetters]}
                                 onValueChange={([min, max]) => {
@@ -349,7 +349,7 @@ export function FilterPanel({
                 <CollapsibleSection
                     title="Syllabes"
                     icon={<MessageSquare className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={(filters.minSyllables !== 1 || filters.maxSyllables !== 4) ? 1 : 0}
+                    badge={(filters.minSyllables !== 1 || filters.maxSyllables !== 5) ? 1 : 0}
                     isOpen={openSections.syllables || false}
                     onToggle={() => toggleSection('syllables')}
                 >
@@ -366,7 +366,7 @@ export function FilterPanel({
                         <div className="px-1 py-4">
                             <Slider
                                 min={1}
-                                max={4}
+                                max={5}
                                 step={1}
                                 value={[filters.minSyllables, filters.maxSyllables]}
                                 onValueChange={([min, max]) => {

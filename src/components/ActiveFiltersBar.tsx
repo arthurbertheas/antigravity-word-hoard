@@ -30,7 +30,7 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
     });
 
     // Syllabes (range)
-    if (filters.minSyllables !== 1 || filters.maxSyllables !== 4) {
+    if (filters.minSyllables !== 1 || filters.maxSyllables !== 5) {
         activeFilters.push({
             type: 'minSyllables',
             value: 'reset',
@@ -47,8 +47,8 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
         });
     });
 
-    // Longueur (si différent des valeurs par défaut 1-20)
-    if (filters.minLetters !== 1 || filters.maxLetters !== 20) {
+    // Longueur (si différent des valeurs par défaut 1-14)
+    if (filters.minLetters !== 1 || filters.maxLetters !== 14) {
         activeFilters.push({
             type: 'minLetters', // On utilise minLetters comme pivot pour la suppression de la longueur
             value: 'reset',

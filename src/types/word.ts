@@ -123,10 +123,10 @@ export const DEFAULT_FILTERS: WordFilters = {
     phonSearch: '',
     categories: [],
     minSyllables: 1,
-    maxSyllables: 4,
+    maxSyllables: 5,
     structures: [],
     graphemes: [],
     frequencies: [],
     minLetters: 1,
-    maxLetters: 20
+    maxLetters: 14
 };
