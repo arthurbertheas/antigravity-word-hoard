@@ -29,6 +29,7 @@ function PlayerEngine() {
 
     // Refs for precise timing and state tracking
     const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+    const beepTimerRef = React.useRef<NodeJS.Timeout | null>(null);
     const startTimeRef = React.useRef<number>(0);
     const remainingRef = React.useRef<number>(0);
     const wasPlayingRef = React.useRef(isPlaying);
@@ -47,6 +48,10 @@ function PlayerEngine() {
         if (timerRef.current) {
             clearTimeout(timerRef.current);
             timerRef.current = null;
+        }
+        if (beepTimerRef.current) {
+            clearTimeout(beepTimerRef.current);
+            beepTimerRef.current = null;
         }
 
         // 3. Handle PAUSE
@@ -94,6 +99,22 @@ function PlayerEngine() {
         // Start Timer
         startTimeRef.current = Date.now();
 
+        // Audio Timing Logic: Beep 300ms before end of gap (if gap is long enough)
+        if (phase === 'gap' && settings.enableSound && settings.gapMs >= 300) {
+            const beepPreRoll = 300;
+            const beepDelay = duration - beepPreRoll;
+
+            if (beepDelay >= 0) {
+                beepTimerRef.current = setTimeout(() => {
+                    playBeep();
+                }, beepDelay);
+            } else {
+                // If we resume with less than 300ms left, beep immediately
+                // because the "display" trigger won't fire (since gapMs >= 300)
+                playBeep();
+            }
+        }
+
         timerRef.current = setTimeout(() => {
             remainingRef.current = 0; // Consumed
 
@@ -111,15 +132,18 @@ function PlayerEngine() {
 
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
+            if (beepTimerRef.current) clearTimeout(beepTimerRef.current);
         };
     }, [isPlaying, currentIndex, phase, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
 
-    // Audio Feedback Trigger
+    // Audio Feedback Trigger (On Display)
+    // Only fires if gap is too short for the pre-roll logic (< 300ms)
     useEffect(() => {
-        if (phase === 'display' && hasStarted && settings.enableSound) {
+        const isShortGap = settings.gapMs < 300;
+        if (phase === 'display' && hasStarted && settings.enableSound && isShortGap) {
             playBeep();
         }
-    }, [phase, hasStarted, settings.enableSound]);
+    }, [phase, hasStarted, settings.enableSound, settings.gapMs]);
 
     return null;
 }
