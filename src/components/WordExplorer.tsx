@@ -123,11 +123,23 @@ function WordExplorerContent() {
                             return;
                         }
 
+                        if (filterType === 'minSyllables' && value === 'reset') {
+                            updateFilter('minSyllables', 1);
+                            updateFilter('maxSyllables', 5);
+                            return;
+                        }
+
                         // Remove specific filter from array
                         const currentFilters = filters[filterType];
                         if (Array.isArray(currentFilters)) {
-                            const newFilters = (currentFilters as any[]).filter(v => v !== value);
-                            updateFilter(filterType, newFilters as any);
+                            if (filterType === 'search' || filterType === 'graphemes' || filterType === 'phonemes') {
+                                // For these types, value is the ID. We filter by id.
+                                const newFilters = (currentFilters as any[]).filter(v => (v.id || v) !== value);
+                                updateFilter(filterType, newFilters as any);
+                            } else {
+                                const newFilters = (currentFilters as any[]).filter(v => v !== value);
+                                updateFilter(filterType, newFilters as any);
+                            }
                         }
                     }}
                     onClearAll={() => {

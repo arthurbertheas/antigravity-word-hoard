@@ -92,33 +92,24 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
     if (activeFilters.length === 0) return null;
 
     return (
-        <div className="px-8 py-2.5 bg-background border-b border-border flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mr-1">
-                Actifs :
+        <div className="px-8 py-2.5 bg-background border-b border-border flex items-center gap-2 flex-wrap min-h-[48px]">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1">
+                ACTIFS :
             </span>
             {activeFilters.map((filter, i) => (
-                <span
+                <button
                     key={`${filter.type}-${filter.value}-${i}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#eef2ff] border border-[#c7d2fe] rounded-full text-xs font-semibold text-[#4f46e5]"
+                    onClick={() => onRemoveFilter(filter.type, filter.value)}
+                    className="group inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#eef2ff] border border-[#c7d2fe] hover:border-[#4f46e5]/40 hover:bg-[#e0e7ff] rounded-full text-xs font-semibold text-[#4f46e5] transition-all cursor-pointer shadow-sm hover:translate-y-[-1px] active:translate-y-0"
                 >
-                    {filter.label}
-                    <button
-                        className="hover:opacity-70 transition-opacity ml-0.5"
-                        onClick={() => {
-                            if (filter.type === 'graphemes' || filter.type === 'phonemes' || filter.type === 'search') {
-                                // For complex filters, value IS the ID, so we pass it directly
-                                onRemoveFilter(filter.type, filter.value);
-                            } else {
-                                onRemoveFilter(filter.type, filter.value);
-                            }
-                        }}
-                    >
-                        <X className="w-3 h-3" />
-                    </button>
-                </span>
+                    <span className="max-w-[200px] truncate">
+                        {filter.label}
+                    </span>
+                    <X className="w-3 h-3 text-[#4f46e5]/50 group-hover:text-[#4f46e5] transition-colors" />
+                </button>
             ))}
             <button
-                className="text-xs text-muted-foreground hover:text-destructive ml-1 transition-colors"
+                className="text-xs font-bold text-muted-foreground hover:text-red-500 ml-2 transition-colors uppercase tracking-tight"
                 onClick={onClearAll}
             >
                 Effacer tout
