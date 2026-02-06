@@ -232,6 +232,10 @@ export function FilterPanel({
                     searchTags={filters.search}
                     onAddFilter={handleAddSearch}
                     onRemoveFilter={handleRemoveSearch}
+                    currentSearch={filters.realtimeSearch || { value: '', position: 'anywhere' }}
+                    onSearchUpdate={(value, position) => {
+                        updateFilter('realtimeSearch', { value, position });
+                    }}
                 />
 
                 {/* [NEW] GRAPHÈMES */}

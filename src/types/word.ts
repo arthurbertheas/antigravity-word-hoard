@@ -124,6 +124,10 @@ export interface WordFilters {
     frequencies: string[];       // Codes fréquence
     minLetters: number;          // Longueur min
     maxLetters: number;          // Longueur max
+    realtimeSearch: {            // NOUVEAU: Recherche temps réel
+        value: string;
+        position: 'start' | 'end' | 'middle' | 'anywhere';
+    };
 }
 
 export const DEFAULT_FILTERS: WordFilters = {
@@ -137,5 +141,6 @@ export const DEFAULT_FILTERS: WordFilters = {
     phonemes: [],
     frequencies: [],
     minLetters: 1,
-    maxLetters: 14
+    maxLetters: 14,
+    realtimeSearch: { value: '', position: 'anywhere' }
 };

@@ -16,11 +16,28 @@ interface SearchFilterProps {
     searchTags: IFilterTag[];
     onAddFilter: (tag: IFilterTag) => void;
     onRemoveFilter: (id: string) => void;
+    currentSearch: { value: string; position: 'start' | 'end' | 'middle' | 'anywhere' };
+    onSearchUpdate: (value: string, position: 'start' | 'end' | 'middle' | 'anywhere') => void;
 }
 
-export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemoveFilter }: SearchFilterProps) {
-    const [inputValue, setInputValue] = useState("");
-    const [position, setPosition] = useState<IFilterTag['position']>('anywhere');
+export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemoveFilter, currentSearch, onSearchUpdate }: SearchFilterProps) {
+    // We use local state for input to allow immediate UI feedback, but we also sync with parent
+    // actually, if we want realtime, we should control the input via currentSearch OR
+    // just fire onSearchUpdate. Let's make it controlled by parent to be safe, 
+    // or keep local state and useEffect?
+    // Let's rely on props for true SSOT.
+
+    // BUT: existing code uses `inputValue` state.
+    // We will keep `inputValue` for the text, and `position` for the select.
+    // And we will trigger `onSearchUpdate` whenever they change.
+
+    // Wait, if we use local state, we need to sync it with props? 
+    // Usually yes. But here `currentSearch` comes from filters which are updated by `onSearchUpdate`.
+    // So making it fully controlled is cleaner. but `SearchFilter` was designed as uncontrolled-ish before adding.
+
+    // Let's make it controlled.
+
+    const { value: inputValue, position } = currentSearch;
 
     const handleAdd = () => {
         if (!inputValue.trim()) return;
@@ -30,8 +47,8 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
             value: inputValue.trim(),
             position
         });
-        setInputValue("");
-        setPosition('anywhere');
+        // Clear realtime search after adding tag
+        onSearchUpdate("", 'anywhere');
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -55,7 +72,7 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
                         type="text"
                         placeholder="ex: bou, tion, chat..."
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        onChange={(e) => onSearchUpdate(e.target.value, position)}
                         onKeyDown={handleKeyDown}
                         className="flex-1 bg-white border-border text-[13px] h-[32px] placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-[rgb(var(--filter-accent))]"
                     />
@@ -63,7 +80,7 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
                     <div className="relative w-[85px]">
                         <select
                             value={position}
-                            onChange={(e) => setPosition(e.target.value as any)}
+                            onChange={(e) => onSearchUpdate(inputValue, e.target.value as any)}
                             className="w-full appearance-none h-[32px] pl-2 pr-6 bg-white border border-border rounded-md text-[12px] font-medium font-['DM_Sans'] text-foreground focus:outline-none focus:border-[rgb(var(--filter-accent))] cursor-pointer truncate"
                         >
                             <option value="anywhere">Partout</option>

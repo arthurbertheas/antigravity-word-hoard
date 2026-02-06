@@ -16,7 +16,33 @@ export function useWords() {
 
     const filteredWords = useMemo(() => {
         return words.filter((word) => {
-            // Recherche textuelle avancée (ORTHO) - [MODIFIÉ: Supporte maintenant les tags multiples et positions]
+            // Recherche textuelle avancée (ORTHO)
+
+            // 1. Recherche Temps Réel (prioritaire sur les tags)
+            if (filters.realtimeSearch && filters.realtimeSearch.value.trim().length > 0) {
+                if (!word.ORTHO) return false;
+                const ortho = word.ORTHO.toLowerCase();
+                const val = filters.realtimeSearch.value.toLowerCase().trim();
+                const pos = filters.realtimeSearch.position;
+
+                if (pos === 'start') {
+                    if (!ortho.startsWith(val)) return false;
+                } else if (pos === 'end') {
+                    if (!ortho.endsWith(val)) return false;
+                } else if (pos === 'middle') {
+                    // Regex for middle: contains but not start and not end? 
+                    // Or just contains? usually "middle" implies strictly inside.
+                    // But strictly speaking, "middle" search often just means "contains".
+                    // Let's align with the existing logic for tags:
+                    // if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho);
+                    if (!new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho)) return false;
+                } else {
+                    // anywhere
+                    if (!ortho.includes(val)) return false;
+                }
+            }
+
+            // 2. Recherche par Tags (AND logic)
             if (filters.search.length > 0) {
                 if (!word.ORTHO) return false;
                 const ortho = word.ORTHO.toLowerCase();
