@@ -14,6 +14,8 @@ import { GraphemeFilter } from "./filters/GraphemeFilter";
 import { PhonemeFilter } from "./filters/PhonemeFilter";
 import { SearchFilter } from "./filters/SearchFilter";
 import { FilterSection } from "./filters/FilterSection";
+import { FilterGroup } from "./filters/FilterGroup";
+import { FilterGroup } from "./filters/FilterGroup";
 
 interface FilterPanelProps {
     filters: WordFilters;
