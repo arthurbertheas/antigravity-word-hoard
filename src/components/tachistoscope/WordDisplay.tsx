@@ -125,11 +125,25 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     return (
                         <span key={idx} className="inline-block">
                             <span className={eColor}>e</span>
-                            {consonantsToHighlight.map((c, i) => (
-                                <span key={i} className="text-[#800000]">
-                                    {c.grapheme}
-                                </span>
-                            ))}
+                            {consonantsToHighlight.map((c, i) => {
+                                const gLower = c.grapheme.toLowerCase();
+                                const isDigraphWithSilent = settings.highlightSilent && (gLower === 'qu' || gLower === 'ge' || gLower === 'gu');
+
+                                if (isDigraphWithSilent) {
+                                    return (
+                                        <span key={i} className="inline-block">
+                                            <span className="text-[#800000]">{c.grapheme[0]}</span>
+                                            <span className="text-gray-400">{c.grapheme[1]}</span>
+                                        </span>
+                                    );
+                                }
+
+                                return (
+                                    <span key={i} className="text-[#800000]">
+                                        {c.grapheme}
+                                    </span>
+                                );
+                            })}
                         </span>
                     );
                 }

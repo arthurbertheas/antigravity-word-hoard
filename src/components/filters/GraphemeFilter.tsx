@@ -61,7 +61,7 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="ex: ette, ain..."
+                        placeholder="ex: ein..."
                         className="flex-1 h-[32px] text-[13px] font-mono px-3 py-[7px] border-border rounded-lg placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-[rgba(79,70,229,0.1)] focus-visible:border-[rgb(var(--filter-accent))]"
                     />
 
