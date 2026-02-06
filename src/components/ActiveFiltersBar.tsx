@@ -13,11 +13,11 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
 
     // Search (Advanced)
     filters.search.forEach(s => {
-        const positionLabel = s.position === 'start' ? 'début' : s.position === 'end' ? 'fin' : s.position === 'middle' ? 'milieu' : '';
+        const pos = s.position === 'start' ? 'début' : s.position === 'end' ? 'fin' : s.position === 'middle' ? 'milieu' : 'partout';
         activeFilters.push({
             type: 'search',
             value: s.id,
-            label: `${s.value} ${positionLabel ? `(${positionLabel})` : ''}`
+            label: `${s.value} (${pos})`
         });
     });
 
@@ -43,21 +43,21 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
 
     // Graphèmes (Text)
     filters.graphemes.forEach(g => {
-        const positionLabel = g.position === 'start' ? 'début' : g.position === 'end' ? 'fin' : g.position === 'middle' ? 'milieu' : '';
+        const pos = g.position === 'start' ? 'début' : g.position === 'end' ? 'fin' : g.position === 'middle' ? 'milieu' : 'partout';
         activeFilters.push({
             type: 'graphemes',
-            value: g.id, // Using ID for removal
-            label: `${g.value} ${positionLabel ? `(${positionLabel})` : ''}`
+            value: g.id,
+            label: `${g.value} (${pos})`
         });
     });
 
     // Phonèmes
     filters.phonemes.forEach(p => {
-        const positionLabel = p.position === 'start' ? 'début' : p.position === 'end' ? 'fin' : p.position === 'middle' ? 'milieu' : '';
+        const pos = p.position === 'start' ? 'début' : p.position === 'end' ? 'fin' : p.position === 'middle' ? 'milieu' : 'partout';
         activeFilters.push({
             type: 'phonemes',
             value: p.id,
-            label: `[${p.value}] ${positionLabel ? `(${positionLabel})` : ''}`
+            label: `[${p.value}] (${pos})`
         });
     });
 
