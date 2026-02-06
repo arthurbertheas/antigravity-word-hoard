@@ -8,7 +8,7 @@ export const FREQUENT_PHONEMES: string[] = [
 ];
 
 export const OTHER_PHONEMES: string[] = [
-    'p', 'b', 't', 'd', 'f', 'v', 'z', 'm', 'n', 'ɲ', 'l', 'ʁ', 'j', 'w', 'ɥ',
+    'p', 'b', 't', 'd', 'f', 'v', 'z', 'm', 'n', 'ɲ', 'l', 'R', 'j', 'w', 'ɥ',
     'e', 'ɛ', 'o', 'ɔ', 'u', 'y', 'ø', 'œ', 'ə', 'ɑ̃', 'œ̃', 'ɡ', 'ŋ'
 ];
 
