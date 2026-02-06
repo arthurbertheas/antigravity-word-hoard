@@ -234,9 +234,6 @@ export function FilterPanel({
                     onRemoveFilter={handleRemoveSearch}
                 />
 
-                {/* Divider - Search / Filters */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
-
                 {/* [NEW] GRAPHÈMES */}
                 <GraphemeFilter
                     isOpen={openSections.graphemes || false}
@@ -245,9 +242,6 @@ export function FilterPanel({
                     onAddFilter={handleAddGrapheme}
                     onRemoveFilter={handleRemoveGrapheme}
                 />
-
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* [NEW] PHONÈMES */}
                 <PhonemeFilter
@@ -283,9 +277,6 @@ export function FilterPanel({
                         ))}
                     </div>
                 </FilterSection>
-
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* Complexité graphémique (RENAMED) */}
                 <FilterSection
@@ -346,9 +337,6 @@ export function FilterPanel({
                     </div>
                 </FilterSection>
 
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
-
                 {/* Syllabes */}
                 <FilterSection
                     title="Syllabes"
@@ -381,9 +369,6 @@ export function FilterPanel({
                         </div>
                     </div>
                 </FilterSection>
-
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
 
                 {/* Fréquence */}
                 <FilterSection
