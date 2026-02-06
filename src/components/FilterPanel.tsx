@@ -210,7 +210,7 @@ export function FilterPanel({
     return (
         <aside className="w-[300px] min-w-[300px] h-full bg-[rgb(var(--filter-surface))] border-r border-[rgb(var(--filter-border))] flex flex-col font-['DM_Sans'] z-10 overflow-hidden">
             {/* Header */}
-            <div className="px-[22px] pt-6 pb-4 border-b border-[rgb(var(--filter-border))]">
+            <div className="px-[22px] pt-6 pb-2">
                 <h2 className="font-sora text-lg font-bold text-[rgb(var(--filter-text-primary))] mb-[2px]">
                     Filtres
                 </h2>
@@ -222,7 +222,9 @@ export function FilterPanel({
             {/* Scrollable Sections */}
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
 
-                {/* [NEW] RECHERCHE AVANCÉE */}
+                {/* [NEW] GROUP: TEXTUEL */}
+                <FilterGroup label="Textuel" variant="text" />
+
                 <SearchFilter
                     isOpen={openSections.search || false}
                     onToggle={() => toggleSection('search')}
