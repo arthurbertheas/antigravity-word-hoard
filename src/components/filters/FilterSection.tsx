@@ -1,110 +1,44 @@
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GroupVariant } from "./FilterGroup";
 
 interface FilterSectionProps {
     title: string;
     icon?: React.ReactNode;
-    badge?: number | string;
+    badge?: number;
     isOpen: boolean;
     onToggle: () => void;
     children: React.ReactNode;
-    className?: string;
-    variant?: GroupVariant; // NEW variant prop
+    className?: string; // To support extra styling if needed
 }
 
-export function FilterSection({
-    title,
-    icon,
-    badge,
-    isOpen,
-    onToggle,
-    children,
-    className,
-    variant = 'text' // Default variant
-}: FilterSectionProps) {
-
-    // Helper to get dynamic classes based on variant
-    const getVariantClasses = (v: GroupVariant) => {
-        switch (v) {
-            case 'text':
-                return {
-                    icon: "bg-[rgba(var(--cat-text),0.07)] border border-[rgba(var(--cat-text),0.14)]",
-                    borderLeft: "border-l-2 border-[rgba(var(--cat-text),0.14)]",
-                    count: "bg-[rgba(var(--cat-text),0.07)] text-[rgb(var(--cat-text))]"
-                };
-            case 'struct':
-                return {
-                    icon: "bg-[rgba(var(--cat-struct),0.07)] border border-[rgba(var(--cat-struct),0.14)]",
-                    borderLeft: "border-l-2 border-[rgba(var(--cat-struct),0.14)]",
-                    count: "bg-[rgba(var(--cat-struct),0.07)] text-[rgb(var(--cat-struct))]"
-                };
-            case 'metric':
-                return {
-                    icon: "bg-[rgba(var(--cat-metric),0.07)] border border-[rgba(var(--cat-metric),0.14)]",
-                    borderLeft: "border-l-2 border-[rgba(var(--cat-metric),0.14)]",
-                    count: "bg-[rgba(var(--cat-metric),0.07)] text-[rgb(var(--cat-metric))]"
-                };
-            default:
-                return { icon: "", borderLeft: "", count: "" };
-        }
-    };
-
-    const styles = getVariantClasses(variant);
-
+export function FilterSection({ title, icon, badge, isOpen, onToggle, children, className }: FilterSectionProps) {
     return (
-        <div className={cn("bg-white", className)}>
+        <div className={cn("px-[22px] mb-1", className)}>
             <div
-                className={cn(
-                    "flex items-center justify-between px-[22px] py-[9px] cursor-pointer transition-colors hover:bg-[hsl(210,40%,99%)]",
-                    isOpen && "bg-[hsl(210,40%,99%)]"
-                )}
+                className="flex items-center gap-2 py-2.5 px-3 -mx-3 cursor-pointer group hover:bg-[rgb(var(--filter-surface-hover))] rounded-lg transition-colors"
                 onClick={onToggle}
             >
-                <div className="flex items-center gap-[10px]">
+                <div className="flex items-center gap-2.5 flex-1">
                     {icon && (
-                        <div className={cn("w-8 h-8 rounded-[9px] flex items-center justify-center text-[14px]", styles.icon)}>
+                        <div className="w-7 h-7 rounded-[8px] bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-border))] flex items-center justify-center transition-colors group-hover:bg-[rgb(var(--filter-accent-light))]">
                             {icon}
                         </div>
                     )}
-                    <span className="font-display text-[12px] font-semibold uppercase tracking-[0.02em] text-[rgb(var(--filter-text-primary))]">
+                    <span className="font-sora text-[11px] font-medium uppercase tracking-[0] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))] transition-colors">
                         {title}
                     </span>
-                </div>
-
-                <div className="flex items-center gap-[6px]">
-                    {badge !== undefined && badge !== 0 && (
-                        <span className={cn(
-                            "font-mono text-[10px] font-semibold min-w-[18px] h-[18px] flex items-center justify-center rounded-[5px] px-[5px]",
-                            styles.count
-                        )}>
+                    {badge !== undefined && badge > 0 && (
+                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] bg-[rgb(var(--filter-accent))] text-white text-[10px] font-bold rounded-full ml-1">
                             {badge}
                         </span>
                     )}
-                    <ChevronDown
-                        className={cn(
-                            "w-3.5 h-3.5 text-muted-foreground transition-all duration-200",
-                            isOpen ? "transform rotate-180 opacity-65" : "opacity-35"
-                        )}
-                    />
                 </div>
+                <ChevronDown className={cn(
+                    "ml-auto text-[rgb(var(--filter-text-muted))] transition-transform duration-250 w-[14px] h-[14px]",
+                    !isOpen && "-rotate-90"
+                )} />
             </div>
-
-            <div
-                className={cn(
-                    "grid transition-all duration-200 ease-in-out",
-                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                )}
-            >
-                <div className="overflow-hidden">
-                    <div className={cn(
-                        "ml-[43px] px-[22px] pt-1 pb-[14px]",
-                        isOpen && styles.borderLeft
-                    )}>
-                        {children}
-                    </div>
-                </div>
-            </div>
+            {isOpen && <div className="pb-[6px]">{children}</div>}
         </div>
     );
 }

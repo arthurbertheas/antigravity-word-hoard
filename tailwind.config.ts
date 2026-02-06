@@ -66,9 +66,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        "cat-text": "rgb(var(--cat-text))",
-        "cat-struct": "rgb(var(--cat-struct))",
-        "cat-metric": "rgb(var(--cat-metric))",
       },
       borderRadius: {
         lg: "var(--radius)",
