@@ -258,8 +258,8 @@ export function FilterPanel({
                     onRemoveFilter={handleRemovePhoneme}
                 />
 
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
+                {/* [NEW] GROUP: STRUCTURE */}
+                <FilterGroup label="Structure" variant="struct" />
 
                 {/* Structure syllabique */}
                 <FilterSection
