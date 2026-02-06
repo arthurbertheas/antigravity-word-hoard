@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Paths
-const excelPath = path.join(__dirname, 'src', 'data', 'Liste refaite v3.xlsx');
+const excelPath = path.join(__dirname, 'src', 'data', 'Liste refaite v4.xlsx');
 const outputPath = path.join(__dirname, 'src', 'data', 'cgp-tokens.json');
 
 // Read the Excel file

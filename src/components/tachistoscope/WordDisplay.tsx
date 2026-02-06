@@ -119,26 +119,21 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                         }
                     }
 
-                    // Render e: as "e" (Red) + consonants (Maroon)
-                    if (settings.highlightVowels) {
-                        return (
-                            <span key={idx} className="inline-block">
-                                <span className="text-red-500">e</span>
-                                {consonantsToHighlight.map((c, i) => (
-                                    <span key={i} className="text-[#800000]">
-                                        {c.grapheme}
-                                    </span>
-                                ))}
-                            </span>
-                        );
-                    } else {
-                        return (
-                            <span key={idx} className="inline-block">
-                                e{consonantsToHighlight.map(c => c.grapheme).join('')}
-                            </span>
-                        );
-                    }
+                    // Render e: as "e" (Red if vowels highlighted) + consonants (Maroon)
+                    const eColor = settings.highlightVowels ? "text-red-500" : "";
+
+                    return (
+                        <span key={idx} className="inline-block">
+                            <span className={eColor}>e</span>
+                            {consonantsToHighlight.map((c, i) => (
+                                <span key={i} className="text-[#800000]">
+                                    {c.grapheme}
+                                </span>
+                            ))}
+                        </span>
+                    );
                 }
+
 
                 // Special handling for graphemes with contextual silent letters - only if not excluded
                 const graphemeLower = parsed.grapheme.toLowerCase();
