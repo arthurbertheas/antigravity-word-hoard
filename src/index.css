@@ -141,6 +141,14 @@
     --filter-tag-active-border: 199 210 254;
     /* #c7d2fe */
 
+    /* Category Colors for Filters (RGB format for alpha support) */
+    --cat-text: 79 70 229;
+    /* Indigo */
+    --cat-struct: 8 145 178;
+    /* Cyan */
+    --cat-metric: 217 119 6;
+    /* Amber */
+
     /* Sidebar tokens */
     --sidebar-background: 210 40% 98%;
     --sidebar-foreground: 222 47% 20%;
