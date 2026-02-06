@@ -310,8 +310,8 @@ export function FilterPanel({
                     </div>
                 </FilterSection>
 
-                {/* Divider */}
-                <div className="h-[1px] bg-[rgb(var(--filter-border))] my-1 w-full" />
+                {/* [NEW] GROUP: MÉTRIQUES */}
+                <FilterGroup label="Métriques" variant="metric" />
 
                 {/* Lettres (Word Length) */}
                 <FilterSection
