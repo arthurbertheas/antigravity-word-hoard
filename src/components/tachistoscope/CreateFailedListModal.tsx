@@ -115,16 +115,16 @@ export function CreateFailedListModal({ isOpen, onClose, onConfirm, failedWords 
                             </div>
 
                             {/* Actions */}
-                            <div className="p-6 flex gap-2.5 justify-end">
+                            <div className="p-6 flex gap-3 justify-end">
                                 <button
                                     onClick={onClose}
-                                    className="px-5.5 py-2.5 rounded-[10px] border border-gray-200 bg-white text-[#6B7280] font-medium text-[14px] hover:bg-gray-50 transition-colors"
+                                    className="px-6 py-3 rounded-[12px] border border-gray-200 bg-white text-[#6B7280] font-medium text-[15px] hover:bg-gray-50 transition-colors"
                                 >
                                     Annuler
                                 </button>
                                 <button
                                     onClick={handleConfirm}
-                                    className="px-5.5 py-2.5 rounded-[10px] bg-[#6C5CE7] text-white font-semibold text-[14px] shadow-[0_2px_8px_rgba(108,92,231,0.3)] hover:bg-[#5b4bc4] transition-all"
+                                    className="px-6 py-3 rounded-[12px] bg-[#6C5CE7] text-white font-semibold text-[15px] shadow-[0_4px_12px_rgba(108,92,231,0.25)] hover:shadow-[0_6px_16px_rgba(108,92,231,0.35)] hover:-translate-y-0.5 transition-all"
                                 >
                                     Créer la liste
                                 </button>
