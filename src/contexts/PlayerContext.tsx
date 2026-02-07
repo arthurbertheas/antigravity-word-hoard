@@ -38,6 +38,7 @@ interface PlayerContextType {
     setCurrentIndex: (index: number) => void;
     setIsPlaying: (updater: boolean | ((prev: boolean) => boolean)) => void;
     setPhase: (phase: PlayerPhase) => void;
+    setHasStarted: (started: boolean) => void;
     updateSettings: (settings: Partial<PlayerSettings>) => void;
     isPanelOpen: boolean;
     setIsPanelOpen: (open: boolean) => void;
@@ -325,7 +326,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             panelMode, togglePanelMode,
             feedback, triggerFeedback, flashFeedback,
             wordStatuses, cycleWordStatus, setWordStatus,
-            setQueue: handleSetQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, updateSettings,
+            setQueue: handleSetQueue, setCurrentIndex, setIsPlaying: handleSetIsPlaying, setPhase, setHasStarted, updateSettings,
             setIsPanelOpen, logResult, nextWord, prevWord, resetSession,
             isShuffled, toggleShuffle
         }}>

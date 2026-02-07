@@ -42,8 +42,8 @@ export function CreateFailedListModal({ isOpen, onClose, onLaunch, onSave, faile
     return (
         <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-[#0F1423]/45 backdrop-blur-[4px] z-[100] animate-in fade-in duration-200" />
-                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90%] max-w-[500px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[101] animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 focus:outline-none overflow-hidden font-dm-sans">
+                <Dialog.Overlay className="fixed inset-0 bg-[#0F1423]/45 backdrop-blur-[4px] z-50 animate-in fade-in duration-200" />
+                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90%] max-w-[500px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-50 animate-in zoom-in-95 slide-in-from-left-1/2 slide-in-from-top-[48%] duration-300 focus:outline-none overflow-hidden font-dm-sans">
                     <>
                         {/* Header */}
                         <div className="px-6 pt-6 flex items-start gap-3.5">

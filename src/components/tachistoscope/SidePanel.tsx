@@ -26,7 +26,7 @@ type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
 export function SidePanel() {
     // Click-outside logic implemented
-    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, setQueue, currentIndex, setCurrentIndex, wordStatuses, cycleWordStatus, startTime, resetSession, setIsPlaying, setPhase } = usePlayer();
+    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, setQueue, currentIndex, setCurrentIndex, wordStatuses, cycleWordStatus, startTime, resetSession, setIsPlaying, setPhase, setHasStarted } = usePlayer();
     const [activeTab, setActiveTab] = useState<TabType>('visual');
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
     const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
@@ -80,6 +80,7 @@ export function SidePanel() {
         resetSession();
         setQueue(failedWords);
         setIsPlaying(true);
+        setHasStarted(true); // Force start to skip "Prêt ?"
         setPhase('display');
 
         toast({
