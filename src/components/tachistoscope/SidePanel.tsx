@@ -62,12 +62,10 @@ export function SidePanel() {
     });
 
     const handleCreateFailedList = () => {
-        const skip = localStorage.getItem('skipFailedListConfirmation') === 'true';
-        if (skip) {
-            handleLaunchList();
-        } else {
-            setIsFailedListModalOpen(true);
-        }
+        // TEMPORARY FIX: Ignore preference to allow user to see the modal if they are stuck
+        // const skip = localStorage.getItem('skipFailedListConfirmation') === 'true';
+        console.log("Opening Failed List Modal", failedWords.length);
+        setIsFailedListModalOpen(true);
     };
 
     const handleLaunchList = () => {
