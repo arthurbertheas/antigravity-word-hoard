@@ -29980,7 +29980,7 @@
     },
     {
         "ORTHO": "maîtresse",
-        "GSEG": ".m.ai.t.r.e:.ss.e",
+        "GSEG": ".m.aî.t.r.e:.ss.e",
         "PSEG": ".m.ɛ.t.R.ɛ.s.#",
         "code graphèmes": "13",
         "code structure": "f",
@@ -29993,7 +29993,7 @@
         "freq_manulex": "161.09032",
         "niveau_calibre": "1.1",
         "code fréquence": "1",
-        "GPMATCH": "(m-m.ai-ɛ.t-t.r-R.e:-ɛ.ss-s.e-#)",
+        "GPMATCH": "(m-m.aî-ɛ.t-t.r-R.e:-ɛ.ss-s.e-#)",
         "SYNT": "NC"
     },
     {

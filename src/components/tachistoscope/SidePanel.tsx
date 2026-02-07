@@ -16,6 +16,10 @@ import { cn } from '@/lib/utils';
 import { usePdfExport } from '@/hooks/usePdfExport';
 import { NewListModal } from './NewListModal';
 import { useToast } from "@/hooks/use-toast"
+import { useSelection } from '@/contexts/SelectionContext';
+import { useSavedLists } from '@/hooks/useSavedLists';
+import { CreateFailedListModal } from './CreateFailedListModal';
+import { useEffect } from 'react';
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
@@ -26,6 +30,63 @@ export function SidePanel() {
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
     const { generatePdf } = usePdfExport();
     const { toast } = useToast();
+    const { clearSelection, setIsFocusModeOpen } = useSelection();
+
+    // User ID for saved lists
+    const [userId, setUserId] = useState<string | null>(null);
+    useEffect(() => {
+        const getMemberstackUser = async () => {
+            try {
+                // @ts-ignore
+                const member = await window.$memberstackDOM?.getCurrentMember();
+                if (member?.data?.auth?.email) {
+                    setUserId(member.data.auth.email);
+                } else {
+                    setUserId('test-user@example.com');
+                }
+            } catch (error) {
+                setUserId('test-user@example.com');
+            }
+        };
+        getMemberstackUser();
+    }, []);
+
+    const { saveList } = useSavedLists(userId);
+    const [isFailedListModalOpen, setIsFailedListModalOpen] = useState(false);
+
+    const failedWords = queue.filter(w => {
+        const status = w.uid ? wordStatuses.get(w.uid) : undefined;
+        return status === 'failed';
+    });
+
+    const handleCreateFailedList = () => {
+        const skip = localStorage.getItem('skipFailedListConfirmation') === 'true';
+        if (skip) {
+            saveFailedList();
+        } else {
+            setIsFailedListModalOpen(true);
+        }
+    };
+
+    const saveFailedList = async () => {
+        const date = new Date();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const dateStr = `${day}/${month}/${year}`;
+        const name = `Mots à retravailler — ${dateStr}`;
+
+        await saveList(name, "Liste générée automatiquement depuis les mots ratés", failedWords, ['ratés', 'auto']);
+
+        // Success actions
+        resetSession();
+        clearSelection();
+        setIsFocusModeOpen(false);
+        setIsPanelOpen(false);
+
+        // If we skipped modal (no success animation there), we might want a toast? 
+        // usageSavedLists alrady toasts on success.
+    };
 
     const handleDownloadPdf = () => {
         try {
@@ -51,17 +112,17 @@ export function SidePanel() {
     const handleNewListConfirm = () => {
         handleDownloadPdf();
         resetSession();
+        clearSelection();
         setIsNewListModalOpen(false);
-        setIsPanelOpen(false); // Close panel or stay? Usually close or go to config. Let's close for now or keep in session mode (empty).
-        // Actually "Nouvelle liste" usually implies picking a new file, so maybe we should go to a "Selection" state?
-        // But for now, resetSession clears the queue, so the UI will probably show empty state or "Prêt".
-        // Let's toggle to 'config' or just close. The previous prompt said "Redirects directly".
-        togglePanelMode('config'); // Go back to config to drag new file?
+        setIsFocusModeOpen(false);
+        togglePanelMode('config');
     };
 
     const handleNewListExit = () => {
         resetSession();
+        clearSelection();
         setIsNewListModalOpen(false);
+        setIsFocusModeOpen(false);
         togglePanelMode('config');
     };
 
@@ -433,7 +494,18 @@ export function SidePanel() {
                             </div >
 
                             {/* Footer */}
-                            < div className="px-8 py-5 border-t border-border">
+                            < div className="px-8 py-5 border-t border-border space-y-3">
+                                {failedWords.length > 0 && (
+                                    <button
+                                        onClick={handleCreateFailedList}
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] font-dm-sans text-[14px] font-semibold hover:bg-[#EDEAFF] hover:border-[#6C5CE7] transition-all duration-200"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                        </svg>
+                                        Créer liste des mots ratés
+                                    </button>
+                                )}
                                 < Button className="w-full justify-center gap-2 px-5 py-3.5 bg-destructive text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-destructive/90 transition-all h-auto">
                                     < Square className="w-4 h-4" />
                                     Terminer la session
@@ -555,6 +627,13 @@ export function SidePanel() {
                     onClose={() => setIsNewListModalOpen(false)}
                     onDownloadAndContinue={handleNewListConfirm}
                     onContinueWithoutSaving={handleNewListExit}
+                />
+
+                <CreateFailedListModal
+                    isOpen={isFailedListModalOpen}
+                    onClose={() => setIsFailedListModalOpen(false)}
+                    onConfirm={saveFailedList}
+                    failedWords={failedWords}
                 />
             </aside >
         </>

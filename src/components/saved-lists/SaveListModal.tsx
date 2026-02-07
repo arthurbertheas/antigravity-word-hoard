@@ -113,7 +113,7 @@ export function SaveListModal({
                             }}
                             placeholder="Ex: Sons CH + V pour Léo"
                             maxLength={50}
-                            className={nameError ? 'border-red-500' : ''}
+                            className={nameError ? 'border-red-500' : 'hover:border-primary focus-visible:border-primary'}
                         />
                         {nameError && (
                             <span className="text-xs text-red-500 mt-1 block">
@@ -136,6 +136,7 @@ export function SaveListModal({
                             placeholder="Pour travailler avec Léo les sons complexes..."
                             rows={3}
                             maxLength={200}
+                            className="hover:border-primary focus-visible:border-primary"
                         />
                         <span className="text-xs text-muted-foreground mt-1 block text-right">
                             {description.length}/200
@@ -147,7 +148,7 @@ export function SaveListModal({
                         <label className="text-sm font-semibold text-foreground mb-2 block">
                             Étiquettes (optionnel)
                         </label>
-                        <div className="flex flex-wrap gap-2 p-2 border border-border rounded-lg min-h-[42px]">
+                        <div className="flex flex-wrap gap-2 p-2 border border-border rounded-lg min-h-[42px] hover:border-primary transition-colors focus-within:border-primary">
                             {tags.map(tag => (
                                 <span
                                     key={tag}
@@ -218,7 +219,7 @@ export function SaveListModal({
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>
+                    <Button variant="outline" onClick={onClose} className="hover:border-primary hover:text-primary hover:bg-primary/5">
                         Annuler
                     </Button>
                     <Button onClick={handleSubmit} disabled={!name.trim()}>

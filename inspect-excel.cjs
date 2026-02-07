@@ -2,7 +2,7 @@ const XLSX = require('xlsx');
 const path = require('path');
 
 // Paths
-const excelPath = path.join(__dirname, 'src', 'data', 'Liste refaite v3.xlsx');
+const excelPath = path.join(__dirname, 'src', 'data', 'Liste refaite v4.xlsx');
 
 // Read the Excel file
 const workbook = XLSX.readFile(excelPath);
