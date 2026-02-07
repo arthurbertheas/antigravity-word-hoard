@@ -19,15 +19,17 @@ import { useToast } from "@/hooks/use-toast"
 import { useSelection } from '@/contexts/SelectionContext';
 import { useSavedLists } from '@/hooks/useSavedLists';
 import { CreateFailedListModal } from './CreateFailedListModal';
+import { SaveListModal } from '@/components/saved-lists/SaveListModal';
 import { useEffect } from 'react';
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
 export function SidePanel() {
     // Click-outside logic implemented
-    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, currentIndex, wordStatuses, cycleWordStatus, startTime, resetSession } = usePlayer();
+    const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, setQueue, currentIndex, setCurrentIndex, wordStatuses, cycleWordStatus, startTime, resetSession, setIsPlaying, setPhase } = usePlayer();
     const [activeTab, setActiveTab] = useState<TabType>('visual');
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
+    const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
     const { generatePdf } = usePdfExport();
     const { toast } = useToast();
     const { clearSelection, setIsFocusModeOpen } = useSelection();
@@ -51,7 +53,7 @@ export function SidePanel() {
         getMemberstackUser();
     }, []);
 
-    const { saveList } = useSavedLists(userId);
+    const { saveList, savedLists } = useSavedLists(userId);
     const [isFailedListModalOpen, setIsFailedListModalOpen] = useState(false);
 
     const failedWords = queue.filter(w => {
@@ -62,30 +64,49 @@ export function SidePanel() {
     const handleCreateFailedList = () => {
         const skip = localStorage.getItem('skipFailedListConfirmation') === 'true';
         if (skip) {
-            saveFailedList();
+            handleLaunchList();
         } else {
             setIsFailedListModalOpen(true);
         }
     };
 
-    const saveFailedList = async () => {
-        const date = new Date();
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        const dateStr = `${day}/${month}/${year}`;
-        const name = `Mots à retravailler — ${dateStr}`;
+    const handleLaunchList = () => {
+        setIsFailedListModalOpen(false);
 
-        await saveList(name, "Liste générée automatiquement depuis les mots ratés", failedWords, ['ratés', 'auto']);
+        // Capture count for toast
+        const count = failedWords.length;
 
-        // Success actions
+        // Reset and restart with failed words
+        resetSession();
+        setQueue(failedWords);
+        setIsPlaying(true);
+        setPhase('display');
+
+        toast({
+            title: "Session lancée",
+            description: `▶ ${count} mots ratés chargés dans le diaporama`,
+            duration: 3000,
+            className: "bg-[#F0EDFF] border-[#6C5CE7] text-[#6C5CE7]"
+        });
+
+        // Close panel to show player
+        setIsPanelOpen(false);
+    };
+
+    const handleOpenSaveListModal = () => {
+        setIsFailedListModalOpen(false);
+        setIsSaveListModalOpen(true);
+    };
+
+    const handleSaveListConfirm = async (name: string, description: string, tags: string[]) => {
+        await saveList(name, description, failedWords, tags);
+        setIsSaveListModalOpen(false);
+
+        // End session and return to config/selection
         resetSession();
         clearSelection();
         setIsFocusModeOpen(false);
-        setIsPanelOpen(false);
-
-        // If we skipped modal (no success animation there), we might want a toast? 
-        // usageSavedLists alrady toasts on success.
+        togglePanelMode('config');
     };
 
     const handleDownloadPdf = () => {
@@ -632,11 +653,24 @@ export function SidePanel() {
                 <CreateFailedListModal
                     isOpen={isFailedListModalOpen}
                     onClose={() => setIsFailedListModalOpen(false)}
-                    onConfirm={saveFailedList}
+                    onLaunch={handleLaunchList}
+                    onSave={handleOpenSaveListModal}
                     failedWords={failedWords}
                 />
-            </aside >
+
+                <SaveListModal
+                    isOpen={isSaveListModalOpen}
+                    onClose={() => setIsSaveListModalOpen(false)}
+                    onSave={handleSaveListConfirm}
+                    words={failedWords}
+                    mode="create"
+                    existingLists={savedLists.map(l => ({ id: l.id, name: l.name }))}
+                    initialData={{
+                        name: `Mots à retravailler — ${new Date().toLocaleDateString('fr-FR')}`,
+                        description: "Liste générée automatiquement depuis les mots ratés",
+                        tags: ['ratés']
+                    }}
+                />    </aside >
         </>
     );
 }
-
