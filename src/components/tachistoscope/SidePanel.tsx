@@ -168,7 +168,7 @@ export function SidePanel() {
         setIsSessionFinishModalOpen(false);
         resetSession();
         // Navigate to ecosystem home
-        window.top!.location.href = '/account/home';
+        window.top!.location.href = 'https://materielorthophonie.webflow.io/account/home';
     };
 
     const handleViewRecap = () => {
