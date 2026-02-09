@@ -144,6 +144,13 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
                     while (idx + lookAhead < parsedGraphemes.length) {
                         if (consonantsToHighlight.length >= 2) break;
+
+                        // NEW: Respect boundaries. If spacing is active and there's a boundary 
+                        // before the next consonant, we STOP dragging to let the spacing logic work.
+                        if (settings.spacingMode !== 'letters' && segmentBoundaries.has(idx + lookAhead - 1)) {
+                            break;
+                        }
+
                         const nextGrapheme = parsedGraphemes[idx + lookAhead];
                         if (nextGrapheme.type === 'consonne') {
                             consonantsToHighlight.push(nextGrapheme);
