@@ -301,15 +301,22 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             setPhase('display');
         } else {
             if (currentIndex > 0) {
+                // If we are on Bravo !, skip gap when going back
+                const isCurrentBravo = queue[currentIndex]?.ORTHO === "Bravo !";
+
                 setCurrentIndex(currentIndex - 1);
-                setPhase('gap');
+                if (isCurrentBravo) {
+                    setPhase('display');
+                } else {
+                    setPhase('gap');
+                }
             } else {
                 setPhase('display');
                 setHasStarted(false);
                 setIsPlaying(false);
             }
         }
-    }, [phase, currentIndex]);
+    }, [phase, currentIndex, queue]);
 
     const resetSession = useCallback(() => {
         setSessionLog([]);
