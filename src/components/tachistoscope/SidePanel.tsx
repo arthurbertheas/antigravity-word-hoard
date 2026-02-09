@@ -143,8 +143,9 @@ export function SidePanel() {
         // clearSelection needs to happen after we ensure we are exiting
         setTimeout(() => {
             clearSelection();
+            setIsPanelOpen(true);
             togglePanelMode('config');
-        }, 50);
+        }, 100);
     };
 
     const handleNewListExit = () => {
@@ -154,8 +155,9 @@ export function SidePanel() {
         // clearSelection needs to happen after we ensure we are exiting
         setTimeout(() => {
             clearSelection();
+            setIsPanelOpen(true);
             togglePanelMode('config');
-        }, 50);
+        }, 100);
     };
 
     const handleConfirmFinishSession = () => {
@@ -166,7 +168,7 @@ export function SidePanel() {
         setIsSessionFinishModalOpen(false);
         resetSession();
         // Navigate to ecosystem home
-        window.location.href = '/account/home';
+        window.top!.location.href = '/account/home';
     };
 
     const handleViewRecap = () => {
