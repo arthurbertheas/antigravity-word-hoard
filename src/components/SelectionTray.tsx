@@ -7,6 +7,7 @@ import { useSavedListsContext } from "@/contexts/SavedListsContext";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
 import { SavedListsPanel } from "@/components/saved-lists/SavedListsPanel";
 import { SavedList } from "@/lib/supabase";
+import { PanelHeader } from "@/components/ui/PanelHeader";
 
 export function SelectionTray() {
     const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen, addItems } = useSelection();
@@ -89,36 +90,17 @@ export function SelectionTray() {
             "shrink-0 bg-card/10 flex flex-col h-full border-l border-[rgb(var(--filter-border))] transition-width-smooth overflow-hidden relative",
             isCollapsed ? "w-[64px]" : "w-80"
         )}>
-            {/* Header (Sandwich: Fixed) */}
-            <div className="flex-none p-4 border-b border-slate-100 bg-white min-h-[80px] flex items-center gap-3">
-                {/* NOUVEAU : Bouton collapse */}
-                <button
-                    onClick={togglePanel}
-                    className="flex-none w-8 h-8 rounded-lg border-[1.5px] border-border bg-white text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center group"
-                    title={isCollapsed ? "Ouvrir (C)" : "Réduire (C)"}
-                >
-                    {isCollapsed ? (
-                        <ChevronLeft className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    ) : (
-                        <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    )}
-                </button>
-
-                {/* Contenu du header (ne change pas mais fade out) */}
-                <div className={cn(
-                    "flex-1 flex items-center justify-between min-w-0 transition-all duration-300",
-                    isCollapsed ? "opacity-0 -translate-x-4 pointer-events-none" : "opacity-100 translate-x-0"
-                )}>
-                    <div className="flex items-center gap-2">
-                        <ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />
-                        <h2 className="font-sora text-sm font-bold text-[rgb(var(--filter-text-primary))]">
-                            Ma Liste
-                        </h2>
-                    </div>
-
-                    <div className="ml-auto flex items-center gap-2 z-10">
-                        {selectedWords.length > 0 && (
-                            <div className="flex items-center gap-2">
+            {/* Harmonized Header */}
+            <PanelHeader
+                title="Ma Liste"
+                subtitle="Liste et actions"
+                icon={<ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />}
+                onForward={!isCollapsed ? () => setActiveView('saved-lists') : undefined}
+                action={
+                    <div className="flex items-center gap-3">
+                        {/* Clear Button (Visible only if not collapsed and has items) */}
+                        {!isCollapsed && selectedWords.length > 0 && (
+                            <div className="flex items-center gap-2 mr-2">
                                 {showClearConfirm ? (
                                     <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
                                         <button
@@ -148,9 +130,22 @@ export function SelectionTray() {
                                 )}
                             </div>
                         )}
+
+                        {/* Toggle Collapse Button */}
+                        <button
+                            onClick={togglePanel}
+                            className="flex-none w-8 h-8 rounded-lg border-[1.5px] border-border bg-white text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center group"
+                            title={isCollapsed ? "Ouvrir (C)" : "Réduire (C)"}
+                        >
+                            {isCollapsed ? (
+                                <ChevronLeft className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            ) : (
+                                <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            )}
+                        </button>
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             {/* Saved Lists Dropdown */}
             {/* Mes listes sauvegardées button (Panel approach) */}

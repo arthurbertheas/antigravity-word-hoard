@@ -22,6 +22,7 @@ import { CreateFailedListModal } from './CreateFailedListModal';
 import { SaveListModal } from '@/components/saved-lists/SaveListModal';
 import { SessionFinishModal } from './SessionFinishModal';
 import { useEffect } from 'react';
+import { PanelHeader } from '@/components/ui/PanelHeader';
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
 
@@ -209,47 +210,29 @@ export function SidePanel() {
                     : "translate-x-full opacity-0 duration-0 pointer-events-none",
                 panelMode === 'stats' ? "w-[520px]" : "w-[360px]"
             )}>
-                {/* Header */}
-                <div className={cn(
-                    "px-8 py-7 pb-6 border-b border-border flex items-center gap-4",
-                    panelMode === 'stats' ? "justify-start" : "justify-between"
-                )}>
-                    {panelMode === 'stats' && (
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-9 w-9 rounded-full border-[1.5px] border-border bg-background hover:bg-muted hover:text-primary hover:border-primary transition-all shrink-0"
-                            onClick={() => togglePanelMode('session')}
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                        </Button>
-                    )}
-
-                    <div className="flex-1">
-                        <div className="text-lg font-bold font-sora text-foreground mb-1">
-                            {panelMode === 'config' ? 'Configuration' :
-                                panelMode === 'stats' ? 'Statistiques' : 'Session en cours'}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                            {panelMode === 'config' ? 'Réglages d\'affichage' :
-                                panelMode === 'stats' ? 'Résumé de la session' : 'Liste et actions'}
-                        </div>
-                    </div>
-
-                    {panelMode !== 'stats' && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted -mt-1 -mr-2"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsPanelOpen(false);
-                            }}
-                        >
-                            <X className="w-4 h-4" />
-                        </Button>
-                    )}
-                </div>
+                {/* Harmonized Header */}
+                <PanelHeader
+                    title={panelMode === 'config' ? 'Configuration' :
+                        panelMode === 'stats' ? 'Statistiques' : 'Session en cours'}
+                    subtitle={panelMode === 'config' ? 'Réglages d\'affichage' :
+                        panelMode === 'stats' ? 'Résumé de la session' : 'Liste et actions'}
+                    onBack={panelMode === 'stats' ? () => togglePanelMode('session') : undefined}
+                    action={
+                        panelMode !== 'stats' ? (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted -mr-2"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsPanelOpen(false);
+                                }}
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
+                        ) : undefined
+                    }
+                />
 
                 {/* MODE CONFIG */}
                 {

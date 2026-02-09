@@ -4,6 +4,7 @@ import { SavedList } from '@/lib/supabase';
 import { SavedListCard } from './SavedListCard';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { PanelHeader } from '@/components/ui/PanelHeader';
 
 interface SavedListsPanelProps {
     lists: SavedList[];
@@ -31,26 +32,12 @@ export function SavedListsPanel({
 
     return (
         <div className="flex flex-col h-full bg-white animate-in slide-in-from-right duration-300">
-            {/* Header */}
-            <div className="flex-none p-[18px_20px_14px]">
-                <div className="flex items-center gap-[10px] mb-1">
-                    <button
-                        onClick={onBack}
-                        className="w-[34px] h-[34px] rounded-[10px] border border-[#E5E7EB] bg-white cursor-pointer flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:text-[#6C5CE7]"
-                        aria-label="Retour"
-                    >
-                        <ChevronLeft className="w-[18px] h-[18px]" />
-                    </button>
-                    <div>
-                        <h2 className="font-sora text-[17px] font-[700] text-[#1A1A2E] leading-tight">
-                            Mes listes
-                        </h2>
-                        <p className="font-['DM_Sans'] text-[12px] text-[#9CA3AF] mt-0.5">
-                            {lists.length} listes sauvegardées
-                        </p>
-                    </div>
-                </div>
-            </div>
+            {/* Harmonized Header */}
+            <PanelHeader
+                title="Mes listes"
+                subtitle={`${lists.length} listes sauvegardées`}
+                onBack={onBack}
+            />
 
             {/* Search Bar */}
             <div className="flex-none px-4 pb-3">
