@@ -275,8 +275,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             setHasStarted(true);
             setPhase('display');
         } else {
+            // Guard: Stop if we are already at the last word (Bravo !)
+            if (currentIndex >= queue.length - 1) return;
+
             if (phase === 'display') {
-                // SKIP GAP if next is last (Bravo !)
+                // Check if NEXT word is Fin (Bravo !). If so, SKIP GAP.
                 const isNextLast = currentIndex + 1 >= queue.length - 1;
                 const isNextBravo = queue[currentIndex + 1]?.ORTHO === "Bravo !";
 
@@ -287,7 +290,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                     setPhase('gap');
                 }
             } else {
-                setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
+                setCurrentIndex(prev => prev + 1);
                 setPhase('display');
             }
         }
