@@ -276,13 +276,22 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             setPhase('display');
         } else {
             if (phase === 'display') {
-                setPhase('gap');
+                // SKIP GAP if next is last (Bravo !)
+                const isNextLast = currentIndex + 1 >= queue.length - 1;
+                const isNextBravo = queue[currentIndex + 1]?.ORTHO === "Bravo !";
+
+                if (isNextLast || isNextBravo) {
+                    setCurrentIndex(prev => prev + 1);
+                    setPhase('display');
+                } else {
+                    setPhase('gap');
+                }
             } else {
                 setCurrentIndex(prev => (prev < queue.length - 1 ? prev + 1 : prev));
                 setPhase('display');
             }
         }
-    }, [queue.length, hasStarted, phase]);
+    }, [queue, hasStarted, phase, currentIndex]);
 
     const prevWord = useCallback(() => {
         if (phase === 'gap') {

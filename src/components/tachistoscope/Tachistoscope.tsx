@@ -123,24 +123,7 @@ function PlayerEngine() {
 
         timerRef.current = setTimeout(() => {
             remainingRef.current = 0; // Consumed
-
-            if (phase === 'display') {
-                // Check if NEXT word is the LAST word (Bravo !). 
-                // We check both index AND content to be safe.
-                const nextIndex = currentIndex + 1;
-                const isNextLast = nextIndex === queue.length - 1;
-                const isNextBravoString = queue[nextIndex]?.ORTHO === "Bravo !";
-
-                if (isNextLast || isNextBravoString) {
-                    // Manually advance to next/last word (Bravo) without going through 'gap' phase
-                    setCurrentIndex(nextIndex);
-                    setPhase('display');
-                } else {
-                    setPhase('gap');
-                }
-            } else {
-                nextWord();
-            }
+            nextWord();
         }, duration);
 
         // Update trackers
@@ -152,7 +135,7 @@ function PlayerEngine() {
             if (timerRef.current) clearTimeout(timerRef.current);
             if (beepTimerRef.current) clearTimeout(beepTimerRef.current);
         };
-    }, [isPlaying, currentIndex, phase, queue.length, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
+    }, [isPlaying, currentIndex, phase, queue, settings.speedMs, settings.gapMs, setPhase, nextWord, setIsPlaying]);
 
     // Audio Feedback Trigger (On Display)
     // Only fires if gap is too short for the pre-roll logic (< 500ms) OR if it is the first word
@@ -172,7 +155,7 @@ function PlayerEngine() {
         if (phase === 'display' && hasStarted && settings.enableSound && shouldBeepOnDisplay) {
             playBeep();
         }
-    }, [phase, hasStarted, settings.enableSound, settings.gapMs, currentIndex, queue.length, isPlaying]);
+    }, [phase, hasStarted, settings.enableSound, settings.gapMs, currentIndex, queue, isPlaying]);
 
     return null;
 }
@@ -207,6 +190,8 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
     // Initialize queue with FIN word appended
     useEffect(() => {
+        if (!words || words.length === 0) return;
+
         const effectiveWords = [...words, FIN_WORD];
         setQueue(effectiveWords);
         return () => resetSession();
