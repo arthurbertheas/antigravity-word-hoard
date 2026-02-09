@@ -32,7 +32,7 @@ export function SidePanel() {
     const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
     const { generatePdf } = usePdfExport();
     const { toast } = useToast();
-    const { clearSelection, addItems, setIsFocusModeOpen } = useSelection();
+    const { clearSelection, addItems, setSelection, setIsFocusModeOpen } = useSelection();
 
     // Saved Lists Context
     const { saveList, savedLists } = useSavedListsContext();
@@ -100,8 +100,7 @@ export function SidePanel() {
         if (newListId) {
             // End session and return to config/selection
             resetSession();
-            clearSelection();
-            addItems(failedWords); // This "loads" the failed words into the main UI
+            setSelection(failedWords); // Atomic replacement
 
             setIsFocusModeOpen(false);
             togglePanelMode('config');
