@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { supabase, SavedList } from '@/lib/supabase';
 import { Word } from '@/types/word';
 import { useToast } from '@/hooks/use-toast';
+import { normalizeWords } from '@/utils/word-normalization';
 
 interface SavedListsContextType {
     savedLists: SavedList[];
@@ -158,7 +159,7 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
             setCurrentListId(listId);
             setIsModified(false);
             toast({ title: 'Liste chargée', description: `"${data.name}" (${data.word_count} mots)` });
-            return data.words as Word[];
+            return normalizeWords(data.words);
         } catch (error) {
             console.error('Error loading list:', error);
             toast({ title: 'Erreur', description: 'Impossible de charger la liste', variant: 'destructive' });

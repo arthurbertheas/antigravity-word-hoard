@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Word } from '@/types/word';
+import { normalizeWord, normalizeWords } from '@/utils/word-normalization';
 
 interface SelectionContextType {
     selectedWords: Word[];
@@ -27,17 +28,19 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
 
     const addItem = (word: Word) => {
-        const targetId = getWordId(word);
+        const normalized = normalizeWord(word);
+        const targetId = getWordId(normalized);
         setSelectedWords(prev => {
             const exists = prev.some(w => getWordId(w) === targetId);
             if (exists) return prev;
-            return [...prev, word];
+            return [...prev, normalized];
         });
     };
 
     const addItems = (words: Word[]) => {
+        const normalizedWords = normalizeWords(words);
         setSelectedWords(prev => {
-            const newWords = words.filter(word => {
+            const newWords = normalizedWords.filter(word => {
                 const targetId = getWordId(word);
                 return !prev.some(w => getWordId(w) === targetId);
             });
@@ -71,7 +74,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     };
 
     const setSelection = (words: Word[]) => {
-        setSelectedWords(words);
+        setSelectedWords(normalizeWords(words));
     };
 
     const isSelected = (word: Word) => {

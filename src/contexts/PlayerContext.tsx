@@ -1,5 +1,6 @@
 ﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Word } from '@/types/word';
+import { normalizeWords } from '@/utils/word-normalization';
 
 export type PlayerPhase = 'display' | 'gap';
 export type FeedbackType = 'positive' | 'negative';
@@ -164,8 +165,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const handleSetQueue = useCallback((words: Word[]) => {
+        const normalizedWords = normalizeWords(words);
         // Ensure ALL words have a stable UID based on content and position
-        const wordsWithIds = words.map((w, idx) => ({
+        const wordsWithIds = normalizedWords.map((w, idx) => ({
             ...w,
             uid: w.uid || `${w.MOTS}-${w.PHONEMES}-${w.SYNT}-${idx}`
         }));
