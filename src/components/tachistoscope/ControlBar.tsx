@@ -26,7 +26,8 @@ export function ControlBar() {
         togglePanelMode,
         feedback,
         isShuffled,
-        toggleShuffle
+        toggleShuffle,
+        isPanelOpen
     } = usePlayer();
 
     const [isVisible, setIsVisible] = useState(true);
@@ -191,7 +192,7 @@ export function ControlBar() {
                             className={
                                 cn(
                                     "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-white text-muted-foreground hover:bg-background hover:border-primary/60 hover:text-primary hover:bg-primary/5 transition-all",
-                                    panelMode === 'config' && "bg-primary border-primary text-white hover:bg-primary-hover"
+                                    isPanelOpen && panelMode === 'config' && "bg-primary border-primary text-white hover:bg-primary-hover"
                                 )}
                             onClick={() => togglePanelMode('config')}
                             title="Configuration (C)"
@@ -205,7 +206,7 @@ export function ControlBar() {
                             className={
                                 cn(
                                     "w-10 h-10 rounded-[10px] border-[1.5px] border-border bg-white text-muted-foreground hover:bg-background hover:border-primary/60 hover:text-primary hover:bg-primary/5 transition-all",
-                                    panelMode === 'session' && "bg-primary border-primary text-white hover:bg-primary-hover"
+                                    isPanelOpen && panelMode === 'session' && "bg-primary border-primary text-white hover:bg-primary-hover"
                                 )}
                             onClick={() => togglePanelMode('session')}
                             title="Liste des mots (L)"
