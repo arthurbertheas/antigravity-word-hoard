@@ -46,7 +46,7 @@ export function SelectionTray() {
     const togglePanel = () => setIsCollapsed(!isCollapsed);
 
     // Stats calculation
-    const totalSyllables = selectedWords.reduce((acc, word) => acc + Number(word.SYLL || 0), 0);
+    const totalSyllables = selectedWords.reduce((acc, word) => acc + Number(word.NBSYLL || 0), 0);
     const avgSyllables = selectedWords.length > 0 ? (totalSyllables / selectedWords.length).toFixed(1) : 0;
 
     const handleClearRequest = () => {
@@ -296,7 +296,7 @@ export function SelectionTray() {
                                 key={getWordId(word)}
                                 className="group p-3 bg-white rounded-xl border border-border shadow-sm text-sm flex items-center justify-between hover:border-primary/30 hover:shadow-md transition-all duration-200"
                             >
-                                <span className="font-medium text-foreground">{word.ORTHO}</span>
+                                <span className="font-medium text-foreground">{word.MOTS}</span>
                                 <button
                                     onClick={() => removeItem(getWordId(word))}
                                     className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"

@@ -72,7 +72,7 @@ export function CreateFailedListModal({ isOpen, onClose, onLaunch, onSave, faile
                                             key={i}
                                             className="px-3 py-1.5 rounded-[20px] bg-[#FDEDEC] text-[#E74C3C] text-[13px] font-medium border border-[#E74C3C]/10"
                                         >
-                                            {word.ORTHO}
+                                            {word.MOTS}
                                         </span>
                                     ))}
                                 </div>

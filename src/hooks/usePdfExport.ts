@@ -11,7 +11,7 @@ interface UsePdfExportProps {
 
 export function usePdfExport() {
     const generatePdf = useCallback(({ queue, wordStatuses, startTime }: UsePdfExportProps) => {
-        const visualQueue = queue.filter(w => w.ORTHO !== 'Bravo !');
+        const visualQueue = queue.filter(w => w.MOTS !== 'Bravo !');
 
         // Calculate stats
         const totalWords = visualQueue.length;
@@ -98,7 +98,7 @@ export function usePdfExport() {
                 doc.setTextColor(100, 100, 100); // Gray
             }
 
-            doc.text(`${symbol} ${String(index + 1).padStart(2, '0')}. ${word.ORTHO}`, 20, yPos);
+            doc.text(`${symbol} ${String(index + 1).padStart(2, '0')}. ${word.MOTS}`, 20, yPos);
             doc.setTextColor(0, 0, 0); // Reset color
 
             yPos += lineHeight;

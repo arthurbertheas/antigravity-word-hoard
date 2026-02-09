@@ -45,7 +45,7 @@ export function WordBank({ words }: WordBankProps) {
                         <div className="flex flex-wrap gap-2.5">
                             {currentWords.map((word) => (
                                 <WordCard
-                                    key={`${word.ORTHO}-${word.PHON}`}
+                                    key={`${word.MOTS}-${word.PHONEMES}`}
                                     word={word}
                                 />
                             ))}

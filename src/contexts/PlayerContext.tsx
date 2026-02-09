@@ -157,7 +157,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         // Ensure ALL words have a stable UID based on content and position
         const wordsWithIds = words.map((w, idx) => ({
             ...w,
-            uid: w.uid || `${w.ORTHO}-${w.PHON}-${w.SYNT}-${idx}`
+            uid: w.uid || `${w.MOTS}-${w.PHONEMES}-${w.SYNT}-${idx}`
         }));
         setQueue(wordsWithIds);
         setIsShuffled(false);
@@ -183,7 +183,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             const toShuffle = [...queue];
 
             // Keep the last word (usually "Bravo !") if it's there
-            const hasFin = toShuffle.length > 0 && toShuffle[toShuffle.length - 1].ORTHO === 'Bravo !';
+            const hasFin = toShuffle.length > 0 && toShuffle[toShuffle.length - 1].MOTS === 'Bravo !';
             const finWord = hasFin ? toShuffle.pop() : null;
 
             // Fisher-Yates
@@ -281,7 +281,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             if (phase === 'display') {
                 // Check if NEXT word is Fin (Bravo !). If so, SKIP GAP.
                 const isNextLast = currentIndex + 1 >= queue.length - 1;
-                const isNextBravo = queue[currentIndex + 1]?.ORTHO === "Bravo !";
+                const isNextBravo = queue[currentIndex + 1]?.MOTS === "Bravo !";
 
                 if (isNextLast || isNextBravo) {
                     setCurrentIndex(prev => prev + 1);
@@ -302,7 +302,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         } else {
             if (currentIndex > 0) {
                 // If we are on Bravo !, skip gap when going back
-                const isCurrentBravo = queue[currentIndex]?.ORTHO === "Bravo !";
+                const isCurrentBravo = queue[currentIndex]?.MOTS === "Bravo !";
 
                 setCurrentIndex(currentIndex - 1);
                 if (isCurrentBravo) {

@@ -213,7 +213,7 @@ export function SaveListModal({
                                     key={i}
                                     className="px-2.5 py-1 bg-white border border-border rounded-md text-sm font-medium"
                                 >
-                                    {word.ORTHO}
+                                    {word.MOTS}
                                 </span>
                             ))}
                             {words.length > 20 && (

@@ -102,11 +102,11 @@ function WordExplorerContent() {
                 <ResultsHeader
                     words={words}
                     isAllSelected={words.length > 0 && words.every(word =>
-                        selectedWords.some(sw => sw.ORTHO === word.ORTHO)
+                        selectedWords.some(sw => sw.MOTS === word.MOTS)
                     )}
                     onToggleSelectAll={() => {
                         const isAllSelected = words.length > 0 && words.every(word =>
-                            selectedWords.some(sw => sw.ORTHO === word.ORTHO)
+                            selectedWords.some(sw => sw.MOTS === word.MOTS)
                         );
                         if (isAllSelected) {
                             removeItems(words);

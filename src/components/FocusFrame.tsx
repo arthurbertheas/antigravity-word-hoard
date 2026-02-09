@@ -22,7 +22,7 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
     const [textScale, setTextScale] = useState([1]);
     const [letterSpacing, setLetterSpacing] = useState([0]);
 
-    const validWords = words.filter(w => w && w.ORTHO);
+    const validWords = words.filter(w => w && w.MOTS);
     const currentWord = validWords[currentIndex];
 
     // --- PARENT COMMUNICATION ---
@@ -194,7 +194,7 @@ export function FocusFrame({ words, isOpen, onClose }: FocusFrameProps) {
                         maxWidth: '100%'
                     }}
                 >
-                    {currentWord.ORTHO}
+                    {currentWord.MOTS}
                 </h1>
             </div>
 

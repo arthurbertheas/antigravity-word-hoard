@@ -180,13 +180,17 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
     } = usePlayer();
 
     const FIN_WORD = React.useMemo(() => ({
-        ORTHO: "Bravo !",
-        GSEG: "B.r.a.v.o.\u00A0.!",
-        PHON: "bʀavo",
+        MOTS: "Bravo !",
+        PHONEMES: "bʀavo",
+        GRAPHEMES: "",
+        "segmentation graphèmes": "B.r.a.v.o.\u00A0.!",
         SYNT: "NC",
-        "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
-        "code structure": "a", "code graphèmes": "", NBLET: "", NBPHON: "",
-        NBGRAPH: "", PSEG: "", GPMATCH: ""
+        "APPUI LEXICAL": "",
+        NBSYLL: "2",
+        "segmentation syllabique": "Bra.vo",
+        "progression structure": "a",
+        "progression graphèmes": "",
+        GPMATCH: ""
     } as unknown as Word), []);
 
     // Initialize queue with FIN word appended
@@ -196,7 +200,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         // Skip update if queue already matches current words (plus FIN_WORD)
         // This prevents the "flash" and reset that wipes wordStatuses if words prop re-renders
         if (queue.length === words.length + 1 &&
-            queue.slice(0, words.length).every((w, i) => w.ORTHO === words[i].ORTHO)) {
+            queue.slice(0, words.length).every((w, i) => w.MOTS === words[i].MOTS)) {
             return;
         }
 
@@ -225,7 +229,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     e.preventDefault();
                     if (currentIndex < words.length && queue[currentIndex]) {
                         const word = queue[currentIndex];
-                        logResult(word.ORTHO, 'success');
+                        logResult(word.MOTS, 'success');
                         flashFeedback('positive');
                         if (word.uid) setWordStatus(word.uid, 'validated');
                     }
@@ -234,7 +238,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     e.preventDefault();
                     if (currentIndex < words.length && queue[currentIndex]) {
                         const word = queue[currentIndex];
-                        logResult(word.ORTHO, 'failed');
+                        logResult(word.MOTS, 'failed');
                         flashFeedback('negative');
                         if (word.uid) setWordStatus(word.uid, 'failed');
                     }
@@ -265,13 +269,17 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
     if (words.length === 0) return null;
 
     const PREVIEW_WORD = {
-        ORTHO: "Prêt ?",
-        GSEG: "P.r.ê.t.\u00A0.?",
-        PHON: "pʀɛ",
+        MOTS: "Prêt ?",
+        PHONEMES: "pʀɛ",
+        GRAPHEMES: "",
+        "segmentation graphèmes": "P.r.ê.t.\u00A0.?",
         SYNT: "NC",
-        "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
-        "code structure": "a", "code graphèmes": "", NBLET: "", NBPHON: "",
-        NBGRAPH: "", PSEG: "", GPMATCH: ""
+        "APPUI LEXICAL": "",
+        NBSYLL: "1",
+        "segmentation syllabique": "Prêt",
+        "progression structure": "a",
+        "progression graphèmes": "",
+        GPMATCH: ""
     } as unknown as Word;
 
     const showPreview = !hasStarted;

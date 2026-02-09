@@ -2,62 +2,53 @@
 
 export interface Word {
     uid?: string;            // Identifiant unique (pour le shuffle)
-    // Données principales
-    ORTHO: string;           // Orthographe du mot
-    PHON: string;            // Transcription phonétique
-    SYNT: SyntCategory;      // Catégorie syntaxique
-    "fréquence": string;     // Fréquence d'usage
-    "code fréquence": string; // Code fréquence (1-4)
 
-    // Données syllabiques
-    NBSYLL: string;          // Nombre de syllabes
-    PSYLL: string;           // Découpage syllabique phonétique
+    // Données principales - RENOMMÉES V7
+    MOTS: string;                    // was ORTHO
+    PHONEMES: string;                // was PHON
+    GRAPHEMES: string;               // NOUVEAU V7
+    SYNT: SyntCategory;
+    "APPUI LEXICAL": string;         // was "code fréquence"
 
-    // Données structurelles
-    "code structure": StructureCode;  // Structure syllabique
-    "code graphèmes": string;         // Complexité graphémique (1-13)
-    NBLET: string;           // Nombre de lettres
-    NBPHON: string;          // Nombre de phonèmes
-    NBGRAPH: string;         // Nombre de graphèmes
+    // Données syllabiques - RENOMMÉES V7
+    NBSYLL: string;                  // Nb de syllabes
+    "segmentation syllabique": string;  // was PSYLL
 
-    // Segmentation
-    GSEG: string;            // Graphèmes segmentés
-    PSEG: string;            // Phonèmes segmentés
-    GPMATCH: string;         // Correspondance graphème-phonème
+    // Données structurelles - RENOMMÉES V7
+    "progression structure": StructureCode;  // was "code structure"
+    "progression graphèmes": string;         // was "code graphèmes"
 
-    // Colonnes optionnelles
-    "tri simple"?: string;
-    "structure phonétique"?: string;
+    // Segmentation & Correspondance
+    "segmentation graphèmes": string;   // was GSEG
+    GPMATCH: string;                    // Correspondance graphème-phonème
+
+    // Pattern & Structures (v3/v7)
+    "structure C.V"?: string;           // Pattern CV (ex: "VCVCVCV")
+    "C.V syllabes"?: string;            // Pattern CV par syllabe
+    "consonne double"?: string;         // "oui" | "non"
+    "groupe CC"?: string;               // Type de cluster consonantique
+    "groupe VV"?: string;               // Type de cluster vocalique
+
+    // Nouveaux champs v7
     "régularité graphotactique"?: string;
     "image associée"?: string;
-    PUORTHO?: string;
 
-    // Nouveaux champs orthophoniste (v3)
-    "structure C.V"?: string;       // Pattern CV (ex: "VCVCVCV")
-    "consonne double"?: string;     // "oui" | "non"
-    "groupe CC"?: string;           // Type de cluster consonantique
-    "groupe VV"?: string;           // Type de cluster vocalique
+    // Colonnes supprimées dans V7: fréquence, NBLET, NBPHON, NBGRAPH, PSEG, PUORTHO
 
-    // Statistiques homophones
-    NBHPTY: string;
-    NBHGTY: string;
-    NBHPNGTY: string;
-    NBHGNPTY: string;
-    NBHPTO: string;
-    NBHGTO: string;
-    NBHPNGTO: string;
-    NBHGNPTO: string;
-    NBONTY: string;
-    NBONTO: string;
-    NBPGNTY: string;
-    NBPGNTO: string;
+    // Statistiques homophones (optionnelles selon le JSON)
+    NBHPTY?: string;
+    NBHGTY?: string;
+    NBHPNGTY?: string;
+    NBHGNPTY?: string;
+    NBONTY?: string;
+    NBONTO?: string;
 
-    // Fréquences bigrammes (nombreuses colonnes FR* et CO*)
-    [key: string]: string;
+    // Flexibilité pour les autres colonnes
+    [key: string]: string | undefined;
 }
 
 // Catégories syntaxiques
-export type SyntCategory = 'NC' | 'ADJ' | 'VER' | 'ADV' | 'PRE';
+export type SyntCategory = 'NC' | 'ADJ' | 'VER' | 'ADV' | 'PRE' | 'NP' | string;
 
 // Codes de structure syllabique
 export type StructureCode = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | '1';
@@ -113,18 +104,18 @@ export interface FilterTag {
 
 // Filtres disponibles
 export interface WordFilters {
-    search: FilterTag[];         // Recherche avancée (ORTHO) - MODIFIÉ
+    search: FilterTag[];         // Recherche avancée (MOTS)
     categories: SyntCategory[];  // Catégories syntaxiques
     minSyllables: number;        // Nb syllabes min
     maxSyllables: number;        // Nb syllabes max
-    structures: string[];        // Codes structure
-    graphemeDisplay: string[];   // Codes graphèmes (Complexité - ex 'graphemes' renamed)
-    graphemes: FilterTag[];      // NOUVEAU: Recherche de graphèmes spécifiques
-    phonemes: FilterTag[];       // NOUVEAU: Recherche de phonèmes spécifiques
-    frequencies: string[];       // Codes fréquence
-    minLetters: number;          // Longueur min
-    maxLetters: number;          // Longueur max
-    realtimeSearch: {            // NOUVEAU: Recherche temps réel
+    structures: string[];        // Codes structure (progression structure)
+    graphemeDisplay: string[];   // Codes graphèmes (progression graphèmes)
+    graphemes: FilterTag[];      // Recherche de graphèmes spécifiques
+    phonemes: FilterTag[];       // Recherche de phonèmes spécifiques
+    frequencies: string[];       // Codes fréquence (APPUI LEXICAL)
+    minLetters: number;          // Longueur min (calculé sur MOTS)
+    maxLetters: number;          // Longueur max (calculé sur MOTS)
+    realtimeSearch: {            // Recherche temps réel
         value: string;
         position: 'start' | 'end' | 'middle' | 'anywhere';
     };

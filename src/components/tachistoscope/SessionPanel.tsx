@@ -30,7 +30,7 @@ export function SessionPanel() {
     }, [currentIndex, isPanelOpen]);
 
     // Exclude "FIN" for visual representaiton and stats
-    const visualQueue = queue.filter(w => w.ORTHO !== 'Bravo !');
+    const visualQueue = queue.filter(w => w.MOTS !== 'Bravo !');
     const totalWords = visualQueue.length;
 
     // Performance stats based on attempted words (sessionLog)
@@ -113,12 +113,12 @@ export function SessionPanel() {
                                 const isPast = index < currentIndex;
 
                                 // Find log for this index/word
-                                const log = sessionLog.find(l => l.wordId === word.ORTHO);
+                                const log = sessionLog.find(l => l.wordId === word.MOTS);
                                 const status = log?.status;
 
                                 return (
                                     <li
-                                        key={`${word.id}-${index}`}
+                                        key={`${word.uid || word.MOTS}-${index}`}
                                         ref={isActive ? activeItemRef : null}
                                         onClick={() => setCurrentIndex(index)}
                                         className={cn(
@@ -142,7 +142,7 @@ export function SessionPanel() {
                                                     status === 'failed' ? "text-rose-600 font-bold group-hover:text-rose-700" :
                                                         isActive ? "text-slate-800" : "text-slate-400"
                                             )}>
-                                                {word.ORTHO}
+                                                {word.MOTS}
                                             </span>
                                         </div>
 

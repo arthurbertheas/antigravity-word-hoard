@@ -15,7 +15,7 @@ export function WordCard({ word, onClick }: WordCardProps) {
     return (
         <div
             onClick={() => toggleSelection(word)}
-            title={`${word.ORTHO} - ${word.NBSYLL} syll.`}
+            title={`${word.MOTS} - ${word.NBSYLL} syll.`}
             className={cn(
                 "relative inline-flex items-center justify-center px-5 py-2.5 rounded-[10px] border-[1.5px] cursor-pointer select-none min-h-[50px] min-w-[70px] text-center transition-all duration-200",
                 "hover:border-[#4f46e5] hover:bg-[#f0f1f4] hover:shadow-[0_2px_8px_rgba(79,70,229,0.12)] hover:-translate-y-px",
@@ -29,7 +29,7 @@ export function WordCard({ word, onClick }: WordCardProps) {
                 "text-[15px] font-medium whitespace-nowrap",
                 selected ? "text-[#4f46e5] font-semibold" : "text-[#1a1c23]"
             )}>
-                {word.ORTHO}
+                {word.MOTS}
             </span>
 
             {/* Indicateur de sélection (Check) - Absolute positioned to avoid text shift */}

@@ -10,7 +10,7 @@ interface WordDisplayProps {
 
 export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & { forceVisible?: boolean }) {
     // If not word and not forcing, return null. Note: on 'gap', word might be present but phase is gap.
-    if (!word || !word.GSEG) return null;
+    if (!word || !word["segmentation graphèmes"]) return null;
     const { settings, phase } = usePlayer();
 
     // Parse GPMATCH for precise grapheme-phoneme mapping
@@ -23,16 +23,16 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
             console.error("Error parsing GPMATCH:", e);
         }
 
-        // Fallback to GSEG (if parse fails or no GPMATCH)
-        // Check if GSEG exists first
-        if (!word.GSEG) return [];
+        // Fallback to segmentation graphèmes (if parse fails or no GPMATCH)
+        // Check if field exists first
+        if (!word["segmentation graphèmes"]) return [];
 
-        return word.GSEG.split('.').filter(s => s.length > 0).map(seg => ({
+        return word["segmentation graphèmes"].split('.').filter(s => s.length > 0).map(seg => ({
             grapheme: seg,
             phoneme: '',
             type: getGraphemeType(seg)
         }));
-    }, [word.GPMATCH, word.GSEG]);
+    }, [word.GPMATCH, word["segmentation graphèmes"]]);
 
     // SAME CONTAINER STRUCTURE for both word and gap to ensure perfect alignment
     const renderContent = (content: React.ReactNode) => (
@@ -85,7 +85,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 if ((parsed as any)._skipRender) return null;
 
                 // Determine if this word should be excluded from highlighting
-                const isExcluded = ["Prêt ?", "Bravo !"].includes(word.ORTHO);
+                const isExcluded = ["Prêt ?", "Bravo !"].includes(word.MOTS);
 
                 // Determine styling based on grapheme type and settings
                 let colorClass = '';

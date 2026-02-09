@@ -92,7 +92,7 @@ export function ControlBar() {
 
     // Calculate progress - 0% when showing "PRÊT ?", otherwise based on current index
     const lastWord = queue[queue.length - 1];
-    const hasFin = lastWord?.ORTHO === 'Bravo !';
+    const hasFin = lastWord?.MOTS === 'Bravo !';
     const totalRealWords = hasFin ? queue.length - 1 : queue.length;
     const progressPercent = !hasStarted ? 0 : ((currentIndex + 1) / totalRealWords) * 100;
 

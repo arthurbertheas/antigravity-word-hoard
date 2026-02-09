@@ -416,7 +416,7 @@ export function SidePanel() {
                             {/* Stats */}
                             {(() => {
                                 // Calculate statistics from wordStatuses
-                                const totalWords = queue.filter(w => w.ORTHO !== 'Bravo !').length;
+                                const totalWords = queue.filter(w => w.MOTS !== 'Bravo !').length;
                                 const statusValues = Array.from(wordStatuses.values());
                                 const validatedCount = statusValues.filter(s => s === 'validated').length;
                                 const failedCount = statusValues.filter(s => s === 'failed').length;
@@ -481,7 +481,7 @@ export function SidePanel() {
                                 </div >
                                 <div className="space-y-2">
                                     {
-                                        queue.filter(word => word.ORTHO !== 'Bravo !').map((word, index) => {
+                                        queue.filter(word => word.MOTS !== 'Bravo !').map((word, index) => {
                                             const status = index === currentIndex ? 'current' : (word.uid ? wordStatuses.get(word.uid) || 'neutral' : 'neutral');
                                             const isClickable = status !== 'current';
 
@@ -508,7 +508,7 @@ export function SidePanel() {
                                                         "flex-1 font-medium",
                                                         status === 'current' ? "text-primary font-semibold" : "text-muted-foreground"
                                                     )}>
-                                                        {word.ORTHO}
+                                                        {word.MOTS}
                                                     </span>
                                                 </div>
                                             );
@@ -544,7 +544,7 @@ export function SidePanel() {
                     panelMode === 'stats' && (
                         <div className="flex-1 overflow-y-auto px-8 py-6">
                             {(() => {
-                                const visualQueue = queue.filter(w => w.ORTHO !== 'Bravo !');
+                                const visualQueue = queue.filter(w => w.MOTS !== 'Bravo !');
                                 // Calculate stats
                                 const totalWords = visualQueue.length;
                                 const validatedCount = Array.from(wordStatuses.values()).filter(s => s === 'validated').length;
@@ -613,7 +613,7 @@ export function SidePanel() {
                                                                 {String(index + 1).padStart(2, '0')}
                                                             </span>
                                                             <span className="flex-1 text-[15px] font-medium text-foreground">
-                                                                {word.ORTHO}
+                                                                {word.MOTS}
                                                             </span>
                                                             <div className={cn(
                                                                 "w-6 h-6 rounded-full flex items-center justify-center text-sm",

@@ -19,7 +19,7 @@ const SelectionContext = createContext<SelectionContextType | undefined>(undefin
 
 // Helper to generate a unique ID for a word
 export function getWordId(word: Word): string {
-    return `${word.ORTHO}_${word.SYNT}_${word.PHON}_${word.NBSYLL}`;
+    return `${word.MOTS}_${word.SYNT}_${word.PHONEMES}_${word.NBSYLL}`;
 }
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
@@ -84,7 +84,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
         window.parent.postMessage({
             type: 'selection_update',
             count: selectedWords.length,
-            selectedIds: selectedWords.map(w => w.ORTHO)
+            selectedIds: selectedWords.map(w => w.MOTS)
         }, '*');
     }, [selectedWords]);
 
