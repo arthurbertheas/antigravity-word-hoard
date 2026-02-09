@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSavedListsContext } from "@/contexts/SavedListsContext";
-import { SavedListsDropdown } from "@/components/saved-lists/SavedListsDropdown";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
+import { SavedListsPanel } from "@/components/saved-lists/SavedListsPanel";
+import { SavedList } from "@/lib/supabase";
 
 export function SelectionTray() {
     const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen, addItems } = useSelection();
@@ -15,6 +16,7 @@ export function SelectionTray() {
         if (saved !== null) return saved === 'true';
         return window.innerWidth <= 1440;
     });
+    const [activeView, setActiveView] = useState<'main' | 'saved-lists'>('main');
 
     // Saved Lists Context
     const {
@@ -63,7 +65,13 @@ export function SelectionTray() {
         if (words) {
             clearSelection();
             addItems(words);
+            setActiveView('main'); // Always go back to main view after loading
         }
+    };
+
+    // Handler for selecting from panel
+    const handleSelectFromPanel = (list: SavedList) => {
+        handleLoadList(list.id);
     };
 
     // Handler pour sauvegarder
@@ -145,24 +153,23 @@ export function SelectionTray() {
             </div>
 
             {/* Saved Lists Dropdown */}
+            {/* Mes listes sauvegardées button (Panel approach) */}
             <div className={cn(
                 "flex-none p-4 border-b border-slate-50 bg-white transition-all duration-300 relative z-20",
-                isCollapsed ? "opacity-0 -translate-x-4 pointer-events-none absolute w-full" : "opacity-100 translate-x-0"
+                isCollapsed || activeView !== 'main' ? "opacity-0 -translate-x-4 pointer-events-none absolute w-full" : "opacity-100 translate-x-0"
             )}>
-                <SavedListsDropdown
-                    lists={savedLists}
-                    currentListId={currentListId}
-                    onLoadList={handleLoadList}
-                    onEditList={(listId) => {
-                        setEditingListId(listId);
-                        setShowSaveModal(true);
-                    }}
-                    onDeleteList={deleteList}
-                    onCreateNew={() => {
-                        setEditingListId(null);
-                        setShowSaveModal(true);
-                    }}
-                />
+                <button
+                    onClick={() => setActiveView('saved-lists')}
+                    className="w-full h-[46px] px-4 bg-[rgba(108,92,231,0.04)] border-[1.5px] border-[#6C5CE7] rounded-[12px] hover:bg-[rgba(108,92,231,0.08)] transition-all flex items-center justify-between group"
+                >
+                    <div className="flex items-center gap-[10px]">
+                        <span className="text-sm">📁</span>
+                        <span className="font-['DM_Sans'] text-[14px] font-[600] text-[#6C5CE7] truncate max-w-[180px]">
+                            {currentListId ? savedLists.find(l => l.id === currentListId)?.name : 'Mes listes sauvegardées'}
+                        </span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#6C5CE7] group-hover:translate-x-0.5 transition-transform" />
+                </button>
             </div>
 
             {/* Modified Badge */}
@@ -278,7 +285,7 @@ export function SelectionTray() {
             {/* List Content (Sandwich: Flexible) */}
             <div className={cn(
                 "flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-transparent to-card/5 transition-opacity duration-300",
-                isCollapsed ? "opacity-0 pointer-events-none" : "opacity-100"
+                isCollapsed || activeView !== 'main' ? "opacity-0 pointer-events-none absolute w-full h-[calc(100%-80px)]" : "opacity-100"
             )}>
                 {selectedWords.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 opacity-40">
@@ -310,8 +317,27 @@ export function SelectionTray() {
                 )}
             </div>
 
+            {/* Saved Lists Panel (DEDICATED VIEW) */}
+            {!isCollapsed && activeView === 'saved-lists' && (
+                <div className="absolute inset-x-0 bottom-0 top-[80px] z-30">
+                    <SavedListsPanel
+                        lists={savedLists}
+                        currentListId={currentListId}
+                        onBack={() => setActiveView('main')}
+                        onSelectList={handleSelectFromPanel}
+                        onCreateNew={() => {
+                            setEditingListId(null);
+                            setShowSaveModal(true);
+                        }}
+                    />
+                </div>
+            )}
+
             {/* Footer Action (Sandwich: Fixed at bottom) */}
-            <div className="flex-none p-4 bg-white border-t border-border space-y-2">
+            <div className={cn(
+                "flex-none p-4 bg-white border-t border-border space-y-2 transition-opacity duration-300",
+                activeView !== 'main' && "opacity-0 pointer-events-none"
+            )}>
                 {/* Save Button */}
                 <button
                     className={cn(
