@@ -79,7 +79,7 @@ export function SidePanel() {
         // Reset and restart with failed words
         resetSession();
         setQueue(failedWords);
-        setIsPlaying(true);
+        // setIsPlaying(true); // Removed to allow "Prêt ?" screen
         // setHasStarted(true); // Removed to allow "Prêt ?" screen
         setPhase('display');
 
