@@ -98,7 +98,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
     const fontStyles: React.CSSProperties = {
         fontSize: `${settings.fontSize}vmin`,
-        letterSpacing: settings.spacingMode === 'letters' ? `${settings.spacingValue}px` : 'normal',
+        letterSpacing: settings.spacingMode === 'letters' ? `${settings.spacingValue / 10}em` : 'normal',
         fontFamily: settings.fontFamily === 'opendyslexic' ? 'OpenDyslexic, sans-serif' :
             settings.fontFamily === 'arial' ? 'Arial, sans-serif' :
                 settings.fontFamily === 'verdana' ? 'Verdana, sans-serif' :
@@ -134,7 +134,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 // Spacing logic for non-letters mode
                 const needsMargin = settings.spacingMode !== 'letters' && segmentBoundaries.has(idx);
                 const itemStyle = needsMargin && idx < parsedGraphemes.length - 1
-                    ? { marginRight: `${settings.spacingValue}px` }
+                    ? { marginRight: `${settings.spacingValue / 10}em` }
                     : {};
 
                 // Special handling for e: (drags consonants)
@@ -158,7 +158,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     const lastGraphemeIdx = idx + lookAhead - 1;
                     const eNeedsMargin = settings.spacingMode !== 'letters' && segmentBoundaries.has(lastGraphemeIdx);
                     const eStyle = eNeedsMargin && lastGraphemeIdx < parsedGraphemes.length - 1
-                        ? { marginRight: `${settings.spacingValue}px` }
+                        ? { marginRight: `${settings.spacingValue / 10}em` }
                         : {};
 
                     const eColor = settings.highlightVowels ? "text-red-500" : "";

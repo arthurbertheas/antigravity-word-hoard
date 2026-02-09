@@ -350,12 +350,12 @@ export function SidePanel() {
                                                 <div className="bg-muted p-4 rounded-[10px] space-y-3">
                                                     < div className="flex justify-between items-center mb-3">
                                                         < span className="text-[13px] font-medium text-muted-foreground">Espacement</span>
-                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.spacingValue}px</span>
+                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.spacingValue / 10).toFixed(1)}x</span>
                                                     </div >
                                                     <Slider
                                                         value={[settings.spacingValue]}
                                                         min={0}
-                                                        max={settings.spacingMode === 'letters' ? 50 : 30}
+                                                        max={settings.spacingMode === 'letters' ? 30 : 20}
                                                         step={1}
                                                         onValueChange={([v]) => updateSettings({ spacingValue: v })}
                                                         className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
