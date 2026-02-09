@@ -159,14 +159,8 @@ export function SidePanel() {
     const handleQuitSession = () => {
         setIsSessionFinishModalOpen(false);
         resetSession();
-        // Simulate navigation to home
-        toast({
-            title: "Session terminée",
-            description: "Retour à l'accueil (Simulé)",
-            duration: 2000
-        });
-        // In a real app, this would be navigate('/') or similar
-        setIsPanelOpen(false);
+        // Navigate to ecosystem home
+        window.location.href = '/account/home';
     };
 
     const handleViewRecap = () => {
