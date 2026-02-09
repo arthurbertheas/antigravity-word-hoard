@@ -169,6 +169,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                         : {};
 
                     const eColor = settings.highlightVowels ? "text-red-500" : "";
+                    const brownColorClass = settings.highlightVowels ? "text-[#800000]" : "";
 
                     return (
                         <span key={idx} className="inline-block" style={eStyle}>
@@ -180,14 +181,14 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                                 if (isDigraphWithSilent) {
                                     return (
                                         <span key={i} className="inline-block">
-                                            <span className="text-[#800000]">{c.grapheme[0]}</span>
+                                            <span className={brownColorClass}>{c.grapheme[0]}</span>
                                             <span className="text-gray-400">{c.grapheme[1]}</span>
                                         </span>
                                     );
                                 }
 
                                 return (
-                                    <span key={i} className="text-[#800000]">
+                                    <span key={i} className={brownColorClass}>
                                         {c.grapheme}
                                     </span>
                                 );
