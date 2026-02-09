@@ -58,21 +58,20 @@ export function SidePanel() {
         // Capture count for toast
         const count = failedWords.length;
 
-        // Reset and restart with failed words
-        // Append FIN_WORD to prevent looping
-        const FIN_WORD = {
-            ORTHO: "Bravo !",
-            GSEG: "B.r.a.v.o.\u00A0.!",
-            PHON: "bʀavo",
-            SYNT: "NC",
-            "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
-            "code structure": "a", "code graphèmes": "", NBLET: "", NBPHON: "",
-            NBGRAPH: "", PSEG: "", GPMATCH: ""
-        } as any;
+        // Update global selection to match failed words
+        // This ensures Tachistoscope receives the correct 'words' prop
+        // and its internal useEffect syncs the queue correctly.
+        setSelection(failedWords);
 
-        const queueWithFin = [...failedWords, FIN_WORD];
+        // Reset session state
         resetSession();
-        setQueue(queueWithFin);
+
+        // We don't strictly need to setQueue manually if Tachistoscope's useEffect works,
+        // but setting it here ensures immediate state update before the prop propagates.
+        // However, relying on prop propagation is safer to avoid race conditions 
+        // with the useEffect in Tachistoscope.tsx that checks queue.length.
+        // Let's let the sync mechanism handle it, but we force open the player.
+
         setPhase('display');
 
         toast({
