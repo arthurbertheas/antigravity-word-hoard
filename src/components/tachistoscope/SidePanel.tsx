@@ -62,10 +62,12 @@ export function SidePanel() {
     });
 
     const handleCreateFailedList = () => {
-        // TEMPORARY FIX: Ignore preference to allow user to see the modal if they are stuck
-        // const skip = localStorage.getItem('skipFailedListConfirmation') === 'true';
-        console.log("Opening Failed List Modal", failedWords.length);
-        setIsFailedListModalOpen(true);
+        const skip = localStorage.getItem('skipFailedListConfirmation') === 'true';
+        if (skip) {
+            handleLaunchList();
+        } else {
+            setIsFailedListModalOpen(true);
+        }
     };
 
     const handleLaunchList = () => {
@@ -78,7 +80,7 @@ export function SidePanel() {
         resetSession();
         setQueue(failedWords);
         setIsPlaying(true);
-        setHasStarted(true); // Force start to skip "Prêt ?"
+        // setHasStarted(true); // Removed to allow "Prêt ?" screen
         setPhase('display');
 
         toast({
