@@ -285,10 +285,58 @@ export function SidePanel() {
 
                                             <div className="space-y-3.5">
                                                 < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Taille et Espacement</label>
-                                                < div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                                    <span className="text-[13px] font-medium text-muted-foreground">Mode d'espacement</span>
+                                                    <div className="flex gap-4 items-center">
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="spacingMode"
+                                                                value="letters"
+                                                                checked={settings.spacingMode === 'letters'}
+                                                                onChange={(e) => updateSettings({ spacingMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.spacingMode === 'letters' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Lettres</span>
+                                                        </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="spacingMode"
+                                                                value="graphemes"
+                                                                checked={settings.spacingMode === 'graphemes'}
+                                                                onChange={(e) => updateSettings({ spacingMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.spacingMode === 'graphemes' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Graphèmes</span>
+                                                        </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="spacingMode"
+                                                                value="syllables"
+                                                                checked={settings.spacingMode === 'syllables'}
+                                                                onChange={(e) => updateSettings({ spacingMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.spacingMode === 'syllables' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Syllabes</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
                                                     < div className="flex justify-between items-center mb-3">
                                                         < span className="text-[13px] font-medium text-muted-foreground">Zoom</span>
-                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.fontSize}x</span>
+                                                        < span className="text-[15px] font-bold font-sora text-red-500 min-w-[60px] text-right">{settings.fontSize}x</span>
                                                     </div >
                                                     <Slider
                                                         value={[settings.fontSize]}
@@ -302,14 +350,14 @@ export function SidePanel() {
                                                 <div className="bg-muted p-4 rounded-[10px] space-y-3">
                                                     < div className="flex justify-between items-center mb-3">
                                                         < span className="text-[13px] font-medium text-muted-foreground">Espacement</span>
-                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.letterSpacing}px</span>
+                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.spacingValue}px</span>
                                                     </div >
                                                     <Slider
-                                                        value={[settings.letterSpacing]}
+                                                        value={[settings.spacingValue]}
                                                         min={0}
-                                                        max={50}
+                                                        max={settings.spacingMode === 'letters' ? 50 : 30}
                                                         step={1}
-                                                        onValueChange={([v]) => updateSettings({ letterSpacing: v })}
+                                                        onValueChange={([v]) => updateSettings({ spacingValue: v })}
                                                         className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
                                                     />
                                                 </div >

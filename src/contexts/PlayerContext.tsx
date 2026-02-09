@@ -11,7 +11,8 @@ export interface PlayerSettings {
     fontFamily: 'arial' | 'verdana' | 'mdi-ecole' | 'sans' | 'serif' | 'mono' | 'opendyslexic';
     highlightVowels: boolean;
     highlightSilent: boolean;
-    letterSpacing: number;
+    spacingValue: number;
+    spacingMode: 'letters' | 'graphemes' | 'syllables';
     showFocusPoint: boolean;
     enableSound: boolean;
 }
@@ -67,7 +68,8 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     fontFamily: 'arial',
     highlightVowels: false,
     highlightSilent: false,
-    letterSpacing: 0,
+    spacingValue: 0,
+    spacingMode: 'letters',
     showFocusPoint: true,
     enableSound: false,
 };
@@ -92,8 +94,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [settings, setSettings] = useState<PlayerSettings>(() => {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            const parsed = saved ? JSON.parse(saved) : {};
-            // Merge defaults (for focus point) with saved choices
+            if (!saved) return DEFAULT_SETTINGS;
+
+            const parsed = JSON.parse(saved);
+
+            // Migration: rename letterSpacing to spacingValue if it exists
+            if (parsed.letterSpacing !== undefined && parsed.spacingValue === undefined) {
+                parsed.spacingValue = parsed.letterSpacing;
+                delete parsed.letterSpacing;
+            }
+
             return { ...DEFAULT_SETTINGS, ...parsed };
         } catch (e) {
             return DEFAULT_SETTINGS;

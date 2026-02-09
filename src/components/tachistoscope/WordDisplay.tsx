@@ -24,15 +24,46 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         }
 
         // Fallback to segmentation graphèmes (if parse fails or no GPMATCH)
-        // Check if field exists first
         if (!word["segmentation graphèmes"]) return [];
 
-        return word["segmentation graphèmes"].split('.').filter(s => s.length > 0).map(seg => ({
+        return word["segmentation graphèmes"].split('-').filter(s => s.length > 0).map(seg => ({
             grapheme: seg,
             phoneme: '',
             type: getGraphemeType(seg)
         }));
     }, [word.GPMATCH, word["segmentation graphèmes"]]);
+
+    // Calculate segment boundaries (where to apply spacing)
+    const segmentBoundaries = useMemo(() => {
+        if (settings.spacingMode === 'letters') return new Set();
+
+        const modeField = settings.spacingMode === 'syllables'
+            ? word["segmentation syllabique"]
+            : word["segmentation graphèmes"];
+
+        if (!modeField) return new Set();
+
+        // Clean hyphenated segments for comparison
+        const segments = modeField.split('-').map(s => s.toLowerCase().replace(/[^a-zÀ-ÿ0-9]/g, ''));
+        const boundaries = new Set<number>();
+
+        let currentString = "";
+        let segmentIdx = 0;
+
+        parsedGraphemes.forEach((parsed, idx) => {
+            // Use only alphanumeric for boundary comparison to be robust
+            const cleanGrapheme = parsed.grapheme.toLowerCase().replace(/[^a-zÀ-ÿ0-9]/g, '');
+            currentString += cleanGrapheme;
+
+            if (segmentIdx < segments.length && currentString === segments[segmentIdx]) {
+                boundaries.add(idx);
+                currentString = "";
+                segmentIdx++;
+            }
+        });
+
+        return boundaries;
+    }, [parsedGraphemes, settings.spacingMode, word]);
 
     // SAME CONTAINER STRUCTURE for both word and gap to ensure perfect alignment
     const renderContent = (content: React.ReactNode) => (
@@ -51,7 +82,6 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         return renderContent(
             settings.showFocusPoint ? (
                 <div className="relative w-24 h-24 flex items-center justify-center">
-                    {/* Finer cross as requested */}
                     <div className="absolute w-[2px] h-8 bg-zinc-900 rounded-full" />
                     <div className="absolute w-8 h-[2px] bg-zinc-900 rounded-full" />
                 </div>
@@ -61,7 +91,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
     const fontStyles: React.CSSProperties = {
         fontSize: `${settings.fontSize}vmin`,
-        letterSpacing: `${settings.letterSpacing}px`,
+        letterSpacing: settings.spacingMode === 'letters' ? `${settings.spacingValue}px` : 'normal',
         fontFamily: settings.fontFamily === 'opendyslexic' ? 'OpenDyslexic, sans-serif' :
             settings.fontFamily === 'arial' ? 'Arial, sans-serif' :
                 settings.fontFamily === 'verdana' ? 'Verdana, sans-serif' :
@@ -81,49 +111,53 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
             style={fontStyles}
         >
             {parsedGraphemes.map((parsed, idx) => {
-                // Skip if already processed (for e: lookahead)
                 if ((parsed as any)._skipRender) return null;
 
-                // Determine if this word should be excluded from highlighting
                 const isExcluded = ["Prêt ?", "Bravo !"].includes(word.MOTS);
-
-                // Determine styling based on grapheme type and settings
                 let colorClass = '';
 
                 if (!isExcluded) {
                     if (settings.highlightVowels && parsed.type === 'voyelle') {
-                        colorClass = 'text-red-500'; // Vowels in red
+                        colorClass = 'text-red-500';
                     } else if (settings.highlightSilent && parsed.type === 'muette') {
-                        colorClass = 'text-gray-400'; // Silent letters in gray
+                        colorClass = 'text-gray-400';
                     }
                 }
-                // Consonants keep default color (black)
 
+                // Spacing logic for non-letters mode
+                const needsMargin = settings.spacingMode !== 'letters' && segmentBoundaries.has(idx);
+                const itemStyle = needsMargin && idx < parsedGraphemes.length - 1
+                    ? { marginRight: `${settings.spacingValue}px` }
+                    : {};
+
+                // Special handling for e: (drags consonants)
                 if (parsed.grapheme === 'e:' && !isExcluded) {
-                    // Collect following consonants to highlight with e:
                     const consonantsToHighlight = [];
                     let lookAhead = 1;
 
                     while (idx + lookAhead < parsedGraphemes.length) {
-                        // General Rule: 'e' never drags more than 2 consonants
                         if (consonantsToHighlight.length >= 2) break;
-
                         const nextGrapheme = parsedGraphemes[idx + lookAhead];
                         if (nextGrapheme.type === 'consonne') {
                             consonantsToHighlight.push(nextGrapheme);
-                            // Mark as processed to avoid double rendering
                             (nextGrapheme as any)._skipRender = true;
                             lookAhead++;
                         } else {
-                            break; // Stop at next vowel or non-consonant
+                            break;
                         }
                     }
 
-                    // Render e: as "e" (Red if vowels highlighted) + consonants (Maroon)
+                    // For e:, boundary might be on the last dragged consonant
+                    const lastGraphemeIdx = idx + lookAhead - 1;
+                    const eNeedsMargin = settings.spacingMode !== 'letters' && segmentBoundaries.has(lastGraphemeIdx);
+                    const eStyle = eNeedsMargin && lastGraphemeIdx < parsedGraphemes.length - 1
+                        ? { marginRight: `${settings.spacingValue}px` }
+                        : {};
+
                     const eColor = settings.highlightVowels ? "text-red-500" : "";
 
                     return (
-                        <span key={idx} className="inline-block">
+                        <span key={idx} className="inline-block" style={eStyle}>
                             <span className={eColor}>e</span>
                             {consonantsToHighlight.map((c, i) => {
                                 const gLower = c.grapheme.toLowerCase();
@@ -148,17 +182,14 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     );
                 }
 
-
-                // Special handling for graphemes with contextual silent letters - only if not excluded
+                // Special handling for digraphs with silent letters
                 const graphemeLower = parsed.grapheme.toLowerCase();
-
                 if (!isExcluded && settings.highlightSilent && (graphemeLower === 'qu' || graphemeLower === 'ge' || graphemeLower === 'gu')) {
-                    // Split the grapheme to highlight the silent letter
                     const firstLetter = parsed.grapheme[0];
                     const silentLetter = parsed.grapheme[1];
 
                     return (
-                        <span key={idx} className="inline-block">
+                        <span key={idx} className="inline-block" style={itemStyle}>
                             <span className={cn(settings.highlightVowels && parsed.type === 'voyelle' ? 'text-red-500' : '')}>
                                 {firstLetter}
                             </span>
@@ -173,6 +204,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     <span
                         key={idx}
                         className={cn("inline-block", colorClass)}
+                        style={itemStyle}
                     >
                         {parsed.grapheme}
                     </span>
