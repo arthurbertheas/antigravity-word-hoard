@@ -137,19 +137,25 @@ export function SidePanel() {
 
     const handleNewListConfirm = () => {
         handleDownloadPdf();
-        resetSession();
-        clearSelection();
+        setIsFocusModeOpen(false); // Close Tachi first
         setIsNewListModalOpen(false);
-        setIsFocusModeOpen(false);
-        togglePanelMode('config');
+        resetSession();
+        // clearSelection needs to happen after we ensure we are exiting
+        setTimeout(() => {
+            clearSelection();
+            togglePanelMode('config');
+        }, 50);
     };
 
     const handleNewListExit = () => {
-        resetSession();
-        clearSelection();
+        setIsFocusModeOpen(false); // Close Tachi first
         setIsNewListModalOpen(false);
-        setIsFocusModeOpen(false);
-        togglePanelMode('config');
+        resetSession();
+        // clearSelection needs to happen after we ensure we are exiting
+        setTimeout(() => {
+            clearSelection();
+            togglePanelMode('config');
+        }, 50);
     };
 
     const handleConfirmFinishSession = () => {
