@@ -154,10 +154,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const handleSetQueue = useCallback((words: Word[]) => {
-        // Ensure ALL words have a UID
+        // Ensure ALL words have a stable UID based on content and position
         const wordsWithIds = words.map((w, idx) => ({
             ...w,
-            uid: w.uid || `${w.ORTHO}-${idx}-${Math.random().toString(36).substr(2, 9)}`
+            uid: w.uid || `${w.ORTHO}-${w.PHON}-${w.SYNT}-${idx}`
         }));
         setQueue(wordsWithIds);
         setIsShuffled(false);

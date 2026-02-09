@@ -163,6 +163,7 @@ function PlayerEngine() {
 function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: Word[] }) {
     const {
         currentIndex,
+        queue,
         isPlaying,
         setIsPlaying,
         nextWord,
@@ -192,10 +193,17 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
     useEffect(() => {
         if (!words || words.length === 0) return;
 
+        // Skip update if queue already matches current words (plus FIN_WORD)
+        // This prevents the "flash" and reset that wipes wordStatuses if words prop re-renders
+        if (queue.length === words.length + 1 &&
+            queue.slice(0, words.length).every((w, i) => w.ORTHO === words[i].ORTHO)) {
+            return;
+        }
+
         const effectiveWords = [...words, FIN_WORD];
         setQueue(effectiveWords);
         return () => resetSession();
-    }, [words, FIN_WORD, setQueue, resetSession]);
+    }, [words, FIN_WORD, setQueue, resetSession, queue.length]); // Added queue.length to trigger check
 
     // Keyboard Mapping
     useEffect(() => {
@@ -277,7 +285,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
     // However, `TachistoscopeContent` here uses `words` prop for `WordDisplay`.
 
     // Let's grab `queue` from usePlayer to be safe and consistent with the appended word.
-    const { queue } = usePlayer();
+
 
     return (
         <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">

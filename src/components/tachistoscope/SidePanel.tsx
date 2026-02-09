@@ -112,6 +112,7 @@ export function SidePanel() {
     };
 
     const handleSaveListConfirm = async (name: string, description: string, tags: string[], _saveAsNew?: boolean) => {
+        console.log("Saving failed words list:", { name, count: failedWords.length, words: failedWords });
         await saveList(name, description, failedWords, tags);
         setIsSaveListModalOpen(false);
 
