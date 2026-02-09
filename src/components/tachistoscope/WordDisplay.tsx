@@ -41,24 +41,31 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
             ? word["segmentation syllabique"]
             : word["segmentation graphèmes"];
 
-        if (!modeField) return new Set();
+        // Robust fallback: if syllables requested but missing, try graphemes
+        const activeSegmentation = modeField || word["segmentation graphèmes"];
+        if (!activeSegmentation) return new Set();
 
-        // Clean hyphenated segments for comparison
-        const segments = modeField.split('-').map(s => s.toLowerCase().replace(/[^a-zÀ-ÿ0-9]/g, ''));
+        // 1. Find the target character positions from the segmentation field
+        // We split by [-.] and count alphanumeric chars as boundaries
+        const parts = activeSegmentation.split(/[-.]/);
+        const gapPositions: number[] = [];
+        let totalChars = 0;
+        for (let i = 0; i < parts.length - 1; i++) {
+            totalChars += parts[i].toLowerCase().replace(/[^a-zÀ-ÿ0-9]/g, '').length;
+            gapPositions.push(totalChars);
+        }
+
+        // 2. Map these character positions to grapheme indices
         const boundaries = new Set<number>();
-
-        let currentString = "";
-        let segmentIdx = 0;
+        let cumulativeGraphemeChars = 0;
 
         parsedGraphemes.forEach((parsed, idx) => {
-            // Use only alphanumeric for boundary comparison to be robust
             const cleanGrapheme = parsed.grapheme.toLowerCase().replace(/[^a-zÀ-ÿ0-9]/g, '');
-            currentString += cleanGrapheme;
+            cumulativeGraphemeChars += cleanGrapheme.length;
 
-            if (segmentIdx < segments.length && currentString === segments[segmentIdx]) {
+            // If this grapheme ends at one of our target gap positions, mark it as a boundary
+            if (gapPositions.includes(cumulativeGraphemeChars)) {
                 boundaries.add(idx);
-                currentString = "";
-                segmentIdx++;
             }
         });
 
