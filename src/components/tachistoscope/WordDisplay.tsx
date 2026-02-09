@@ -26,7 +26,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         // Fallback to segmentation graphèmes (if parse fails or no GPMATCH)
         if (!word["segmentation graphèmes"]) return [];
 
-        return word["segmentation graphèmes"].split('-').filter(s => s.length > 0).map(seg => ({
+        return word["segmentation graphèmes"].split(/[-.]/).filter(s => s.length > 0).map(seg => ({
             grapheme: seg,
             phoneme: '',
             type: getGraphemeType(seg)
