@@ -17,7 +17,7 @@ import { usePdfExport } from '@/hooks/usePdfExport';
 import { NewListModal } from './NewListModal';
 import { useToast } from "@/hooks/use-toast"
 import { useSelection } from '@/contexts/SelectionContext';
-import { useSavedLists } from '@/hooks/useSavedLists';
+import { useSavedListsContext } from '@/contexts/SavedListsContext';
 import { CreateFailedListModal } from './CreateFailedListModal';
 import { SaveListModal } from '@/components/saved-lists/SaveListModal';
 import { useEffect } from 'react';
@@ -32,28 +32,10 @@ export function SidePanel() {
     const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
     const { generatePdf } = usePdfExport();
     const { toast } = useToast();
-    const { clearSelection, setIsFocusModeOpen } = useSelection();
+    const { clearSelection, addItems, setIsFocusModeOpen } = useSelection();
 
-    // User ID for saved lists
-    const [userId, setUserId] = useState<string | null>(null);
-    useEffect(() => {
-        const getMemberstackUser = async () => {
-            try {
-                // @ts-ignore
-                const member = await window.$memberstackDOM?.getCurrentMember();
-                if (member?.data?.auth?.email) {
-                    setUserId(member.data.auth.email);
-                } else {
-                    setUserId('test-user@example.com');
-                }
-            } catch (error) {
-                setUserId('test-user@example.com');
-            }
-        };
-        getMemberstackUser();
-    }, []);
-
-    const { saveList, savedLists } = useSavedLists(userId);
+    // Saved Lists Context
+    const { saveList, savedLists } = useSavedListsContext();
     const [isFailedListModalOpen, setIsFailedListModalOpen] = useState(false);
 
     const failedWords = queue.filter(w => {
@@ -77,7 +59,7 @@ export function SidePanel() {
         const count = failedWords.length;
 
         // Reset and restart with failed words
-        // Reset and restart with failed words (Append FIN_WORD to prevent looping)
+        // Append FIN_WORD to prevent looping
         const FIN_WORD = {
             ORTHO: "Bravo !",
             GSEG: "B.r.a.v.o.\u00A0.!",
@@ -91,8 +73,6 @@ export function SidePanel() {
         const queueWithFin = [...failedWords, FIN_WORD];
         resetSession();
         setQueue(queueWithFin);
-        // setIsPlaying(true); // Removed to allow "Prêt ?" screen
-        // setHasStarted(true); // Removed to allow "Prêt ?" screen
         setPhase('display');
 
         toast({
@@ -113,14 +93,25 @@ export function SidePanel() {
 
     const handleSaveListConfirm = async (name: string, description: string, tags: string[], _saveAsNew?: boolean) => {
         console.log("Saving failed words list:", { name, count: failedWords.length, words: failedWords });
-        await saveList(name, description, failedWords, tags);
+        const newListId = await saveList(name, description, failedWords, tags);
         setIsSaveListModalOpen(false);
 
-        // End session and return to config/selection
-        resetSession();
-        clearSelection();
-        setIsFocusModeOpen(false);
-        togglePanelMode('config');
+        // If save was successful, load these words into the selection tray
+        if (newListId) {
+            // End session and return to config/selection
+            resetSession();
+            clearSelection();
+            addItems(failedWords); // This "loads" the failed words into the main UI
+
+            setIsFocusModeOpen(false);
+            togglePanelMode('config');
+
+            toast({
+                title: "Liste chargée",
+                description: `Les ${failedWords.length} mots ratés sont maintenant dans votre sélection.`,
+                duration: 4000
+            });
+        }
     };
 
     const handleDownloadPdf = () => {

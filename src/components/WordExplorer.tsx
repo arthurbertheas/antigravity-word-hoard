@@ -28,11 +28,14 @@ import { SelectionTray } from "./SelectionTray";
 import { Tachistoscope } from "./tachistoscope/Tachistoscope";
 import { ActiveFiltersBar } from "./ActiveFiltersBar";
 import { ResultsHeader } from "./ResultsHeader";
+import { SavedListsProvider } from "@/contexts/SavedListsContext";
 
 export function WordExplorer() {
     return (
         <SelectionProvider>
-            <WordExplorerContent />
+            <SavedListsProvider>
+                <WordExplorerContent />
+            </SavedListsProvider>
         </SelectionProvider>
     );
 }

@@ -3,7 +3,7 @@ import { useSelection, getWordId } from "@/contexts/SelectionContext";
 import { Button } from "@/components/ui/button";
 import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useSavedLists } from "@/hooks/useSavedLists";
+import { useSavedListsContext } from "@/contexts/SavedListsContext";
 import { SavedListsDropdown } from "@/components/saved-lists/SavedListsDropdown";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
 
@@ -16,56 +16,32 @@ export function SelectionTray() {
         return window.innerWidth <= 1440;
     });
 
-    // Saved Lists State
-    const [userId, setUserId] = useState<string | null>(null);
-    const [showSaveModal, setShowSaveModal] = useState(false);
-    const [editingListId, setEditingListId] = useState<string | null>(null);
-
-    // Saved Lists Hook
+    // Saved Lists Context
     const {
         savedLists,
         isLoading,
         currentListId,
         isModified,
         setIsModified,
-        setCurrentListId,
         saveList,
         updateList,
         deleteList,
         loadList
-    } = useSavedLists(userId);
+    } = useSavedListsContext();
+
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [editingListId, setEditingListId] = useState<string | null>(null);
 
     useEffect(() => {
         localStorage.setItem('maListe_collapsed', String(isCollapsed));
     }, [isCollapsed]);
-
-    // Memberstack User Detection
-    useEffect(() => {
-        const getMemberstackUser = async () => {
-            try {
-                // @ts-ignore - Memberstack global
-                const member = await window.$memberstackDOM?.getCurrentMember();
-                if (member?.data?.auth?.email) {
-                    setUserId(member.data.auth.email);
-                } else {
-                    // Mode test : user_id fixe pour développement
-                    setUserId('test-user@example.com');
-                }
-            } catch (error) {
-                console.error('Memberstack error:', error);
-                // Mode test : user_id fixe pour développement
-                setUserId('test-user@example.com');
-            }
-        };
-        getMemberstackUser();
-    }, []);
 
     // Mark as modified when selection changes
     useEffect(() => {
         if (currentListId && selectedWords.length > 0) {
             setIsModified(true);
         }
-    }, [selectedWords, currentListId]);
+    }, [selectedWords, currentListId, setIsModified]);
 
     const togglePanel = () => setIsCollapsed(!isCollapsed);
 
