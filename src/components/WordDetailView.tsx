@@ -49,9 +49,9 @@ export function WordDetailView({ word, onBack }: WordDetailViewProps) {
                             </div>
                         </div>
 
-                        {/* Note de Fréquence (Badge Circulaire) */}
+                        {/* Note d'Appui Lexical (Badge Circulaire) */}
                         <div className="flex flex-col items-center gap-1 bg-background p-3 rounded-xl border border-border/50 shadow-sm">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Fréq.</span>
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Appui</span>
                             <span className="text-2xl font-bold text-accent">{frequency.toFixed(1)}</span>
                         </div>
                     </div>

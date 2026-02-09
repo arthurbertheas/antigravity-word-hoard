@@ -79,15 +79,6 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
         });
     });
 
-    // Longueur (si différent des valeurs par défaut 1-14)
-    if (filters.minLetters !== 1 || filters.maxLetters !== 14) {
-        activeFilters.push({
-            type: 'minLetters', // On utilise minLetters comme pivot pour la suppression de la longueur
-            value: 'reset',
-            label: `Longueur: ${filters.minLetters}-${filters.maxLetters}`
-        });
-    }
-
     // If no active filters, don't render
     if (activeFilters.length === 0) return null;
 

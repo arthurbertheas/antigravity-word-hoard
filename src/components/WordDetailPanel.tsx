@@ -96,14 +96,14 @@ export function WordDetailPanel({ word, onClose }: WordDetailPanelProps) {
                         </div>
                     </section>
 
-                    {/* Fréquence */}
+                    {/* Code appui lexical */}
                     <section className="space-y-3">
                         <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                            Fréquence
+                            Code appui lexical
                         </h3>
                         <div className="space-y-2">
                             <div className="flex justify-between items-end">
-                                <span className="text-xs text-muted-foreground">Indice Manulex</span>
+                                <span className="text-xs text-muted-foreground">Appui lexical</span>
                                 <span className="font-mono text-base font-bold text-accent">{frequency.toFixed(1)}</span>
                             </div>
                             <div className="h-1.5 bg-muted rounded-full overflow-hidden">

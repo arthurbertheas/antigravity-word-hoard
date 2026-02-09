@@ -100,14 +100,14 @@ export function WordDetailDrawer({ word, onClose }: WordDetailDrawerProps) {
                                 </div>
                             </section>
 
-                            {/* Fréquence */}
+                            {/* Code appui lexical */}
                             <section className="space-y-3">
                                 <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                    Fréquence d'usage
+                                    Code appui lexical
                                 </h3>
                                 <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
                                     <div className="flex justify-between items-end mb-2">
-                                        <span className="text-sm text-muted-foreground">Indice</span>
+                                        <span className="text-sm text-muted-foreground">Appui lexical</span>
                                         <span className="font-mono text-xl font-bold">{frequency.toFixed(1)}</span>
                                     </div>
                                     <div className="h-1.5 bg-muted rounded-full overflow-hidden mb-2">
