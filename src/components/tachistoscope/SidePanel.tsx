@@ -336,7 +336,7 @@ export function SidePanel() {
                                                 <div className="bg-muted p-4 rounded-[10px] space-y-3">
                                                     < div className="flex justify-between items-center mb-3">
                                                         < span className="text-[13px] font-medium text-muted-foreground">Zoom</span>
-                                                        < span className="text-[15px] font-bold font-sora text-red-500 min-w-[60px] text-right">{settings.fontSize}x</span>
+                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.fontSize}x</span>
                                                     </div >
                                                     <Slider
                                                         value={[settings.fontSize]}
