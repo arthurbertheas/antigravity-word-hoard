@@ -77,8 +77,20 @@ export function SidePanel() {
         const count = failedWords.length;
 
         // Reset and restart with failed words
+        // Reset and restart with failed words (Append FIN_WORD to prevent looping)
+        const FIN_WORD = {
+            ORTHO: "Bravo !",
+            GSEG: "B.r.a.v.o.\u00A0.!",
+            PHON: "bʀavo",
+            SYNT: "NC",
+            "fréquence": "", "code fréquence": "", NBSYLL: "", PSYLL: "",
+            "code structure": "a", "code graphèmes": "", NBLET: "", NBPHON: "",
+            NBGRAPH: "", PSEG: "", GPMATCH: ""
+        } as any;
+
+        const queueWithFin = [...failedWords, FIN_WORD];
         resetSession();
-        setQueue(failedWords);
+        setQueue(queueWithFin);
         // setIsPlaying(true); // Removed to allow "Prêt ?" screen
         // setHasStarted(true); // Removed to allow "Prêt ?" screen
         setPhase('display');

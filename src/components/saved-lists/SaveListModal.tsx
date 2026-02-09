@@ -92,7 +92,7 @@ export function SaveListModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] z-[102] dialog-overlay-boost">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         {mode === 'create' ? '💾 Sauvegarder la liste' : '✏️ Modifier la liste'}
