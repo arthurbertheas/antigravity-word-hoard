@@ -125,12 +125,15 @@ function PlayerEngine() {
             remainingRef.current = 0; // Consumed
 
             if (phase === 'display') {
-                // Check if NEXT word is the LAST word (Bravo !). If so, SKIP GAP.
-                const isNextLast = currentIndex + 1 === queue.length - 1;
+                // Check if NEXT word is the LAST word (Bravo !). 
+                // We check both index AND content to be safe.
+                const nextIndex = currentIndex + 1;
+                const isNextLast = nextIndex === queue.length - 1;
+                const isNextBravoString = queue[nextIndex]?.ORTHO === "Bravo !";
 
-                if (isNextLast) {
-                    // Manually advance to last word (Bravo) without going through 'gap' phase
-                    setCurrentIndex(currentIndex + 1);
+                if (isNextLast || isNextBravoString) {
+                    // Manually advance to next/last word (Bravo) without going through 'gap' phase
+                    setCurrentIndex(nextIndex);
                     setPhase('display');
                 } else {
                     setPhase('gap');
