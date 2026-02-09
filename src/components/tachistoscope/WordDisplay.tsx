@@ -112,13 +112,15 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         settings.fontFamily === 'mono' && "font-mono",
     );
 
+    const skippedIndices = new Set<number>();
+
     return renderContent(
         <div
-            className={containerClasses}
+            className="flex flex-wrap items-center justify-center gap-0 leading-none select-none"
             style={fontStyles}
         >
             {parsedGraphemes.map((parsed, idx) => {
-                if ((parsed as any)._skipRender) return null;
+                if (skippedIndices.has(idx)) return null;
 
                 const isExcluded = ["Prêt ?", "Bravo !"].includes(word.MOTS);
                 let colorClass = '';
@@ -138,8 +140,8 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     : {};
 
                 // Special handling for e: (drags consonants)
-                if (parsed.grapheme === 'e:' && !isExcluded) {
-                    const consonantsToHighlight = [];
+                if (parsed.grapheme.toLowerCase() === 'e:' || (parsed.grapheme.toLowerCase() === 'e' && parsed.phoneme === 'ɛ')) {
+                    const consonantsToHighlight: any[] = [];
                     let lookAhead = 1;
 
                     while (idx + lookAhead < parsedGraphemes.length) {
@@ -154,7 +156,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                         const nextGrapheme = parsedGraphemes[idx + lookAhead];
                         if (nextGrapheme.type === 'consonne') {
                             consonantsToHighlight.push(nextGrapheme);
-                            (nextGrapheme as any)._skipRender = true;
+                            skippedIndices.add(idx + lookAhead);
                             lookAhead++;
                         } else {
                             break;
@@ -199,15 +201,16 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
                 // Special handling for digraphs with silent letters
                 const graphemeLower = parsed.grapheme.toLowerCase();
-                if (!isExcluded && settings.highlightSilent && (graphemeLower === 'qu' || graphemeLower === 'ge' || graphemeLower === 'gu')) {
-                    const firstLetter = parsed.grapheme[0];
+                const isSilentDigraph = settings.highlightSilent && (graphemeLower === 'qu' || graphemeLower === 'ge' || graphemeLower === 'gu');
+
+                if (isSilentDigraph && parsed.grapheme.length === 2) {
+                    const mainLetter = parsed.grapheme[0];
                     const silentLetter = parsed.grapheme[1];
+                    const mainColor = colorClass; // Still red if vowel, but usually consonants
 
                     return (
                         <span key={idx} className="inline-block" style={itemStyle}>
-                            <span className={cn(settings.highlightVowels && parsed.type === 'voyelle' ? 'text-red-500' : '')}>
-                                {firstLetter}
-                            </span>
+                            <span className={mainColor}>{mainLetter}</span>
                             <span className="text-gray-400">
                                 {silentLetter}
                             </span>
