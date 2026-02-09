@@ -20,6 +20,7 @@ import { useSelection } from '@/contexts/SelectionContext';
 import { useSavedListsContext } from '@/contexts/SavedListsContext';
 import { CreateFailedListModal } from './CreateFailedListModal';
 import { SaveListModal } from '@/components/saved-lists/SaveListModal';
+import { SessionFinishModal } from './SessionFinishModal';
 import { useEffect } from 'react';
 
 type TabType = 'visual' | 'timing' | 'focus' | 'sound';
@@ -37,6 +38,7 @@ export function SidePanel() {
     // Saved Lists Context
     const { saveList, savedLists } = useSavedListsContext();
     const [isFailedListModalOpen, setIsFailedListModalOpen] = useState(false);
+    const [isSessionFinishModalOpen, setIsSessionFinishModalOpen] = useState(false);
 
     const failedWords = queue.filter(w => {
         const status = w.uid ? wordStatuses.get(w.uid) : undefined;
@@ -148,6 +150,33 @@ export function SidePanel() {
         setIsNewListModalOpen(false);
         setIsFocusModeOpen(false);
         togglePanelMode('config');
+    };
+
+    const handleConfirmFinishSession = () => {
+        setIsSessionFinishModalOpen(true);
+    };
+
+    const handleQuitSession = () => {
+        setIsSessionFinishModalOpen(false);
+        resetSession();
+        // Simulate navigation to home
+        toast({
+            title: "Session terminée",
+            description: "Retour à l'accueil (Simulé)",
+            duration: 2000
+        });
+        // In a real app, this would be navigate('/') or similar
+        setIsPanelOpen(false);
+    };
+
+    const handleViewRecap = () => {
+        setIsSessionFinishModalOpen(false);
+        togglePanelMode('stats');
+        toast({
+            title: "Récapitulatif",
+            description: "Voici le résumé de votre session.",
+            duration: 2000
+        });
     };
 
     const tabs: { id: TabType; label: string }[] = [
@@ -530,7 +559,10 @@ export function SidePanel() {
                                         Créer liste des mots ratés
                                     </button>
                                 )}
-                                < Button className="w-full justify-center gap-2 px-5 py-3.5 bg-destructive text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-destructive/90 transition-all h-auto">
+                                < Button
+                                    className="w-full justify-center gap-2 px-5 py-3.5 bg-destructive text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-destructive/90 transition-all h-auto"
+                                    onClick={handleConfirmFinishSession}
+                                >
                                     < Square className="w-4 h-4" />
                                     Terminer la session
                                 </Button >
@@ -673,7 +705,29 @@ export function SidePanel() {
                         description: "Liste générée automatiquement depuis les mots ratés",
                         tags: ['ratés']
                     }}
-                />    </aside >
+                />
+
+                <SessionFinishModal
+                    isOpen={isSessionFinishModalOpen}
+                    onClose={() => setIsSessionFinishModalOpen(false)}
+                    stats={(() => {
+                        const visualQueue = queue.filter(w => w.MOTS !== 'Bravo !');
+                        const totalCount = visualQueue.length;
+                        const validatedCount = Array.from(wordStatuses.values()).filter(s => s === 'validated').length;
+                        const failedCount = Array.from(wordStatuses.values()).filter(s => s === 'failed').length;
+                        const answeredCount = validatedCount + failedCount;
+                        const successRate = answeredCount > 0 ? Math.round((validatedCount / answeredCount) * 100) : 0;
+
+                        return {
+                            successCount: validatedCount,
+                            totalCount,
+                            successRate
+                        };
+                    })()}
+                    onQuit={handleQuitSession}
+                    onViewRecap={handleViewRecap}
+                />
+            </aside >
         </>
     );
 }
