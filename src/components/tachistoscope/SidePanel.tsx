@@ -111,7 +111,7 @@ export function SidePanel() {
         setIsSaveListModalOpen(true);
     };
 
-    const handleSaveListConfirm = async (name: string, description: string, tags: string[]) => {
+    const handleSaveListConfirm = async (name: string, description: string, tags: string[], _saveAsNew?: boolean) => {
         await saveList(name, description, failedWords, tags);
         setIsSaveListModalOpen(false);
 

@@ -15,7 +15,7 @@ import { Word } from '@/types/word';
 interface SaveListModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (name: string, description: string, tags: string[]) => void;
+    onSave: (name: string, description: string, tags: string[], saveAsNew?: boolean) => void;
     words: Word[];
     initialData?: {
         name: string;
@@ -74,11 +74,18 @@ export function SaveListModal({
         const trimmedName = name.trim();
         if (!trimmedName) return;
 
-        // Check for duplicate names (excluding current list in edit mode)
-        const isDuplicate = existingLists.some(list =>
-            list.name.toLowerCase() === trimmedName.toLowerCase() &&
-            list.id !== currentListId
-        );
+        const isRenamed = mode === 'edit' && initialData && trimmedName.toLowerCase() !== initialData.name.trim().toLowerCase();
+        const shouldSaveAsNew = mode === 'create' || isRenamed;
+
+        // Check for duplicate names
+        // - In pure edit mode (no rename), we skip collision check
+        // - In create mode or rename mode, we check against all existing lists
+        let isDuplicate = false;
+        if (shouldSaveAsNew) {
+            isDuplicate = existingLists.some(list =>
+                list.name.trim().toLowerCase() === trimmedName.toLowerCase()
+            );
+        }
 
         if (isDuplicate) {
             setNameError('Une liste avec ce nom existe déjà');
@@ -86,7 +93,7 @@ export function SaveListModal({
         }
 
         setNameError('');
-        onSave(trimmedName, description.trim(), tags);
+        onSave(trimmedName, description.trim(), tags, shouldSaveAsNew);
         onClose();
     };
 
@@ -223,7 +230,9 @@ export function SaveListModal({
                         Annuler
                     </Button>
                     <Button onClick={handleSubmit} disabled={!name.trim()}>
-                        {mode === 'create' ? 'Sauvegarder' : 'Mettre à jour'}
+                        {mode === 'edit' && name.trim().toLowerCase() === initialData?.name.trim().toLowerCase()
+                            ? 'Mettre à jour'
+                            : 'Sauvegarder'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

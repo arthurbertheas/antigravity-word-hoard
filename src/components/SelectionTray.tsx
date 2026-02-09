@@ -91,8 +91,8 @@ export function SelectionTray() {
     };
 
     // Handler pour sauvegarder
-    const handleSaveList = async (name: string, description: string, tags: string[]) => {
-        if (editingListId) {
+    const handleSaveList = async (name: string, description: string, tags: string[], saveAsNew?: boolean) => {
+        if (editingListId && !saveAsNew) {
             await updateList(editingListId, name, description, selectedWords, tags);
         } else {
             await saveList(name, description, selectedWords, tags);
