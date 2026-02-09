@@ -141,21 +141,18 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
                 // Special handling for e: (drags consonants)
                 if (parsed.grapheme.toLowerCase() === 'e:' || (parsed.grapheme.toLowerCase() === 'e' && parsed.phoneme === 'ɛ')) {
-                    const consonantsToHighlight: any[] = [];
+                    const consonantsToHighlight: { grapheme: string, phoneme: string, type: string, needsMargin: boolean }[] = [];
                     let lookAhead = 1;
+
+                    const eNeedsMargin = settings.spacingMode !== 'letters' && segmentBoundaries.has(idx);
 
                     while (idx + lookAhead < parsedGraphemes.length) {
                         if (consonantsToHighlight.length >= 2) break;
 
-                        // NEW: Respect boundaries. If spacing is active and there's a boundary 
-                        // before the next consonant, we STOP dragging to let the spacing logic work.
-                        if (settings.spacingMode !== 'letters' && segmentBoundaries.has(idx + lookAhead - 1)) {
-                            break;
-                        }
-
                         const nextGrapheme = parsedGraphemes[idx + lookAhead];
                         if (nextGrapheme.type === 'consonne') {
-                            consonantsToHighlight.push(nextGrapheme);
+                            const needsMargin = settings.spacingMode !== 'letters' && segmentBoundaries.has(idx + lookAhead);
+                            consonantsToHighlight.push({ ...nextGrapheme, needsMargin });
                             skippedIndices.add(idx + lookAhead);
                             lookAhead++;
                         } else {
@@ -163,26 +160,23 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                         }
                     }
 
-                    // For e:, boundary might be on the last dragged consonant
-                    const lastGraphemeIdx = idx + lookAhead - 1;
-                    const eNeedsMargin = settings.spacingMode !== 'letters' && segmentBoundaries.has(lastGraphemeIdx);
-                    const eStyle = eNeedsMargin && lastGraphemeIdx < parsedGraphemes.length - 1
-                        ? { marginRight: `${settings.spacingValue / 10}em` }
-                        : {};
-
                     const eColor = settings.highlightVowels ? "text-red-500" : "";
                     const brownColorClass = settings.highlightVowels ? "text-[#800000]" : "";
+                    const marginValue = `${settings.spacingValue / 10}em`;
 
                     return (
-                        <span key={idx} className="inline-block" style={eStyle}>
-                            <span className={eColor}>e</span>
+                        <span key={idx} className="inline-block">
+                            <span className={eColor} style={eNeedsMargin ? { marginRight: marginValue } : {}}>e</span>
                             {consonantsToHighlight.map((c, i) => {
                                 const gLower = c.grapheme.toLowerCase();
                                 const isDigraphWithSilent = settings.highlightSilent && (gLower === 'qu' || gLower === 'ge' || gLower === 'gu');
+                                const itemStyle = c.needsMargin && (idx + i + 1) < parsedGraphemes.length - 1
+                                    ? { marginRight: marginValue }
+                                    : {};
 
                                 if (isDigraphWithSilent) {
                                     return (
-                                        <span key={i} className="inline-block">
+                                        <span key={i} className="inline-block" style={itemStyle}>
                                             <span className={brownColorClass}>{c.grapheme[0]}</span>
                                             <span className="text-gray-400">{c.grapheme[1]}</span>
                                         </span>
@@ -190,7 +184,7 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                                 }
 
                                 return (
-                                    <span key={i} className={brownColorClass}>
+                                    <span key={i} className={cn("inline-block", brownColorClass)} style={itemStyle}>
                                         {c.grapheme}
                                     </span>
                                 );
