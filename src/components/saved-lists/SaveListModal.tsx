@@ -106,9 +106,9 @@ export function SaveListModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[440px] px-0 py-0 border-none rounded-[22px] overflow-hidden z-[102]">
+            <DialogContent className="sm:max-w-[560px] px-0 py-0 border-none rounded-[22px] overflow-hidden z-[102]">
                 <DialogHeader className="p-6 pb-4 flex flex-row items-center justify-between border-b border-[#F3F4F6]">
-                    <DialogTitle className="flex items-center gap-2 font-['Sora'] text-[16px] font-[700] text-[#1A1A2E]">
+                    <DialogTitle className="flex items-center gap-2 font-['Sora'] text-[18px] font-[700] text-[#1A1A2E]">
                         {mode === 'create' ? '💾 Sauvegarder la liste' : '✏️ Modifier la liste'}
                     </DialogTitle>
                 </DialogHeader>
@@ -116,7 +116,7 @@ export function SaveListModal({
                 <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     {/* Nom */}
                     <div>
-                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block">
+                        <label className="text-[12px] font-[600] text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-wide">
                             Nom de la liste *
                         </label>
                         <div className="relative">
@@ -146,7 +146,7 @@ export function SaveListModal({
 
                     {/* Description */}
                     <div>
-                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block text-balance">
+                        <label className="text-[12px] font-[600] text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-wide">
                             Description (optionnel)
                         </label>
                         <div className="relative">
@@ -166,7 +166,7 @@ export function SaveListModal({
 
                     {/* Tags */}
                     <div>
-                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block">
+                        <label className="text-[12px] font-[600] text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-wide">
                             Étiquettes (optionnel)
                         </label>
                         <div className="flex flex-wrap gap-2 p-2 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] min-h-[44px] transition-all focus-within:border-[#6C5CE7]">
@@ -217,8 +217,8 @@ export function SaveListModal({
 
                     {/* Mots */}
                     <div>
-                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block">
-                            Mots ({localWords.length})
+                        <label className="text-[12px] font-[600] text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-wide">
+                            Aperçu ({localWords.length} mots)
                         </label>
                         <div className="p-3 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] max-h-[160px] overflow-y-auto flex flex-wrap gap-2">
                             {localWords.map((word, i) => (
