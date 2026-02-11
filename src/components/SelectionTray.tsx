@@ -119,6 +119,7 @@ export function SelectionTray() {
                 // If we are editing the currently loaded list, update selection
                 clearSelection();
                 addItems(words);
+                setOriginalWords(words); // Update tracking (Fix Ticket 3)
             }
         } else {
             await saveList(name, description, words, tags);
