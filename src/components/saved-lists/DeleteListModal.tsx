@@ -17,13 +17,8 @@ interface DeleteListModalProps {
 export function DeleteListModal({ isOpen, onClose, onConfirm, listName }: DeleteListModalProps) {
     const [shake, setShake] = useState(false);
 
-    useEffect(() => {
-        if (isOpen) {
-            setShake(true);
-            const timer = setTimeout(() => setShake(false), 500);
-            return () => clearTimeout(timer);
-        }
-    }, [isOpen]);
+    // Effet shake supprimé à l'ouverture pour éviter le "pop"
+    // L'animation pourra être réactivée sur une action spécifique si nécessaire
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -32,7 +27,7 @@ export function DeleteListModal({ isOpen, onClose, onConfirm, listName }: Delete
                     {/* Animated Trash Icon */}
                     <div className={cn(
                         "w-[52px] h-[52px] rounded-[16px] bg-gradient-to-br from-[#FEE2E2] to-[#FECACA] flex items-center justify-center text-[#EF4444] mb-5 shadow-sm",
-                        shake && "animate-[shake_0.5s_ease-in-out]"
+                        shake && "animate-[shake_0.5s_ease-in-out]" // Shake uniquement si activé explicitement
                     )}>
                         <Trash2 className="w-6 h-6" />
                     </div>
