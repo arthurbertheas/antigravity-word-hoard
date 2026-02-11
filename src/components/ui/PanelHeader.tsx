@@ -24,7 +24,7 @@ export function PanelHeader({
   return (
     <div className={cn("items-center justify-between p-[20px_20px_16px] bg-white px-[16px] py-[16px] flex flex-row pr-px",
 
-    !hideBorder && "border-b border-[#F3F4F6]"
+    !hideBorder && "border-y border-[#F3F4F6]"
     )}>
       <div className="flex items-center gap-3">
         {/* Back or Forward button */}
