@@ -58,16 +58,7 @@ export function DeleteListModal({ isOpen, onClose, onConfirm, listName }: Delete
                     </div>
                 </div>
 
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-                    @keyframes shake {
-                        0%, 100% { transform: rotate(0deg); }
-                        20% { transform: rotate(-8deg); }
-                        40% { transform: rotate(8deg); }
-                        60% { transform: rotate(-4deg); }
-                        80% { transform: rotate(4deg); }
-                    }
-                `}} />
+
             </DialogContent>
         </Dialog>
     );
