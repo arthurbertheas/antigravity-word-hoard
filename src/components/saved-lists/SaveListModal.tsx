@@ -262,7 +262,7 @@ export function SaveListModal({
                         disabled={!name.trim()}
                         className="flex-1 h-11 bg-[#6C5CE7] hover:bg-[#5A4BD1] text-white font-[600] font-['DM_Sans'] shadow-[0_4px_12px_rgba(108,92,231,0.2)]"
                     >
-                        {mode === 'edit' && name.trim().toLowerCase() === initialData?.name.trim().toLowerCase()
+                        {mode === 'edit'
                             ? 'Mettre à jour'
                             : 'Sauvegarder'}
                     </Button>
