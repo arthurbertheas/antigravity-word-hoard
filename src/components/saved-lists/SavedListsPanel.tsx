@@ -45,8 +45,8 @@ export function SavedListsPanel({
                 onBack={onBack}
             />
 
-            <div className="p-4 space-y-4 flex-1 overflow-hidden flex flex-col">
-                <div className="relative py-4 border-b border-[#f0f2f5]">
+            <div className="px-4 pt-4 pb-0">
+                <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         value={searchQuery}
@@ -55,6 +55,11 @@ export function SavedListsPanel({
                         className="pl-9 bg-muted/50 border-none h-10 rounded-[12px] bg-[#F8F9FC] text-[14px]"
                     />
                 </div>
+            </div>
+
+            <div className="h-px bg-[#f0f2f5] my-4" />
+
+            <div className="px-4 space-y-4 flex-1 overflow-hidden flex flex-col">
 
                 {/* Deselect Option - Only shown if a list is selected */}
                 {currentListId && onDeselect && (
