@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Word } from '@/types/word';
 import { normalizeWord, normalizeWords } from '@/utils/word-normalization';
+import { selectRandomWords } from '@/utils/random-selection';
 
 interface SelectionContextType {
     selectedWords: Word[];
@@ -14,6 +15,9 @@ interface SelectionContextType {
     isSelected: (word: Word) => boolean;
     isFocusModeOpen: boolean;
     setIsFocusModeOpen: (open: boolean) => void;
+    randomSelectedCount: number;
+    selectRandom: (count: number, words: Word[], filters: any) => void;
+    deselectRandom: () => void;
 }
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
@@ -26,8 +30,21 @@ export function getWordId(word: Word): string {
 export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedWords, setSelectedWords] = useState<Word[]>([]);
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
+    const [randomSelectedCount, setRandomSelectedCount] = useState(0);
+
+    const selectRandom = (count: number, words: Word[], filters: any) => {
+        const selected = selectRandomWords(count, words, filters);
+        setSelection(selected);
+        setRandomSelectedCount(count);
+    };
+
+    const deselectRandom = () => {
+        clearSelection();
+        setRandomSelectedCount(0);
+    };
 
     const addItem = (word: Word) => {
+        setRandomSelectedCount(0); // Reset random state on manual change
         const normalized = normalizeWord(word);
         const targetId = getWordId(normalized);
         setSelectedWords(prev => {
@@ -38,6 +55,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     };
 
     const addItems = (words: Word[]) => {
+        setRandomSelectedCount(0); // Reset random state on manual change
         const normalizedWords = normalizeWords(words);
         setSelectedWords(prev => {
             const newWords = normalizedWords.filter(word => {
@@ -49,15 +67,18 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     };
 
     const removeItem = (wordId: string) => {
+        setRandomSelectedCount(0); // Reset random state on manual change
         setSelectedWords(prev => prev.filter(w => getWordId(w) !== wordId));
     };
 
     const removeItems = (words: Word[]) => {
+        setRandomSelectedCount(0); // Reset random state on manual change
         const idsToRemove = new Set(words.map(w => getWordId(w)));
         setSelectedWords(prev => prev.filter(w => !idsToRemove.has(getWordId(w))));
     };
 
     const toggleSelection = (word: Word) => {
+        setRandomSelectedCount(0); // Reset random state on manual change
         const targetId = getWordId(word);
         setSelectedWords(prev => {
             const exists = prev.some(w => getWordId(w) === targetId);
@@ -71,10 +92,24 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
     const clearSelection = () => {
         setSelectedWords([]);
+        setRandomSelectedCount(0);
     };
 
     const setSelection = (words: Word[]) => {
         setSelectedWords(normalizeWords(words));
+        // Note: selectRandom uses setSelection, so we don't reset count here
+        // selectRandom will set the count itself after calling this.
+        // Wait, selectRandom calls selectRandomWords -> returns array.
+        // selectRandom calls setSelection(selected).
+        // If setSelection resets count, it breaks selectRandom?
+        // Yes.
+        // So setSelection should NOT reset count?
+        // But if I call setSelection manually elsewhere?
+        // I should probably move setRandomSelectedCount(count) inside selectRandom AFTER setSelection.
+        // And setSelection should probably reset it?
+        // Or I assume setSelection is a low-level setter.
+        // Let's keep setSelection "pure" and handle reset in high-level methods.
+        // But manual selection methods (addItem, etc) DO reset it.
     };
 
     const isSelected = (word: Word) => {
@@ -121,7 +156,10 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             setSelection,
             isSelected,
             isFocusModeOpen,
-            setIsFocusModeOpen
+            setIsFocusModeOpen,
+            randomSelectedCount,
+            selectRandom,
+            deselectRandom
         }}>
             {children}
         </SelectionContext.Provider>

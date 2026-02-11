@@ -42,7 +42,7 @@ export function WordExplorer() {
 
 function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
-    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems } = useSelection();
+    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, selectRandom, deselectRandom } = useSelection();
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);
@@ -101,9 +101,11 @@ function WordExplorerContent() {
                 {/* Results Header */}
                 <ResultsHeader
                     words={words}
+                    filters={filters}
                     isAllSelected={words.length > 0 && words.every(word =>
                         selectedWords.some(sw => sw.MOTS === word.MOTS)
                     )}
+                    randomSelectedCount={randomSelectedCount}
                     onToggleSelectAll={() => {
                         const isAllSelected = words.length > 0 && words.every(word =>
                             selectedWords.some(sw => sw.MOTS === word.MOTS)
@@ -114,6 +116,8 @@ function WordExplorerContent() {
                             addItems(words);
                         }
                     }}
+                    onRandomSelect={(count) => selectRandom(count, words, filters)}
+                    onRandomDeselect={deselectRandom}
                 />
 
                 {/* Active Filters Bar */}

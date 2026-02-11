@@ -1,0 +1,90 @@
+import React, { useState } from 'react';
+import { Word, WordFilters } from '@/types/word';
+import { cn } from '@/lib/utils';
+import { ChevronDown, Check } from 'lucide-react';
+import { RandomSelectionPopover } from './RandomSelectionPopover';
+
+interface RandomSelectButtonProps {
+    availableWords: Word[];
+    activeFilters: WordFilters;
+    randomSelectedCount: number;
+    onRandomSelect: (count: number) => void;
+    onRandomDeselect: () => void;
+    disabled?: boolean;
+}
+
+export function RandomSelectButton({
+    availableWords,
+    activeFilters,
+    randomSelectedCount,
+    onRandomSelect,
+    onRandomDeselect,
+    disabled
+}: RandomSelectButtonProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    const isActive = randomSelectedCount > 0;
+
+    const handleSelect = (count: number) => {
+        onRandomSelect(count);
+        // On laisse ouvert ou on ferme ? Le design dit "Sélectionner" lance la sélection.
+        // On peut fermer après sélection.
+        setIsOpen(false);
+    };
+
+    const handleDeselect = () => {
+        onRandomDeselect();
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => !disabled && setIsOpen(!isOpen)}
+                disabled={disabled}
+                className={cn(
+                    "flex items-center gap-2 px-4 py-2 bg-white border rounded-[10px] transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed group",
+                    (isActive || isOpen) ?
+                        "border-[#6366f1]" :
+                        "border-[#d1d5db] hover:border-[#6366f1]",
+                    isActive ? "bg-white" : "hover:bg-[#fafaff]"
+                )}
+            >
+                {/* Circle Indicator */}
+                <div className={cn(
+                    "w-[18px] h-[18px] rounded-full flex items-center justify-center transition-all border-2",
+                    isActive ?
+                        "bg-[#6366f1] border-[#6366f1]" :
+                        "border-[#d0d3e0] group-hover:border-[#6366f1]"
+                )}>
+                    {isActive && <Check className="w-2.5 h-2.5 text-white stroke-[3px]" />}
+                </div>
+
+                {/* Label */}
+                <span className={cn(
+                    "text-sm font-semibold transition-colors",
+                    isActive ? "text-[#6366f1]" : "text-[#4b5563] group-hover:text-[#6366f1]"
+                )}>
+                    {isActive ? `${randomSelectedCount} aléatoires` : "Aléatoire"}
+                </span>
+
+                {/* Chevron */}
+                <ChevronDown className={cn(
+                    "w-3.5 h-3.5 ml-1 transition-transform duration-200 text-[#9ca3af]",
+                    isOpen && "rotate-180 text-[#6366f1]",
+                    isActive && "text-[#6366f1]"
+                )} strokeWidth={2.5} />
+            </button>
+
+            <RandomSelectionPopover
+                isOpen={isOpen}
+                onClose={() => setIsOpen(false)}
+                maxWords={availableWords.length}
+                activeFilters={activeFilters}
+                currentCount={randomSelectedCount}
+                isActive={isActive}
+                onSelect={handleSelect}
+                onDeselect={handleDeselect}
+            />
+        </div>
+    );
+}
