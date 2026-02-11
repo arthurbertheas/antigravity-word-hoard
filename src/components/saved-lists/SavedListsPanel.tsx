@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Search, Folder, Plus } from 'lucide-react';
+import { ChevronLeft, Search, Folder, Plus } from 'lucide-react';
 import { SavedList } from '@/lib/supabase';
-import { CompactSavedListRow } from './CompactSavedListRow';
+import { SavedListCard } from './SavedListCard';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { PanelHeader } from '@/components/ui/PanelHeader';
 
 interface SavedListsPanelProps {
@@ -10,8 +11,6 @@ interface SavedListsPanelProps {
     currentListId: string | null;
     onBack: () => void;
     onSelectList: (list: SavedList) => void;
-    onEditList: (list: SavedList) => void;
-    onDeleteList: (list: SavedList) => void;
     onCreateNew: () => void;
 }
 
@@ -20,8 +19,6 @@ export function SavedListsPanel({
     currentListId,
     onBack,
     onSelectList,
-    onEditList,
-    onDeleteList,
     onCreateNew
 }: SavedListsPanelProps) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -43,7 +40,7 @@ export function SavedListsPanel({
             />
 
             {/* Search Bar */}
-            <div className="flex-none px-4 pb-1">
+            <div className="flex-none px-4 pb-3">
                 <div className="flex items-center gap-2 p-[9px_14px] rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] transition-all group-within:border-[#6C5CE7]">
                     <Search className="w-4 h-4 text-[#9CA3AF]" />
                     <input
@@ -56,23 +53,14 @@ export function SavedListsPanel({
                 </div>
             </div>
 
-            {/* Search Counter */}
-            {searchQuery && (
-                <div className="px-[16px] py-[6px] pb-[2px] text-[10px] font-[600] text-[#9CA3AF] font-['DM_Sans'] uppercase tracking-[0.06em]">
-                    {filteredLists.length} résultat{filteredLists.length > 1 ? 's' : ''}
-                </div>
-            )}
-
-            <div className="flex-1 overflow-y-auto px-1 space-y-[1px] pb-4">
+            <div className="flex-1 overflow-y-auto px-4 space-y-2 pb-4">
                 {filteredLists.length > 0 ? (
                     filteredLists.map((list) => (
-                        <CompactSavedListRow
+                        <SavedListCard
                             key={list.id}
                             list={list}
                             isSelected={list.id === currentListId}
                             onSelect={onSelectList}
-                            onEdit={onEditList}
-                            onDelete={onDeleteList}
                         />
                     ))
                 ) : (
@@ -99,13 +87,13 @@ export function SavedListsPanel({
             </div>
 
             {/* Footer Action */}
-            <div className="flex-none p-[8px_12px_14px] bg-white border-t border-[#F3F4F6]">
+            <div className="flex-none p-[12px_16px_18px] bg-white border-t border-[#F3F4F6]">
                 <button
                     onClick={onCreateNew}
-                    className="w-full p-[9px_12px] rounded-[12px] border-[2px] border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] font-['DM_Sans'] text-[13px] font-[600] cursor-pointer flex items-center justify-center gap-2 transition-all hover:bg-[#EDEAFF] hover:border-[#6C5CE7]"
+                    className="w-full p-[11px_16px] rounded-[12px] border-[2px] border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] font-['DM_Sans'] text-[13px] font-[600] cursor-pointer flex items-center justify-center gap-2 transition-all hover:bg-[#EDEAFF] hover:border-[#6C5CE7]"
                 >
                     <Plus className="w-4 h-4" />
-                    Nouvelle liste
+                    Créer une nouvelle liste
                 </button>
             </div>
         </div>
