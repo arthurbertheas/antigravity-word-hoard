@@ -43,6 +43,7 @@ export function SavedListsPanel({
                 title="Mes listes"
                 subtitle={`${lists.length} listes sauvegardées`}
                 onBack={onBack}
+                hideBorder={true}
             />
 
             <div className="px-4 pt-4 pb-0">
