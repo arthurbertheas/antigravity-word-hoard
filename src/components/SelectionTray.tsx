@@ -53,8 +53,8 @@ export function SelectionTray() {
 
   // Detect modifications (Ticket 2)
   const hasChanges = currentListId && originalWords.length > 0 && (
-  originalWords.length !== selectedWords.length ||
-  !originalWords.every((w, i) => w.MOTS === selectedWords[i]?.MOTS));
+    originalWords.length !== selectedWords.length ||
+    !originalWords.every((w, i) => w.MOTS === selectedWords[i]?.MOTS));
 
 
   const togglePanel = () => setIsCollapsed(!isCollapsed);
@@ -164,270 +164,269 @@ export function SelectionTray() {
       "shrink-0 bg-card/10 flex flex-col h-full border-l border-[rgb(var(--filter-border))] transition-width-smooth overflow-hidden relative",
       isCollapsed ? "w-[64px]" : "w-80"
     )}>
-            {/* Collapsed State View ... same as before ... */}
-            {isCollapsed &&
-      <div className="flex flex-col items-center py-4 gap-4 h-full animate-in fade-in duration-300">
-                    <button
-          onClick={togglePanel}
-          className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0"
-          title="Ouvrir Ma Liste">
+      {/* Collapsed State View ... same as before ... */}
+      {isCollapsed &&
+        <div className="flex flex-col items-center py-4 gap-4 h-full animate-in fade-in duration-300">
+          <button
+            onClick={togglePanel}
+            className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0"
+            title="Ouvrir Ma Liste">
 
-                        <ChevronLeft className="w-4 h-4" strokeWidth={1.8} />
-                    </button>
+            <ChevronLeft className="w-4 h-4" strokeWidth={1.8} />
+          </button>
 
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="w-10 h-10 rounded-[12px] bg-[#F0EDFF] flex items-center justify-center text-[#6C5CE7]">
-                            <ListChecks className="w-5 h-5" />
-                        </div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-10 h-10 rounded-[12px] bg-[#F0EDFF] flex items-center justify-center text-[#6C5CE7]">
+              <ListChecks className="w-5 h-5" />
+            </div>
 
-                        {selectedWords.length > 0 &&
-          <div className="min-w-[24px] h-6 rounded-lg bg-[#6C5CE7] text-white text-[12px] font-bold font-['IBM_Plex_Mono'] flex items-center justify-center px-1.5 shadow-sm">
-                                {selectedWords.length}
-                            </div>
-          }
-                    </div>
+            {selectedWords.length > 0 &&
+              <div className="min-w-[24px] h-6 rounded-lg bg-[#6C5CE7] text-white text-[12px] font-bold font-['IBM_Plex_Mono'] flex items-center justify-center px-1.5 shadow-sm">
+                {selectedWords.length}
+              </div>
+            }
+          </div>
 
-                    <div className="flex-1" />
+          <div className="flex-1" />
 
-                    <button
-          onClick={() => setIsFocusModeOpen(true)}
-          disabled={selectedWords.length === 0}
-          className="w-11 h-11 rounded-[14px] bg-[#6C5CE7] text-white flex items-center justify-center shadow-[0_3px_12px_rgba(108,92,231,0.35)] transition-all hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.4)] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#6C5CE7] disabled:hover:translate-y-0 mb-2"
-          title="Lancer la sélection">
+          <button
+            onClick={() => setIsFocusModeOpen(true)}
+            disabled={selectedWords.length === 0}
+            className="w-11 h-11 rounded-[14px] bg-[#6C5CE7] text-white flex items-center justify-center shadow-[0_3px_12px_rgba(108,92,231,0.35)] transition-all hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.4)] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#6C5CE7] disabled:hover:translate-y-0 mb-2"
+            title="Lancer la sélection">
 
-                        <Play className="w-[18px] h-[18px]" fill="currentColor" />
-                    </button>
-                </div>
+            <Play className="w-[18px] h-[18px]" fill="currentColor" />
+          </button>
+        </div>
       }
 
-            {/* Expanded State View */}
-            {!isCollapsed &&
-      <>
-                    <PanelHeader
-          title="Ma Liste"
-          subtitle="Liste et actions"
-          icon={<ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />}
-          onForward={undefined}
-          action={
-          <div className="flex items-center gap-3">
-                                {selectedWords.length > 0 &&
-            <div className="flex items-center gap-2 mr-2">
-                                        {showClearConfirm ?
-              <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
-                                                <button
-                  onClick={() => setShowClearConfirm(false)}
-                  className="text-[10px] font-bold text-muted-foreground hover:text-foreground">
+      {/* Expanded State View */}
+      {!isCollapsed &&
+        <>
+          <PanelHeader
+            title="Ma Liste"
+            subtitle="Liste et actions"
+            icon={<ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />}
+            onForward={undefined}
+            action={
+              <div className="flex items-center gap-3">
+                {selectedWords.length > 0 &&
+                  <div className="flex items-center gap-2 mr-2">
+                    {showClearConfirm ?
+                      <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+                        <button
+                          onClick={() => setShowClearConfirm(false)}
+                          className="text-[10px] font-bold text-muted-foreground hover:text-foreground">
 
-                                                    Annuler
-                                                </button>
-                                                <button
-                  onClick={() => {
-                    clearSelection();
-                    setShowClearConfirm(false);
-                  }}
-                  className="text-[10px] font-bold text-destructive hover:underline">
+                          Annuler
+                        </button>
+                        <button
+                          onClick={() => {
+                            clearSelection();
+                            setShowClearConfirm(false);
+                          }}
+                          className="text-[10px] font-bold text-destructive hover:underline">
 
-                                                    Confirmer
-                                                </button>
-                                            </div> :
+                          Confirmer
+                        </button>
+                      </div> :
 
-              <button
-                onClick={handleClearRequest}
-                className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group">
+                      <button
+                        onClick={handleClearRequest}
+                        className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group">
 
-                                                <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
-                                                Vider
-                                            </button>
-              }
-                                    </div>
-            }
-
-                                <button
-              onClick={togglePanel}
-              className="flex-none w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
-              title="Réduire (C)">
-
-                                    <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
-                                </button>
-                            </div>
-          } />
-
-
-                    <div className="flex-1 overflow-hidden flex flex-col pt-3 py-0">
-                        <div className="flex-none px-4 py-2">
-                            <UnifiedListSelector
-              selectedList={currentListId ? savedLists.find((l) => l.id === currentListId) || null : null}
-              onOpenListView={() => setActiveView('saved-lists')}
-              onDeselect={handleDirectDeselect} />
-
-                        </div>
-
-
-                        <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
-                            <div className="flex items-baseline gap-2 mb-2">
-                                <div className="text-2xl font-black text-foreground">
-                                    {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-primary">{totalSyllables}</span> Syllabes
-                                    </div>
-                                    <div className="w-1 h-1 rounded-full bg-border" />
-                                    <div className="flex items-center gap-1">
-                                        Moy. <span className="text-primary">{selectedWords.length > 0 ? avgSyllables : 'ØØ'}</span>
-                                    </div>
-                                </div>
-
-                                <div className={cn(
-                "flex flex-wrap gap-1 transition-all duration-300",
-                selectedWords.length === 0 && "opacity-0"
-              )}>
-                                    {Object.entries(
-                  selectedWords.reduce((acc, word) => {
-                    const cat = word.SYNT || 'AUTRE';
-                    acc[cat] = (acc[cat] || 0) + 1;
-                    return acc;
-                  }, {} as Record<string, number>)
-                ).map(([cat, count]) =>
-                <span key={cat} className="px-1.5 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
-                                            {count} {cat}
-                                        </span>
-                )}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-transparent to-card/5">
-                            {selectedWords.length === 0 ?
-            <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 opacity-40">
-                                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                                        <ListChecks className="w-8 h-8 text-muted-foreground" />
-                                    </div>
-                                    <p className="text-xs font-medium text-muted-foreground italic max-w-[150px]">
-                                        Cliquez sur un mot pour l'ajouter à votre liste.
-                                    </p>
-                                </div> :
-
-            <div className="space-y-2">
-                                    {selectedWords.map((word) => {
-                // Check if word is new (Ticket 2)
-                const isNewWord = currentListId && originalWords.length > 0 &&
-                !originalWords.some((w) => w.MOTS === word.MOTS);
-
-                return (
-                  <div
-                    key={getWordId(word)}
-                    style={{
-                      padding: '12px',
-                      borderRadius: '12px',
-                      border: isNewWord ? '1px solid #E0DAFB' : '1px solid #F3F4F6',
-                      background: isNewWord ? 'rgba(108,92,231,0.04)' : '#fff',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '8px',
-                      transition: 'all 0.2s ease'
-                    }}
-                    className="group hover:shadow-md">
-
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-                                                    <span style={{
-                        fontFamily: 'DM Sans',
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: '#1A1A2E'
-                      }}>
-                                                        {word.MOTS}
-                                                    </span>
-
-                                                    {/* Badge AJOUTÉ (Ticket 2) */}
-                                                    {isNewWord &&
-                      <span style={{
-                        padding: '1px 5px',
-                        borderRadius: '5px',
-                        background: '#F0EDFF',
-                        color: '#6C5CE7',
-                        fontSize: '8px',
-                        fontWeight: 700,
-                        letterSpacing: '0.02em',
-                        textTransform: 'uppercase'
-                      }}>
-                                                            AJOUTÉ
-                                                        </span>
-                      }
-                                                </div>
-
-                                                <button
-                      onClick={() => removeItem(getWordId(word))}
-                      className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
-                      title="Supprimer">
-
-                                                    <X className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>);
-
-              })}
-                                </div>
-            }
-                        </div>
-
-                        <div className="flex-none p-4 mt-auto border-t border-slate-100 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)] space-y-2">
-                            {/* Contextual Footer Button (Ticket 2 - 4 états) */}
-                            <ContextualFooterButton
-              mode={
-              selectedWords.length === 0 ? 'hidden' :
-              hasChanges ? 'update' :
-              !currentListId ? 'create' :
-              'hidden'
-              }
-              onSave={async () => {
-                if (hasChanges) {
-                  await handleDirectSave();
-                } else {
-                  setEditingListId(null);
-                  setShowSaveModal(true);
+                        <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
+                        Vider
+                      </button>
+                    }
+                  </div>
                 }
-              }} />
+
+                <button
+                  onClick={togglePanel}
+                  className="flex-none w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
+                  title="Réduire (C)">
+
+                  <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
+                </button>
+              </div>
+            } />
+
+          <div className="flex-1 overflow-hidden flex flex-col py-0">
+            <div className="flex-none px-4 py-2">
+              <UnifiedListSelector
+                selectedList={currentListId ? savedLists.find((l) => l.id === currentListId) || null : null}
+                onOpenListView={() => setActiveView('saved-lists')}
+                onDeselect={handleDirectDeselect} />
+
+            </div>
 
 
-                            <Button
-              className="w-full flex items-center justify-center gap-3 h-[52px] rounded-xl bg-[rgb(var(--filter-accent))] text-white font-sora font-bold text-base shadow-[0_4px_12px_rgba(var(--filter-accent),0.25)] hover:shadow-[0_6px_20px_rgba(var(--filter-accent),0.35)] hover:-translate-y-0.5 transition-all duration-300"
-              onClick={() => setIsFocusModeOpen(true)}
-              disabled={selectedWords.length === 0}>
-
-                                <Play fill="white" className="w-5 h-5" />
-                                Lancer la sélection
-                                <ChevronRight className="w-4 h-4" strokeWidth={3} />
-                            </Button>
-                        </div>
-                    </div>
-                </>
-      }
-
-            {/* Saved Lists Panel Overlay */}
-            {!isCollapsed && activeView === 'saved-lists' &&
-      <div className="absolute inset-x-0 bottom-0 top-[80px] z-30">
-                    <SavedListsPanel
-          lists={savedLists}
-          currentListId={currentListId}
-          onBack={() => setActiveView('main')}
-          onSelectList={handleSelectFromPanel}
-          onEditList={handleEditList}
-          onDeleteList={handleDeleteList}
-          onCreateNew={() => {
-            setEditingListId(null);
-            setShowSaveModal(true);
-          }} />
-
+            <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
+              <div className="flex items-baseline gap-2 mb-2">
+                <div className="text-2xl font-black text-foreground">
+                  {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
+                  <div className="flex items-center gap-1">
+                    <span className="text-primary">{totalSyllables}</span> Syllabes
+                  </div>
+                  <div className="w-1 h-1 rounded-full bg-border" />
+                  <div className="flex items-center gap-1">
+                    Moy. <span className="text-primary">{selectedWords.length > 0 ? avgSyllables : 'ØØ'}</span>
+                  </div>
+                </div>
+
+                <div className={cn(
+                  "flex flex-wrap gap-1 transition-all duration-300",
+                  selectedWords.length === 0 && "opacity-0"
+                )}>
+                  {Object.entries(
+                    selectedWords.reduce((acc, word) => {
+                      const cat = word.SYNT || 'AUTRE';
+                      acc[cat] = (acc[cat] || 0) + 1;
+                      return acc;
+                    }, {} as Record<string, number>)
+                  ).map(([cat, count]) =>
+                    <span key={cat} className="px-1.5 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
+                      {count} {cat}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-transparent to-card/5">
+              {selectedWords.length === 0 ?
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 opacity-40">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                    <ListChecks className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-xs font-medium text-muted-foreground italic max-w-[150px]">
+                    Cliquez sur un mot pour l'ajouter à votre liste.
+                  </p>
+                </div> :
+
+                <div className="space-y-2">
+                  {selectedWords.map((word) => {
+                    // Check if word is new (Ticket 2)
+                    const isNewWord = currentListId && originalWords.length > 0 &&
+                      !originalWords.some((w) => w.MOTS === word.MOTS);
+
+                    return (
+                      <div
+                        key={getWordId(word)}
+                        style={{
+                          padding: '12px',
+                          borderRadius: '12px',
+                          border: isNewWord ? '1px solid #E0DAFB' : '1px solid #F3F4F6',
+                          background: isNewWord ? 'rgba(108,92,231,0.04)' : '#fff',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        className="group hover:shadow-md">
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                          <span style={{
+                            fontFamily: 'DM Sans',
+                            fontSize: '14px',
+                            fontWeight: 500,
+                            color: '#1A1A2E'
+                          }}>
+                            {word.MOTS}
+                          </span>
+
+                          {/* Badge AJOUTÉ (Ticket 2) */}
+                          {isNewWord &&
+                            <span style={{
+                              padding: '1px 5px',
+                              borderRadius: '5px',
+                              background: '#F0EDFF',
+                              color: '#6C5CE7',
+                              fontSize: '8px',
+                              fontWeight: 700,
+                              letterSpacing: '0.02em',
+                              textTransform: 'uppercase'
+                            }}>
+                              AJOUTÉ
+                            </span>
+                          }
+                        </div>
+
+                        <button
+                          onClick={() => removeItem(getWordId(word))}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
+                          title="Supprimer">
+
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>);
+
+                  })}
+                </div>
+              }
+            </div>
+
+            <div className="flex-none p-4 mt-auto border-t border-slate-100 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)] space-y-2">
+              {/* Contextual Footer Button (Ticket 2 - 4 états) */}
+              <ContextualFooterButton
+                mode={
+                  selectedWords.length === 0 ? 'hidden' :
+                    hasChanges ? 'update' :
+                      !currentListId ? 'create' :
+                        'hidden'
+                }
+                onSave={async () => {
+                  if (hasChanges) {
+                    await handleDirectSave();
+                  } else {
+                    setEditingListId(null);
+                    setShowSaveModal(true);
+                  }
+                }} />
+
+
+              <Button
+                className="w-full flex items-center justify-center gap-3 h-[52px] rounded-xl bg-[rgb(var(--filter-accent))] text-white font-sora font-bold text-base shadow-[0_4px_12px_rgba(var(--filter-accent),0.25)] hover:shadow-[0_6px_20px_rgba(var(--filter-accent),0.35)] hover:-translate-y-0.5 transition-all duration-300"
+                onClick={() => setIsFocusModeOpen(true)}
+                disabled={selectedWords.length === 0}>
+
+                <Play fill="white" className="w-5 h-5" />
+                Lancer la sélection
+                <ChevronRight className="w-4 h-4" strokeWidth={3} />
+              </Button>
+            </div>
+          </div>
+        </>
       }
 
-            {/* Save List Modal */}
-            <SaveListModal
+      {/* Saved Lists Panel Overlay */}
+      {!isCollapsed && activeView === 'saved-lists' &&
+        <div className="absolute inset-x-0 bottom-0 top-[80px] z-30">
+          <SavedListsPanel
+            lists={savedLists}
+            currentListId={currentListId}
+            onBack={() => setActiveView('main')}
+            onSelectList={handleSelectFromPanel}
+            onEditList={handleEditList}
+            onDeleteList={handleDeleteList}
+            onCreateNew={() => {
+              setEditingListId(null);
+              setShowSaveModal(true);
+            }} />
+
+        </div>
+      }
+
+      {/* Save List Modal */}
+      <SaveListModal
         isOpen={showSaveModal}
         onClose={() => {
           setShowSaveModal(false);
@@ -446,22 +445,22 @@ export function SelectionTray() {
         currentListId={editingListId} />
 
 
-            {/* Delete Confirmation Modal */}
-            <DeleteListModal
+      {/* Delete Confirmation Modal */}
+      <DeleteListModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleConfirmDelete}
         listName={listToDelete?.name || ''} />
 
 
-            {/* Detach List Modal (Ticket 2) */}
-            <DetachListModal
+      {/* Detach List Modal (Ticket 2) */}
+      <DetachListModal
         isOpen={showDetachModal}
         onClose={() => setShowDetachModal(false)}
         onConfirm={handleConfirmDetach}
         listName={currentListId ? savedLists.find((l) => l.id === currentListId)?.name || '' : ''} />
 
 
-        </aside>);
+    </aside>);
 
 }
