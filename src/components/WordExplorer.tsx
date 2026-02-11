@@ -47,6 +47,18 @@ function WordExplorerContent() {
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);
 
+    // Reset selection when filters change (Ticket: Reset Selection on Filter Change)
+    const isFirstRender = React.useRef(true);
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        if (selectedWords.length > 0 || randomSelectedCount > 0) {
+            clearSelection();
+        }
+    }, [filters, clearSelection, selectedWords.length, randomSelectedCount]);
+
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
         console.log("Filter change:", key, value);
