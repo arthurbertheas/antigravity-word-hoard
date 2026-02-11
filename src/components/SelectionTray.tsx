@@ -6,8 +6,10 @@ import { cn } from "@/lib/utils";
 import { useSavedListsContext } from "@/contexts/SavedListsContext";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
 import { SavedListsPanel } from "@/components/saved-lists/SavedListsPanel";
+import { DeleteListModal } from "@/components/saved-lists/DeleteListModal";
 import { SavedList } from "@/lib/supabase";
 import { PanelHeader } from "@/components/ui/PanelHeader";
+import { Word } from "@/types/word";
 
 export function SelectionTray() {
     const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen, addItems } = useSelection();
@@ -27,11 +29,14 @@ export function SelectionTray() {
         setIsModified,
         saveList,
         updateList,
+        deleteList,
         loadList
     } = useSavedListsContext();
 
     const [showSaveModal, setShowSaveModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingListId, setEditingListId] = useState<string | null>(null);
+    const [listToDelete, setListToDelete] = useState<SavedList | null>(null);
 
     useEffect(() => {
         localStorage.setItem('maListe_collapsed', String(isCollapsed));
@@ -73,12 +78,43 @@ export function SelectionTray() {
         handleLoadList(list.id);
     };
 
+    // Handler pour ouvrir l'édition
+    const handleEditList = (list: SavedList) => {
+        setEditingListId(list.id);
+        setShowSaveModal(true);
+    };
+
+    // Handler pour ouvrir la suppression
+    const handleDeleteList = (list: SavedList) => {
+        setListToDelete(list);
+        setShowDeleteModal(true);
+    };
+
+    // Handler pour confirmer la suppression
+    const handleConfirmDelete = async () => {
+        if (listToDelete) {
+            const success = await deleteList(listToDelete.id);
+            if (success) {
+                if (currentListId === listToDelete.id) {
+                    clearSelection();
+                }
+                setShowDeleteModal(false);
+                setListToDelete(null);
+            }
+        }
+    };
+
     // Handler pour sauvegarder
-    const handleSaveList = async (name: string, description: string, tags: string[], saveAsNew?: boolean) => {
+    const handleSaveList = async (name: string, description: string, tags: string[], words: Word[], saveAsNew?: boolean) => {
         if (editingListId && !saveAsNew) {
-            await updateList(editingListId, name, description, selectedWords, tags);
+            const success = await updateList(editingListId, name, description, words, tags);
+            if (success && currentListId === editingListId) {
+                // If we are editing the currently loaded list, update selection
+                clearSelection();
+                addItems(words);
+            }
         } else {
-            await saveList(name, description, selectedWords, tags);
+            await saveList(name, description, words, tags);
         }
         setEditingListId(null);
     };
@@ -88,10 +124,9 @@ export function SelectionTray() {
             "shrink-0 bg-card/10 flex flex-col h-full border-l border-[rgb(var(--filter-border))] transition-width-smooth overflow-hidden relative",
             isCollapsed ? "w-[64px]" : "w-80"
         )}>
-            {/* Collapsed State View */}
+            {/* Collapsed State View ... same as before ... */}
             {isCollapsed && (
                 <div className="flex flex-col items-center py-4 gap-4 h-full animate-in fade-in duration-300">
-                    {/* Expand Button (Chevron Left to open) */}
                     <button
                         onClick={togglePanel}
                         className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0"
@@ -100,7 +135,6 @@ export function SelectionTray() {
                         <ChevronLeft className="w-4 h-4" strokeWidth={1.8} />
                     </button>
 
-                    {/* List Icon and Counter Badge */}
                     <div className="flex flex-col items-center gap-2">
                         <div className="w-10 h-10 rounded-[12px] bg-[#F0EDFF] flex items-center justify-center text-[#6C5CE7]">
                             <ListChecks className="w-5 h-5" />
@@ -113,10 +147,8 @@ export function SelectionTray() {
                         )}
                     </div>
 
-                    {/* Spacer */}
                     <div className="flex-1" />
 
-                    {/* Compact Launch CTA */}
                     <button
                         onClick={() => setIsFocusModeOpen(true)}
                         disabled={selectedWords.length === 0}
@@ -131,7 +163,6 @@ export function SelectionTray() {
             {/* Expanded State View */}
             {!isCollapsed && (
                 <>
-                    {/* Harmonized Header */}
                     <PanelHeader
                         title="Ma Liste"
                         subtitle="Liste et actions"
@@ -139,7 +170,6 @@ export function SelectionTray() {
                         onForward={undefined}
                         action={
                             <div className="flex items-center gap-3">
-                                {/* Clear Button (Visible only if items) */}
                                 {selectedWords.length > 0 && (
                                     <div className="flex items-center gap-2 mr-2">
                                         {showClearConfirm ? (
@@ -172,7 +202,6 @@ export function SelectionTray() {
                                     </div>
                                 )}
 
-                                {/* Toggle Collapse Button (Chevron Right to collapse) */}
                                 <button
                                     onClick={togglePanel}
                                     className="flex-none w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
@@ -185,7 +214,6 @@ export function SelectionTray() {
                     />
 
                     <div className="flex-1 overflow-hidden flex flex-col pt-3">
-                        {/* Mes listes sauvegardées button */}
                         <div className="flex-none px-4 py-2">
                             <button
                                 onClick={() => setActiveView('saved-lists')}
@@ -220,7 +248,6 @@ export function SelectionTray() {
                             </div>
                         )}
 
-                        {/* Stats Section */}
                         <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
                             <div className="flex items-baseline gap-2 mb-2">
                                 <div className="text-2xl font-black text-foreground">
@@ -258,7 +285,6 @@ export function SelectionTray() {
                             </div>
                         </div>
 
-                        {/* List Content */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-transparent to-card/5">
                             {selectedWords.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 opacity-40">
@@ -290,7 +316,6 @@ export function SelectionTray() {
                             )}
                         </div>
 
-                        {/* Footer Action */}
                         <div className="flex-none p-4 mt-auto border-t border-slate-100 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)] space-y-2">
                             <button
                                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent border border-border text-foreground rounded-lg font-semibold text-xs hover:border-primary hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -326,6 +351,8 @@ export function SelectionTray() {
                         currentListId={currentListId}
                         onBack={() => setActiveView('main')}
                         onSelectList={handleSelectFromPanel}
+                        onEditList={handleEditList}
+                        onDeleteList={handleDeleteList}
                         onCreateNew={() => {
                             setEditingListId(null);
                             setShowSaveModal(true);
@@ -346,11 +373,20 @@ export function SelectionTray() {
                 initialData={editingListId ? {
                     name: savedLists.find(l => l.id === editingListId)?.name || '',
                     description: savedLists.find(l => l.id === editingListId)?.description || '',
-                    tags: savedLists.find(l => l.id === editingListId)?.tags || []
+                    tags: savedLists.find(l => l.id === editingListId)?.tags || [],
+                    words: savedLists.find(l => l.id === editingListId)?.words || []
                 } : undefined}
                 mode={editingListId ? 'edit' : 'create'}
                 existingLists={savedLists.map(l => ({ id: l.id, name: l.name }))}
                 currentListId={editingListId}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <DeleteListModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleConfirmDelete}
+                listName={listToDelete?.name || ''}
             />
         </aside>
     );

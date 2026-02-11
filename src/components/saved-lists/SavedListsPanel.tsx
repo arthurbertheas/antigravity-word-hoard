@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Search, Folder, Plus } from 'lucide-react';
-import { SavedList } from '@/lib/supabase';
-import { SavedListCard } from './SavedListCard';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Search, Plus } from 'lucide-react';
+import { useSavedListsContext } from '@/contexts/SavedListsContext';
+import { CompactSavedListRow } from './CompactSavedListRow';
 import { PanelHeader } from '@/components/ui/PanelHeader';
+import { SavedList } from '@/lib/supabase';
+import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 
 interface SavedListsPanelProps {
     lists: SavedList[];
     currentListId: string | null;
     onBack: () => void;
     onSelectList: (list: SavedList) => void;
+    onEditList: (list: SavedList) => void;
+    onDeleteList: (list: SavedList) => void;
     onCreateNew: () => void;
 }
 
@@ -19,6 +22,8 @@ export function SavedListsPanel({
     currentListId,
     onBack,
     onSelectList,
+    onEditList,
+    onDeleteList,
     onCreateNew
 }: SavedListsPanelProps) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -32,69 +37,61 @@ export function SavedListsPanel({
 
     return (
         <div className="flex flex-col h-full bg-white animate-in slide-in-from-right duration-300">
-            {/* Harmonized Header */}
             <PanelHeader
                 title="Mes listes"
                 subtitle={`${lists.length} listes sauvegardées`}
                 onBack={onBack}
             />
 
-            {/* Search Bar */}
-            <div className="flex-none px-4 pb-3">
-                <div className="flex items-center gap-2 p-[9px_14px] rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] transition-all group-within:border-[#6C5CE7]">
-                    <Search className="w-4 h-4 text-[#9CA3AF]" />
-                    <input
-                        type="text"
-                        placeholder="Rechercher une liste..."
+            <div className="p-4 space-y-4 flex-1 overflow-hidden flex flex-col">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="border-none outline-none bg-transparent text-[13px] text-[#1A1A2E] font-['DM_Sans'] flex-1 placeholder:text-[#B0B5C0]"
+                        placeholder="Rechercher une liste..."
+                        className="pl-9 bg-muted/50 border-none"
                     />
                 </div>
-            </div>
 
-            <div className="flex-1 overflow-y-auto px-4 space-y-2 pb-4">
-                {filteredLists.length > 0 ? (
-                    filteredLists.map((list) => (
-                        <SavedListCard
-                            key={list.id}
-                            list={list}
-                            isSelected={list.id === currentListId}
-                            onSelect={onSelectList}
-                        />
-                    ))
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-                        {searchQuery ? (
-                            <p className="font-['DM_Sans'] text-[13px] text-[#9CA3AF]">
-                                Aucune liste trouvée
-                            </p>
-                        ) : (
-                            <>
-                                <div className="w-12 h-12 rounded-[14px] bg-[#F3F4F6] flex items-center justify-center text-[#9CA3AF] mb-4">
-                                    <Folder className="w-6 h-6" />
-                                </div>
-                                <h3 className="font-['DM_Sans'] text-[14px] font-[600] text-[#1A1A2E] mb-1">
-                                    Aucune liste sauvegardée
-                                </h3>
-                                <p className="font-['DM_Sans'] text-[12px] text-[#9CA3AF] leading-relaxed">
-                                    Créez votre première liste<br />depuis la sélection de mots
-                                </p>
-                            </>
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {/* Footer Action */}
-            <div className="flex-none p-[12px_16px_18px] bg-white border-t border-[#F3F4F6]">
                 <button
                     onClick={onCreateNew}
-                    className="w-full p-[11px_16px] rounded-[12px] border-[2px] border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] font-['DM_Sans'] text-[13px] font-[600] cursor-pointer flex items-center justify-center gap-2 transition-all hover:bg-[#EDEAFF] hover:border-[#6C5CE7]"
+                    className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-border rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-all group"
                 >
-                    <Plus className="w-4 h-4" />
-                    Créer une nouvelle liste
+                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Plus className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="font-semibold text-sm">Créer une nouvelle liste</span>
                 </button>
+
+                <div className="flex-1 overflow-y-auto space-y-0 relative -mx-4 px-4">
+                    {searchQuery && (
+                        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm py-2 mb-2 border-b border-border">
+                            <span className="text-[10px] font-[600] uppercase tracking-wider text-[#9CA3AF] px-2 block">
+                                {filteredLists.length} RÉSULTATS
+                            </span>
+                        </div>
+                    )}
+
+                    {filteredLists.length > 0 ? (
+                        <div className="pb-4">
+                            {filteredLists.map((list) => (
+                                <CompactSavedListRow
+                                    key={list.id}
+                                    list={list}
+                                    isSelected={currentListId === list.id}
+                                    onSelect={onSelectList}
+                                    onEdit={onEditList}
+                                    onDelete={onDeleteList}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <p className="text-sm">Aucune liste trouvée</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

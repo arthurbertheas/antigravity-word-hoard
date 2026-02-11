@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { X, Search } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -8,32 +7,35 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Word } from '@/types/word';
+import { cn } from '@/lib/utils';
 
 interface SaveListModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (name: string, description: string, tags: string[], saveAsNew?: boolean) => void;
+    onSave: (name: string, description: string, tags: string[], words: Word[], saveAsNew?: boolean) => void;
     words: Word[];
     initialData?: {
         name: string;
         description: string;
         tags: string[];
+        words?: Word[];
     };
     mode: 'create' | 'edit';
     existingLists: Array<{ id: string; name: string }>;
     currentListId?: string | null;
 }
 
-const SUGGESTED_TAGS = ['CP', 'CE1', 'CE2', 'CM1', 'CM2', 'Phonologie', 'Lecture', 'Orthographe'];
+const SUGGESTED_TAGS = ['CP', 'CE1', 'CE2', 'CM1', 'Phonologie', 'Lecture', 'Orthographe'];
 
 export function SaveListModal({
     isOpen,
     onClose,
     onSave,
-    words,
+    words: initialWords,
     initialData,
     mode,
     existingLists,
@@ -42,6 +44,7 @@ export function SaveListModal({
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState<string[]>([]);
+    const [localWords, setLocalWords] = useState<Word[]>([]);
     const [tagInput, setTagInput] = useState('');
     const [nameError, setNameError] = useState('');
 
@@ -50,17 +53,19 @@ export function SaveListModal({
             setName(initialData.name);
             setDescription(initialData.description);
             setTags(initialData.tags);
+            setLocalWords(initialData.words || initialWords);
         } else {
             setName('');
             setDescription('');
             setTags([]);
+            setLocalWords(initialWords);
         }
         setTagInput('');
-    }, [initialData, isOpen]);
+    }, [initialData, initialWords, isOpen]);
 
     const handleAddTag = (tag: string) => {
         const trimmed = tag.trim();
-        if (trimmed && !tags.includes(trimmed) && tags.length < 5) {
+        if (trimmed && !tags.includes(trimmed) && tags.length < 8) {
             setTags([...tags, trimmed]);
             setTagInput('');
         }
@@ -68,6 +73,10 @@ export function SaveListModal({
 
     const handleRemoveTag = (tagToRemove: string) => {
         setTags(tags.filter(t => t !== tagToRemove));
+    };
+
+    const handleRemoveWord = (wordToRemove: Word) => {
+        setLocalWords(localWords.filter(w => w.MOTS !== wordToRemove.MOTS));
     };
 
     const handleSubmit = () => {
@@ -78,8 +87,6 @@ export function SaveListModal({
         const shouldSaveAsNew = mode === 'create' || isRenamed;
 
         // Check for duplicate names
-        // - In pure edit mode (no rename), we skip collision check
-        // - In create mode or rename mode, we check against all existing lists
         let isDuplicate = false;
         if (shouldSaveAsNew) {
             isDuplicate = existingLists.some(list =>
@@ -93,73 +100,80 @@ export function SaveListModal({
         }
 
         setNameError('');
-        onSave(trimmedName, description.trim(), tags, shouldSaveAsNew);
+        onSave(trimmedName, description.trim(), tags, localWords, shouldSaveAsNew);
         onClose();
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[500px] z-[102] dialog-overlay-boost">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
+            <DialogContent className="sm:max-w-[440px] px-0 py-0 border-none rounded-[22px] overflow-hidden z-[102]">
+                <DialogHeader className="p-6 pb-4 flex flex-row items-center justify-between border-b border-[#F3F4F6]">
+                    <DialogTitle className="flex items-center gap-2 font-['Sora'] text-[16px] font-[700] text-[#1A1A2E]">
                         {mode === 'create' ? '💾 Sauvegarder la liste' : '✏️ Modifier la liste'}
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-4 py-4">
+                <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     {/* Nom */}
                     <div>
-                        <label className="text-sm font-semibold text-foreground mb-2 block">
+                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block">
                             Nom de la liste *
                         </label>
-                        <Input
-                            value={name}
-                            onChange={(e) => {
-                                setName(e.target.value);
-                                setNameError('');
-                            }}
-                            placeholder="Ex: Sons CH + V pour Léo"
-                            maxLength={50}
-                            className={nameError ? 'border-red-500' : 'hover:border-primary focus-visible:border-primary'}
-                        />
+                        <div className="relative">
+                            <Input
+                                value={name}
+                                onChange={(e) => {
+                                    setName(e.target.value);
+                                    setNameError('');
+                                }}
+                                placeholder="Ex: Sons CH + V pour Léo"
+                                maxLength={50}
+                                className={cn(
+                                    "h-11 rounded-[10px] border-[1.5px] bg-[#F8F9FC] font-['DM_Sans'] text-[14px]",
+                                    nameError ? 'border-red-500' : 'border-[#E5E7EB] focus-visible:border-[#6C5CE7]'
+                                )}
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-[#B0B5C0]">
+                                {name.length}/50
+                            </span>
+                        </div>
                         {nameError && (
-                            <span className="text-xs text-red-500 mt-1 block">
+                            <span className="text-[11px] text-red-500 mt-1 block">
                                 {nameError}
                             </span>
                         )}
-                        <span className="text-xs text-muted-foreground mt-1 block text-right">
-                            {name.length}/50
-                        </span>
                     </div>
 
                     {/* Description */}
                     <div>
-                        <label className="text-sm font-semibold text-foreground mb-2 block">
+                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block text-balance">
                             Description (optionnel)
                         </label>
-                        <Textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Pour travailler avec Léo les sons complexes..."
-                            rows={3}
-                            maxLength={200}
-                            className="hover:border-primary focus-visible:border-primary"
-                        />
-                        <span className="text-xs text-muted-foreground mt-1 block text-right">
-                            {description.length}/200
-                        </span>
+                        <div className="relative">
+                            <Textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Pour travailler avec Léo les sons complexes..."
+                                rows={2}
+                                maxLength={200}
+                                className="rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] font-['DM_Sans'] text-[14px] focus-visible:border-[#6C5CE7] resize-none"
+                            />
+                            <span className="absolute right-3 bottom-2 text-[11px] text-[#B0B5C0]">
+                                {description.length}/200
+                            </span>
+                        </div>
                     </div>
 
                     {/* Tags */}
                     <div>
-                        <label className="text-sm font-semibold text-foreground mb-2 block">
+                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block">
                             Étiquettes (optionnel)
                         </label>
-                        <div className="flex flex-wrap gap-2 p-2 border border-border rounded-lg min-h-[42px] hover:border-primary transition-colors focus-within:border-primary">
+                        <div className="flex flex-wrap gap-2 p-2 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] min-h-[44px] transition-all focus-within:border-[#6C5CE7]">
                             {tags.map(tag => (
                                 <span
                                     key={tag}
-                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-sm font-semibold rounded-md"
+                                    className="inline-flex items-center gap-1.5 px-[9px] py-[2px] bg-[#F0EDFF] text-[#7C6FD4] text-[11px] font-[500] font-['DM_Sans'] rounded-[8px]"
                                 >
                                     {tag}
                                     <button
@@ -181,20 +195,19 @@ export function SaveListModal({
                                     }
                                 }}
                                 placeholder={tags.length === 0 ? "Ajouter une étiquette..." : ""}
-                                className="flex-1 min-w-[120px] px-2 py-1 text-sm outline-none"
-                                disabled={tags.length >= 5}
+                                className="flex-1 min-w-[120px] bg-transparent text-[13px] outline-none"
+                                disabled={tags.length >= 8}
                             />
                         </div>
 
                         {/* Suggestions */}
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            <span className="text-xs text-muted-foreground font-semibold">Suggestions :</span>
+                        <div className="flex flex-wrap gap-1.5 mt-2">
                             {SUGGESTED_TAGS.filter(tag => !tags.includes(tag)).map(tag => (
                                 <button
                                     key={tag}
                                     onClick={() => handleAddTag(tag)}
-                                    className="px-2 py-1 bg-muted text-muted-foreground text-xs font-semibold rounded-md hover:bg-primary/10 hover:text-primary transition-colors"
-                                    disabled={tags.length >= 5}
+                                    className="px-2 py-0.5 bg-[#F3F4F6] text-[#6B7280] text-[10px] font-[500] font-['DM_Sans'] rounded-md hover:bg-[#F0EDFF] hover:text-[#7C6FD4] transition-colors"
+                                    disabled={tags.length >= 8}
                                 >
                                     {tag}
                                 </button>
@@ -202,36 +215,45 @@ export function SaveListModal({
                         </div>
                     </div>
 
-                    {/* Aperçu */}
+                    {/* Mots */}
                     <div>
-                        <label className="text-sm font-semibold text-foreground mb-2 block">
-                            Aperçu ({words.length} mots)
+                        <label className="text-[13px] font-[600] text-[#1A1A2E] font-['DM_Sans'] mb-2 block">
+                            Mots ({localWords.length})
                         </label>
-                        <div className="p-3 bg-muted/30 rounded-lg max-h-[120px] overflow-y-auto flex flex-wrap gap-2">
-                            {words.slice(0, 20).map((word, i) => (
+                        <div className="p-3 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] max-h-[160px] overflow-y-auto flex flex-wrap gap-2">
+                            {localWords.map((word, i) => (
                                 <span
                                     key={i}
-                                    className="px-2.5 py-1 bg-white border border-border rounded-md text-sm font-medium"
+                                    className="inline-flex items-center gap-1.5 px-[9px] py-[3px] bg-white border border-[#E5E7EB] rounded-[8px] text-[13px] font-[500] font-['DM_Sans'] group"
                                 >
                                     {word.MOTS}
+                                    <button
+                                        onClick={() => handleRemoveWord(word)}
+                                        className="text-[#9CA3AF] hover:text-red-500 transition-colors"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
                                 </span>
                             ))}
-                            {words.length > 20 && (
-                                <span className="px-2.5 py-1 text-sm text-muted-foreground italic">
-                                    +{words.length - 20} autres...
-                                </span>
-                            )}
                         </div>
                     </div>
                 </div>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={onClose} className="hover:border-primary hover:text-primary hover:bg-primary/5">
+                <DialogFooter className="p-6 pt-4 border-t border-[#F3F4F6] flex sm:justify-between items-center sm:flex-row gap-3">
+                    <Button
+                        variant="outline"
+                        onClick={onClose}
+                        className="flex-1 h-11 border-[1.5px] border-[#E5E7EB] text-[#6B7280] font-[600] font-['DM_Sans'] hover:bg-[#F8F9FC] hover:text-[#1A1A2E]"
+                    >
                         Annuler
                     </Button>
-                    <Button onClick={handleSubmit} disabled={!name.trim()}>
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={!name.trim()}
+                        className="flex-1 h-11 bg-[#6C5CE7] hover:bg-[#5A4BD1] text-white font-[600] font-['DM_Sans'] shadow-[0_4px_12px_rgba(108,92,231,0.2)]"
+                    >
                         {mode === 'edit' && name.trim().toLowerCase() === initialData?.name.trim().toLowerCase()
-                            ? 'Mettre à jour'
+                            ? 'Enregistrer'
                             : 'Sauvegarder'}
                     </Button>
                 </DialogFooter>
