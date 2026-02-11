@@ -116,8 +116,8 @@ export function SaveListModal({
                 <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     {/* Nom */}
                     <div>
-                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
-                            Nom de la liste *
+                        <label className="text-[14px] font-[700] text-[#1A1A2E] font-['DM_Sans'] mb-2.5 block tracking-tight">
+                            Nom de la liste <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
                             <Input
@@ -146,8 +146,8 @@ export function SaveListModal({
 
                     {/* Description */}
                     <div>
-                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
-                            Description (optionnel)
+                        <label className="text-[14px] font-[700] text-[#1A1A2E] font-['DM_Sans'] mb-2.5 block tracking-tight">
+                            Description <span className="text-[13px] font-[400] text-[#6B7280] ml-1">(optionnel)</span>
                         </label>
                         <div className="relative">
                             <Textarea
@@ -165,8 +165,8 @@ export function SaveListModal({
 
                     {/* Tags */}
                     <div>
-                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
-                            Étiquettes (optionnel)
+                        <label className="text-[14px] font-[700] text-[#1A1A2E] font-['DM_Sans'] mb-2.5 block tracking-tight">
+                            Étiquettes <span className="text-[13px] font-[400] text-[#6B7280] ml-1">(optionnel)</span>
                         </label>
                         <div className="flex flex-wrap gap-2 p-2 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] min-h-[44px] transition-all focus-within:border-[#6C5CE7]">
                             {tags.map(tag => (
@@ -227,8 +227,8 @@ export function SaveListModal({
 
                     {/* Mots */}
                     <div>
-                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
-                            Aperçu ({localWords.length} mots)
+                        <label className="text-[14px] font-[700] text-[#1A1A2E] font-['DM_Sans'] mb-2.5 block tracking-tight">
+                            Aperçu <span className="text-[13px] font-[400] text-[#6B7280] ml-1">({localWords.length} mots)</span>
                         </label>
                         <div className="p-3 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] max-h-[160px] overflow-y-auto flex flex-wrap gap-2">
                             {localWords.map((word, i) => (
