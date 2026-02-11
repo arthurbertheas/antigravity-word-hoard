@@ -42,13 +42,13 @@ export function WordExplorer() {
 
 function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
-    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, selectRandom, deselectRandom } = useSelection();
+    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, selectRandom, deselectRandom, clearSelection } = useSelection();
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);
 
     // Reset selection when filters change (Ticket: Reset Selection on Filter Change)
-    const isFirstRender = React.useRef(true);
+    const isFirstRender = useRef(true);
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
