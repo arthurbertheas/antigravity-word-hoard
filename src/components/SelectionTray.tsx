@@ -7,6 +7,9 @@ import { useSavedListsContext } from "@/contexts/SavedListsContext";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
 import { SavedListsPanel } from "@/components/saved-lists/SavedListsPanel";
 import { DeleteListModal } from "@/components/saved-lists/DeleteListModal";
+import { LoadedListBlock } from "@/components/saved-lists/LoadedListBlock";
+import { DetachListModal } from "@/components/saved-lists/DetachListModal";
+import { ContextualFooterButton } from "@/components/saved-lists/ContextualFooterButton";
 import { SavedList } from "@/lib/supabase";
 import { PanelHeader } from "@/components/ui/PanelHeader";
 import { Word } from "@/types/word";
@@ -35,19 +38,22 @@ export function SelectionTray() {
 
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDetachModal, setShowDetachModal] = useState(false);
     const [editingListId, setEditingListId] = useState<string | null>(null);
     const [listToDelete, setListToDelete] = useState<SavedList | null>(null);
+
+    // Track original words for modification detection (Ticket 2)
+    const [originalWords, setOriginalWords] = useState<Word[]>([]);
 
     useEffect(() => {
         localStorage.setItem('maListe_collapsed', String(isCollapsed));
     }, [isCollapsed]);
 
-    // Mark as modified when selection changes
-    useEffect(() => {
-        if (currentListId && selectedWords.length > 0) {
-            setIsModified(true);
-        }
-    }, [selectedWords, currentListId, setIsModified]);
+    // Detect modifications (Ticket 2)
+    const hasChanges = currentListId && originalWords.length > 0 && (
+        originalWords.length !== selectedWords.length ||
+        !originalWords.every((w, i) => w.MOTS === selectedWords[i]?.MOTS)
+    );
 
     const togglePanel = () => setIsCollapsed(!isCollapsed);
 
@@ -69,6 +75,7 @@ export function SelectionTray() {
         if (words) {
             clearSelection();
             addItems(words);
+            setOriginalWords(words); // Track original words
             setActiveView('main'); // Always go back to main view after loading
         }
     };
@@ -117,6 +124,29 @@ export function SelectionTray() {
             await saveList(name, description, words, tags);
         }
         setEditingListId(null);
+    };
+
+    // Handler pour détacher la liste (Ticket 2)
+    const handleDetachList = () => {
+        setShowDetachModal(true);
+    };
+
+    // Handler pour confirmer le détachement
+    const handleConfirmDetach = () => {
+        setOriginalWords([]);
+        // Le currentListId sera géré par le context
+        setShowDetachModal(false);
+    };
+
+    // Handler pour save direct (Ticket 2 - État 4)
+    const handleDirectSave = async () => {
+        if (currentListId) {
+            const currentList = savedLists.find(l => l.id === currentListId);
+            if (currentList) {
+                await updateList(currentListId, currentList.name, currentList.description, selectedWords, currentList.tags);
+                setOriginalWords([...selectedWords]); // Update tracking
+            }
+        }
     };
 
     return (
@@ -231,22 +261,21 @@ export function SelectionTray() {
                             </button>
                         </div>
 
-                        {isModified && currentListId && (
-                            <div className="flex-none px-4 py-3 bg-yellow-50 border-b border-yellow-200 mt-2">
-                                <div className="text-xs text-yellow-800 mb-2 font-medium">
-                                    ✏️ Liste modifiée
-                                </div>
-                                <button
-                                    onClick={() => {
+
+                        {/* Loaded List Block (Ticket 2) */}
+                        {currentListId && savedLists.find(l => l.id === currentListId) && (
+                            <div className="flex-none px-4 py-2">
+                                <LoadedListBlock
+                                    list={savedLists.find(l => l.id === currentListId)!}
+                                    onEdit={() => {
                                         setEditingListId(currentListId);
                                         setShowSaveModal(true);
                                     }}
-                                    className="w-full px-3 py-2 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-xs font-bold rounded-lg transition-colors"
-                                >
-                                    Sauvegarder les modifications
-                                </button>
+                                    onDetach={handleDetachList}
+                                />
                             </div>
                         )}
+
 
                         <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
                             <div className="flex items-baseline gap-2 mb-2">
@@ -317,17 +346,23 @@ export function SelectionTray() {
                         </div>
 
                         <div className="flex-none p-4 mt-auto border-t border-slate-100 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)] space-y-2">
-                            <button
-                                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-transparent border border-border text-foreground rounded-lg font-semibold text-xs hover:border-primary hover:text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={selectedWords.length === 0}
-                                onClick={() => {
-                                    setEditingListId(null);
-                                    setShowSaveModal(true);
+                            {/* Contextual Footer Button (Ticket 2 - 4 états) */}
+                            <ContextualFooterButton
+                                mode={
+                                    selectedWords.length === 0 ? 'hidden' :
+                                        hasChanges ? 'update' :
+                                            !currentListId ? 'create' :
+                                                'hidden'
+                                }
+                                onSave={async () => {
+                                    if (hasChanges) {
+                                        await handleDirectSave();
+                                    } else {
+                                        setEditingListId(null);
+                                        setShowSaveModal(true);
+                                    }
                                 }}
-                            >
-                                <Save className="w-3.5 h-3.5" />
-                                Sauvegarder cette liste
-                            </button>
+                            />
 
                             <Button
                                 className="w-full flex items-center justify-center gap-3 h-[52px] rounded-xl bg-[rgb(var(--filter-accent))] text-white font-sora font-bold text-base shadow-[0_4px_12px_rgba(var(--filter-accent),0.25)] hover:shadow-[0_6px_20px_rgba(var(--filter-accent),0.35)] hover:-translate-y-0.5 transition-all duration-300"
@@ -388,6 +423,15 @@ export function SelectionTray() {
                 onConfirm={handleConfirmDelete}
                 listName={listToDelete?.name || ''}
             />
+
+            {/* Detach List Modal (Ticket 2) */}
+            <DetachListModal
+                isOpen={showDetachModal}
+                onClose={() => setShowDetachModal(false)}
+                onConfirm={handleConfirmDetach}
+                listName={currentListId ? savedLists.find(l => l.id === currentListId)?.name || '' : ''}
+            />
+
         </aside>
     );
 }
