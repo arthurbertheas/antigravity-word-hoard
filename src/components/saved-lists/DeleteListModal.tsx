@@ -38,12 +38,12 @@ export function DeleteListModal({ isOpen, onClose, onConfirm, listName }: Delete
                     </div>
 
                     <h3 className="font-['Sora'] text-[16px] font-[700] text-[#1A1A2E] mb-2">
-                        Supprimer cette liste ?
+                        Êtes-vous sûr(e) ?
                     </h3>
 
                     <p className="font-['DM_Sans'] text-[14px] text-[#6B7280] leading-relaxed mb-8">
-                        "<span className="font-bold text-[#1A1A2E]">{listName}</span>"<br />
-                        sera définitivement supprimée.
+                        Vous êtes sur le point de supprimer <span className="font-bold text-[#1A1A2E]">"{listName}"</span>.<br />
+                        Cette action ne peut pas être annulée.
                     </p>
 
                     <div className="flex gap-3 w-full">
