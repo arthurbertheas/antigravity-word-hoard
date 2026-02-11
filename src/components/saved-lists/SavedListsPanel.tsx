@@ -43,9 +43,9 @@ export function SavedListsPanel({
                 onBack={onBack}
             />
 
-            <div className="p-4 space-y-4 flex-1 overflow-hidden flex flex-col">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="p-0 flex-1 overflow-hidden flex flex-col">
+                <div className="relative px-5 py-4 pb-2">
+                    <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -54,7 +54,7 @@ export function SavedListsPanel({
                     />
                 </div>
 
-                <div className="flex-1 overflow-y-auto space-y-0 relative -mx-4 px-4 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 flex flex-col">
+                <div className="flex-1 overflow-y-auto space-y-0 relative px-5 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 flex flex-col">
                     {searchQuery && filteredLists.length > 0 && (
                         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm py-2 mb-2 border-b border-border">
                             <span className="text-[10px] font-[600] uppercase tracking-wider text-[#9CA3AF] px-2 block">
@@ -64,7 +64,7 @@ export function SavedListsPanel({
                     )}
 
                     {filteredLists.length > 0 ? (
-                        <div className="pb-4 flex flex-col gap-0.5 flex-1">
+                        <div className="pb-4 flex flex-col gap-3 flex-1">
                             {filteredLists.map((list) => (
                                 <CompactSavedListRow
                                     key={list.id}
@@ -83,7 +83,7 @@ export function SavedListsPanel({
                     )}
 
                     {/* Footer Create Button */}
-                    <div className="pb-6 pt-2 px-1 mt-auto">
+                    <div className="pb-6 pt-4 mt-auto sticky bottom-0 bg-white">
                         <button
                             onClick={onCreateNew}
                             className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] hover:bg-[#F0EDFF] hover:border-[#6C5CE7] hover:shadow-sm transition-all group"
@@ -94,6 +94,7 @@ export function SavedListsPanel({
                     </div>
                 </div>
             </div>
+
         </div>
     );
 }

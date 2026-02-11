@@ -277,14 +277,14 @@ export function SelectionTray() {
                         )}
 
 
-                        <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
-                            <div className="flex items-baseline gap-2 mb-2">
+                        <div className="flex-none px-5 py-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
+                            <div className="flex items-baseline gap-2 mb-3">
                                 <div className="text-2xl font-black text-foreground">
                                     {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
                                     <div className="flex items-center gap-1">
                                         <span className="text-primary">{totalSyllables}</span> Syllabes
@@ -296,7 +296,7 @@ export function SelectionTray() {
                                 </div>
 
                                 <div className={cn(
-                                    "flex flex-wrap gap-1 transition-all duration-300",
+                                    "flex flex-wrap gap-1.5 transition-all duration-300",
                                     selectedWords.length === 0 && "opacity-0"
                                 )}>
                                     {Object.entries(
@@ -306,7 +306,7 @@ export function SelectionTray() {
                                             return acc;
                                         }, {} as Record<string, number>)
                                     ).map(([cat, count]) => (
-                                        <span key={cat} className="px-1.5 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
+                                        <span key={cat} className="px-2 py-0.5 bg-muted rounded text-[9px] font-bold text-muted-foreground">
                                             {count} {cat}
                                         </span>
                                     ))}
@@ -314,9 +314,9 @@ export function SelectionTray() {
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-gradient-to-b from-transparent to-card/5">
+                        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2 bg-gradient-to-b from-transparent to-card/5">
                             {selectedWords.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 opacity-40">
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-40">
                                     <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
                                         <ListChecks className="w-8 h-8 text-muted-foreground" />
                                     </div>
