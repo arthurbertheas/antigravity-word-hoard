@@ -49,6 +49,8 @@ export function SaveListModal({
     const [nameError, setNameError] = useState('');
 
     useEffect(() => {
+        if (!isOpen) return;
+
         if (initialData) {
             setName(initialData.name);
             setDescription(initialData.description);
@@ -61,7 +63,8 @@ export function SaveListModal({
             setLocalWords(initialWords);
         }
         setTagInput('');
-    }, [initialData, initialWords, isOpen]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
 
     const handleAddTag = (tag: string) => {
         const trimmed = tag.trim();
