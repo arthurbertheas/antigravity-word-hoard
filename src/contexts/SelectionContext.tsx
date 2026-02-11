@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Word } from '@/types/word';
 import { normalizeWord, normalizeWords } from '@/utils/word-normalization';
 import { selectRandomWords } from '@/utils/random-selection';
@@ -32,18 +32,18 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
     const [randomSelectedCount, setRandomSelectedCount] = useState(0);
 
-    const selectRandom = (count: number, words: Word[], filters: any) => {
+    const selectRandom = useCallback((count: number, words: Word[], filters: any) => {
         const selected = selectRandomWords(count, words, filters);
         setSelection(selected);
         setRandomSelectedCount(count);
-    };
+    }, []);
 
-    const deselectRandom = () => {
+    const deselectRandom = useCallback(() => {
         clearSelection();
         setRandomSelectedCount(0);
-    };
+    }, []);
 
-    const addItem = (word: Word) => {
+    const addItem = useCallback((word: Word) => {
         setRandomSelectedCount(0); // Reset random state on manual change
         const normalized = normalizeWord(word);
         const targetId = getWordId(normalized);
@@ -52,9 +52,9 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             if (exists) return prev;
             return [...prev, normalized];
         });
-    };
+    }, []);
 
-    const addItems = (words: Word[]) => {
+    const addItems = useCallback((words: Word[]) => {
         setRandomSelectedCount(0); // Reset random state on manual change
         const normalizedWords = normalizeWords(words);
         setSelectedWords(prev => {
@@ -64,20 +64,20 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             });
             return [...prev, ...newWords];
         });
-    };
+    }, []);
 
-    const removeItem = (wordId: string) => {
+    const removeItem = useCallback((wordId: string) => {
         setRandomSelectedCount(0); // Reset random state on manual change
         setSelectedWords(prev => prev.filter(w => getWordId(w) !== wordId));
-    };
+    }, []);
 
-    const removeItems = (words: Word[]) => {
+    const removeItems = useCallback((words: Word[]) => {
         setRandomSelectedCount(0); // Reset random state on manual change
         const idsToRemove = new Set(words.map(w => getWordId(w)));
         setSelectedWords(prev => prev.filter(w => !idsToRemove.has(getWordId(w))));
-    };
+    }, []);
 
-    const toggleSelection = (word: Word) => {
+    const toggleSelection = useCallback((word: Word) => {
         setRandomSelectedCount(0); // Reset random state on manual change
         const targetId = getWordId(word);
         setSelectedWords(prev => {
@@ -88,34 +88,21 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
                 return [...prev, word];
             }
         });
-    };
+    }, []);
 
-    const clearSelection = () => {
+    const clearSelection = useCallback(() => {
         setSelectedWords([]);
         setRandomSelectedCount(0);
-    };
+    }, []);
 
-    const setSelection = (words: Word[]) => {
+    const setSelection = useCallback((words: Word[]) => {
         setSelectedWords(normalizeWords(words));
-        // Note: selectRandom uses setSelection, so we don't reset count here
-        // selectRandom will set the count itself after calling this.
-        // Wait, selectRandom calls selectRandomWords -> returns array.
-        // selectRandom calls setSelection(selected).
-        // If setSelection resets count, it breaks selectRandom?
-        // Yes.
-        // So setSelection should NOT reset count?
-        // But if I call setSelection manually elsewhere?
-        // I should probably move setRandomSelectedCount(count) inside selectRandom AFTER setSelection.
-        // And setSelection should probably reset it?
-        // Or I assume setSelection is a low-level setter.
-        // Let's keep setSelection "pure" and handle reset in high-level methods.
-        // But manual selection methods (addItem, etc) DO reset it.
-    };
+    }, []);
 
-    const isSelected = (word: Word) => {
+    const isSelected = useCallback((word: Word) => {
         const targetId = getWordId(word);
         return selectedWords.some(w => getWordId(w) === targetId);
-    };
+    }, [selectedWords]);
 
     // Webflow Bridge: Sync state with parent (send updates)
     useEffect(() => {
@@ -142,7 +129,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, [selectedWords]);
+    }, [selectedWords, clearSelection]);
 
     return (
         <SelectionContext.Provider value={{

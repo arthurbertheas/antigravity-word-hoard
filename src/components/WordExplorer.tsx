@@ -57,7 +57,7 @@ function WordExplorerContent() {
         if (selectedWords.length > 0 || randomSelectedCount > 0) {
             clearSelection();
         }
-    }, [filters, clearSelection, selectedWords.length, randomSelectedCount]);
+    }, [filters, clearSelection]); // Removed selection dependencies to prevent loop
 
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
