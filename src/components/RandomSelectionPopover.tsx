@@ -98,7 +98,7 @@ export function RandomSelectionPopover({
 
             <div
                 ref={popoverRef}
-                className="absolute top-[calc(100%+8px)] left-0 z-50 w-[280px] bg-white border border-[#e0e3eb] rounded-[14px] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.12)] animate-in fade-in zoom-in-95 duration-150 origin-top-left"
+                className="absolute top-[calc(100%+8px)] right-0 z-50 w-[280px] bg-white border border-[#e0e3eb] rounded-[14px] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.12)] animate-in fade-in zoom-in-95 duration-150 origin-top-right"
             >
                 {/* Header / Close (Mobile mostly, but good for UX) */}
                 <div className="absolute top-2 right-2 md:hidden">
