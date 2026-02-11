@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, X } from 'lucide-react';
 import { useSavedListsContext } from '@/contexts/SavedListsContext';
 import { CompactSavedListRow } from './CompactSavedListRow';
 import { PanelHeader } from '@/components/ui/PanelHeader';
@@ -15,6 +15,7 @@ interface SavedListsPanelProps {
     onEditList: (list: SavedList) => void;
     onDeleteList: (list: SavedList) => void;
     onCreateNew: () => void;
+    onDeselect?: () => void;
 }
 
 export function SavedListsPanel({
@@ -24,7 +25,8 @@ export function SavedListsPanel({
     onSelectList,
     onEditList,
     onDeleteList,
-    onCreateNew
+    onCreateNew,
+    onDeselect
 }: SavedListsPanelProps) {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -53,6 +55,19 @@ export function SavedListsPanel({
                         className="pl-9 bg-muted/50 border-none h-10 rounded-[12px] bg-[#F8F9FC] text-[14px]"
                     />
                 </div>
+
+                {/* Deselect Option - Only shown if a list is selected */}
+                {currentListId && onDeselect && (
+                    <button
+                        onClick={onDeselect}
+                        className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#fff8f8] transition-colors border-b border-[#f0f2f5] group"
+                    >
+                        <X className="w-[18px] h-[18px] text-[#8b8fa8] group-hover:text-[#ef4444] transition-colors" />
+                        <span className="text-[13px] font-[500] text-[#8b8fa8] group-hover:text-[#ef4444] font-['DM_Sans'] transition-colors">
+                            Désélectionner la liste
+                        </span>
+                    </button>
+                )}
 
                 <div className="flex-1 overflow-y-auto space-y-0 relative -mx-4 px-4 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 flex flex-col">
                     {searchQuery && filteredLists.length > 0 && (

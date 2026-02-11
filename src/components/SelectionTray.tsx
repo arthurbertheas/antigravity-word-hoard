@@ -8,6 +8,7 @@ import { SaveListModal } from "@/components/saved-lists/SaveListModal";
 import { SavedListsPanel } from "@/components/saved-lists/SavedListsPanel";
 import { DeleteListModal } from "@/components/saved-lists/DeleteListModal";
 import { LoadedListBlock } from "@/components/saved-lists/LoadedListBlock";
+import { UnifiedListSelector } from "@/components/saved-lists/UnifiedListSelector";
 import { DetachListModal } from "@/components/saved-lists/DetachListModal";
 import { ContextualFooterButton } from "@/components/saved-lists/ContextualFooterButton";
 import { SavedList } from "@/lib/supabase";
@@ -246,36 +247,12 @@ export function SelectionTray() {
 
                     <div className="flex-1 overflow-hidden flex flex-col pt-3">
                         <div className="flex-none px-4 py-2">
-                            <button
-                                onClick={() => setActiveView('saved-lists')}
-                                className="w-full flex items-center justify-between px-4 py-3 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#6C5CE7] hover:bg-[#F8F6FF] group transition-all"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-[#F3F4F6] group-hover:bg-[#F0EDFF] flex items-center justify-center text-[#9CA3AF] group-hover:text-[#6C5CE7] transition-colors">
-                                        <Folder className="w-4 h-4" />
-                                    </div>
-                                    <span className="font-dm-sans text-sm font-semibold text-[#374151] group-hover:text-[#1A1A2E]">
-                                        Mes listes
-                                    </span>
-                                </div>
-                                <ChevronRight className="w-4 h-4 text-[#D1D5DB] group-hover:text-[#6C5CE7] group-hover:translate-x-1 transition-all" />
-                            </button>
+                            <UnifiedListSelector
+                                selectedList={currentListId ? savedLists.find(l => l.id === currentListId) || null : null}
+                                onOpenListView={() => setActiveView('saved-lists')}
+                                onDeselect={handleDetachList}
+                            />
                         </div>
-
-
-                        {/* Loaded List Block (Ticket 2) */}
-                        {currentListId && savedLists.find(l => l.id === currentListId) && (
-                            <div className="flex-none px-4 py-2">
-                                <LoadedListBlock
-                                    list={savedLists.find(l => l.id === currentListId)!}
-                                    onEdit={() => {
-                                        setEditingListId(currentListId);
-                                        setShowSaveModal(true);
-                                    }}
-                                    onDetach={handleDetachList}
-                                />
-                            </div>
-                        )}
 
 
                         <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
@@ -436,6 +413,10 @@ export function SelectionTray() {
                         onCreateNew={() => {
                             setEditingListId(null);
                             setShowSaveModal(true);
+                        }}
+                        onDeselect={() => {
+                            setActiveView('main');
+                            handleDetachList();
                         }}
                     />
                 </div>
