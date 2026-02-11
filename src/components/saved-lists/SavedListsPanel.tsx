@@ -84,16 +84,17 @@ export function SavedListsPanel({
 
                 </div>
 
-                {/* Footer Create Button */}
-                <div className="flex-none p-4 mt-auto border-t border-slate-100 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)] z-10">
-                    <button
-                        onClick={onCreateNew}
-                        className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] hover:bg-[#F0EDFF] hover:border-[#6C5CE7] hover:shadow-sm transition-all group"
-                    >
-                        <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
-                        <span className="font-['Sora'] font-[600] text-[15px]">Nouvelle liste</span>
-                    </button>
-                </div>
+            </div>
+
+            {/* Footer Create Button */}
+            <div className="flex-none p-4 mt-auto border-t border-slate-100 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.02)] z-10">
+                <button
+                    onClick={onCreateNew}
+                    className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] hover:bg-[#F0EDFF] hover:border-[#6C5CE7] hover:shadow-sm transition-all group"
+                >
+                    <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                    <span className="font-['Sora'] font-[600] text-[15px]">Nouvelle liste</span>
+                </button>
             </div>
         </div>
     );
