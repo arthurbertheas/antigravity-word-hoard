@@ -409,7 +409,7 @@ export function SelectionTray() {
 
       {/* Saved Lists Panel Overlay */}
       {!isCollapsed && activeView === 'saved-lists' &&
-        <div className="absolute inset-x-0 bottom-0 top-[80px] z-30">
+        <div className="absolute inset-x-0 bottom-0 top-[69px] z-30">
           <SavedListsPanel
             lists={savedLists}
             currentListId={currentListId}
