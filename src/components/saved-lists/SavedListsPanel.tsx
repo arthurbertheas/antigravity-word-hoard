@@ -57,7 +57,7 @@ export function SavedListsPanel({
                 </div>
             </div>
 
-            <div className="h-px bg-[#f0f2f5] my-4" />
+            <div className="h-px bg-[#f0f2f5] mb-4" />
 
             <div className="px-4 space-y-4 flex-1 overflow-hidden flex flex-col">
 
