@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { MoreHorizontal, Edit2, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface ActionMenuProps {
     onEdit: () => void;
@@ -26,8 +26,8 @@ export function ActionMenu({ onEdit, onDelete }: ActionMenuProps) {
             const rect = triggerRef.current?.getBoundingClientRect();
             if (rect) {
                 setCoords({
-                    top: rect.bottom + 8,
-                    left: rect.right - 140 // Width of menu is 140
+                    top: rect.bottom + 4,
+                    left: rect.right - 170 // Width exact: 170px
                 });
             }
         }
@@ -36,54 +36,173 @@ export function ActionMenu({ onEdit, onDelete }: ActionMenuProps) {
     }, [isOpen]);
 
     return (
-        <div className="relative">
+        <>
             <button
                 ref={triggerRef}
                 onClick={(e) => {
                     e.stopPropagation();
                     setIsOpen(!isOpen);
                 }}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#9CA3AF] hover:bg-[#F3F4F6] hover:text-[#1A1A2E] transition-all"
+                style={{
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: '7px',
+                    border: 'none',
+                    background: isOpen ? '#F0EDFF' : 'transparent',
+                    color: isOpen ? '#6C5CE7' : '#C4C4C4',
+                    transition: 'all 0.12s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                    if (!isOpen) {
+                        e.currentTarget.style.background = '#F3F4F6';
+                        e.currentTarget.style.color = '#9CA3AF';
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    if (!isOpen) {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#C4C4C4';
+                    }
+                }}
             >
-                <MoreHorizontal className="w-4 h-4" />
+                <MoreHorizontal style={{ width: '14px', height: '14px' }} />
             </button>
 
-            {isOpen && (
+            {isOpen && createPortal(
                 <div
                     ref={menuRef}
                     style={{
                         position: 'fixed',
                         top: coords.top,
                         left: coords.left,
-                        zIndex: 9999
+                        zIndex: 9999,
+                        width: '170px',
+                        background: 'rgba(255,255,255,0.97)',
+                        backdropFilter: 'blur(16px)',
+                        borderRadius: '14px',
+                        border: '1px solid rgba(0,0,0,0.06)',
+                        boxShadow: '0 10px 36px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.5) inset',
+                        animation: 'menuPop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        overflow: 'hidden'
                     }}
-                    className="w-[140px] bg-white rounded-[12px] shadow-[0_8px_20px_rgba(0,0,0,0.12)] border border-[#F3F4F6] p-1.5 animate-in fade-in zoom-in-95 duration-200"
                     onClick={(e) => e.stopPropagation()}
                 >
+                    {/* Modifier */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
                             onEdit();
                             setIsOpen(false);
                         }}
-                        className="w-full h-9 px-3 flex items-center gap-2.5 rounded-[8px] text-[13px] font-[600] text-[#4B5563] hover:bg-[#F8F9FC] hover:text-[#1A1A2E] transition-colors"
+                        style={{
+                            width: '100%',
+                            padding: '9px 12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            transition: 'background 0.1s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#F8F9FC';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                        }}
                     >
-                        <Edit2 className="w-4 h-4" />
-                        Modifier
+                        <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '8px',
+                            background: '#F0EDFF',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#6C5CE7',
+                            flexShrink: 0
+                        }}>
+                            <Edit2 style={{ width: '14px', height: '14px' }} />
+                        </div>
+                        <span style={{
+                            fontFamily: 'DM Sans',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            color: '#374151'
+                        }}>
+                            Modifier
+                        </span>
                     </button>
+
+                    {/* Supprimer */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
                             onDelete();
                             setIsOpen(false);
                         }}
-                        className="w-full h-9 px-3 flex items-center gap-2.5 rounded-[8px] text-[13px] font-[600] text-[#EF4444] hover:bg-[#FEF2F2] transition-colors"
+                        style={{
+                            width: '100%',
+                            padding: '9px 12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            border: 'none',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            transition: 'background 0.1s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#FEF2F2';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                        }}
                     >
-                        <Trash2 className="w-4 h-4" />
-                        Supprimer
+                        <div style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '8px',
+                            background: '#FEE2E2',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#EF4444',
+                            flexShrink: 0
+                        }}>
+                            <Trash2 style={{ width: '14px', height: '14px' }} />
+                        </div>
+                        <span style={{
+                            fontFamily: 'DM Sans',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            color: '#EF4444'
+                        }}>
+                            Supprimer
+                        </span>
                     </button>
-                </div>
+
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
+                        @keyframes menuPop {
+                            from {
+                                opacity: 0;
+                                transform: scale(0.92) translateY(-4px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: scale(1) translateY(0);
+                            }
+                        }
+                    `}} />
+                </div>,
+                document.body
             )}
-        </div>
+        </>
     );
 }
