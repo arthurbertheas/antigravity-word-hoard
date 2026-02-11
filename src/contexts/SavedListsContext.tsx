@@ -58,7 +58,14 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
                 .order('last_used', { ascending: false });
 
             if (error) throw error;
-            setSavedLists(data || []);
+
+            // Normalize words for all lists (Ticket 3 - Fix legacy data)
+            const normalizedLists = data?.map(list => ({
+                ...list,
+                words: normalizeWords(list.words || [])
+            })) || [];
+
+            setSavedLists(normalizedLists);
         } catch (error) {
             console.error('Error loading lists:', error);
         } finally {

@@ -236,7 +236,7 @@ export function SaveListModal({
                                     key={i}
                                     className="inline-flex items-center gap-1.5 px-[9px] py-[3px] bg-white border border-[#E5E7EB] rounded-[8px] text-[13px] font-[500] font-['DM_Sans'] group"
                                 >
-                                    {word.MOTS}
+                                    {word.MOTS || (word as any).ORTHO || "???"}
                                     <button
                                         onClick={() => handleRemoveWord(word)}
                                         className="text-[#9CA3AF] hover:text-red-500 transition-colors"
