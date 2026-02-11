@@ -22,7 +22,7 @@ export function PanelHeader({
   hideBorder = false
 }: PanelHeaderProps) {
   return (
-    <div className={cn("flex items-center justify-between p-[20px_20px_16px] bg-white px-[16px] py-[17px]",
+    <div className={cn("flex items-center justify-between p-[20px_20px_16px] bg-white px-[16px] py-[16px]",
 
     !hideBorder && "border-b border-[#F3F4F6]"
     )}>
