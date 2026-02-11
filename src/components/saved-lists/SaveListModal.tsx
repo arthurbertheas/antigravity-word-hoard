@@ -116,16 +116,7 @@ export function SaveListModal({
                 <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                     {/* Nom */}
                     <div>
-                        <label style={{
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            color: '#6B7280',
-                            fontFamily: 'DM Sans',
-                            marginBottom: '8px',
-                            display: 'block',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em'
-                        }}>
+                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
                             Nom de la liste *
                         </label>
                         <div className="relative">
@@ -155,28 +146,18 @@ export function SaveListModal({
 
                     {/* Description */}
                     <div>
-                        <label style={{
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            color: '#6B7280',
-                            fontFamily: 'DM Sans',
-                            marginBottom: '8px',
-                            display: 'block',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em'
-                        }}>
+                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
                             Description (optionnel)
                         </label>
                         <div className="relative">
                             <Textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Pour travailler avec Léo les sons complexes..."
-                                rows={2}
+                                placeholder="Pour travailler les sons complexes..."
                                 maxLength={200}
-                                className="rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] font-['DM_Sans'] text-[14px] focus-visible:border-[#6C5CE7] resize-none"
+                                className="min-h-[80px] rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] font-['DM_Sans'] text-[14px] resize-none focus-visible:border-[#6C5CE7]"
                             />
-                            <span className="absolute right-3 bottom-2 text-[11px] text-[#B0B5C0]">
+                            <span className="absolute right-3 bottom-3 text-[11px] text-[#B0B5C0]">
                                 {description.length}/200
                             </span>
                         </div>
@@ -184,16 +165,7 @@ export function SaveListModal({
 
                     {/* Tags */}
                     <div>
-                        <label style={{
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            color: '#6B7280',
-                            fontFamily: 'DM Sans',
-                            marginBottom: '8px',
-                            display: 'block',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em'
-                        }}>
+                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
                             Étiquettes (optionnel)
                         </label>
                         <div className="flex flex-wrap gap-2 p-2 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] min-h-[44px] transition-all focus-within:border-[#6C5CE7]">
@@ -225,16 +197,27 @@ export function SaveListModal({
                                 className="flex-1 min-w-[120px] bg-transparent text-[13px] outline-none"
                                 disabled={tags.length >= 8}
                             />
+                            <div className="hidden">
+                                {SUGGESTED_TAGS.filter(t => !tags.includes(t)).map(tag => (
+                                    <button
+                                        key={tag}
+                                        type="button"
+                                        onClick={() => handleAddTag(tag)}
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-
                         {/* Suggestions */}
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                            {SUGGESTED_TAGS.filter(tag => !tags.includes(tag)).map(tag => (
+                        <div className="mt-2 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                            <span className="text-[11px] text-[#9CA3AF] whitespace-nowrap">Suggestions :</span>
+                            {SUGGESTED_TAGS.filter(t => !tags.includes(t)).map(tag => (
                                 <button
                                     key={tag}
+                                    type="button"
                                     onClick={() => handleAddTag(tag)}
-                                    className="px-2 py-0.5 bg-[#F3F4F6] text-[#6B7280] text-[10px] font-[500] font-['DM_Sans'] rounded-md hover:bg-[#F0EDFF] hover:text-[#7C6FD4] transition-colors"
-                                    disabled={tags.length >= 8}
+                                    className="px-2.5 py-1 rounded-full border border-[#E5E7EB] bg-white text-[11px] text-[#6B7280] hover:border-[#C4B8FF] hover:text-[#6C5CE7] transition-colors whitespace-nowrap"
                                 >
                                     {tag}
                                 </button>
@@ -244,16 +227,7 @@ export function SaveListModal({
 
                     {/* Mots */}
                     <div>
-                        <label style={{
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            color: '#6B7280',
-                            fontFamily: 'DM Sans',
-                            marginBottom: '8px',
-                            display: 'block',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em'
-                        }}>
+                        <label className="text-[11px] font-[600] !text-[#6B7280] font-['DM_Sans'] mb-2 block uppercase tracking-[0.05em]">
                             Aperçu ({localWords.length} mots)
                         </label>
                         <div className="p-3 border-[1.5px] border-[#E5E7EB] bg-[#F8F9FC] rounded-[10px] max-h-[160px] overflow-y-auto flex flex-wrap gap-2">
