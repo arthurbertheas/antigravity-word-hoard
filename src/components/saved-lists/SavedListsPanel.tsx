@@ -49,23 +49,13 @@ export function SavedListsPanel({
                     <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Rechercher une liste..."
-                        className="pl-9 bg-muted/50 border-none"
+                        placeholder="Rechercher..."
+                        className="pl-9 bg-muted/50 border-none h-10 rounded-[12px] bg-[#F8F9FC] text-[14px]"
                     />
                 </div>
 
-                <button
-                    onClick={onCreateNew}
-                    className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-border rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-all group"
-                >
-                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Plus className="w-4 h-4 text-primary" />
-                    </div>
-                    <span className="font-semibold text-sm">Créer une nouvelle liste</span>
-                </button>
-
-                <div className="flex-1 overflow-y-auto space-y-0 relative -mx-4 px-4">
-                    {searchQuery && (
+                <div className="flex-1 overflow-y-auto space-y-0 relative -mx-4 px-4 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 flex flex-col">
+                    {searchQuery && filteredLists.length > 0 && (
                         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm py-2 mb-2 border-b border-border">
                             <span className="text-[10px] font-[600] uppercase tracking-wider text-[#9CA3AF] px-2 block">
                                 {filteredLists.length} RÉSULTATS
@@ -74,7 +64,7 @@ export function SavedListsPanel({
                     )}
 
                     {filteredLists.length > 0 ? (
-                        <div className="pb-4">
+                        <div className="pb-4 flex flex-col gap-0.5 flex-1">
                             {filteredLists.map((list) => (
                                 <CompactSavedListRow
                                     key={list.id}
@@ -87,10 +77,21 @@ export function SavedListsPanel({
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-8 text-muted-foreground">
-                            <p className="text-sm">Aucune liste trouvée</p>
+                        <div className="text-center py-12 text-muted-foreground flex-1">
+                            <p className="text-sm font-medium">Aucune liste trouvée</p>
                         </div>
                     )}
+
+                    {/* Footer Create Button */}
+                    <div className="pb-6 pt-2 px-1 mt-auto">
+                        <button
+                            onClick={onCreateNew}
+                            className="w-full h-12 flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] hover:bg-[#F0EDFF] hover:border-[#6C5CE7] hover:shadow-sm transition-all group"
+                        >
+                            <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                            <span className="font-['Sora'] font-[600] text-[15px]">Nouvelle liste</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

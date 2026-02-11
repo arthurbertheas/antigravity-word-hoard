@@ -24,55 +24,67 @@ export function CompactSavedListRow({
         <div
             onClick={() => onSelect(list)}
             className={cn(
-                "w-full h-[52px] px-3.5 flex items-center gap-3.5 cursor-pointer transition-all duration-200 group border-b border-[#F9FAFB]",
+                "w-full h-[52px] px-3.5 flex items-center justify-between gap-3 cursor-pointer transition-all duration-200 group border-b border-[#F9FAFB] relative",
                 isSelected
                     ? "bg-[rgba(108,92,231,0.04)] border-l-[3px] border-l-[#6C5CE7] border-b-transparent"
                     : "hover:bg-[#F8F9FC] border-l-[3px] border-l-transparent"
             )}
         >
-            {/* Word Count Badge */}
-            <div className={cn(
-                "flex-none w-[34px] h-[34px] rounded-[10px] flex items-center justify-center text-[13px] font-[700] font-['IBM_Plex_Mono'] shadow-sm",
-                isSelected
-                    ? "bg-[#6C5CE7] text-white"
-                    : "bg-[#F3F4F6] text-[#6B7280] group-hover:bg-[#E0E7FF] group-hover:text-[#6C5CE7]"
-            )}>
-                {list.word_count || (list.words?.length || 0)}
-            </div>
-
-            {/* List Info */}
-            <div className="flex-1 min-w-0 flex flex-col justify-center">
+            {/* List Info (Main Content) */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
                 <h4 className={cn(
-                    "text-[14px] font-[700] font-['Sora'] truncate mb-0.5",
+                    "text-[14px] font-[700] font-['Sora'] truncate",
                     isSelected ? "text-[#1A1A2E]" : "text-[#374151] group-hover:text-[#1A1A2E]"
                 )}>
                     {list.name}
                 </h4>
 
                 <div className="flex items-center gap-2 text-[11px] font-[500] font-['DM_Sans'] text-[#9CA3AF]">
-                    <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
+                    <span className="shrink-0">
                         {formatDateCompact(list.last_used || list.updated_at || list.created_at)}
-                    </div>
+                    </span>
+
+                    <div className="w-0.5 h-0.5 rounded-full bg-[#D1D5DB]" />
+
                     {list.tags && list.tags.length > 0 && (
-                        <>
-                            <div className="w-1 h-1 rounded-full bg-[#E5E7EB]" />
-                            <div className="flex items-center gap-1 truncate">
-                                <Tag className="w-3 h-3" />
-                                {list.tags.slice(0, 2).join(', ')}
-                                {list.tags.length > 2 && ` +${list.tags.length - 2}`}
-                            </div>
-                        </>
+                        <div className="flex items-center gap-1.5 truncate">
+                            {list.tags.slice(0, 2).map(tag => (
+                                <span key={tag} className={cn(
+                                    "px-[6px] py-[1px] rounded-[6px] text-[10px] font-medium leading-none",
+                                    isSelected
+                                        ? "bg-[rgba(108,92,231,0.1)] text-[#6C5CE7]"
+                                        : "bg-[#F3F4F6] text-[#6B7280] group-hover:bg-[#F0EDFF] group-hover:text-[#7C6FD4]"
+                                )}>
+                                    {tag}
+                                </span>
+                            ))}
+                            {list.tags.length > 2 && (
+                                <span className="text-[10px] text-[#9CA3AF]">+{list.tags.length - 2}</span>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex-none opacity-0 group-hover:opacity-100 transition-opacity">
-                <ActionMenu
-                    onEdit={() => onEdit(list)}
-                    onDelete={() => onDelete(list)}
-                />
+            {/* Right Side: Counter + Actions */}
+            <div className="flex items-center gap-3">
+                {/* Word Count Badge */}
+                <div className={cn(
+                    "w-[26px] h-[26px] rounded-[8px] flex items-center justify-center text-[12px] font-[700] font-['IBM_Plex_Mono'] transition-colors",
+                    isSelected
+                        ? "bg-[#6C5CE7] text-white shadow-sm"
+                        : "bg-[#F3F4F6] text-[#9CA3AF] group-hover:bg-[#E5E7EB] group-hover:text-[#6B7280]"
+                )}>
+                    {list.word_count || (list.words?.length || 0)}
+                </div>
+
+                {/* Actions Menu */}
+                <div className="flex-none text-[#9CA3AF]">
+                    <ActionMenu
+                        onEdit={() => onEdit(list)}
+                        onDelete={() => onDelete(list)}
+                    />
+                </div>
             </div>
         </div>
     );
