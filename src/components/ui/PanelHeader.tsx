@@ -22,28 +22,28 @@ export function PanelHeader({
   hideBorder = false
 }: PanelHeaderProps) {
   return (
-    <div className={cn(
-      "flex items-center justify-between p-[20px_20px_16px] bg-white px-[16px] py-[16px]",
-      !hideBorder && "border-b border-[#F3F4F6]"
+    <div className={cn("flex items-center justify-between p-[20px_20px_16px] bg-white px-[16px] py-[16px]",
+
+    !hideBorder && "border-b border-[#F3F4F6]"
     )}>
       <div className="flex items-center gap-3">
         {/* Back or Forward button */}
         {(onBack || onForward) &&
-          <button
-            onClick={onBack || onForward}
-            className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0">
+        <button
+          onClick={onBack || onForward}
+          className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0">
 
             {onBack ?
-              <ChevronLeft className="w-4 h-4" strokeWidth={1.8} /> :
+          <ChevronLeft className="w-4 h-4" strokeWidth={1.8} /> :
 
-              <ChevronRight className="w-4 h-4" strokeWidth={1.8} />
-            }
+          <ChevronRight className="w-4 h-4" strokeWidth={1.8} />
+          }
           </button>
         }
 
         {/* Icon */}
         {icon &&
-          <span className="text-lg flex-shrink-0 flex items-center justify-center">
+        <span className="text-lg flex-shrink-0 flex items-center justify-center">
             {icon}
           </span>
         }
@@ -54,7 +54,7 @@ export function PanelHeader({
             {title}
           </h2>
           {subtitle &&
-            <p className="font-['DM_Sans'] text-[12px] text-[#9CA3AF] mt-[2px] leading-tight">
+          <p className="font-['DM_Sans'] text-[12px] text-[#9CA3AF] mt-[2px] leading-tight">
               {subtitle}
             </p>
           }
@@ -63,7 +63,7 @@ export function PanelHeader({
 
       {/* Optional action (e.g., Close button, Toggle) */}
       {action &&
-        <div className="flex items-center ml-auto">
+      <div className="flex items-center ml-auto">
           {action}
         </div>
       }
