@@ -133,6 +133,12 @@ export function SelectionTray() {
         setShowDetachModal(true);
     };
 
+    // Handler pour désélectionner directement (sans modal)
+    const handleDirectDeselect = () => {
+        clearSelection();
+        setOriginalWords([]);
+    };
+
     // Handler pour confirmer le détachement
     const handleConfirmDetach = () => {
         setOriginalWords([]);
@@ -250,7 +256,7 @@ export function SelectionTray() {
                             <UnifiedListSelector
                                 selectedList={currentListId ? savedLists.find(l => l.id === currentListId) || null : null}
                                 onOpenListView={() => setActiveView('saved-lists')}
-                                onDeselect={handleDetachList}
+                                onDeselect={handleDirectDeselect}
                             />
                         </div>
 
@@ -413,10 +419,6 @@ export function SelectionTray() {
                         onCreateNew={() => {
                             setEditingListId(null);
                             setShowSaveModal(true);
-                        }}
-                        onDeselect={() => {
-                            setActiveView('main');
-                            handleDetachList();
                         }}
                     />
                 </div>
