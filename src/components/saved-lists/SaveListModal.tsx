@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Word } from '@/types/word';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface SaveListModalProps {
     isOpen: boolean;
@@ -47,9 +48,13 @@ export function SaveListModal({
     const [localWords, setLocalWords] = useState<Word[]>([]);
     const [tagInput, setTagInput] = useState('');
     const [nameError, setNameError] = useState('');
+    const { toast, dismiss } = useToast();
 
     useEffect(() => {
         if (!isOpen) return;
+
+        // Dismiss any active toasts when modal opens
+        dismiss();
 
         if (initialData) {
             setName(initialData.name);
