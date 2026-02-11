@@ -45,7 +45,7 @@ export function SavedListsPanel({
                 onBack={onBack} />
 
 
-            <div className="pt-4 pb-0 px-[15px] py-[15px]">
+            <div className="p-4">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
