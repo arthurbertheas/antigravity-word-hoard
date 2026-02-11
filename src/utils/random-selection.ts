@@ -1,8 +1,8 @@
-import { Word, WordFilters } from '@/types/word';
+import { Word, WordFilters, SYNT_LABELS, STRUCTURE_LABELS, FREQUENCY_LABELS, GRAPHEME_LABELS } from '@/types/word';
 
 // Types internes pour la logique de distribution
 interface DistributionCriterion {
-    type: 'syllables' | 'phonemes' | 'positions' | 'categories' | 'graphemes';
+    type: 'syllables' | 'phonemes' | 'categories' | 'graphemes' | 'frequencies' | 'structures' | 'graphemeDisplay';
     values: (string | number)[];
 }
 
@@ -144,8 +144,29 @@ function getDistributionCriteria(filters: WordFilters): DistributionCriterion[] 
         });
     }
 
-    // On pourrait ajouter d'autres critères si nécessaire (structures, etc.)
-    // Pour l' instant on se limite aux principaux demandés
+    // Structures (array)
+    if (filters.structures && filters.structures.length > 1) {
+        criteria.push({
+            type: 'structures',
+            values: filters.structures
+        });
+    }
+
+    // Fréquences (Appui Lexical) (array)
+    if (filters.frequencies && filters.frequencies.length > 1) {
+        criteria.push({
+            type: 'frequencies',
+            values: filters.frequencies
+        });
+    }
+
+    // Complexité (Progression Graphèmes) (array)
+    if (filters.graphemeDisplay && filters.graphemeDisplay.length > 1) {
+        criteria.push({
+            type: 'graphemeDisplay',
+            values: filters.graphemeDisplay
+        });
+    }
 
     return criteria;
 }
@@ -186,7 +207,18 @@ function matchesCombination(word: Word, combo: Combination): boolean {
             case 'graphemes':
                 // Check simple de présence
                 if (!word.MOTS.includes(String(value))) return false;
-                // Note: C'est une approximation, idéalement on checkerait GRAPHEMES si dispo et parsé
+                break;
+
+            case 'structures':
+                if (word["progression structure"] !== value) return false;
+                break;
+
+            case 'frequencies':
+                if (word["APPUI LEXICAL"] !== value) return false;
+                break;
+
+            case 'graphemeDisplay':
+                if (word["progression graphèmes"] !== value) return false;
                 break;
         }
     }
@@ -212,9 +244,20 @@ function formatCriterionLabel(criterion: DistributionCriterion): string {
         case 'phonemes':
             return `Phonèmes (${valuesStr})`;
         case 'categories':
-            return `Catégories (${valuesStr})`;
+            // @ts-ignore
+            return `Catégories (${criterion.values.map(v => SYNT_LABELS[String(v)] || v).join(', ')})`;
         case 'graphemes':
             return `Graphèmes (${valuesStr})`;
+        case 'structures':
+            // @ts-ignore
+            return `Structures (${criterion.values.map(v => STRUCTURE_LABELS[String(v)] || v).join(', ')})`;
+        case 'frequencies':
+            // @ts-ignore
+            return `Code Appui (${criterion.values.map(v => FREQUENCY_LABELS[String(v)] || v).join(', ')})`;
+        case 'graphemeDisplay':
+            // Utilisation de GRAPHEME_LABELS pour la complexité
+            // @ts-ignore
+            return `Complexité (${criterion.values.map(v => GRAPHEME_LABELS[String(v)] || v).join(', ')})`;
         default:
             return '';
     }
