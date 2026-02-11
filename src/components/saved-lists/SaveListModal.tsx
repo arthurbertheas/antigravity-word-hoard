@@ -49,12 +49,17 @@ export function SaveListModal({
     const [tagInput, setTagInput] = useState('');
     const [nameError, setNameError] = useState('');
     const { toast, dismiss } = useToast();
+    // Freeze mode when opening to prevent flicker during close animation
+    const [localMode, setLocalMode] = useState(mode);
 
     useEffect(() => {
         if (!isOpen) return;
 
         // Dismiss any active toasts when modal opens
         dismiss();
+
+        // Update local mode
+        setLocalMode(mode);
 
         if (initialData) {
             setName(initialData.name);
@@ -117,7 +122,7 @@ export function SaveListModal({
             <DialogContent className="sm:max-w-[560px] px-0 py-0 border-none rounded-[22px] overflow-hidden z-[102]">
                 <DialogHeader className="p-6 pb-4 flex flex-row items-center justify-between border-b border-[#F3F4F6]">
                     <DialogTitle className="flex items-center gap-2 font-['Sora'] text-[18px] font-[700] text-[#1A1A2E]">
-                        {mode === 'create' ? '💾 Sauvegarder la liste' : '✏️ Modifier la liste'}
+                        {localMode === 'create' ? '💾 Sauvegarder la liste' : '✏️ Modifier la liste'}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -270,7 +275,7 @@ export function SaveListModal({
                         disabled={!name.trim()}
                         className="flex-1 h-11 bg-[#6C5CE7] hover:bg-[#5A4BD1] text-white font-[600] font-['DM_Sans'] shadow-[0_4px_12px_rgba(108,92,231,0.2)]"
                     >
-                        {mode === 'edit'
+                        {localMode === 'edit'
                             ? 'Mettre à jour'
                             : 'Sauvegarder'}
                     </Button>
