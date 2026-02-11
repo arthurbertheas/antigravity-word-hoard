@@ -31,6 +31,7 @@ export function SelectionTray() {
         currentListId,
         isModified,
         setIsModified,
+        setCurrentListId,
         saveList,
         updateList,
         deleteList,
@@ -137,6 +138,7 @@ export function SelectionTray() {
     const handleDirectDeselect = () => {
         clearSelection();
         setOriginalWords([]);
+        setCurrentListId(null); // Clear the selected list from context
     };
 
     // Handler pour confirmer le détachement
