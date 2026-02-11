@@ -203,54 +203,57 @@ export function SelectionTray() {
       {/* Expanded State View */}
       {!isCollapsed &&
         <>
-          <PanelHeader
-            title="Ma Liste"
-            subtitle="Liste et actions"
-            icon={<ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />}
-            onForward={undefined}
-            action={
-              <div className="flex items-center gap-3">
-                {selectedWords.length > 0 &&
-                  <div className="flex items-center gap-2 mr-2">
-                    {showClearConfirm ?
-                      <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+          <div className="border-b border-[#E5E7EB] relative z-40">
+            <PanelHeader
+              title="Ma Liste"
+              subtitle="Liste et actions"
+              icon={<ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />}
+              onForward={undefined}
+              hideBorder={true}
+              action={
+                <div className="flex items-center gap-3">
+                  {selectedWords.length > 0 &&
+                    <div className="flex items-center gap-2 mr-2">
+                      {showClearConfirm ?
+                        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+                          <button
+                            onClick={() => setShowClearConfirm(false)}
+                            className="text-[10px] font-bold text-muted-foreground hover:text-foreground">
+
+                            Annuler
+                          </button>
+                          <button
+                            onClick={() => {
+                              clearSelection();
+                              setShowClearConfirm(false);
+                            }}
+                            className="text-[10px] font-bold text-destructive hover:underline">
+
+                            Confirmer
+                          </button>
+                        </div> :
+
                         <button
-                          onClick={() => setShowClearConfirm(false)}
-                          className="text-[10px] font-bold text-muted-foreground hover:text-foreground">
+                          onClick={handleClearRequest}
+                          className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group">
 
-                          Annuler
+                          <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
+                          Vider
                         </button>
-                        <button
-                          onClick={() => {
-                            clearSelection();
-                            setShowClearConfirm(false);
-                          }}
-                          className="text-[10px] font-bold text-destructive hover:underline">
+                      }
+                    </div>
+                  }
 
-                          Confirmer
-                        </button>
-                      </div> :
+                  <button
+                    onClick={togglePanel}
+                    className="flex-none w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
+                    title="Réduire (C)">
 
-                      <button
-                        onClick={handleClearRequest}
-                        className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group">
-
-                        <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
-                        Vider
-                      </button>
-                    }
-                  </div>
-                }
-
-                <button
-                  onClick={togglePanel}
-                  className="flex-none w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
-                  title="Réduire (C)">
-
-                  <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
-                </button>
-              </div>
-            } />
+                    <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
+                  </button>
+                </div>
+              } />
+          </div>
 
           <div className="flex-1 overflow-hidden flex flex-col py-0">
             <div className="flex-none px-4 py-2">
