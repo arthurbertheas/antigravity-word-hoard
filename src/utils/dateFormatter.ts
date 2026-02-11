@@ -32,3 +32,33 @@ export function formatDateTimeSmart(isoString: string | null | undefined): strin
 
     return `${day}/${month}/${year} à ${time}`;
 }
+
+/**
+ * Formats an ISO date string into a compact format:
+ * - Today: "Auj. 14h35"
+ * - Yesterday: "Hier 14h35"
+ * - Older: "DD/MM"
+ */
+export function formatDateCompact(isoString: string | null | undefined): string {
+    if (!isoString) return '';
+
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+
+    const now = new Date();
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const time = `${String(date.getHours()).padStart(2, '0')}h${String(date.getMinutes()).padStart(2, '0')}`;
+
+    const isToday = date.toDateString() === now.toDateString();
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+
+    if (isToday) return `Auj. ${time}`;
+    if (isYesterday) return `Hier ${time}`;
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+
+    return `${day}/${month}`;
+}
