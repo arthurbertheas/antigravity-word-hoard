@@ -326,21 +326,65 @@ export function SelectionTray() {
                                 </div>
                             ) : (
                                 <div className="space-y-2">
-                                    {selectedWords.map((word) => (
-                                        <div
-                                            key={getWordId(word)}
-                                            className="group p-3 bg-white rounded-xl border border-border shadow-sm text-sm flex items-center justify-between hover:border-primary/30 hover:shadow-md transition-all duration-200"
-                                        >
-                                            <span className="font-medium text-foreground">{word.MOTS}</span>
-                                            <button
-                                                onClick={() => removeItem(getWordId(word))}
-                                                className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
-                                                title="Supprimer"
+                                    {selectedWords.map((word) => {
+                                        // Check if word is new (Ticket 2)
+                                        const isNewWord = currentListId && originalWords.length > 0 &&
+                                            !originalWords.some(w => w.MOTS === word.MOTS);
+
+                                        return (
+                                            <div
+                                                key={getWordId(word)}
+                                                style={{
+                                                    padding: '12px',
+                                                    borderRadius: '12px',
+                                                    border: isNewWord ? '1px solid #E0DAFB' : '1px solid #F3F4F6',
+                                                    background: isNewWord ? 'rgba(108,92,231,0.04)' : '#fff',
+                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    gap: '8px',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                                className="group hover:shadow-md"
                                             >
-                                                <X className="w-3.5 h-3.5" />
-                                            </button>
-                                        </div>
-                                    ))}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                                    <span style={{
+                                                        fontFamily: 'DM Sans',
+                                                        fontSize: '14px',
+                                                        fontWeight: 500,
+                                                        color: '#1A1A2E'
+                                                    }}>
+                                                        {word.MOTS}
+                                                    </span>
+
+                                                    {/* Badge AJOUTÉ (Ticket 2) */}
+                                                    {isNewWord && (
+                                                        <span style={{
+                                                            padding: '1px 5px',
+                                                            borderRadius: '5px',
+                                                            background: '#F0EDFF',
+                                                            color: '#6C5CE7',
+                                                            fontSize: '8px',
+                                                            fontWeight: 700,
+                                                            letterSpacing: '0.02em',
+                                                            textTransform: 'uppercase'
+                                                        }}>
+                                                            AJOUTÉ
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                <button
+                                                    onClick={() => removeItem(getWordId(word))}
+                                                    className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
+                                                    title="Supprimer"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
