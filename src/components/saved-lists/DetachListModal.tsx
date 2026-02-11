@@ -18,9 +18,6 @@ export function DetachListModal({ isOpen, onClose, onConfirm, listName }: Detach
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent
                 className="sm:max-w-[380px] p-0 border-none rounded-[22px] overflow-hidden z-[105]"
-                style={{
-                    animation: 'modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                }}
             >
                 <div
                     className="bg-white flex flex-col items-center text-center"
@@ -105,20 +102,6 @@ export function DetachListModal({ isOpen, onClose, onConfirm, listName }: Detach
                         </Button>
                     </div>
                 </div>
-
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-                    @keyframes modalIn {
-                        from {
-                            opacity: 0;
-                            transform: scale(0.94) translateY(8px);
-                        }
-                        to {
-                            opacity: 1;
-                            transform: scale(1) translateY(0);
-                        }
-                    }
-                `}} />
             </DialogContent>
         </Dialog>
     );
