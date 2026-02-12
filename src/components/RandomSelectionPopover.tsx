@@ -31,15 +31,7 @@ export function RandomSelectionPopover({
     const popoverRef = useRef<HTMLDivElement>(null);
 
     // Focus input on open
-    useEffect(() => {
-        if (isOpen) {
-            // S'assurer que le focus se fait après le rendu
-            setTimeout(() => {
-                inputRef.current?.focus();
-                inputRef.current?.select();
-            }, 50);
-        }
-    }, [isOpen]);
+
 
     // Update distribution preview when input changes or filters change
     useEffect(() => {
@@ -119,7 +111,7 @@ export function RandomSelectionPopover({
                             onChange={(e) => setInputValue(e.target.value.replace(/\D/g, ''))}
                             onBlur={handleBlur}
                             onKeyDown={handleKeyDown}
-                            className="w-[80px] p-[10px_12px] bg-[#f8f9fc] border border-[#e8ebf2] rounded-[10px] text-[16px] font-semibold text-[#1a1a2e] text-center focus:outline-none focus:border-[#6366f1] focus:bg-white focus:ring-4 focus:ring-[#6366f1]/10 transition-all"
+                            className="w-[80px] p-[10px_12px] bg-[#f8f9fc] border border-[#e8ebf2] rounded-[10px] text-[16px] font-semibold text-[#1a1a2e] text-center focus:outline-none focus:border-[#6366f1] focus:bg-white transition-all"
                         />
                         <div className="text-[12px] text-[#8b8fa8] whitespace-nowrap">
                             max <strong className="text-[#6366f1]">{maxWords}</strong>
