@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { MoreHorizontal, Edit2, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ActionMenuProps {
     onEdit: () => void;
@@ -43,6 +44,10 @@ export function ActionMenu({ onEdit, onDelete }: ActionMenuProps) {
                     e.stopPropagation();
                     setIsOpen(!isOpen);
                 }}
+                className={cn(
+                    "opacity-0 group-hover:opacity-100 transition-opacity duration-150",
+                    isOpen && "opacity-100"
+                )}
                 style={{
                     width: '26px',
                     height: '26px',
@@ -50,7 +55,7 @@ export function ActionMenu({ onEdit, onDelete }: ActionMenuProps) {
                     border: 'none',
                     background: isOpen ? '#F0EDFF' : 'transparent',
                     color: isOpen ? '#6C5CE7' : '#C4C4C4',
-                    transition: 'all 0.12s ease',
+                    transition: 'all 0.15s ease',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
