@@ -31,7 +31,7 @@ export function ResultsHeader({
         </span>
         <div className="flex items-baseline gap-2">
           <span className="font-sora text-[22px] font-bold text-slate-800 leading-none">{words.length}</span>
-          <span className="text-sm font-medium text-slate-500">mots trouvés!</span>
+          <span className="text-sm font-medium text-slate-500">mots trouvés</span>
         </div>
       </div>
 
