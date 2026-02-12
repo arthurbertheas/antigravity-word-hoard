@@ -214,10 +214,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             setQueue(toShuffle);
             setIsShuffled(true);
 
-            // Maintain current word
-            if (currentWord) {
+            // If session has started, maintain current character
+            if (hasStarted && currentWord) {
                 const newIdx = toShuffle.findIndex(w => w.uid === currentWord.uid);
                 if (newIdx !== -1) setCurrentIndex(newIdx);
+            } else {
+                // If session hasn't started, reset to 0 to show the new first word
+                setCurrentIndex(0);
             }
         } else {
             // DEACTIVATE SHUFFLE
@@ -226,14 +229,17 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 setQueue(originalQueue);
                 setIsShuffled(false);
 
-                // Maintain current word
-                if (currentWord) {
+                // If session has started, maintain current character
+                if (hasStarted && currentWord) {
                     const originalIdx = originalQueue.findIndex(w => w.uid === currentWord.uid);
                     if (originalIdx !== -1) setCurrentIndex(originalIdx);
+                } else {
+                    // If session hasn't started, reset to 0
+                    setCurrentIndex(0);
                 }
             }
         }
-    }, [isShuffled, queue, currentIndex, originalQueue]);
+    }, [isShuffled, queue, currentIndex, originalQueue, hasStarted]);
 
     const setWordStatus = useCallback((uid: string, status: WordStatus) => {
         setWordStatuses(prev => {
