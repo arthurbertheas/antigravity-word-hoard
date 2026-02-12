@@ -99,7 +99,7 @@ export function ControlBar() {
     return (
         <div
             className={cn(
-                "floating-bar fixed left-1/2 -translate-x-1/2 z-[60] transition-all duration-500",
+                "floating-bar fixed left-1/2 -translate-x-1/2 z-[75] transition-all duration-500",
                 isVisible ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0 pointer-events-none"
             )}
             style={{ bottom: '32px' }}
