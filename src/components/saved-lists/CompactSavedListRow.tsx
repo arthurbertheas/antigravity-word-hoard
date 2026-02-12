@@ -135,6 +135,7 @@ export function CompactSavedListRow({
 
                 {/* Actions Menu */}
                 <ActionMenu
+                    list={list}
                     onEdit={() => onEdit(list)}
                     onDelete={() => onDelete(list)}
                 />
