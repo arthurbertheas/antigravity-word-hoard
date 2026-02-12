@@ -31,15 +31,7 @@ export function RandomSelectionPopover({
     const popoverRef = useRef<HTMLDivElement>(null);
 
     // Focus input on open
-    useEffect(() => {
-        if (isOpen) {
-            // S'assurer que le focus se fait après le rendu
-            setTimeout(() => {
-                inputRef.current?.focus();
-                inputRef.current?.select();
-            }, 50);
-        }
-    }, [isOpen]);
+
 
     // Update distribution preview when input changes or filters change
     useEffect(() => {
