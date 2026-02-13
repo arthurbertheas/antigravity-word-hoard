@@ -74,7 +74,7 @@ export function SessionFinishModal({
                                 "rounded-[10px] hover:bg-[#6C5CE7]/5 hover:text-[#6C5CE7] transition-colors"
                             )}
                         >
-                            Voir le récap
+                            Voir le récap 📊
                         </Button>
                         <Button
                             onClick={onQuit}
