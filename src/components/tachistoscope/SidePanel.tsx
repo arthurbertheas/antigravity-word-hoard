@@ -166,15 +166,11 @@ export function SidePanel() {
     };
 
     const handleQuitSession = () => {
-        console.log('🚪 Quit button clicked - closing session and returning to dashboard');
         setIsSessionFinishModalOpen(false);
         resetSession();
-        // Close both the panel and tachistoscope for complete return
+        // Close both the panel and tachistoscope - same as clicking "← Retour"
         setIsPanelOpen(false);
         setIsFocusModeOpen(false);
-        // Tell parent to close the tool and return to dashboard
-        console.log('📤 Sending close_tool message to parent window');
-        window.parent.postMessage({ type: 'close_tool' }, '*');
     };
 
     const handleViewRecap = () => {
