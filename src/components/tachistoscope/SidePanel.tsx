@@ -168,7 +168,8 @@ export function SidePanel() {
     const handleQuitSession = () => {
         setIsSessionFinishModalOpen(false);
         resetSession();
-        // Close the tachistoscope (same as clicking "← Retour")
+        // Close both the panel and tachistoscope for complete return
+        setIsPanelOpen(false);
         setIsFocusModeOpen(false);
     };
 
