@@ -33,19 +33,23 @@
 
 <body>
   <script>
-    // Initialize Supabase
-    const supabaseUrl = 'https://jzefsnvmlvxvwzpbpvaq.supabase.co';
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6ZWZzbnZtbHZ4dnd6cGJwdmFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTYwODAsImV4cCI6MjA4NTczMjA4MH0.OS85CwkjuAdLirMtq0l1Xlir9Fgtz_JJVW41eQhcLKw';
-    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+    // Only check authentication if NOT in an iframe
+    // (parent shell already handles auth)
+    if (window.self === window.top) {
+      // Initialize Supabase
+      const supabaseUrl = 'https://jzefsnvmlvxvwzpbpvaq.supabase.co';
+      const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6ZWZzbnZtbHZ4dnd6cGJwdmFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTYwODAsImV4cCI6MjA4NTczMjA4MH0.OS85CwkjuAdLirMtq0l1Xlir9Fgtz_JJVW41eQhcLKw';
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-    // Check authentication
-    (async () => {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (!user) {
-        // Not logged in - redirect to login
-        window.location.href = 'https://app.materielorthophonie.fr/login.html';
-      }
-    })();
+      // Check authentication
+      (async () => {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) {
+          // Not logged in - redirect to login
+          window.location.href = 'https://app.materielorthophonie.fr/login.html';
+        }
+      })();
+    }
   </script>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
