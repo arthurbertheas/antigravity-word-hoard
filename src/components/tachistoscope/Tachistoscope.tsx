@@ -176,7 +176,9 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         flashFeedback,
         togglePanelMode,
         setWordStatus,
-        isPanelOpen
+        isPanelOpen,
+        toggleShuffle,
+        isShuffled
     } = usePlayer();
 
     const FIN_WORD = React.useMemo(() => ({
@@ -208,6 +210,18 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         setQueue(effectiveWords);
         return () => resetSession();
     }, [words, FIN_WORD, setQueue, resetSession, queue.length]); // Added queue.length to trigger check
+
+    // Auto-shuffle on initial load
+    useEffect(() => {
+        // Only shuffle if queue is ready, has words, and is not already shuffled
+        if (queue.length > 1 && !isShuffled && !hasStarted) {
+            // Small delay to ensure queue is fully set
+            const timer = setTimeout(() => {
+                toggleShuffle();
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [queue.length, isShuffled, hasStarted, toggleShuffle]);
 
     // Keyboard Mapping
     useEffect(() => {
