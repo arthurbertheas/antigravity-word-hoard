@@ -1,3 +1,4 @@
+// SessionFinishModal - Modal displayed when tachistoscope session ends
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
