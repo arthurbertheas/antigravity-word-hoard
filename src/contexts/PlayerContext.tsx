@@ -64,16 +64,16 @@ interface PlayerContextType {
 const STORAGE_KEY = 'tachistoscope-settings';
 
 const DEFAULT_SETTINGS: PlayerSettings = {
-    speedMs: 1000,
-    gapMs: 500,
-    fontSize: 15,
-    fontFamily: 'arial',
-    highlightVowels: false,
-    highlightSilent: false,
-    spacingValue: 0,
-    spacingMode: 'letters',
-    showFocusPoint: true,
-    enableSound: false,
+    speedMs: 3000,           // 3 secondes d'exposition
+    gapMs: 2000,             // 2 secondes de pause inter-mots
+    fontSize: 10,            // Zoom 10x
+    fontFamily: 'arial',     // Police Arial
+    highlightVowels: false,  // Pas de coloration des voyelles
+    highlightSilent: false,  // Pas de coloration des lettres muettes
+    spacingValue: 2,         // Espacement 0,2x (divisé par 10 pour l'affichage)
+    spacingMode: 'letters',  // Mode lettres
+    showFocusPoint: true,    // Point de fixation activé
+    enableSound: true,       // Son activé
 };
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);

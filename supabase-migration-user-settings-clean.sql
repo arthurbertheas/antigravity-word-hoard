@@ -1,7 +1,17 @@
 -- Migration: Create user_tachistoscope_settings table
 -- Description: Store user-specific default settings for the tachistoscope
+-- This version handles existing policies and objects
 
--- Create the table
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can read own tachistoscope settings" ON public.user_tachistoscope_settings;
+DROP POLICY IF EXISTS "Users can insert own tachistoscope settings" ON public.user_tachistoscope_settings;
+DROP POLICY IF EXISTS "Users can update own tachistoscope settings" ON public.user_tachistoscope_settings;
+DROP POLICY IF EXISTS "Users can delete own tachistoscope settings" ON public.user_tachistoscope_settings;
+
+-- Drop existing trigger if it exists
+DROP TRIGGER IF EXISTS update_user_tachistoscope_settings_updated_at ON public.user_tachistoscope_settings;
+
+-- Create the table (will skip if already exists)
 CREATE TABLE IF NOT EXISTS public.user_tachistoscope_settings (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
