@@ -1,10 +1,8 @@
 // SessionFinishModal - Modal displayed when tachistoscope session ends
-import { useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import confetti from "canvas-confetti";
 
 interface SessionFinishModalProps {
     isOpen: boolean;
@@ -26,50 +24,6 @@ export function SessionFinishModal({
     onViewRecap
 }: SessionFinishModalProps) {
     const { successCount, totalCount, successRate } = stats;
-
-    // Trigger confetti when modal opens
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const duration = 3 * 1000; // 3 seconds
-        const animationEnd = Date.now() + duration;
-        const defaults = {
-            startVelocity: 30,
-            spread: 360,
-            ticks: 60,
-            zIndex: 9999
-        };
-
-        function randomInRange(min: number, max: number) {
-            return Math.random() * (max - min) + min;
-        }
-
-        const interval = setInterval(() => {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-                return clearInterval(interval);
-            }
-
-            const particleCount = 50 * (timeLeft / duration);
-
-            // Left cannon
-            confetti({
-                ...defaults,
-                particleCount,
-                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-            });
-
-            // Right cannon
-            confetti({
-                ...defaults,
-                particleCount,
-                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-            });
-        }, 250);
-
-        return () => clearInterval(interval);
-    }, [isOpen]);
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
