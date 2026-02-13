@@ -195,6 +195,9 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
         GPMATCH: ""
     } as unknown as Word), []);
 
+    // Track if auto-shuffle has been applied to prevent re-triggering
+    const autoShuffleApplied = React.useRef(false);
+
     // Initialize queue with FIN word appended
     useEffect(() => {
         if (!words || words.length === 0) return;
@@ -208,16 +211,19 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
         const effectiveWords = [...words, FIN_WORD];
         setQueue(effectiveWords);
+        // Reset auto-shuffle flag when new words are loaded
+        autoShuffleApplied.current = false;
         return () => resetSession();
     }, [words, FIN_WORD, setQueue, resetSession, queue.length]); // Added queue.length to trigger check
 
-    // Auto-shuffle on initial load
+    // Auto-shuffle on initial load (only once)
     useEffect(() => {
-        // Only shuffle if queue is ready, has words, and is not already shuffled
-        if (queue.length > 1 && !isShuffled && !hasStarted) {
+        // Only shuffle if queue is ready, has words, not already shuffled, and hasn't been applied yet
+        if (queue.length > 1 && !isShuffled && !hasStarted && !autoShuffleApplied.current) {
             // Small delay to ensure queue is fully set
             const timer = setTimeout(() => {
                 toggleShuffle();
+                autoShuffleApplied.current = true; // Mark as applied
             }, 100);
             return () => clearTimeout(timer);
         }
