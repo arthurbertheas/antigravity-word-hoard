@@ -168,8 +168,10 @@ export function SidePanel() {
     const handleQuitSession = () => {
         // Close tachistoscope first (same as clicking "← Retour" / X button)
         setIsFocusModeOpen(false);
-        // Then close the modal
+        // Close the modal
         setIsSessionFinishModalOpen(false);
+        // Send message to parent window to close the entire tool
+        window.parent.postMessage({ type: 'close_tool' }, '*');
     };
 
     const handleViewRecap = () => {
