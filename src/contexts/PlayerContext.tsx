@@ -1,6 +1,7 @@
 ﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Word } from '@/types/word';
 import { normalizeWords } from '@/utils/word-normalization';
+import { loadUserTachistoscopeSettings, saveUserTachistoscopeSettings, TachistoscopeSettings } from '@/lib/supabase';
 
 export type PlayerPhase = 'display' | 'gap';
 export type FeedbackType = 'positive' | 'negative';
@@ -112,10 +113,70 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     });
 
     const [startTime, setStartTime] = useState<number | null>(null);
+    const [settingsLoaded, setSettingsLoaded] = useState(false);
 
+    // Load settings from Supabase on mount (if user is authenticated)
     useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const userSettings = await loadUserTachistoscopeSettings();
+                if (userSettings) {
+                    // Convert TachistoscopeSettings to PlayerSettings format
+                    const loadedSettings: PlayerSettings = {
+                        speedMs: userSettings.speed_ms,
+                        gapMs: userSettings.gap_ms,
+                        fontSize: userSettings.font_size,
+                        fontFamily: userSettings.font_family,
+                        highlightVowels: userSettings.highlight_vowels,
+                        highlightSilent: userSettings.highlight_silent,
+                        spacingValue: userSettings.spacing_value,
+                        spacingMode: userSettings.spacing_mode,
+                        showFocusPoint: userSettings.show_focus_point,
+                        enableSound: userSettings.enable_sound,
+                    };
+                    setSettings(loadedSettings);
+                }
+            } catch (error) {
+                console.error('Failed to load user settings from Supabase:', error);
+            } finally {
+                setSettingsLoaded(true);
+            }
+        };
+
+        loadSettings();
+    }, []);
+
+    // Save settings to localStorage and Supabase when they change
+    useEffect(() => {
+        // Skip saving during initial load
+        if (!settingsLoaded) return;
+
+        // Save to localStorage
         localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    }, [settings]);
+
+        // Save to Supabase (async, fire-and-forget)
+        const saveToSupabase = async () => {
+            try {
+                const supabaseSettings: Omit<TachistoscopeSettings, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
+                    speed_ms: settings.speedMs,
+                    gap_ms: settings.gapMs,
+                    font_size: settings.fontSize,
+                    font_family: settings.fontFamily,
+                    highlight_vowels: settings.highlightVowels,
+                    highlight_silent: settings.highlightSilent,
+                    spacing_value: settings.spacingValue,
+                    spacing_mode: settings.spacingMode,
+                    show_focus_point: settings.showFocusPoint,
+                    enable_sound: settings.enableSound,
+                };
+                await saveUserTachistoscopeSettings(supabaseSettings);
+            } catch (error) {
+                console.error('Failed to save settings to Supabase:', error);
+            }
+        };
+
+        saveToSupabase();
+    }, [settings, settingsLoaded]);
 
     // Toggle body class for floating bar visibility
     useEffect(() => {
