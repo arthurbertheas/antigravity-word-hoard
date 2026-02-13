@@ -54,7 +54,7 @@ export function SessionFinishModal({
 
                     {/* Title */}
                     <h2 className="text-[17px] font-bold font-sora text-[#1A1A2E] mb-2 leading-tight">
-                        Session terminée
+                        Session terminée 🎉
                     </h2>
 
                     {/* Stats */}
