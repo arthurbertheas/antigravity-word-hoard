@@ -166,11 +166,8 @@ export function SidePanel() {
     };
 
     const handleQuitSession = () => {
+        // Close modal and tachistoscope - exactly like clicking "← Retour" (X button)
         setIsSessionFinishModalOpen(false);
-        resetSession();
-        // Close both the panel and tachistoscope - same as clicking "← Retour"
-        // This provides a clean return to the word bank view
-        setIsPanelOpen(false);
         setIsFocusModeOpen(false);
     };
 
