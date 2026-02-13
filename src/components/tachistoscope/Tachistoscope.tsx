@@ -212,6 +212,21 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
     // Keyboard Mapping
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore keyboard events if an interactive element has focus
+            // This prevents conflicts with sliders, inputs, selects, etc. in the side panel
+            const target = e.target as HTMLElement;
+            const isInteractiveElement = target.tagName === 'INPUT' ||
+                                        target.tagName === 'TEXTAREA' ||
+                                        target.tagName === 'SELECT' ||
+                                        target.getAttribute('role') === 'slider' ||
+                                        target.getAttribute('role') === 'spinbutton' ||
+                                        target.closest('[role="slider"]') !== null;
+
+            if (isInteractiveElement) {
+                // Let the interactive element handle the keyboard event
+                return;
+            }
+
             switch (e.code) {
                 case 'Space':
                     e.preventDefault();
