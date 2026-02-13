@@ -171,6 +171,8 @@ export function SidePanel() {
         // Close both the panel and tachistoscope for complete return
         setIsPanelOpen(false);
         setIsFocusModeOpen(false);
+        // Tell parent to close the tool and return to dashboard
+        window.parent.postMessage({ type: 'close_tool' }, '*');
     };
 
     const handleViewRecap = () => {
