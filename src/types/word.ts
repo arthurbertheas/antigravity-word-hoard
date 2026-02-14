@@ -115,6 +115,7 @@ export interface WordFilters {
     frequencies: string[];       // Codes fréquence (APPUI LEXICAL)
     minLetters: number;          // Longueur min (calculé sur MOTS)
     maxLetters: number;          // Longueur max (calculé sur MOTS)
+    hasImage: boolean | null;    // null = tous, true = avec image, false = sans image
     realtimeSearch: {            // Recherche temps réel
         value: string;
         position: 'start' | 'end' | 'middle' | 'anywhere';
@@ -133,5 +134,6 @@ export const DEFAULT_FILTERS: WordFilters = {
     frequencies: [],
     minLetters: 1,
     maxLetters: 14,
+    hasImage: null,
     realtimeSearch: { value: '', position: 'anywhere' }
 };

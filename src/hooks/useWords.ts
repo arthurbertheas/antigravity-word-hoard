@@ -117,6 +117,17 @@ export function useWords() {
                 }
             }
 
+            // Filtre par image associée
+            if (filters.hasImage !== null) {
+                const hasAssociatedImage = word["image associée"] && word["image associée"].trim().length > 0;
+                if (filters.hasImage && !hasAssociatedImage) {
+                    return false; // On veut des images, mais ce mot n'en a pas
+                }
+                if (!filters.hasImage && hasAssociatedImage) {
+                    return false; // On ne veut pas d'images, mais ce mot en a une
+                }
+            }
+
             // Filtre par longueur (nombre de lettres) - calculé sur MOTS en V7
             const nbLet = word.MOTS.length;
             if (nbLet < filters.minLetters || nbLet > filters.maxLetters) {

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, Layers, BarChart3, Binary } from "lucide-react";
+import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, Layers, BarChart3, Binary, Image } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import {
     WordFilters,
@@ -151,6 +152,7 @@ export function FilterPanel({
         graphemeDisplay: false, // Renamed from graphemes
         graphemes: true, // New text filter
         phonemes: true, // New text filter
+        images: true, // Image filter
     });
 
     const toggleSection = (section: string) => {
@@ -368,6 +370,33 @@ export function FilterPanel({
                     onAddFilter={handleAddPhonemes}
                     onRemoveFilter={handleRemovePhoneme}
                 />
+
+                {/* IMAGES ASSOCIÉES */}
+                <FilterSection
+                    title="Images"
+                    icon={<Image className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
+                    badge={filters.hasImage !== null ? 1 : 0}
+                    isOpen={openSections.images || false}
+                    onToggle={() => toggleSection('images')}
+                >
+                    <div className="px-3 py-2">
+                        <div className="flex items-center justify-between">
+                            <label
+                                htmlFor="image-filter"
+                                className="text-[13px] font-medium text-[rgb(var(--filter-text-primary))] cursor-pointer"
+                            >
+                                Avec image associée
+                            </label>
+                            <Switch
+                                id="image-filter"
+                                checked={filters.hasImage === true}
+                                onCheckedChange={(checked) => {
+                                    updateFilter('hasImage', checked ? true : null);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </FilterSection>
             </div>
         </aside>
     );
