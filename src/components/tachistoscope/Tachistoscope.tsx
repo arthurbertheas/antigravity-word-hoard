@@ -243,24 +243,27 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                 return Math.random() * (max - min) + min;
             }
 
-            // Launch 3 random confetti bursts with 200ms delay
+            // Launch 3 confetti bursts: left, up, right
+            // First burst: to the left
             confetti({
-                angle: randomInRange(55, 125),
+                angle: 60,
                 spread: randomInRange(50, 70),
                 particleCount: randomInRange(50, 100),
                 origin: { y: 0.6 }
             });
+            // Second burst: straight up
             setTimeout(() => {
                 confetti({
-                    angle: randomInRange(55, 125),
+                    angle: 90,
                     spread: randomInRange(50, 70),
                     particleCount: randomInRange(50, 100),
                     origin: { y: 0.6 }
                 });
             }, 200);
+            // Third burst: to the right
             setTimeout(() => {
                 confetti({
-                    angle: randomInRange(55, 125),
+                    angle: 120,
                     spread: randomInRange(50, 70),
                     particleCount: randomInRange(50, 100),
                     origin: { y: 0.6 }
