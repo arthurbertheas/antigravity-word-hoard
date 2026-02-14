@@ -47,16 +47,26 @@ function WordExplorerContent() {
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);
 
-    // DISABLED: Selection should persist when filters change
-    // The real bug is that the word list disappears with random selection + filter change
-    // const isFirstRender = useRef(true);
-    // useEffect(() => {
-    //     if (isFirstRender.current) {
-    //         isFirstRender.current = false;
-    //         return;
-    //     }
-    //     clearSelection();
-    // }, [filters, clearSelection]);
+    // Reset ONLY random selection when filters change
+    // Manual selection (individual words, select all) should persist
+    // Random selection is based on filters, so it becomes invalid when filters change
+    const isFirstRender = useRef(true);
+    const previousRandomCount = useRef(randomSelectedCount);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        // Only clear if there's an active random selection
+        if (previousRandomCount.current > 0) {
+            clearSelection();
+        }
+
+        // Update the ref for next render
+        previousRandomCount.current = randomSelectedCount;
+    }, [filters, clearSelection, randomSelectedCount]);
 
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
