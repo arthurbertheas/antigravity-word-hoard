@@ -32,6 +32,7 @@ export interface TachistoscopeSettings {
     highlight_silent: boolean;
     spacing_value: number;
     spacing_mode: 'letters' | 'graphemes' | 'syllables';
+    display_mode: 'wordOnly' | 'image' | 'imageAndWord';
     show_focus_point: boolean;
     enable_sound: boolean;
     created_at?: string;
@@ -74,6 +75,7 @@ export async function loadUserTachistoscopeSettings(): Promise<TachistoscopeSett
             highlight_silent: data.highlight_silent,
             spacing_value: data.spacing_value,
             spacing_mode: data.spacing_mode,
+            display_mode: data.display_mode || 'wordOnly',
             show_focus_point: data.show_focus_point,
             enable_sound: data.enable_sound,
             created_at: data.created_at,
@@ -108,6 +110,7 @@ export async function saveUserTachistoscopeSettings(settings: Omit<Tachistoscope
             highlight_silent: settings.highlight_silent,
             spacing_value: settings.spacing_value,
             spacing_mode: settings.spacing_mode,
+            display_mode: settings.display_mode,
             show_focus_point: settings.show_focus_point,
             enable_sound: settings.enable_sound,
         };

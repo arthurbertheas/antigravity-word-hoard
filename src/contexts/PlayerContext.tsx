@@ -15,6 +15,7 @@ export interface PlayerSettings {
     highlightSilent: boolean;
     spacingValue: number;
     spacingMode: 'letters' | 'graphemes' | 'syllables';
+    displayMode: 'wordOnly' | 'image' | 'imageAndWord';
     showFocusPoint: boolean;
     enableSound: boolean;
 }
@@ -72,6 +73,7 @@ const DEFAULT_SETTINGS: PlayerSettings = {
     highlightSilent: false,  // Pas de coloration des lettres muettes
     spacingValue: 2,         // Espacement 0,2x (divisé par 10 pour l'affichage)
     spacingMode: 'letters',  // Mode lettres
+    displayMode: 'wordOnly', // Mode mot uniquement (default)
     showFocusPoint: true,    // Point de fixation activé
     enableSound: true,       // Son activé
 };
@@ -131,6 +133,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                         highlightSilent: userSettings.highlight_silent,
                         spacingValue: userSettings.spacing_value,
                         spacingMode: userSettings.spacing_mode,
+                        displayMode: userSettings.display_mode || 'wordOnly',
                         showFocusPoint: userSettings.show_focus_point,
                         enableSound: userSettings.enable_sound,
                     };
@@ -166,6 +169,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                     highlight_silent: settings.highlightSilent,
                     spacing_value: settings.spacingValue,
                     spacing_mode: settings.spacingMode,
+                    display_mode: settings.displayMode,
                     show_focus_point: settings.showFocusPoint,
                     enable_sound: settings.enableSound,
                 };

@@ -286,6 +286,57 @@ export function SidePanel() {
                                             </div >
 
                                             <div className="space-y-3.5">
+                                                < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Mode d'affichage</label>
+                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                                    <span className="text-[13px] font-medium text-muted-foreground">Affichage du mot</span>
+                                                    <div className="flex flex-col gap-3">
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="displayMode"
+                                                                value="wordOnly"
+                                                                checked={settings.displayMode === 'wordOnly'}
+                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.displayMode === 'wordOnly' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Mot</span>
+                                                        </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="displayMode"
+                                                                value="image"
+                                                                checked={settings.displayMode === 'image'}
+                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.displayMode === 'image' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Image</span>
+                                                        </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="displayMode"
+                                                                value="imageAndWord"
+                                                                checked={settings.displayMode === 'imageAndWord'}
+                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.displayMode === 'imageAndWord' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Image + Mot</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3.5">
                                                 < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Taille et Espacement</label>
                                                 <div className="bg-muted p-4 rounded-[10px] space-y-3">
                                                     <span className="text-[13px] font-medium text-muted-foreground">Mode d'espacement</span>

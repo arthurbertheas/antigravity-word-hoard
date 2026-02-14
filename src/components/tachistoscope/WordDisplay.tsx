@@ -13,6 +13,9 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     if (!word || !word["segmentation graphèmes"]) return null;
     const { settings, phase } = usePlayer();
 
+    // Check if word has an associated image
+    const hasImage = word["image associée"] && word["image associée"].trim().length > 0;
+
     // Parse GPMATCH for precise grapheme-phoneme mapping
     const parsedGraphemes = useMemo(() => {
         try {
@@ -114,7 +117,8 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
     const skippedIndices = new Set<number>();
 
-    return renderContent(
+    // Render word content
+    const wordContent = (
         <div
             className="flex flex-wrap items-center justify-center gap-0 leading-none select-none"
             style={fontStyles}
@@ -224,4 +228,39 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
             })}
         </div>
     );
+
+    // Determine what to display based on displayMode
+    const shouldShowImage = hasImage && (settings.displayMode === 'image' || settings.displayMode === 'imageAndWord');
+    const shouldShowWord = settings.displayMode === 'wordOnly' || settings.displayMode === 'imageAndWord' || !hasImage;
+
+    // Build final display content
+    let displayContent;
+
+    if (shouldShowImage && shouldShowWord) {
+        // imageAndWord mode
+        displayContent = (
+            <div className="flex flex-col items-center justify-center gap-8">
+                <img
+                    src={word["image associée"]}
+                    alt={word.MOTS}
+                    className="max-w-[40vmin] max-h-[30vmin] object-contain"
+                />
+                {wordContent}
+            </div>
+        );
+    } else if (shouldShowImage && !shouldShowWord) {
+        // image only mode
+        displayContent = (
+            <img
+                src={word["image associée"]}
+                alt={word.MOTS}
+                className="max-w-[60vmin] max-h-[50vmin] object-contain"
+            />
+        );
+    } else {
+        // wordOnly mode (default)
+        displayContent = wordContent;
+    }
+
+    return renderContent(displayContent);
 }
