@@ -243,15 +243,29 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                 return Math.random() * (max - min) + min;
             }
 
-            // Launch 3 random confetti bursts
-            for (let i = 0; i < 3; i++) {
+            // Launch 3 random confetti bursts with 200ms delay
+            confetti({
+                angle: randomInRange(55, 125),
+                spread: randomInRange(50, 70),
+                particleCount: randomInRange(50, 100),
+                origin: { y: 0.6 }
+            });
+            setTimeout(() => {
                 confetti({
                     angle: randomInRange(55, 125),
                     spread: randomInRange(50, 70),
                     particleCount: randomInRange(50, 100),
                     origin: { y: 0.6 }
                 });
-            }
+            }, 200);
+            setTimeout(() => {
+                confetti({
+                    angle: randomInRange(55, 125),
+                    spread: randomInRange(50, 70),
+                    particleCount: randomInRange(50, 100),
+                    origin: { y: 0.6 }
+                });
+            }, 400);
         }
 
         // Reset the flag when we're not on the Bravo word anymore
