@@ -332,6 +332,34 @@ export function SidePanel() {
                                                                 settings.displayMode === 'imageAndWord' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                                                             )}>Image + Mot</span>
                                                         </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="displayMode"
+                                                                value="alternateWordFirst"
+                                                                checked={settings.displayMode === 'alternateWordFirst'}
+                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.displayMode === 'alternateWordFirst' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Alternance Mot→Image</span>
+                                                        </label>
+                                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                                            <input
+                                                                type="radio"
+                                                                name="displayMode"
+                                                                value="alternateImageFirst"
+                                                                checked={settings.displayMode === 'alternateImageFirst'}
+                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
+                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-[14px] font-medium transition-colors",
+                                                                settings.displayMode === 'alternateImageFirst' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                            )}>Alternance Image→Mot</span>
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </div>

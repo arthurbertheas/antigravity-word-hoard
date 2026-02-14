@@ -15,7 +15,7 @@ export interface PlayerSettings {
     highlightSilent: boolean;
     spacingValue: number;
     spacingMode: 'letters' | 'graphemes' | 'syllables';
-    displayMode: 'wordOnly' | 'image' | 'imageAndWord';
+    displayMode: 'wordOnly' | 'image' | 'imageAndWord' | 'alternateWordFirst' | 'alternateImageFirst';
     showFocusPoint: boolean;
     enableSound: boolean;
 }

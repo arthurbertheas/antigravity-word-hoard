@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Word } from '@/types/word';
 import { cn } from '@/lib/utils';
 import { usePlayer } from '@/contexts/PlayerContext';
@@ -15,6 +15,21 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
     // Check if word has an associated image
     const hasImage = word["image associée"] && word["image associée"].trim().length > 0;
+
+    // State for alternating modes - tracks whether we show the alternate element
+    const [showAlternate, setShowAlternate] = useState(false);
+
+    // Reset alternate state when word changes
+    useEffect(() => {
+        setShowAlternate(false);
+    }, [word.MOTS, word.PHONEMES]);
+
+    // Handle click to toggle in alternating modes
+    const handleAlternateClick = () => {
+        if (settings.displayMode === 'alternateWordFirst' || settings.displayMode === 'alternateImageFirst') {
+            setShowAlternate(prev => !prev);
+        }
+    };
 
     // Parse GPMATCH for precise grapheme-phoneme mapping
     const parsedGraphemes = useMemo(() => {
@@ -230,8 +245,22 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     );
 
     // Determine what to display based on displayMode
-    const shouldShowImage = hasImage && (settings.displayMode === 'image' || settings.displayMode === 'imageAndWord');
-    const shouldShowWord = settings.displayMode === 'wordOnly' || settings.displayMode === 'imageAndWord' || !hasImage;
+    let shouldShowImage = false;
+    let shouldShowWord = false;
+
+    if (settings.displayMode === 'alternateWordFirst') {
+        // Alternating mode: starts with word, toggles to image
+        shouldShowWord = !showAlternate;
+        shouldShowImage = hasImage && showAlternate;
+    } else if (settings.displayMode === 'alternateImageFirst') {
+        // Alternating mode: starts with image, toggles to word
+        shouldShowImage = hasImage && !showAlternate;
+        shouldShowWord = showAlternate;
+    } else {
+        // Static modes
+        shouldShowImage = hasImage && (settings.displayMode === 'image' || settings.displayMode === 'imageAndWord');
+        shouldShowWord = settings.displayMode === 'wordOnly' || settings.displayMode === 'imageAndWord' || !hasImage;
+    }
 
     // Build final display content
     let displayContent;
@@ -262,5 +291,16 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         displayContent = wordContent;
     }
 
-    return renderContent(displayContent);
+    // Wrap displayContent with click handler for alternating modes
+    const isAlternatingMode = settings.displayMode === 'alternateWordFirst' || settings.displayMode === 'alternateImageFirst';
+    const finalDisplayContent = isAlternatingMode ? (
+        <div
+            onClick={handleAlternateClick}
+            className="cursor-pointer w-full h-full flex items-center justify-center"
+        >
+            {displayContent}
+        </div>
+    ) : displayContent;
+
+    return renderContent(finalDisplayContent);
 }

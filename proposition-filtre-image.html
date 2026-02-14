@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposition Design - Filtre Image</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .section {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .recommendation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin: 24px 0;
+        }
+
+        .recommendation h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .card {
+            border: 2px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .card-header {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            color: #166534;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fefce8;
+            border-color: #eab308;
+            color: #854d0e;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-top: 12px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 16px 0;
+        }
+
+        .pros {
+            background: #f0fdf4;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .cons {
+            background: #fef2f2;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .pattern-option {
+            border: 2px solid #e2e8f0;
+            padding: 24px;
+            border-radius: 12px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pattern-option:hover {
+            border-color: #667eea;
+        }
+
+        .pattern-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .feature {
+            background: rgba(255,255,255,0.2);
+            padding: 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 0;
+        }
+
+        .checklist li {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .checklist input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="icon-box">🖼️</div>
+                <div>
+                    <h1>Proposition Design : Filtre Image</h1>
+                    <p class="subtitle">Analyse UX/UI professionnelle et recommandations d'implémentation · Lead Designer · Février 2026</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- VUE D'ENSEMBLE -->
+        <div class="section">
+            <h2>📊 Vue d'ensemble</h2>
+
+            <div class="alert alert-info">
+                <p><strong>Contexte :</strong> Votre application de sélection de mots pour l'orthophonie dispose déjà d'un système de filtres avancé. L'ajout d'un filtre "Image" permettra aux utilisateurs de sélectionner les mots selon la présence d'illustrations.</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="alert alert-success">
+                    <h3>✅ Données disponibles</h3>
+                    <ul>
+                        <li>Champ <code>"image associée"</code> déjà présent</li>
+                        <li>Format : string (URL ou indicateur)</li>
+                        <li>Déjà utilisé dans le type <code>Word</code></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">🎯</div>
+                    <h3>Objectifs UX</h3>
+                    <ul>
+                        <li>Permettre le filtrage par présence d'image</li>
+                        <li>Interface claire et accessible</li>
+                        <li>Cohérence avec le design existant</li>
+                        <li>Performance optimale (filtrage rapide)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECOMMANDATION PRINCIPALE -->
+        <div class="section">
+            <h2>🎯 Ma recommandation principale</h2>
+
+            <div class="recommendation">
+                <h3>✨ Pattern "Trois options exclusives"</h3>
+                <p style="margin-bottom: 20px; opacity: 0.95;">Trois boutons radio clairs : <strong>Avec image</strong> · <strong>Sans image</strong> · <strong>Tous (indifférent)</strong></p>
+
+                <div class="feature-grid">
+                    <div class="feature">
+                        <strong>✨ Clarté maximale</strong><br>
+                        <small>Aucune ambiguïté sur l'état actuel</small>
+                    </div>
+                    <div class="feature">
+                        <strong>♿ Accessible</strong><br>
+                        <small>Compatible lecteurs d'écran</small>
+                    </div>
+                    <div class="feature">
+                        <strong>🎨 Cohérent</strong><br>
+                        <small>S'intègre au design actuel</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-header">📐</div>
+                    <h3>Placement optimal</h3>
+                    <p>Section "Filtres complémentaires", entre Recherche et Graphèmes</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">⚡</div>
+                    <h3>Performance</h3>
+                    <p>Filtrage client-side instantané, pas de requête serveur</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">📊</div>
+                    <h3>Statistiques</h3>
+                    <p>Afficher le compte pour chaque option (ex: "Avec image (234)")</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPARAISON DES PATTERNS -->
+        <div class="section">
+            <h2>🎨 Comparaison des patterns UX</h2>
+
+            <div class="pattern-option selected">
+                <h3>Pattern 1 : Trois options exclusives <span class="badge">RECOMMANDÉ</span></h3>
+                <p>Trois boutons radio : Avec / Sans / Tous</p>
+
+                <div class="pros-cons">
+                    <div class="pros">
+                        <strong>✅ Avantages</strong>
+                        <ul>
+                            <li>Très explicite</li>
+                            <li>État par défaut clair</li>
+                            <li>Aucune ambiguïté</li>
+                            <li>Accessible WCAG 2.1</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>⚠️ Considérations</strong>
+                        <ul>
+                            <li>Prend un peu plus de place</li>
+                            <li>3 clics possibles</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <pre><code>imageFilter: 'all' | 'with' | 'without'  // Défaut: 'all'</code></pre>
+            </div>
+
+            <div class="pattern-option">
+                <h3>Pattern 2 : Toggle Simple</h3>
+                <p>Un simple toggle On/Off - Le plus direct</p>
+
+                <div class="pros-cons">
+                    <div class="pros">
+                        <strong>✅ Avantages</strong>
+                        <ul>
+                            <li>Simple et intuitif</li>
+                            <li>Minimal</li>
+                            <li>Rapide à utiliser</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>⚠️ Considérations</strong>
+                        <ul>
+                            <li>Moins de nuances</li>
+                            <li>État "tous" moins clair</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <pre><code>hasImage: boolean | null  // null = tous, true = avec, false = sans</code></pre>
+            </div>
+
+            <div class="pattern-option">
+                <h3>Pattern 3 : Checkbox tri-état</h3>
+                <p>Une checkbox avec états indéterminé/coché/décoché</p>
+
+                <div class="pros-cons">
+                    <div class="pros">
+                        <strong>✅ Avantages</strong>
+                        <ul>
+                            <li>Compact</li>
+                            <li>Pattern familier</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <strong>⚠️ Considérations</strong>
+                        <ul>
+                            <li>Tri-état moins accessible</li>
+                            <li>Confusion possible</li>
+                            <li>Moins explicite</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <pre><code>hasImage: boolean | undefined  // undefined = tous</code></pre>
+            </div>
+        </div>
+
+        <!-- BEST PRACTICES -->
+        <div class="section">
+            <h2>✨ Best Practices UX/UI</h2>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">🎯</div>
+                    <h3>Clarté avant tout</h3>
+                    <p>Les labels doivent être explicites : "Avec image", "Sans image", pas de symboles ambigus.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">♿</div>
+                    <h3>Accessibilité WCAG 2.1</h3>
+                    <p>Contraste minimum 4.5:1, navigation au clavier, labels ARIA, états focus visibles.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">⚡</div>
+                    <h3>Performance & UX</h3>
+                    <p>Feedback instantané, pas de chargement visible, filtrage client-side si possible.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">🎨</div>
+                    <h3>Cohérence du design system</h3>
+                    <p>Respecter les espacements (22px), les couleurs (--filter-accent), la typographie (Sora/DM Sans).</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">📊</div>
+                    <h3>Statistiques contextuelles</h3>
+                    <p>Afficher le nombre de mots concernés par chaque option (ex: "Avec image (234)").</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">🔄</div>
+                    <h3>État par défaut intelligent</h3>
+                    <p>Par défaut : "Tous" (aucun filtre). Permet de découvrir progressivement.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCESSIBILITÉ -->
+        <div class="section">
+            <h2>♿ Checklist Accessibilité</h2>
+            <ul class="checklist">
+                <li><input type="checkbox"> Contraste texte/fond ≥ 4.5:1 (WCAG AA)</li>
+                <li><input type="checkbox"> Navigation complète au clavier (Tab, Entrée, Espace)</li>
+                <li><input type="checkbox"> Focus visible avec outline de 2px minimum</li>
+                <li><input type="checkbox"> Labels ARIA pour les lecteurs d'écran</li>
+                <li><input type="checkbox"> État actif/inactif clairement distinguable</li>
+                <li><input type="checkbox"> Feedback visuel et sonore sur interaction</li>
+                <li><input type="checkbox"> Taille de touche ≥ 44x44px (mobile)</li>
+                <li><input type="checkbox"> Test avec NVDA, JAWS, VoiceOver</li>
+            </ul>
+        </div>
+
+        <!-- IMPLÉMENTATION -->
+        <div class="section">
+            <h2>⚙️ Guide d'implémentation</h2>
+
+            <h3>1️⃣ Mise à jour des types TypeScript</h3>
+            <pre><code>// src/types/word.ts
+export interface WordFilters {
+    // ... autres filtres existants
+    imageFilter: 'all' | 'with' | 'without';  // Défaut: 'all'
+}
+
+export const DEFAULT_FILTERS: WordFilters = {
+    // ... autres valeurs par défaut
+    imageFilter: 'all'
+};</code></pre>
+
+            <h3>2️⃣ Logique de filtrage</h3>
+            <pre><code>// hooks/useWords.ts
+const filterByImage = (word: Word, filter: 'all' | 'with' | 'without') => {
+    if (filter === 'all') return true;
+
+    const hasImage = word["image associée"] &&
+                     word["image associée"].trim() !== '' &&
+                     word["image associée"] !== 'non';
+
+    return filter === 'with' ? hasImage : !hasImage;
+};
+
+// Dans la fonction de filtrage principale
+const filteredWords = allWords.filter(word => {
+    // ... autres filtres
+    if (!filterByImage(word, filters.imageFilter)) return false;
+    return true;
+});</code></pre>
+
+            <h3>3️⃣ Composant ImageFilter</h3>
+            <div class="alert alert-info">
+                <p>Créer <code>src/components/filters/ImageFilter.tsx</code> en suivant le pattern de <code>SearchFilter.tsx</code></p>
+                <p>Utiliser le composant <code>FilterSection</code> existant et respecter la structure des autres filtres.</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <h3>⚠️ Points d'attention</h3>
+                <ul>
+                    <li>Vérifier les valeurs possibles du champ "image associée" (vide, "non", URL, etc.)</li>
+                    <li>Calculer les statistiques (nombre de mots avec/sans image) pour l'affichage</li>
+                    <li>Tester la performance avec un grand nombre de mots</li>
+                    <li>Ajouter des tests unitaires pour la logique de filtrage</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- CHECKLIST DÉPLOIEMENT -->
+        <div class="section">
+            <h2>🚀 Checklist de déploiement</h2>
+            <ul class="checklist">
+                <li><input type="checkbox"> Types TypeScript ajoutés et compilés sans erreur</li>
+                <li><input type="checkbox"> Composant ImageFilter créé et stylé</li>
+                <li><input type="checkbox"> Logique de filtrage implémentée dans useWords</li>
+                <li><input type="checkbox"> Badge de compteur fonctionnel (affiche 1 quand actif)</li>
+                <li><input type="checkbox"> État par défaut "Tous" correctement initialisé</li>
+                <li><input type="checkbox"> Statistiques calculées (nombre avec/sans image)</li>
+                <li><input type="checkbox"> Tests d'accessibilité réalisés (clavier, lecteur d'écran)</li>
+                <li><input type="checkbox"> Tests de performance effectués (> 1000 mots)</li>
+                <li><input type="checkbox"> Documentation mise à jour</li>
+                <li><input type="checkbox"> Code review effectué</li>
+            </ul>
+        </div>
+
+        <div class="alert alert-success" style="margin-top: 40px;">
+            <p>💡 <strong>Cette proposition est basée sur les best practices UX/UI 2026 et l'analyse de votre code existant.</strong></p>
+            <p style="margin-top: 8px;">Prêt à implémenter ? Je peux créer le code complet pour vous !</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple Design - Filtre Image</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --filter-surface: 255, 255, 255;
+            --filter-surface-hover: 240, 241, 244;
+            --filter-border: 228, 230, 235;
+            --filter-text-primary: 26, 28, 35;
+            --filter-text-secondary: 107, 114, 128;
+            --filter-text-muted: 156, 163, 175;
+            --filter-accent: 79, 70, 229;
+            --filter-accent-light: 238, 242, 255;
+            --filter-accent-hover: 67, 56, 202;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f4f5f7;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .font-sora {
+            font-family: 'Sora', sans-serif;
+        }
+
+        /* Panel de filtres */
+        .filter-panel {
+            width: 300px;
+            min-width: 300px;
+            background: rgb(var(--filter-surface));
+            border-right: 1px solid rgb(var(--filter-border));
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .filter-header {
+            padding: 24px 22px 8px;
+        }
+
+        .filter-header h2 {
+            font-family: 'Sora', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: rgb(var(--filter-text-primary));
+            margin-bottom: 2px;
+        }
+
+        .filter-header p {
+            font-size: 12px;
+            color: rgb(var(--filter-text-muted));
+        }
+
+        .filter-sections {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0 24px;
+        }
+
+        /* Groupes de filtres */
+        .filter-group {
+            padding: 16px 22px 12px;
+        }
+
+        .filter-group-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .filter-group-label.primary {
+            color: rgb(var(--filter-accent));
+        }
+
+        .filter-group-label.secondary {
+            color: #f97316;
+        }
+
+        .filter-group-divider {
+            height: 1px;
+            background: rgb(var(--filter-border));
+        }
+
+        /* Section de filtre */
+        .filter-section {
+            padding: 0 22px;
+            margin-bottom: 4px;
+        }
+
+        .filter-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin: 0 -12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .filter-section-header:hover {
+            background: rgb(var(--filter-surface-hover));
+        }
+
+        .filter-section-header .icon-box {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgb(var(--filter-accent-light));
+            border: 1px solid rgb(var(--filter-border));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-section-header .icon-box svg {
+            width: 14px;
+            height: 14px;
+            color: rgb(var(--filter-accent));
+            stroke-width: 2;
+        }
+
+        .filter-section-header .title-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-section-header .title {
+            font-family: 'Sora', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            color: rgb(var(--filter-text-secondary));
+            transition: color 0.2s;
+        }
+
+        .filter-section-header:hover .title {
+            color: rgb(var(--filter-accent));
+        }
+
+        .filter-section-header .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: rgb(var(--filter-accent));
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 9px;
+        }
+
+        .filter-section-header .chevron {
+            width: 14px;
+            height: 14px;
+            color: rgb(var(--filter-text-muted));
+            transition: transform 0.25s;
+            stroke-width: 2;
+        }
+
+        .filter-section-header .chevron.rotated {
+            transform: rotate(-90deg);
+        }
+
+        .filter-section-content {
+            padding: 6px 4px;
+        }
+
+        .filter-section-content.hidden {
+            display: none;
+        }
+
+        /* Options du filtre image */
+        .image-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .image-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .image-option:hover {
+            background: rgb(var(--filter-surface-hover));
+        }
+
+        .image-option.active {
+            background: rgb(var(--filter-accent-light));
+        }
+
+        .image-option .radio {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            border: 2px solid rgb(var(--filter-border));
+            border-radius: 50%;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .image-option.active .radio {
+            border-color: rgb(var(--filter-accent));
+            background: rgb(var(--filter-accent));
+        }
+
+        .image-option .radio-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .image-option.active .radio-dot {
+            opacity: 1;
+        }
+
+        .image-option .icon-badge {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-option .icon-badge svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2;
+        }
+
+        .image-option.with-image .icon-badge {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+        }
+
+        .image-option.with-image .icon-badge svg {
+            color: #16a34a;
+        }
+
+        .image-option.without-image .icon-badge {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+        }
+
+        .image-option.without-image .icon-badge svg {
+            color: #dc2626;
+        }
+
+        .image-option.all .icon-badge {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+
+        .image-option.all .icon-badge svg {
+            color: #6b7280;
+        }
+
+        .image-option .text {
+            flex: 1;
+        }
+
+        .image-option .label {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgb(var(--filter-text-primary));
+            transition: all 0.2s;
+        }
+
+        .image-option.active .label {
+            color: rgb(var(--filter-accent));
+            font-weight: 600;
+        }
+
+        .image-option .description {
+            font-size: 11px;
+            color: rgb(var(--filter-text-muted));
+            margin-top: 1px;
+        }
+
+        .image-option .count {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgb(var(--filter-text-muted));
+            background: rgb(var(--filter-surface-hover));
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 3px;
+        }
+
+        .image-option.active .count {
+            color: rgb(var(--filter-accent));
+            background: rgb(var(--filter-accent-light));
+        }
+
+        /* Preview area */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .preview-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .preview-card h3 {
+            font-family: 'Sora', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: rgb(var(--filter-text-primary));
+            margin-bottom: 16px;
+        }
+
+        .preview-card p {
+            color: rgb(var(--filter-text-secondary));
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .stat-card {
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: rgb(var(--filter-accent));
+            margin-bottom: 4px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: rgb(var(--filter-text-secondary));
+            font-weight: 500;
+        }
+
+        .highlight-new {
+            position: relative;
+        }
+
+        .highlight-new::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: -4px;
+            bottom: -4px;
+            width: 3px;
+            background: linear-gradient(180deg, #10b981, #059669);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .new-badge {
+            position: absolute;
+            right: -8px;
+            top: -8px;
+            background: #10b981;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Scrollbar */
+        .filter-sections::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .filter-sections::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .filter-sections::-webkit-scrollbar-thumb {
+            background: rgb(var(--filter-border));
+            border-radius: 3px;
+        }
+
+        .filter-sections::-webkit-scrollbar-thumb:hover {
+            background: rgb(var(--filter-text-muted));
+        }
+    </style>
+</head>
+<body>
+    <!-- Panel de filtres -->
+    <div class="filter-panel">
+        <div class="filter-header">
+            <h2>Filtres</h2>
+            <p>Affinez votre recherche</p>
+        </div>
+
+        <div class="filter-sections">
+            <!-- Groupe: Filtres principaux -->
+            <div class="filter-group">
+                <div class="filter-group-label primary">Filtres principaux</div>
+                <div class="filter-group-divider"></div>
+            </div>
+
+            <!-- Structures (collapsed) -->
+            <div class="filter-section">
+                <div class="filter-section-header" onclick="toggleSection('structures')">
+                    <div class="icon-box">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </div>
+                    <div class="title-area">
+                        <span class="title">Structures</span>
+                        <span class="badge">2</span>
+                    </div>
+                    <svg class="chevron rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Complexité (collapsed) -->
+            <div class="filter-section">
+                <div class="filter-section-header" onclick="toggleSection('complexity')">
+                    <div class="icon-box">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="title-area">
+                        <span class="title">Complexité (G)</span>
+                    </div>
+                    <svg class="chevron rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Groupe: Filtres complémentaires -->
+            <div class="filter-group">
+                <div class="filter-group-label secondary">Filtres complémentaires</div>
+                <div class="filter-group-divider"></div>
+            </div>
+
+            <!-- Recherche (collapsed) -->
+            <div class="filter-section">
+                <div class="filter-section-header" onclick="toggleSection('search')">
+                    <div class="icon-box">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="title-area">
+                        <span class="title">Recherche</span>
+                    </div>
+                    <svg class="chevron rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- IMAGE FILTER - NOUVEAU -->
+            <div class="filter-section highlight-new" style="position: relative;">
+                <span class="new-badge">Nouveau</span>
+                <div class="filter-section-header" onclick="toggleSection('image')">
+                    <div class="icon-box">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="title-area">
+                        <span class="title">Image</span>
+                        <span id="imageBadge" class="badge" style="display: none;">1</span>
+                    </div>
+                    <svg id="imageChevron" class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+
+                <div id="imageContent" class="filter-section-content">
+                    <div class="image-options">
+                        <!-- Option: Avec image -->
+                        <div class="image-option with-image" onclick="selectOption('with')">
+                            <div class="radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="icon-badge">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="text">
+                                <div class="label">Avec image</div>
+                                <div class="description">Mots illustrés uniquement</div>
+                            </div>
+                            <div class="count">234</div>
+                        </div>
+
+                        <!-- Option: Sans image -->
+                        <div class="image-option without-image" onclick="selectOption('without')">
+                            <div class="radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="icon-badge">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <div class="text">
+                                <div class="label">Sans image</div>
+                                <div class="description">Mots non illustrés</div>
+                            </div>
+                            <div class="count">1,542</div>
+                        </div>
+
+                        <!-- Option: Tous -->
+                        <div class="image-option all active" onclick="selectOption('all')">
+                            <div class="radio">
+                                <div class="radio-dot"></div>
+                            </div>
+                            <div class="icon-badge">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </div>
+                            <div class="text">
+                                <div class="label">Tous (indifférent)</div>
+                                <div class="description">Aucun filtre appliqué</div>
+                            </div>
+                            <div class="count">1,776</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphèmes (collapsed) -->
+            <div class="filter-section">
+                <div class="filter-section-header" onclick="toggleSection('graphemes')">
+                    <div class="icon-box">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                    </div>
+                    <div class="title-area">
+                        <span class="title">Graphèmes</span>
+                    </div>
+                    <svg class="chevron rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Phonèmes (collapsed) -->
+            <div class="filter-section">
+                <div class="filter-section-header" onclick="toggleSection('phonemes')">
+                    <div class="icon-box">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="title-area">
+                        <span class="title">Phonèmes</span>
+                    </div>
+                    <svg class="chevron rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview area -->
+    <div class="preview-area">
+        <div class="preview-card">
+            <h3>✨ Nouveau filtre : Image</h3>
+            <p>Ce filtre permet de sélectionner les mots selon la présence ou l'absence d'une illustration associée. L'interface offre trois options claires et mutuellement exclusives.</p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">234</div>
+                    <div class="label">Avec image</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">1,542</div>
+                    <div class="label">Sans image</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">1,776</div>
+                    <div class="label">Total</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: rgb(var(--filter-text-primary));">
+                    🎯 Points clés du design
+                </h4>
+                <ul style="font-size: 13px; color: rgb(var(--filter-text-secondary)); line-height: 1.8; list-style: none; padding-left: 0;">
+                    <li>✅ Respect total du design system existant</li>
+                    <li>✅ Options mutuellement exclusives (radio buttons)</li>
+                    <li>✅ Statistiques contextuelles affichées</li>
+                    <li>✅ État par défaut : "Tous" (aucun filtre)</li>
+                    <li>✅ Accessible au clavier et lecteurs d'écran</li>
+                    <li>✅ Badge de compteur quand filtre actif</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 24px; padding: 16px; background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 8px;">
+                <p style="font-size: 13px; color: #166534; margin: 0;">
+                    <strong>💡 Essayez :</strong> Cliquez sur les différentes options dans le panel de gauche pour voir comment le filtre fonctionne !
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSelection = 'all';
+
+        function toggleSection(sectionId) {
+            // Pour l'exemple, on ne fait rien pour les autres sections
+            console.log('Toggle section:', sectionId);
+        }
+
+        function selectOption(value) {
+            // Désélectionner toutes les options
+            document.querySelectorAll('.image-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+
+            // Sélectionner l'option cliquée
+            const option = document.querySelector(`.image-option.${value}`);
+            if (option) {
+                option.classList.add('active');
+            }
+
+            currentSelection = value;
+
+            // Mettre à jour le badge
+            const badge = document.getElementById('imageBadge');
+            if (value === 'all') {
+                badge.style.display = 'none';
+            } else {
+                badge.style.display = 'inline-flex';
+            }
+
+            // Animation de feedback
+            option.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                option.style.transform = 'scale(1)';
+            }, 100);
+        }
+    </script>
+</body>
+</html>

@@ -32,7 +32,7 @@ export interface TachistoscopeSettings {
     highlight_silent: boolean;
     spacing_value: number;
     spacing_mode: 'letters' | 'graphemes' | 'syllables';
-    display_mode: 'wordOnly' | 'image' | 'imageAndWord';
+    display_mode: 'wordOnly' | 'image' | 'imageAndWord' | 'alternateWordFirst' | 'alternateImageFirst';
     show_focus_point: boolean;
     enable_sound: boolean;
     created_at?: string;

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperçu Filtre Image</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --filter-surface: 255 255 255;
+            --filter-surface-hover: 240 241 244;
+            --filter-border: 228 230 235;
+            --filter-text-primary: 26 28 35;
+            --filter-text-secondary: 107 114 128;
+            --filter-text-muted: 156 163 175;
+            --filter-accent: 79 70 229;
+            --filter-accent-light: 238 242 255;
+            --filter-accent-hover: 67 56 202;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .font-sora {
+            font-family: 'Sora', sans-serif;
+        }
+
+        .filter-section-header {
+            transition: background-color 0.2s ease;
+        }
+
+        .filter-section-header:hover {
+            background-color: rgb(var(--filter-surface-hover));
+        }
+
+        .chevron {
+            transition: transform 0.25s ease;
+        }
+
+        .chevron.rotated {
+            transform: rotate(-90deg);
+        }
+
+        .image-option {
+            transition: all 0.2s ease;
+        }
+
+        .image-option:hover {
+            background-color: rgb(var(--filter-surface-hover));
+        }
+
+        .image-option.active {
+            background-color: rgb(var(--filter-accent-light));
+        }
+
+        .custom-radio {
+            transition: all 0.2s ease;
+        }
+
+        .new-indicator {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Filter Panel -->
+        <aside class="w-[300px] min-w-[300px] h-full bg-white border-r border-[rgb(var(--filter-border))] flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="px-[22px] pt-6 pb-2">
+                <h2 class="font-sora text-lg font-bold text-[rgb(var(--filter-text-primary))] mb-[2px]">
+                    Filtres
+                </h2>
+                <p class="text-xs text-[rgb(var(--filter-text-muted))]">
+                    Affinez votre recherche
+                </p>
+            </div>
+
+            <!-- Scrollable Sections -->
+            <div class="flex-1 overflow-y-auto py-2 pb-6">
+                <!-- GROUP: FILTRES PRINCIPAUX -->
+                <div class="px-[22px] mb-3 mt-4">
+                    <div class="text-[10px] font-bold tracking-wider uppercase text-[rgb(var(--filter-accent))]">
+                        FILTRES PRINCIPAUX
+                    </div>
+                    <div class="h-px bg-[rgb(var(--filter-border))] mt-2"></div>
+                </div>
+
+                <!-- Example: Structures (collapsed) -->
+                <div class="px-[22px] mb-1">
+                    <div class="filter-section-header flex items-center gap-2 py-2.5 px-3 -mx-3 cursor-pointer group rounded-lg">
+                        <div class="flex items-center gap-2.5 flex-1">
+                            <div class="w-7 h-7 rounded-[8px] bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-border))] flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </div>
+                            <span class="font-sora text-[11px] font-medium uppercase tracking-[0] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))]">
+                                Structures
+                            </span>
+                            <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] bg-[rgb(var(--filter-accent))] text-white text-[10px] font-bold rounded-full ml-1">
+                                2
+                            </span>
+                        </div>
+                        <svg class="chevron rotated w-[14px] h-[14px] text-[rgb(var(--filter-text-muted))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- GROUP: FILTRES COMPLÉMENTAIRES -->
+                <div class="px-[22px] mb-3 mt-4">
+                    <div class="text-[10px] font-bold tracking-wider uppercase" style="color: #f97316;">
+                        FILTRES COMPLÉMENTAIRES
+                    </div>
+                    <div class="h-px bg-[rgb(var(--filter-border))] mt-2"></div>
+                </div>
+
+                <!-- Recherche (collapsed for demo) -->
+                <div class="px-[22px] mb-1">
+                    <div class="filter-section-header flex items-center gap-2 py-2.5 px-3 -mx-3 cursor-pointer group rounded-lg">
+                        <div class="flex items-center gap-2.5 flex-1">
+                            <div class="w-7 h-7 rounded-[8px] bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-border))] flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-sora text-[11px] font-medium uppercase tracking-[0] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))]">
+                                Recherche
+                            </span>
+                        </div>
+                        <svg class="chevron rotated w-[14px] h-[14px] text-[rgb(var(--filter-text-muted))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- IMAGE FILTER - NEW - HIGHLIGHTED -->
+                <div class="px-[22px] mb-1 relative">
+                    <!-- NEW Badge -->
+                    <div class="absolute -right-2 -top-1 z-10">
+                        <span class="new-indicator inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-emerald-500 text-white shadow-sm">
+                            Nouveau
+                        </span>
+                    </div>
+
+                    <div id="imageFilterHeader" class="filter-section-header flex items-center gap-2 py-2.5 px-3 -mx-3 cursor-pointer group rounded-lg" onclick="toggleImageFilter()">
+                        <div class="flex items-center gap-2.5 flex-1">
+                            <div class="w-7 h-7 rounded-[8px] bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-border))] flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-sora text-[11px] font-medium uppercase tracking-[0] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))]">
+                                Image
+                            </span>
+                            <span id="imageBadge" class="hidden inline-flex items-center justify-center min-w-[18px] h-[18px] px-[5px] bg-[rgb(var(--filter-accent))] text-white text-[10px] font-bold rounded-full ml-1">
+                                1
+                            </span>
+                        </div>
+                        <svg id="imageChevron" class="chevron w-[14px] h-[14px] text-[rgb(var(--filter-text-muted))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Image Filter Content -->
+                    <div id="imageFilterContent" class="pb-[6px]">
+                        <div class="px-1 py-1 space-y-2">
+                            <!-- Option: Avec image -->
+                            <div class="image-option flex items-start gap-[10px] px-3 py-2 rounded-lg cursor-pointer" data-value="with" onclick="selectImageFilter('with')">
+                                <!-- Custom Radio -->
+                                <div class="mt-[3px] w-4 h-4 min-w-4 border-2 rounded-full flex items-center justify-center custom-radio border-[rgb(var(--filter-border))] bg-white">
+                                    <div class="w-[6px] h-[6px] rounded-full bg-white opacity-0"></div>
+                                </div>
+
+                                <!-- Icon Badge -->
+                                <div class="flex items-center justify-center w-6 h-6 min-w-6 rounded-[6px] bg-green-100 border border-green-200">
+                                    <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+
+                                <!-- Text -->
+                                <div class="flex-1">
+                                    <div class="text-[13px] font-medium text-[rgb(var(--filter-text-primary))]">
+                                        Avec image
+                                    </div>
+                                    <div class="text-[11px] text-[rgb(var(--filter-text-muted))] mt-[1px]">
+                                        Mots illustrés uniquement
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Option: Sans image -->
+                            <div class="image-option flex items-start gap-[10px] px-3 py-2 rounded-lg cursor-pointer" data-value="without" onclick="selectImageFilter('without')">
+                                <!-- Custom Radio -->
+                                <div class="mt-[3px] w-4 h-4 min-w-4 border-2 rounded-full flex items-center justify-center custom-radio border-[rgb(var(--filter-border))] bg-white">
+                                    <div class="w-[6px] h-[6px] rounded-full bg-white opacity-0"></div>
+                                </div>
+
+                                <!-- Icon Badge -->
+                                <div class="flex items-center justify-center w-6 h-6 min-w-6 rounded-[6px] bg-red-100 border border-red-200">
+                                    <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+
+                                <!-- Text -->
+                                <div class="flex-1">
+                                    <div class="text-[13px] font-medium text-[rgb(var(--filter-text-primary))]">
+                                        Sans image
+                                    </div>
+                                    <div class="text-[11px] text-[rgb(var(--filter-text-muted))] mt-[1px]">
+                                        Mots non illustrés
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Option: Tous (default) -->
+                            <div class="image-option flex items-start gap-[10px] px-3 py-2 rounded-lg cursor-pointer" data-value="all" onclick="selectImageFilter('all')">
+                                <!-- Custom Radio -->
+                                <div class="mt-[3px] w-4 h-4 min-w-4 border-2 rounded-full flex items-center justify-center custom-radio border-[rgb(var(--filter-border))] bg-white">
+                                    <div class="w-[6px] h-[6px] rounded-full bg-white opacity-0"></div>
+                                </div>
+
+                                <!-- Icon Badge -->
+                                <div class="flex items-center justify-center w-6 h-6 min-w-6 rounded-[6px] bg-gray-100 border border-gray-200">
+                                    <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                    </svg>
+                                </div>
+
+                                <!-- Text -->
+                                <div class="flex-1">
+                                    <div class="text-[13px] font-medium text-[rgb(var(--filter-text-primary))]">
+                                        Tous (indifférent)
+                                    </div>
+                                    <div class="text-[11px] text-[rgb(var(--filter-text-muted))] mt-[1px]">
+                                        Aucun filtre appliqué
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graphèmes (collapsed) -->
+                <div class="px-[22px] mb-1">
+                    <div class="filter-section-header flex items-center gap-2 py-2.5 px-3 -mx-3 cursor-pointer group rounded-lg">
+                        <div class="flex items-center gap-2.5 flex-1">
+                            <div class="w-7 h-7 rounded-[8px] bg-[rgb(var(--filter-accent-light))] border border-[rgb(var(--filter-border))] flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-sora text-[11px] font-medium uppercase tracking-[0] text-[rgb(var(--filter-text-secondary))] group-hover:text-[rgb(var(--filter-accent))]">
+                                Graphèmes
+                            </span>
+                        </div>
+                        <svg class="chevron rotated w-[14px] h-[14px] text-[rgb(var(--filter-text-muted))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Info Panel -->
+        <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 p-8 overflow-auto">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-lg border border-[rgb(var(--filter-border))] p-8">
+                    <div class="flex items-start gap-4 mb-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-sora text-2xl font-bold text-[rgb(var(--filter-text-primary))] mb-2">
+                                Nouveau filtre : Image
+                            </h3>
+                            <p class="text-[rgb(var(--filter-text-secondary))]">
+                                Filtrez vos mots selon la présence ou l'absence d'illustration
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+                            <h4 class="font-semibold text-indigo-900 mb-3 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                Options disponibles
+                            </h4>
+                            <div class="space-y-3 text-sm text-indigo-900">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex items-center justify-center w-6 h-6 rounded bg-green-100 border border-green-200 flex-shrink-0 mt-0.5">
+                                        <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <strong>Avec image</strong> : Affiche uniquement les mots ayant une illustration associée
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="flex items-center justify-center w-6 h-6 rounded bg-red-100 border border-red-200 flex-shrink-0 mt-0.5">
+                                        <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <strong>Sans image</strong> : Affiche uniquement les mots sans illustration
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="flex items-center justify-center w-6 h-6 rounded bg-gray-100 border border-gray-200 flex-shrink-0 mt-0.5">
+                                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <strong>Tous (indifférent)</strong> : Affiche tous les mots, qu'ils aient ou non une image (option par défaut)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                            <h4 class="font-semibold text-blue-900 mb-2">📍 Placement dans l'interface</h4>
+                            <p class="text-sm text-blue-800">
+                                Le filtre <strong>Image</strong> est positionné dans la section <span class="font-mono text-xs bg-blue-100 px-1.5 py-0.5 rounded">"Filtres complémentaires"</span>,
+                                entre les filtres <strong>Recherche</strong> et <strong>Graphèmes</strong>.
+                            </p>
+                        </div>
+
+                        <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                            <h4 class="font-semibold text-purple-900 mb-2">🎨 Spécifications de design</h4>
+                            <ul class="text-sm text-purple-800 space-y-1.5">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-purple-500 font-bold">•</span>
+                                    <span>Respect complet du design system existant (variables CSS, espacements, typographie)</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-purple-500 font-bold">•</span>
+                                    <span>Options mutuellement exclusives avec boutons radio personnalisés</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-purple-500 font-bold">•</span>
+                                    <span>Badge numérique (1) affiché quand un filtre est actif</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-purple-500 font-bold">•</span>
+                                    <span>Section collapsible comme tous les autres filtres</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div id="currentState" class="pt-4 border-t border-gray-200">
+                            <p class="text-sm text-center text-gray-500">
+                                💡 <strong>État actuel :</strong> <span id="stateText">Aucun filtre image activé (par défaut)</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFilter = null;
+        let isOpen = true;
+
+        function toggleImageFilter() {
+            isOpen = !isOpen;
+            const content = document.getElementById('imageFilterContent');
+            const chevron = document.getElementById('imageChevron');
+
+            if (isOpen) {
+                content.style.display = 'block';
+                chevron.classList.remove('rotated');
+            } else {
+                content.style.display = 'none';
+                chevron.classList.add('rotated');
+            }
+        }
+
+        function selectImageFilter(value) {
+            // Deselect all
+            document.querySelectorAll('.image-option').forEach(opt => {
+                opt.classList.remove('active');
+                const radio = opt.querySelector('.custom-radio');
+                radio.style.borderColor = 'rgb(var(--filter-border))';
+                radio.style.backgroundColor = 'white';
+                const dot = radio.querySelector('div');
+                dot.style.opacity = '0';
+            });
+
+            // Select the clicked one
+            const option = document.querySelector(`.image-option[data-value="${value}"]`);
+            option.classList.add('active');
+            const radio = option.querySelector('.custom-radio');
+            radio.style.borderColor = 'rgb(var(--filter-accent))';
+            radio.style.backgroundColor = 'rgb(var(--filter-accent))';
+            const dot = radio.querySelector('div');
+            dot.style.opacity = '1';
+
+            // Update badge
+            const badge = document.getElementById('imageBadge');
+            if (value === 'all') {
+                badge.classList.add('hidden');
+                selectedFilter = null;
+            } else {
+                badge.classList.remove('hidden');
+                selectedFilter = value;
+            }
+
+            // Update state text
+            const stateText = document.getElementById('stateText');
+            if (value === 'with') {
+                stateText.textContent = 'Filtre "Avec image" activé';
+            } else if (value === 'without') {
+                stateText.textContent = 'Filtre "Sans image" activé';
+            } else {
+                stateText.textContent = 'Aucun filtre image activé (par défaut)';
+            }
+        }
+    </script>
+</body>
+</html>
