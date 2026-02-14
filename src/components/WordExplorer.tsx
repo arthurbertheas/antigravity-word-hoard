@@ -47,16 +47,16 @@ function WordExplorerContent() {
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen);
 
-    // Reset selection when filters change (Ticket: Reset Selection on Filter Change)
-    const isFirstRender = useRef(true);
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
-        // Always clear selection on filter change (no condition check to avoid stale closure)
-        clearSelection();
-    }, [filters, clearSelection]);
+    // DISABLED: Selection should persist when filters change
+    // The real bug is that the word list disappears with random selection + filter change
+    // const isFirstRender = useRef(true);
+    // useEffect(() => {
+    //     if (isFirstRender.current) {
+    //         isFirstRender.current = false;
+    //         return;
+    //     }
+    //     clearSelection();
+    // }, [filters, clearSelection]);
 
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
