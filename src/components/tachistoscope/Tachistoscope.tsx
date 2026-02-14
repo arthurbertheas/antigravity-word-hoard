@@ -199,6 +199,34 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
     // Track if auto-shuffle has been applied to prevent re-triggering
     const autoShuffleApplied = React.useRef(false);
 
+    // Preload all images from the queue
+    const preloadedImagesRef = React.useRef<Set<string>>(new Set());
+
+    useEffect(() => {
+        if (!words || words.length === 0) return;
+
+        // Collect all image URLs from words
+        const imageUrls = words
+            .map(w => w["image associée"])
+            .filter(url => url && url.trim().length > 0);
+
+        if (imageUrls.length === 0) return;
+
+        // Preload all images
+        imageUrls.forEach(url => {
+            if (!preloadedImagesRef.current.has(url)) {
+                const img = new Image();
+                img.onload = () => {
+                    preloadedImagesRef.current.add(url);
+                };
+                img.onerror = () => {
+                    preloadedImagesRef.current.add(url); // Add even on error to prevent retry
+                };
+                img.src = url;
+            }
+        });
+    }, [words]);
+
     // Initialize queue with FIN word appended
     useEffect(() => {
         if (!words || words.length === 0) return;

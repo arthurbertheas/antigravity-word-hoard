@@ -16,27 +16,6 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     // Check if word has an associated image
     const hasImage = word["image associée"] && word["image associée"].trim().length > 0;
 
-    // Track image loading state
-    const [imageLoaded, setImageLoaded] = React.useState(false);
-    const [currentImageUrl, setCurrentImageUrl] = React.useState<string | null>(null);
-
-    // Reset image loaded state when word changes
-    React.useEffect(() => {
-        if (hasImage && word["image associée"] !== currentImageUrl) {
-            setImageLoaded(false);
-            setCurrentImageUrl(word["image associée"]);
-
-            // Preload image
-            const img = new Image();
-            img.onload = () => setImageLoaded(true);
-            img.onerror = () => setImageLoaded(true); // Still show even if image fails to load
-            img.src = word["image associée"];
-        } else if (!hasImage) {
-            setImageLoaded(true);
-            setCurrentImageUrl(null);
-        }
-    }, [word["image associée"], hasImage, currentImageUrl]);
-
     // Parse GPMATCH for precise grapheme-phoneme mapping
     const parsedGraphemes = useMemo(() => {
         try {
@@ -254,9 +233,6 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     const shouldShowImage = hasImage && (settings.displayMode === 'image' || settings.displayMode === 'imageAndWord');
     const shouldShowWord = settings.displayMode === 'wordOnly' || settings.displayMode === 'imageAndWord' || !hasImage;
 
-    // Wait for image to load before displaying content (prevents visual delay)
-    const shouldWaitForImage = shouldShowImage && !imageLoaded && phase === 'display';
-
     // Build final display content
     let displayContent;
 
@@ -268,7 +244,6 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                     src={word["image associée"]}
                     alt={word.MOTS}
                     className="max-w-[40vmin] max-h-[30vmin] object-contain"
-                    style={{ opacity: imageLoaded ? 1 : 0 }}
                 />
                 {wordContent}
             </div>
@@ -280,17 +255,11 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
                 src={word["image associée"]}
                 alt={word.MOTS}
                 className="max-w-[60vmin] max-h-[50vmin] object-contain"
-                style={{ opacity: imageLoaded ? 1 : 0 }}
             />
         );
     } else {
         // wordOnly mode (default)
         displayContent = wordContent;
-    }
-
-    // Don't show content until image is loaded (prevents flicker)
-    if (shouldWaitForImage) {
-        return renderContent(null);
     }
 
     return renderContent(displayContent);
