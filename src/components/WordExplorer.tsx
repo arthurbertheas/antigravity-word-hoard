@@ -148,6 +148,11 @@ function WordExplorerContent() {
                             return;
                         }
 
+                        if (filterType === 'hasImage' && value === 'reset') {
+                            updateFilter('hasImage', null);
+                            return;
+                        }
+
                         // Remove specific filter from array
                         const currentFilters = filters[filterType];
                         if (Array.isArray(currentFilters)) {

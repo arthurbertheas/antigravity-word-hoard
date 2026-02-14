@@ -79,6 +79,15 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
         });
     });
 
+    // Images
+    if (filters.hasImage !== null) {
+        activeFilters.push({
+            type: 'hasImage',
+            value: 'reset',
+            label: filters.hasImage ? 'Avec image' : 'Sans image'
+        });
+    }
+
     // If no active filters, don't render
     if (activeFilters.length === 0) return null;
 
