@@ -249,7 +249,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                 angle: 60,
                 spread: randomInRange(50, 70),
                 particleCount: randomInRange(50, 100),
-                origin: { y: 0.6 }
+                origin: { y: 0.45 }
             });
             // Second burst: straight up
             setTimeout(() => {
@@ -257,7 +257,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     angle: 90,
                     spread: randomInRange(50, 70),
                     particleCount: randomInRange(50, 100),
-                    origin: { y: 0.6 }
+                    origin: { y: 0.45 }
                 });
             }, 200);
             // Third burst: to the right
@@ -266,7 +266,7 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
                     angle: 120,
                     spread: randomInRange(50, 70),
                     particleCount: randomInRange(50, 100),
-                    origin: { y: 0.6 }
+                    origin: { y: 0.45 }
                 });
             }, 400);
         }
