@@ -6,15 +6,18 @@ interface ExportPreviewProps {
   settings: ExportSettings;
 }
 
+const PREVIEW_WORD_LIMIT = 10;
+
+const formatDate = () => {
+  const today = new Date();
+  return today.toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+};
+
 export function ExportPreview({ words, settings }: ExportPreviewProps) {
-  const formatDate = () => {
-    const today = new Date();
-    return today.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
 
   return (
     <div className="flex-1 bg-white px-6 py-7 overflow-y-auto">
@@ -40,8 +43,8 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
 
         {/* Word List Preview */}
         <div className="space-y-2">
-          {words.slice(0, 10).map((word, index) => (
-            <div key={index} className="flex items-baseline gap-2.5">
+          {words.slice(0, PREVIEW_WORD_LIMIT).map((word) => (
+            <div key={`${word.MOTS}-${word.PHONEMES}`} className="flex items-baseline gap-2.5">
               <span className="text-sm font-semibold text-[#6C5CE7]">•</span>
               <div>
                 {settings.display !== 'imageOnly' && (
@@ -56,9 +59,9 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
               </div>
             </div>
           ))}
-          {words.length > 10 && (
+          {words.length > PREVIEW_WORD_LIMIT && (
             <div className="text-xs text-gray-400 italic pt-2">
-              ... et {words.length - 10} autres mots
+              ... et {words.length - PREVIEW_WORD_LIMIT} autres mots
             </div>
           )}
         </div>
