@@ -3,13 +3,15 @@ export interface PhonemeDef {
     label?: string; // For accessibility or hover if needed
 }
 
-export const FREQUENT_PHONEMES: string[] = [
-    'a', 'i', 'ʃ', 's', 'ɛ̃', 'ɔ̃', 'ʒ', 'k'
+export const CONSONNES: string[] = [
+    'f', 'v', 's', 'z', 'ʃ', 'ʒ', 'p', 'b', 't', 'd', 'k', 'g', 'm', 'n', 'ɲ', 'R', 'l'
 ];
 
-export const OTHER_PHONEMES: string[] = [
-    'p', 'b', 't', 'd', 'f', 'v', 'z', 'm', 'n', 'ɲ', 'l', 'R', 'j', 'w', 'ɥ',
-    'e', 'ɛ', 'o', 'ɔ', 'u', 'y', 'ø', 'œ', 'ə', 'ɑ̃', 'œ̃', 'ɡ', 'ŋ'
+export const VOYELLES: string[] = [
+    'a', 'u', 'y', 'i', 'o', 'ɔ', 'e', 'œ', 'ø', 'ɛ', 'ɔ̃', 'ã', 'ɛ̃', 'œ̃', 'w', 'ɥ', 'j'
 ];
 
-export const ALL_PHONEMES = [...FREQUENT_PHONEMES, ...OTHER_PHONEMES];
+// Keep backward compat
+export const FREQUENT_PHONEMES = CONSONNES.slice(0, 8);
+export const OTHER_PHONEMES = [...CONSONNES.slice(8), ...VOYELLES];
+export const ALL_PHONEMES = [...CONSONNES, ...VOYELLES];

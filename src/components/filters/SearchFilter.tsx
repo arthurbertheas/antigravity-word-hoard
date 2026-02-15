@@ -59,7 +59,7 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
 
     return (
         <FilterSection
-            title="Recherche"
+            title="Séquence de lettres"
             icon={<Search className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
             badge={searchTags.length}
             isOpen={isOpen}

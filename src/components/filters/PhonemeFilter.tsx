@@ -2,8 +2,8 @@ import { useState } from "react";
 import { FilterSection } from "./FilterSection";
 import { FilterTag } from "./FilterTag";
 import { FilterTag as IFilterTag } from "@/types/word";
-import { FREQUENT_PHONEMES, OTHER_PHONEMES } from "@/data/phonemes";
-import { MessageSquare, Plus, ChevronDown } from "lucide-react"; // Using MessageSquare as 'Speech' icon specificied
+import { CONSONNES, VOYELLES } from "@/data/phonemes";
+import { Ear, Plus, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function generateId() {
@@ -20,7 +20,6 @@ interface PhonemeFilterProps {
 
 export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemoveFilter }: PhonemeFilterProps) {
     const [selectedPhonemes, setSelectedPhonemes] = useState<string[]>([]);
-    const [isExpanded, setIsExpanded] = useState(false);
     const [position, setPosition] = useState<IFilterTag['position']>('anywhere');
 
     const togglePhonemeSelection = (ph: string) => {
@@ -37,7 +36,6 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
             value: ph,
             position
         })).filter(newTag =>
-            // Filter out duplicates that already exist
             !phonemes.some(existing => existing.value === newTag.value && existing.position === newTag.position)
         );
 
@@ -45,7 +43,6 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
             onAddFilter(newTags);
         }
 
-        // Reset selection
         setSelectedPhonemes([]);
     };
 
@@ -73,36 +70,28 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
 
     return (
         <FilterSection
-            title="Phonèmes"
-            icon={<MessageSquare className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />} // Using MessageSquare as placeholder for Speech bubble
+            title="Phonème"
+            icon={<Ear className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
             badge={phonemes.length}
             isOpen={isOpen}
             onToggle={onToggle}
         >
             <div className="px-1 py-1 space-y-3">
-                {/* Frequent Phonemes */}
+                {/* Consonnes */}
                 <div>
                     <div className="text-[11px] font-['Sora'] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Fréquents
+                        Consonnes
                     </div>
-                    {renderPhonemeGrid(FREQUENT_PHONEMES)}
+                    {renderPhonemeGrid(CONSONNES)}
                 </div>
 
-                {/* Expand Toggle */}
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="w-full py-1.5 flex items-center justify-center gap-1.5 border border-dashed border-border rounded-[7px] text-[11px] font-medium text-[rgb(var(--filter-accent))] hover:bg-[rgba(79,70,229,0.03)] hover:border-[rgb(var(--filter-accent))] transition-colors"
-                >
-                    <span>{isExpanded ? "Masquer les phonèmes supplémentaires" : `Afficher tous les phonèmes (${FREQUENT_PHONEMES.length + OTHER_PHONEMES.length})`}</span>
-                    <ChevronDown className={cn("w-3 h-3 transition-transform", isExpanded && "rotate-180")} />
-                </button>
-
-                {/* Expanded Grid */}
-                {isExpanded && (
-                    <div className="animate-in fade-in slide-in-from-top-1 duration-200">
-                        {renderPhonemeGrid(OTHER_PHONEMES)}
+                {/* Voyelles */}
+                <div>
+                    <div className="text-[11px] font-['Sora'] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                        Voyelles
                     </div>
-                )}
+                    {renderPhonemeGrid(VOYELLES)}
+                </div>
 
                 {/* Controls */}
                 <div className="flex gap-2">

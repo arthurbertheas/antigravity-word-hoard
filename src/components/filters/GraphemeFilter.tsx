@@ -48,7 +48,7 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
 
     return (
         <FilterSection
-            title="Graphèmes"
+            title="Graphème"
             icon={<Pencil className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
             badge={graphemes.length}
             isOpen={isOpen}
