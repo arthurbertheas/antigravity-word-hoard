@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelection, getWordId } from "@/contexts/SelectionContext";
 import { Button } from "@/components/ui/button";
-import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save, Folder, Play, FileDown } from "lucide-react";
+import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save, Folder, Play, FileDown, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSavedListsContext } from "@/contexts/SavedListsContext";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
@@ -309,52 +309,48 @@ export function SelectionTray() {
                 return (
                   <div
                     key={getWordId(word)}
-                    style={{
-                      padding: '12px',
-                      borderRadius: '12px',
-                      border: isNewWord ? '1px solid #E0DAFB' : '1px solid #F3F4F6',
-                      background: isNewWord ? 'rgba(108,92,231,0.04)' : '#fff',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '8px',
-                      transition: 'all 0.2s ease'
-                    }}
-                    className="group hover:shadow-md">
+                    className={cn(
+                      "group flex items-center gap-3 px-3 py-2.5 rounded-[10px] border transition-all hover:shadow-md",
+                      isNewWord
+                        ? "border-primary/30 bg-primary/[0.03]"
+                        : "border-border bg-card"
+                    )}>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-                          <span style={{
-                        fontFamily: 'DM Sans',
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: '#1A1A2E'
-                      }}>
-                            {word.MOTS}
-                          </span>
-
-                          {/* Badge AJOUTÉ (Ticket 2) */}
-                          {isNewWord &&
-                      <span style={{
-                        padding: '1px 5px',
-                        borderRadius: '5px',
-                        background: '#F0EDFF',
-                        color: '#6C5CE7',
-                        fontSize: '8px',
-                        fontWeight: 700,
-                        letterSpacing: '0.02em',
-                        textTransform: 'uppercase'
-                      }}>
-                              AJOUTÉ
+                        {/* Word info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[14px] font-semibold text-foreground truncate">
+                              {word.MOTS}
                             </span>
-                      }
+                            {isNewWord && (
+                              <span className="flex-shrink-0 px-1.5 py-0.5 rounded-[4px] bg-primary/10 text-primary text-[8px] font-bold uppercase tracking-wide">
+                                Ajouté
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[10px] font-semibold text-muted-foreground uppercase">{word.SYNT}</span>
+                            {word.NBSYLL && (
+                              <>
+                                <span className="text-[10px] text-muted-foreground/40">·</span>
+                                <span className="text-[10px] text-muted-foreground">{word.NBSYLL} syll.</span>
+                              </>
+                            )}
+                            {word["image associée"]?.trim() && (
+                              <>
+                                <span className="text-[10px] text-muted-foreground/40">·</span>
+                                <ImageIcon className="w-2.5 h-2.5 text-muted-foreground" />
+                              </>
+                            )}
+                          </div>
                         </div>
 
+                        {/* Remove button */}
                         <button
-                      onClick={() => removeItem(getWordId(word))}
-                      className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
-                      title="Supprimer">
-
+                          onClick={() => removeItem(getWordId(word))}
+                          className="flex-shrink-0 p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all"
+                          title="Supprimer"
+                        >
                           <X className="w-3.5 h-3.5" />
                         </button>
                       </div>);
