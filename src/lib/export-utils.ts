@@ -37,14 +37,18 @@ export function exportToPDF(words: Word[], settings: ExportSettings): void {
     let currentRow = 0;
 
     words.forEach((word, index) => {
-      const x = margin + currentCol * (colWidth + 10);
-      const y = yPosition + currentRow * cellHeight;
+      let x = margin + currentCol * (colWidth + 10);
+      let y = yPosition + currentRow * cellHeight;
 
       // Check page break
       if (y > pageHeight - margin - cellHeight) {
         doc.addPage();
         yPosition = margin;
         currentRow = 0;
+        currentCol = 0;
+        // Recalculate positions with new page values
+        x = margin + currentCol * (colWidth + 10);
+        y = yPosition + currentRow * cellHeight;
       }
 
       // Draw cell border
