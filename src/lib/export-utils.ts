@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { Document, Packer, Paragraph, TextRun, AlignmentType } from 'docx';
+import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 import { Word } from '@/types/word';
 import { ExportSettings } from '@/types/export';
@@ -135,39 +135,85 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
     })
   );
 
-  // Words
-  words.forEach((word, index) => {
-    const textRuns: TextRun[] = [];
+  // Grid layout using tables
+  if (settings.layout === 'grid-2col' || settings.layout === 'grid-3col') {
+    const cols = settings.layout === 'grid-2col' ? 2 : 3;
+    const rows: TableRow[] = [];
 
-    // Number or bullet
-    if (settings.numberWords) {
-      textRuns.push(new TextRun(`${index + 1}. `));
-    } else {
-      textRuns.push(new TextRun('• '));
-    }
+    for (let i = 0; i < words.length; i += cols) {
+      const cells: TableCell[] = [];
 
-    // Word
-    if (settings.display !== 'imageOnly') {
-      textRuns.push(new TextRun({ text: word.MOTS, bold: true }));
-    }
+      for (let j = 0; j < cols; j++) {
+        const word = words[i + j];
+        if (word) {
+          const textRuns: TextRun[] = [];
+          if (settings.display !== 'imageOnly') {
+            textRuns.push(new TextRun({ text: word.MOTS, bold: true }));
+          }
+          if (settings.includePhonemes && word.PHONEMES) {
+            textRuns.push(new TextRun(`\n/${word.PHONEMES}/`));
+          }
 
-    // Phonemes if enabled
-    if (settings.includePhonemes && word.PHONEMES) {
-      textRuns.push(new TextRun(` /${word.PHONEMES}/`));
-    }
+          cells.push(
+            new TableCell({
+              children: [new Paragraph({ children: textRuns })],
+              width: { size: 100 / cols, type: WidthType.PERCENTAGE },
+            })
+          );
+        } else {
+          cells.push(
+            new TableCell({
+              children: [new Paragraph('')],
+              width: { size: 100 / cols, type: WidthType.PERCENTAGE },
+            })
+          );
+        }
+      }
 
-    // Category if enabled
-    if (settings.includeCategories && word.SYNT) {
-      textRuns.push(new TextRun(` (${word.SYNT})`));
+      rows.push(new TableRow({ children: cells }));
     }
 
     children.push(
-      new Paragraph({
-        children: textRuns,
-        spacing: { after: 100 },
+      new Table({
+        rows,
+        width: { size: 100, type: WidthType.PERCENTAGE },
       })
     );
-  });
+  } else {
+    // List layout (original implementation)
+    words.forEach((word, index) => {
+      const textRuns: TextRun[] = [];
+
+      // Number or bullet
+      if (settings.numberWords) {
+        textRuns.push(new TextRun(`${index + 1}. `));
+      } else {
+        textRuns.push(new TextRun('• '));
+      }
+
+      // Word
+      if (settings.display !== 'imageOnly') {
+        textRuns.push(new TextRun({ text: word.MOTS, bold: true }));
+      }
+
+      // Phonemes if enabled
+      if (settings.includePhonemes && word.PHONEMES) {
+        textRuns.push(new TextRun(` /${word.PHONEMES}/`));
+      }
+
+      // Category if enabled
+      if (settings.includeCategories && word.SYNT) {
+        textRuns.push(new TextRun(` (${word.SYNT})`));
+      }
+
+      children.push(
+        new Paragraph({
+          children: textRuns,
+          spacing: { after: 100 },
+        })
+      );
+    });
+  }
 
   // Footer
   children.push(
