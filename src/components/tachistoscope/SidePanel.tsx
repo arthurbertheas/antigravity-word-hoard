@@ -375,7 +375,7 @@ export function SidePanel() {
                                                     {contentMode !== 'both' && hasImages && (
                                                         <div
                                                             onClick={toggleDoubleFace}
-                                                            className="flex items-center justify-between p-3 bg-muted rounded-[10px] mt-2 cursor-pointer transition-colors hover:bg-[#e8eaf0]"
+                                                            className="flex items-center justify-between p-3 bg-muted rounded-[10px] border border-border mt-2 cursor-pointer transition-colors hover:bg-[#e8eaf0]"
                                                         >
                                                             <div className="flex items-center gap-2.5">
                                                                 <span className="text-[16px]">🃏</span>
@@ -513,7 +513,7 @@ export function SidePanel() {
                                             <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
                                         </div>
 
-                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
                                                 <div className="text-sm font-semibold text-foreground mb-0.5">
                                                     Voyelles en couleur
@@ -528,7 +528,7 @@ export function SidePanel() {
                                             />
                                         </div>
 
-                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
                                                 <div className="text-sm font-semibold text-foreground mb-0.5">
                                                     Lettres muettes
@@ -549,7 +549,7 @@ export function SidePanel() {
                                             <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
                                         </div>
 
-                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
                                                 <div className="text-sm font-semibold text-foreground mb-0.5">Point de fixation</div>
                                                 <div className="text-[11px] text-muted-foreground">Croix centrée affichée pendant la pause</div>
@@ -561,7 +561,7 @@ export function SidePanel() {
                                             />
                                         </div>
 
-                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
                                                 <div className="text-sm font-semibold text-foreground mb-0.5">Signal sonore</div>
                                                 <div className="text-[11px] text-muted-foreground">Bip avant l'affichage de chaque mot</div>
