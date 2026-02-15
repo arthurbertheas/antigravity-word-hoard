@@ -16,7 +16,7 @@ export function NewListModal({ isOpen, onClose, onDownloadAndContinue, onContinu
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] animate-in fade-in duration-200" />
-                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90%] max-w-[420px] bg-card rounded-[20px] shadow-2xl border border-border z-[100] animate-in zoom-in-95 duration-200 p-6 focus:outline-none">
+                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90%] max-w-[420px] bg-card rounded-[20px] shadow-2xl border border-border z-[100] animate-in fade-in zoom-in-95 slide-in-from-left-1/2 slide-in-from-top-[48%] duration-200 p-6 focus:outline-none">
                     <div className="flex flex-col items-center text-center">
                         <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4">
                             <AlertTriangle className="w-6 h-6 text-amber-600" />
