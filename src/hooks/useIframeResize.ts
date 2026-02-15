@@ -34,12 +34,28 @@ export function useIframeResize(isFocusMode: boolean = false) {
                         return rect.bottom > window.innerHeight || rect.right > window.innerWidth;
                     });
                     if (overflowElements.length > 0) {
-                        console.log('Elements causing overflow:', overflowElements.map(el => ({
-                            tag: el.tagName,
-                            class: el.className,
-                            bottom: el.getBoundingClientRect().bottom,
-                            windowHeight: window.innerHeight
-                        })));
+                        console.log(`⚠️ ${overflowElements.length} elements causing overflow!`);
+
+                        // Sort by how much they overflow (worst offenders first)
+                        const sorted = overflowElements
+                            .map(el => ({
+                                element: el,
+                                tag: el.tagName,
+                                class: el.className,
+                                id: el.id,
+                                bottom: el.getBoundingClientRect().bottom,
+                                overflow: el.getBoundingClientRect().bottom - window.innerHeight,
+                                windowHeight: window.innerHeight,
+                                computedStyle: {
+                                    position: window.getComputedStyle(el).position,
+                                    overflow: window.getComputedStyle(el).overflow,
+                                    height: window.getComputedStyle(el).height,
+                                }
+                            }))
+                            .sort((a, b) => b.overflow - a.overflow);
+
+                        console.log('TOP 5 worst offenders:', sorted.slice(0, 5));
+                        console.log('All overflow elements:', sorted);
                     }
                     console.groupEnd();
                 }
