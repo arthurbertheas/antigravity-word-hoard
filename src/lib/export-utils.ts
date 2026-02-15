@@ -7,16 +7,29 @@ import { ExportSettings } from '@/types/export';
 // Helper function to load image as base64
 async function loadImageAsBase64(url: string): Promise<string | null> {
   try {
-    const response = await fetch(url);
+    console.log('[PDF] Loading image:', url);
+    const response = await fetch(url, { mode: 'cors' });
+    if (!response.ok) {
+      console.error('[PDF] Failed to fetch image:', response.status, response.statusText);
+      return null;
+    }
     const blob = await response.blob();
+    console.log('[PDF] Image blob loaded:', blob.type, blob.size, 'bytes');
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        console.log('[PDF] Image converted to base64, length:', result.length);
+        resolve(result);
+      };
+      reader.onerror = (error) => {
+        console.error('[PDF] FileReader error:', error);
+        reject(error);
+      };
       reader.readAsDataURL(blob);
     });
   } catch (error) {
-    console.error('Error loading image:', error);
+    console.error('[PDF] Error loading image:', url, error);
     return null;
   }
 }
@@ -24,11 +37,17 @@ async function loadImageAsBase64(url: string): Promise<string | null> {
 // Helper function to load image as ArrayBuffer for Word
 async function loadImageAsArrayBuffer(url: string): Promise<Uint8Array | null> {
   try {
-    const response = await fetch(url);
+    console.log('[Word] Loading image:', url);
+    const response = await fetch(url, { mode: 'cors' });
+    if (!response.ok) {
+      console.error('[Word] Failed to fetch image:', response.status, response.statusText);
+      return null;
+    }
     const arrayBuffer = await response.arrayBuffer();
+    console.log('[Word] Image loaded:', arrayBuffer.byteLength, 'bytes');
     return new Uint8Array(arrayBuffer);
   } catch (error) {
-    console.error('Error loading image:', error);
+    console.error('[Word] Error loading image:', url, error);
     return null;
   }
 }
@@ -109,14 +128,18 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
     const imageDataMap = new Map<string, string>();
 
     if (hasImages) {
+      console.log('[PDF] Loading images for', words.length, 'words');
+      let loadedCount = 0;
       for (const word of words) {
         if (word["image associée"]) {
           const imageData = await loadImageAsBase64(word["image associée"]);
           if (imageData) {
             imageDataMap.set(word.MOTS, imageData);
+            loadedCount++;
           }
         }
       }
+      console.log('[PDF] Successfully loaded', loadedCount, 'images out of', words.filter(w => w["image associée"]).length);
     }
 
     for (let index = 0; index < words.length; index++) {
@@ -254,14 +277,18 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
 
     // Load all images if needed
     if (hasImages) {
+      console.log('[Word] Loading images for', words.length, 'words');
+      let loadedCount = 0;
       for (const word of words) {
         if (word["image associée"]) {
           const imageData = await loadImageAsArrayBuffer(word["image associée"]);
           if (imageData) {
             imageDataMap.set(word.MOTS, imageData);
+            loadedCount++;
           }
         }
       }
+      console.log('[Word] Successfully loaded', loadedCount, 'images out of', words.filter(w => w["image associée"]).length);
     }
 
     for (let index = 0; index < words.length; index++) {
