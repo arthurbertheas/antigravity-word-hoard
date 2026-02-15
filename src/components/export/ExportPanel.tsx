@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
 import { ExportSettings, DEFAULT_EXPORT_SETTINGS, ExportPanelProps } from '@/types/export';
 import { ExportOptions } from './ExportOptions';
@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
   const [settings, setSettings] = useState<ExportSettings>(DEFAULT_EXPORT_SETTINGS);
 
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     try {
       switch (settings.format) {
         case 'pdf':
@@ -30,7 +30,7 @@ export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
       console.error('Export error:', error);
       toast.error('Erreur lors de l\'export. Veuillez réessayer.');
     }
-  };
+  }, [selectedWords, settings]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
