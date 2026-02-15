@@ -15,49 +15,9 @@ export function useIframeResize(isFocusMode: boolean = false) {
                     // Webflow promotes the iframe to fixed fullscreen (100vw/100vh).
                     return;
                 } else {
-                    // NORMAL MODE: Match content height
-                    height = document.body.scrollHeight;
-
-                    // DIAGNOSTIC: Log height information
-                    console.group('[SCROLL DEBUG] Height Calculation');
-                    console.log('body.scrollHeight:', document.body.scrollHeight);
-                    console.log('body.offsetHeight:', document.body.offsetHeight);
-                    console.log('body.clientHeight:', document.body.clientHeight);
-                    console.log('documentElement.scrollHeight:', document.documentElement.scrollHeight);
-                    console.log('documentElement.offsetHeight:', document.documentElement.offsetHeight);
-                    console.log('window.innerHeight:', window.innerHeight);
-                    console.log('Height sent to parent:', height);
-
-                    // Check for overflow elements
-                    const overflowElements = Array.from(document.querySelectorAll('*')).filter(el => {
-                        const rect = el.getBoundingClientRect();
-                        return rect.bottom > window.innerHeight || rect.right > window.innerWidth;
-                    });
-                    if (overflowElements.length > 0) {
-                        console.log(`⚠️ ${overflowElements.length} elements causing overflow!`);
-
-                        // Sort by how much they overflow (worst offenders first)
-                        const sorted = overflowElements
-                            .map(el => ({
-                                element: el,
-                                tag: el.tagName,
-                                class: el.className,
-                                id: el.id,
-                                bottom: el.getBoundingClientRect().bottom,
-                                overflow: el.getBoundingClientRect().bottom - window.innerHeight,
-                                windowHeight: window.innerHeight,
-                                computedStyle: {
-                                    position: window.getComputedStyle(el).position,
-                                    overflow: window.getComputedStyle(el).overflow,
-                                    height: window.getComputedStyle(el).height,
-                                }
-                            }))
-                            .sort((a, b) => b.overflow - a.overflow);
-
-                        console.log('TOP 5 worst offenders:', sorted.slice(0, 5));
-                        console.log('All overflow elements:', sorted);
-                    }
-                    console.groupEnd();
+                    // NORMAL MODE: Use window.innerHeight to avoid counting
+                    // radix-ui portals with position:absolute that overflow beyond viewport
+                    height = window.innerHeight;
                 }
 
                 // Send to parent
