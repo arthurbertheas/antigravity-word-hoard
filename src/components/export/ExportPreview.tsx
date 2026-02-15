@@ -18,6 +18,17 @@ const formatDate = () => {
 };
 
 export function ExportPreview({ words, settings }: ExportPreviewProps) {
+  // Handle empty state
+  if (words.length === 0) {
+    return (
+      <div className="flex-1 bg-white px-6 py-7 flex items-center justify-center">
+        <div className="text-center text-gray-400">
+          <p className="text-sm">Aucun mot sélectionné</p>
+          <p className="text-xs mt-2">Sélectionnez des mots pour voir l'aperçu</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-white px-6 py-7 overflow-y-auto">
