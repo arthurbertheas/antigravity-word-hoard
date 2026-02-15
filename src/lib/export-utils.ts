@@ -553,6 +553,34 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
           color: var(--color-primary);
         }
 
+        /* Footer */
+        .document-footer {
+          margin-top: 40px;
+          padding-top: 32px;
+          border-top: 1px solid var(--color-border);
+          text-align: center;
+        }
+
+        .footer-brand {
+          font-family: var(--font-serif);
+          font-size: 13px;
+          color: var(--color-text-muted);
+          font-style: italic;
+          margin-bottom: 6px;
+        }
+
+        .footer-tagline {
+          font-size: 11px;
+          color: #CBD5E0;
+          letter-spacing: 0.5px;
+        }
+
+        @media print {
+          .document-footer {
+            page-break-inside: avoid;
+          }
+        }
+
         h1 {
           font-size: 18pt;
           font-weight: bold;
@@ -671,7 +699,12 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
   });
 
   html += `</ul>`;
-  html += `<div class="footer">Généré depuis Ressources Orthophonie</div>`;
+  html += `
+    <footer class="document-footer">
+      <div class="footer-brand">Généré depuis Ressources Orthophonie</div>
+      <div class="footer-tagline">Document créé avec soin pour la rééducation</div>
+    </footer>
+  `;
   html += `</body></html>`;
 
   // Use hidden iframe instead of popup (works with Firefox + uBlock)
