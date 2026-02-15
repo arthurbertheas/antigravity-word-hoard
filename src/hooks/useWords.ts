@@ -74,6 +74,41 @@ export function useWords() {
                 return false;
             }
 
+            // Filtre graphème temps réel (prioritaire sur les tags)
+            if (filters.realtimeGrapheme && filters.realtimeGrapheme.value.trim().length > 0) {
+                if (!word["segmentation graphèmes"]) return false;
+                const gseg = word["segmentation graphèmes"].toLowerCase();
+                const segments = gseg.split('-').filter(Boolean);
+                const val = filters.realtimeGrapheme.value.toLowerCase().trim();
+                const pos = filters.realtimeGrapheme.position;
+
+                if (pos === 'start') {
+                    if (segments[0] !== val) return false;
+                } else if (pos === 'end') {
+                    if (segments[segments.length - 1] !== val) return false;
+                } else if (pos === 'middle') {
+                    if (!segments.some((seg, index) => seg === val && index > 0 && index < segments.length - 1)) return false;
+                } else {
+                    if (!segments.includes(val)) return false;
+                }
+            }
+
+            // Filtre phonèmes temps réel (prioritaire sur les tags)
+            if (filters.realtimePhonemes && filters.realtimePhonemes.values.length > 0) {
+                if (!word.PHONEMES) return false;
+                const phon = word.PHONEMES.toLowerCase();
+                const pos = filters.realtimePhonemes.position;
+
+                const allMatch = filters.realtimePhonemes.values.every(ph => {
+                    const val = ph.toLowerCase();
+                    if (pos === 'start') return phon.startsWith(val);
+                    if (pos === 'end') return phon.endsWith(val);
+                    if (pos === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(phon);
+                    return phon.includes(val);
+                });
+                if (!allMatch) return false;
+            }
+
             // Filtre par graphèmes spécifiques (AND logic)
             if (filters.graphemes.length > 0) {
                 if (!word["segmentation graphèmes"]) return false;

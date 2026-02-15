@@ -120,6 +120,14 @@ export interface WordFilters {
         value: string;
         position: 'start' | 'end' | 'middle' | 'anywhere';
     };
+    realtimeGrapheme: {          // Graphème temps réel
+        value: string;
+        position: 'start' | 'end' | 'middle' | 'anywhere';
+    };
+    realtimePhonemes: {          // Phonèmes temps réel
+        values: string[];
+        position: 'start' | 'end' | 'middle' | 'anywhere';
+    };
 }
 
 export const DEFAULT_FILTERS: WordFilters = {
@@ -135,5 +143,7 @@ export const DEFAULT_FILTERS: WordFilters = {
     minLetters: 1,
     maxLetters: 14,
     hasImage: null,
-    realtimeSearch: { value: '', position: 'anywhere' }
+    realtimeSearch: { value: '', position: 'anywhere' },
+    realtimeGrapheme: { value: '', position: 'anywhere' },
+    realtimePhonemes: { values: [], position: 'anywhere' }
 };

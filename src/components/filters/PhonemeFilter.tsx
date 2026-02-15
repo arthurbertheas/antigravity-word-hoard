@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FilterSection } from "./FilterSection";
 import { FilterTag } from "./FilterTag";
 import { FilterTag as IFilterTag } from "@/types/word";
@@ -16,16 +15,18 @@ interface PhonemeFilterProps {
     phonemes: IFilterTag[];
     onAddFilter: (tags: IFilterTag[]) => void;
     onRemoveFilter: (id: string) => void;
+    currentPhonemes: { values: string[]; position: 'start' | 'end' | 'middle' | 'anywhere' };
+    onPhonemesUpdate: (values: string[], position: 'start' | 'end' | 'middle' | 'anywhere') => void;
 }
 
-export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemoveFilter }: PhonemeFilterProps) {
-    const [selectedPhonemes, setSelectedPhonemes] = useState<string[]>([]);
-    const [position, setPosition] = useState<IFilterTag['position']>('anywhere');
+export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemoveFilter, currentPhonemes, onPhonemesUpdate }: PhonemeFilterProps) {
+    const { values: selectedPhonemes, position } = currentPhonemes;
 
     const togglePhonemeSelection = (ph: string) => {
-        setSelectedPhonemes(prev =>
-            prev.includes(ph) ? prev.filter(p => p !== ph) : [...prev, ph]
-        );
+        const next = selectedPhonemes.includes(ph)
+            ? selectedPhonemes.filter(p => p !== ph)
+            : [...selectedPhonemes, ph];
+        onPhonemesUpdate(next, position);
     };
 
     const handleAdd = () => {
@@ -43,7 +44,8 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
             onAddFilter(newTags);
         }
 
-        setSelectedPhonemes([]);
+        // Clear realtime after adding tags
+        onPhonemesUpdate([], 'anywhere');
     };
 
     const renderPhonemeGrid = (list: string[]) => (
@@ -98,7 +100,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                     <div className="relative flex-1">
                         <select
                             value={position}
-                            onChange={(e) => setPosition(e.target.value as any)}
+                            onChange={(e) => onPhonemesUpdate(selectedPhonemes, e.target.value as any)}
                             className="w-full appearance-none h-[32px] pl-3 pr-7 bg-white border border-border rounded-[7px] text-[12px] font-medium font-['DM_Sans'] text-foreground focus:outline-none focus:border-[rgb(var(--filter-accent))] cursor-pointer"
                         >
                             <option value="anywhere">Partout</option>

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FilterSection } from "./FilterSection";
 import { FilterTag } from "./FilterTag";
 import { FilterTag as IFilterTag } from "@/types/word";
@@ -16,11 +15,12 @@ interface GraphemeFilterProps {
     graphemes: IFilterTag[];
     onAddFilter: (tag: IFilterTag) => void;
     onRemoveFilter: (id: string) => void;
+    currentGrapheme: { value: string; position: 'start' | 'end' | 'middle' | 'anywhere' };
+    onGraphemeUpdate: (value: string, position: 'start' | 'end' | 'middle' | 'anywhere') => void;
 }
 
-export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRemoveFilter }: GraphemeFilterProps) {
-    const [inputValue, setInputValue] = useState("");
-    const [position, setPosition] = useState<IFilterTag['position']>('anywhere');
+export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRemoveFilter, currentGrapheme, onGraphemeUpdate }: GraphemeFilterProps) {
+    const { value: inputValue, position } = currentGrapheme;
 
     const handleAdd = () => {
         if (!inputValue.trim()) return;
@@ -28,7 +28,7 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
         // Prevent duplicates
         const exists = graphemes.some(g => g.value === inputValue.trim() && g.position === position);
         if (exists) {
-            setInputValue("");
+            onGraphemeUpdate("", 'anywhere');
             return;
         }
 
@@ -37,7 +37,8 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
             value: inputValue.trim(),
             position
         });
-        setInputValue("");
+        // Clear realtime after adding tag
+        onGraphemeUpdate("", 'anywhere');
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -59,7 +60,7 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
                 <div className="flex gap-2 mb-2">
                     <Input
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
+                        onChange={(e) => onGraphemeUpdate(e.target.value, position)}
                         onKeyDown={handleKeyDown}
                         placeholder="ex: ein..."
                         className="flex-1 h-[32px] text-[13px] font-mono px-3 py-[7px] border-border rounded-lg placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-[rgba(79,70,229,0.1)] focus-visible:border-[rgb(var(--filter-accent))]"
@@ -70,7 +71,7 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
                     <div className="relative">
                         <select
                             value={position}
-                            onChange={(e) => setPosition(e.target.value as any)}
+                            onChange={(e) => onGraphemeUpdate(inputValue, e.target.value as any)}
                             className="appearance-none h-[32px] pl-3 pr-7 bg-white border border-border rounded-[7px] text-[12px] font-medium font-['DM_Sans'] text-foreground focus:outline-none focus:border-[rgb(var(--filter-accent))] cursor-pointer"
                         >
                             <option value="anywhere">Partout</option>

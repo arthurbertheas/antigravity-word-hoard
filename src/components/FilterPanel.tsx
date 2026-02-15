@@ -372,6 +372,10 @@ export function FilterPanel({
                     graphemes={filters.graphemes}
                     onAddFilter={handleAddGrapheme}
                     onRemoveFilter={handleRemoveGrapheme}
+                    currentGrapheme={filters.realtimeGrapheme || { value: '', position: 'anywhere' }}
+                    onGraphemeUpdate={(value, position) => {
+                        updateFilter('realtimeGrapheme', { value, position });
+                    }}
                 />
 
                 {/* PHONÈMES */}
@@ -381,6 +385,10 @@ export function FilterPanel({
                     phonemes={filters.phonemes}
                     onAddFilter={handleAddPhonemes}
                     onRemoveFilter={handleRemovePhoneme}
+                    currentPhonemes={filters.realtimePhonemes || { values: [], position: 'anywhere' }}
+                    onPhonemesUpdate={(values, position) => {
+                        updateFilter('realtimePhonemes', { values, position });
+                    }}
                 />
 
                 {/* IMAGES ASSOCIÉES */}
