@@ -243,10 +243,10 @@ export function SelectionTray() {
                 </div>
                 {selectedWords.length > 0 && (
                   showClearConfirm ? (
-                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+                    <div className="flex items-center gap-1.5 animate-in fade-in slide-in-from-right-2 duration-300">
                       <button
                         onClick={() => setShowClearConfirm(false)}
-                        className="text-[11px] font-semibold text-[#9CA3AF] hover:text-[#1A1A2E] transition-colors">
+                        className="px-2.5 py-1 rounded-full border border-[#E5E7EB] text-[11px] font-semibold text-[#9CA3AF] hover:text-[#1A1A2E] hover:bg-[#F9FAFB] transition-all">
                         Annuler
                       </button>
                       <button
@@ -254,15 +254,15 @@ export function SelectionTray() {
                           clearSelection();
                           setShowClearConfirm(false);
                         }}
-                        className="text-[11px] font-semibold text-[#EF4444] hover:underline transition-colors">
+                        className="px-2.5 py-1 rounded-full bg-[#EF4444] text-[11px] font-semibold text-white hover:bg-[#DC2626] transition-all">
                         Confirmer
                       </button>
                     </div>
                   ) : (
                     <button
                       onClick={handleClearRequest}
-                      className="flex items-center gap-1.5 text-[13px] font-medium text-[#9CA3AF] hover:text-[#EF4444] transition-colors group">
-                      <Trash2 className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#E5E7EB] text-[11px] font-semibold text-[#9CA3AF] hover:border-[#FCA5A5] hover:text-[#EF4444] hover:bg-[#FEF2F2] transition-all group">
+                      <Trash2 className="w-3 h-3 group-hover:scale-110 transition-transform" />
                       Vider
                     </button>
                   )
