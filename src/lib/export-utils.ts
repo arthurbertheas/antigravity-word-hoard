@@ -697,6 +697,282 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
             page-break-inside: avoid;
           }
         }
+
+        /* Grid 2 Columns Layout */
+        .word-grid-2col {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
+        }
+
+        .word-card {
+          background: linear-gradient(135deg, var(--color-bg-card) 0%, #FFFFFF 100%);
+          border: 1px solid var(--color-border);
+          border-radius: 12px;
+          padding: 20px;
+          display: flex;
+          gap: 16px;
+          align-items: flex-start;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .word-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 4px;
+          height: 100%;
+          background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+        }
+
+        .word-card-content {
+          flex: 1;
+          display: flex;
+          gap: 14px;
+          align-items: flex-start;
+        }
+
+        .word-image-card {
+          flex-shrink: 0;
+          width: 64px;
+          height: 64px;
+          border-radius: 8px;
+          object-fit: cover;
+          border: 1px solid var(--color-border);
+          background: white;
+        }
+
+        @media print {
+          .word-card {
+            page-break-inside: avoid;
+          }
+        }
+
+        /* Grid 3 Columns Layout */
+        .word-grid-3col {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+        }
+
+        /* Smaller cards for 3 columns */
+        .word-grid-3col .word-card {
+          padding: 16px;
+        }
+
+        .word-grid-3col .word-number {
+          width: 30px;
+          height: 30px;
+          font-size: 13px;
+        }
+
+        .word-grid-3col .word-bullet {
+          width: 30px;
+          height: 30px;
+          font-size: 16px;
+        }
+
+        .word-grid-3col .word-image-card {
+          width: 48px;
+          height: 48px;
+        }
+
+        .word-grid-3col .word-text {
+          font-size: 18px;
+        }
+
+        .word-grid-3col .word-phoneme {
+          font-size: 12px;
+        }
+
+        .word-grid-3col .word-category {
+          font-size: 10px;
+          padding: 3px 8px;
+        }
+
+        /* Flashcards Layout */
+        .word-flashcards {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px;
+        }
+
+        .flashcard {
+          background: linear-gradient(135deg, var(--color-bg-card) 0%, #FFFFFF 100%);
+          border: 1px solid var(--color-border);
+          border-radius: 12px;
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .flashcard::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+        }
+
+        .flashcard-number {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-primary) 0%, #8B7FE8 100%);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 13px;
+          box-shadow: 0 2px 8px rgba(108, 92, 231, 0.25);
+          z-index: 1;
+        }
+
+        .flashcard-image {
+          width: 100%;
+          height: 120px;
+          border-radius: 8px;
+          object-fit: cover;
+          border: 1px solid var(--color-border);
+          background: white;
+        }
+
+        .flashcard-text {
+          font-family: var(--font-serif);
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+          text-align: center;
+        }
+
+        .flashcard-meta {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          align-items: center;
+          text-align: center;
+        }
+
+        .flashcard-phoneme {
+          font-size: 12px;
+          color: var(--color-primary);
+          font-style: italic;
+        }
+
+        .flashcard-category {
+          font-size: 10px;
+          color: var(--color-text-secondary);
+          background: #EDF2F7;
+          padding: 3px 10px;
+          border-radius: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+        }
+
+        @media print {
+          .flashcard {
+            page-break-inside: avoid;
+          }
+        }
+
+        /* Table Layout */
+        .word-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 14px;
+        }
+
+        .word-table thead {
+          background: linear-gradient(135deg, var(--color-bg-card) 0%, #FFFFFF 100%);
+          border-bottom: 2px solid var(--color-primary);
+        }
+
+        .word-table th {
+          font-family: var(--font-sans);
+          font-weight: 600;
+          color: var(--color-text-primary);
+          text-align: left;
+          padding: 12px 16px;
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .word-table tbody tr {
+          border-bottom: 1px solid var(--color-border);
+        }
+
+        .word-table tbody tr:hover {
+          background: var(--color-bg-card);
+        }
+
+        .word-table td {
+          padding: 12px 16px;
+          vertical-align: middle;
+        }
+
+        .table-number {
+          width: 50px;
+          text-align: center;
+          font-weight: 600;
+          color: var(--color-primary);
+        }
+
+        .table-image {
+          width: 48px;
+          height: 48px;
+          border-radius: 6px;
+          object-fit: cover;
+          border: 1px solid var(--color-border);
+        }
+
+        .table-word {
+          font-family: var(--font-serif);
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+        }
+
+        .table-phoneme {
+          color: var(--color-primary);
+          font-style: italic;
+          font-size: 13px;
+        }
+
+        .table-category {
+          font-size: 11px;
+          color: var(--color-text-secondary);
+          background: #EDF2F7;
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+          display: inline-block;
+        }
+
+        @media print {
+          .word-table {
+            page-break-inside: avoid;
+          }
+
+          .word-table tbody tr {
+            page-break-inside: avoid;
+          }
+        }
       </style>
     </head>
     <body>
@@ -751,6 +1027,233 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
       }
 
       // Text content
+      if (settings.display !== 'imageOnly') {
+        html += `<div class="word-details">`;
+        html += `<div class="word-text">${word.MOTS}</div>`;
+
+        if (settings.includePhonemes || settings.includeCategories) {
+          html += `<div class="word-meta">`;
+          if (settings.includePhonemes && word.PHONEMES) {
+            html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
+          }
+          if (settings.includeCategories && word.SYNT) {
+            html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+  }
+  else if (settings.layout === 'grid-2col') {
+    html += `<div class="word-grid-2col">`;
+
+    words.forEach((word, index) => {
+      html += `
+        <div class="word-card">
+          ${settings.numberWords
+            ? `<div class="word-number">${index + 1}</div>`
+            : `<div class="word-bullet">•</div>`
+          }
+          <div class="word-card-content">
+      `;
+
+      // Image (if applicable)
+      if ((settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"]) {
+        html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="word-image-card" />`;
+      }
+
+      // Text content
+      if (settings.display !== 'imageOnly') {
+        html += `<div class="word-details">`;
+        html += `<div class="word-text">${word.MOTS}</div>`;
+
+        if (settings.includePhonemes || settings.includeCategories) {
+          html += `<div class="word-meta">`;
+          if (settings.includePhonemes && word.PHONEMES) {
+            html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
+          }
+          if (settings.includeCategories && word.SYNT) {
+            html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+  }
+  else if (settings.layout === 'grid-3col') {
+    html += `<div class="word-grid-3col">`;
+
+    words.forEach((word, index) => {
+      html += `
+        <div class="word-card">
+          ${settings.numberWords
+            ? `<div class="word-number">${index + 1}</div>`
+            : `<div class="word-bullet">•</div>`
+          }
+          <div class="word-card-content">
+      `;
+
+      if ((settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"]) {
+        html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="word-image-card" />`;
+      }
+
+      if (settings.display !== 'imageOnly') {
+        html += `<div class="word-details">`;
+        html += `<div class="word-text">${word.MOTS}</div>`;
+
+        if (settings.includePhonemes || settings.includeCategories) {
+          html += `<div class="word-meta">`;
+          if (settings.includePhonemes && word.PHONEMES) {
+            html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
+          }
+          if (settings.includeCategories && word.SYNT) {
+            html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+  }
+  else if (settings.layout === 'flashcards') {
+    html += `<div class="word-flashcards">`;
+
+    words.forEach((word, index) => {
+      html += `<div class="flashcard">`;
+
+      if (settings.numberWords) {
+        html += `<div class="flashcard-number">${index + 1}</div>`;
+      }
+
+      if ((settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"]) {
+        html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="flashcard-image" />`;
+      }
+
+      if (settings.display !== 'imageOnly') {
+        html += `<div class="flashcard-text">${word.MOTS}</div>`;
+
+        if (settings.includePhonemes || settings.includeCategories) {
+          html += `<div class="flashcard-meta">`;
+          if (settings.includePhonemes && word.PHONEMES) {
+            html += `<span class="flashcard-phoneme">/${word.PHONEMES}/</span>`;
+          }
+          if (settings.includeCategories && word.SYNT) {
+            html += `<span class="flashcard-category">${word.SYNT}</span>`;
+          }
+          html += `</div>`;
+        }
+      }
+
+      html += `</div>`;
+    });
+
+    html += `</div>`;
+  }
+  else if (settings.layout === 'table') {
+    html += `<table class="word-table">`;
+    html += `<thead><tr>`;
+
+    if (settings.numberWords) {
+      html += `<th>#</th>`;
+    }
+
+    if (settings.display === 'imageOnly' || settings.display === 'wordAndImage') {
+      html += `<th>Image</th>`;
+    }
+
+    if (settings.display !== 'imageOnly') {
+      html += `<th>Mot</th>`;
+    }
+
+    if (settings.includePhonemes) {
+      html += `<th>Phonème</th>`;
+    }
+
+    if (settings.includeCategories) {
+      html += `<th>Catégorie</th>`;
+    }
+
+    html += `</tr></thead>`;
+    html += `<tbody>`;
+
+    words.forEach((word, index) => {
+      html += `<tr>`;
+
+      if (settings.numberWords) {
+        html += `<td class="table-number">${index + 1}</td>`;
+      }
+
+      if (settings.display === 'imageOnly' || settings.display === 'wordAndImage') {
+        html += `<td>`;
+        if (word["image associée"]) {
+          html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="table-image" />`;
+        }
+        html += `</td>`;
+      }
+
+      if (settings.display !== 'imageOnly') {
+        html += `<td class="table-word">${word.MOTS}</td>`;
+      }
+
+      if (settings.includePhonemes) {
+        html += `<td class="table-phoneme">${word.PHONEMES || ''}</td>`;
+      }
+
+      if (settings.includeCategories) {
+        html += `<td><span class="table-category">${word.SYNT || ''}</span></td>`;
+      }
+
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+  }
+  else {
+    // Fallback: use list-1col for unknown layouts
+    console.warn(`Unknown layout: ${settings.layout}, falling back to list-1col`);
+
+    html += `<div class="word-list-1col">`;
+
+    words.forEach((word, index) => {
+      html += `
+        <div class="word-item-list">
+          ${settings.numberWords
+            ? `<div class="word-number">${index + 1}</div>`
+            : `<div class="word-bullet">•</div>`
+          }
+          <div class="word-content-list">
+      `;
+
+      if ((settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"]) {
+        html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="word-image-list" />`;
+      }
+
       if (settings.display !== 'imageOnly') {
         html += `<div class="word-details">`;
         html += `<div class="word-text">${word.MOTS}</div>`;
