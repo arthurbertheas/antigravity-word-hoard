@@ -270,16 +270,6 @@ export function SelectionTray() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/70">
-                  <div className="flex items-center gap-1">
-                    <span className="text-primary">{totalSyllables}</span> Syllabes
-                  </div>
-                  <div className="w-1 h-1 rounded-full bg-border" />
-                  <div className="flex items-center gap-1">
-                    Moy. <span className="text-primary">{selectedWords.length > 0 ? avgSyllables : 'ØØ'}</span>
-                  </div>
-                </div>
-
                 <div className={cn(
                 "flex flex-wrap gap-1 transition-all duration-300",
                 selectedWords.length === 0 && "opacity-0"
