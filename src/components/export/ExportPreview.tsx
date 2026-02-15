@@ -58,26 +58,55 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
         )}
 
         {/* Word List Preview */}
-        <div className="space-y-3">
+        <div className={
+          settings.layout === 'grid-2col'
+            ? 'grid grid-cols-2 gap-3'
+            : settings.layout === 'grid-3col'
+            ? 'grid grid-cols-3 gap-2.5'
+            : 'space-y-3'
+        }>
           {previewWords.map((word, index) => (
-            <div key={`${word.MOTS}-${word.PHONEMES}`} className="flex items-start gap-2.5">
-              <span className="text-sm font-semibold text-[#6C5CE7] mt-0.5">
+            <div
+              key={`${word.MOTS}-${word.PHONEMES}`}
+              className={
+                settings.layout === 'grid-2col' || settings.layout === 'grid-3col'
+                  ? 'flex flex-col gap-2 p-3 bg-white border border-gray-200 rounded-lg'
+                  : 'flex items-start gap-2.5'
+              }
+            >
+              {/* Number/Bullet */}
+              <span className={
+                settings.layout === 'grid-2col' || settings.layout === 'grid-3col'
+                  ? 'text-xs font-semibold text-[#6C5CE7]'
+                  : 'text-sm font-semibold text-[#6C5CE7] mt-0.5'
+              }>
                 {settings.numberWords ? `${index + 1}.` : '•'}
               </span>
+
               <div className="flex flex-col gap-1.5">
                 {/* Image */}
                 {(settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"] && (
                   <img
                     src={word["image associée"]}
                     alt={word.MOTS}
-                    className="w-16 h-16 object-cover rounded border border-gray-200"
+                    className={
+                      settings.layout === 'grid-3col'
+                        ? 'w-12 h-12 object-cover rounded border border-gray-200'
+                        : 'w-16 h-16 object-cover rounded border border-gray-200'
+                    }
                   />
                 )}
 
                 {/* Text content */}
                 <div>
                   {settings.display !== 'imageOnly' && (
-                    <span className="text-sm text-gray-900">{word.MOTS}</span>
+                    <span className={
+                      settings.layout === 'grid-3col'
+                        ? 'text-xs text-gray-900 font-medium'
+                        : 'text-sm text-gray-900'
+                    }>
+                      {word.MOTS}
+                    </span>
                   )}
                   {settings.includePhonemes && word.PHONEMES && (
                     <span className="text-xs text-gray-500 ml-2">/{word.PHONEMES}/</span>
@@ -89,12 +118,12 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
               </div>
             </div>
           ))}
-          {words.length > PREVIEW_WORD_LIMIT && (
-            <div className="text-xs text-gray-400 italic pt-2">
-              ... et {words.length - previewWords.length} autres mots
-            </div>
-          )}
         </div>
+        {words.length > PREVIEW_WORD_LIMIT && (
+          <div className="text-xs text-gray-400 italic pt-2">
+            ... et {words.length - previewWords.length} autres mots
+          </div>
+        )}
 
         {/* Footer */}
         <div className="mt-5 pt-3 border-t border-gray-100 text-[11px] text-gray-400 italic text-center">
