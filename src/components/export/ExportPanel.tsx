@@ -14,7 +14,7 @@ export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
     try {
       switch (settings.format) {
         case 'pdf':
-          exportToPDF(selectedWords, settings);
+          await exportToPDF(selectedWords, settings);
           toast.success('PDF téléchargé avec succès !');
           break;
         case 'word':

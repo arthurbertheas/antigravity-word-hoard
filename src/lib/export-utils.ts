@@ -1,10 +1,39 @@
 import jsPDF from 'jspdf';
-import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType } from 'docx';
+import { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 import { Word } from '@/types/word';
 import { ExportSettings } from '@/types/export';
 
-export function exportToPDF(words: Word[], settings: ExportSettings): void {
+// Helper function to load image as base64
+async function loadImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Error loading image:', error);
+    return null;
+  }
+}
+
+// Helper function to load image as ArrayBuffer for Word
+async function loadImageAsArrayBuffer(url: string): Promise<Uint8Array | null> {
+  try {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    return new Uint8Array(arrayBuffer);
+  } catch (error) {
+    console.error('Error loading image:', error);
+    return null;
+  }
+}
+
+export async function exportToPDF(words: Word[], settings: ExportSettings): Promise<void> {
   const doc = new jsPDF();
 
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -70,24 +99,63 @@ export function exportToPDF(words: Word[], settings: ExportSettings): void {
       }
     });
   } else {
-    // List layout (original implementation)
+    // List layout with optional images
     doc.setFontSize(12);
     const lineHeight = 7;
+    const imageSize = 20; // 20mm square images
 
-    words.forEach((word, index) => {
-      if (yPosition > pageHeight - margin) {
+    // Load all images if needed
+    const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
+    const imageDataMap = new Map<string, string>();
+
+    if (hasImages) {
+      for (const word of words) {
+        if (word["image associée"]) {
+          const imageData = await loadImageAsBase64(word["image associée"]);
+          if (imageData) {
+            imageDataMap.set(word.MOTS, imageData);
+          }
+        }
+      }
+    }
+
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+      const hasImage = hasImages && imageDataMap.has(word.MOTS);
+      const itemHeight = hasImage ? imageSize + 5 : lineHeight;
+
+      // Check page break
+      if (yPosition + itemHeight > pageHeight - margin) {
         doc.addPage();
         yPosition = margin;
       }
 
-      let text = settings.numberWords ? `${index + 1}. ` : '• ';
-      if (settings.display !== 'imageOnly') text += word.MOTS;
-      if (settings.includePhonemes && word.PHONEMES) text += ` /${word.PHONEMES}/`;
-      if (settings.includeCategories && word.SYNT) text += ` (${word.SYNT})`;
+      let xOffset = margin + 5;
 
-      doc.text(text, margin + 5, yPosition);
-      yPosition += lineHeight;
-    });
+      // Number or bullet
+      let prefix = settings.numberWords ? `${index + 1}. ` : '• ';
+      doc.text(prefix, xOffset, yPosition + (hasImage ? imageSize / 2 : 0));
+      xOffset += 10;
+
+      // Image
+      if (hasImage) {
+        const imageData = imageDataMap.get(word.MOTS);
+        if (imageData) {
+          doc.addImage(imageData, 'JPEG', xOffset, yPosition, imageSize, imageSize);
+          xOffset += imageSize + 5;
+        }
+      }
+
+      // Text
+      if (settings.display !== 'imageOnly') {
+        let text = word.MOTS;
+        if (settings.includePhonemes && word.PHONEMES) text += ` /${word.PHONEMES}/`;
+        if (settings.includeCategories && word.SYNT) text += ` (${word.SYNT})`;
+        doc.text(text, xOffset, yPosition + (hasImage ? imageSize / 2 : 0));
+      }
+
+      yPosition += itemHeight;
+    }
   }
 
   // Footer
@@ -180,39 +248,72 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
       })
     );
   } else {
-    // List layout (original implementation)
-    words.forEach((word, index) => {
-      const textRuns: TextRun[] = [];
+    // List layout with optional images
+    const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
+    const imageDataMap = new Map<string, Uint8Array>();
+
+    // Load all images if needed
+    if (hasImages) {
+      for (const word of words) {
+        if (word["image associée"]) {
+          const imageData = await loadImageAsArrayBuffer(word["image associée"]);
+          if (imageData) {
+            imageDataMap.set(word.MOTS, imageData);
+          }
+        }
+      }
+    }
+
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+      const paragraphChildren: (TextRun | ImageRun)[] = [];
 
       // Number or bullet
       if (settings.numberWords) {
-        textRuns.push(new TextRun(`${index + 1}. `));
+        paragraphChildren.push(new TextRun(`${index + 1}. `));
       } else {
-        textRuns.push(new TextRun('• '));
+        paragraphChildren.push(new TextRun('• '));
       }
 
-      // Word
+      // Image
+      if (hasImages && imageDataMap.has(word.MOTS)) {
+        const imageData = imageDataMap.get(word.MOTS);
+        if (imageData) {
+          paragraphChildren.push(
+            new ImageRun({
+              data: imageData,
+              transformation: {
+                width: 80,
+                height: 80,
+              },
+            })
+          );
+          paragraphChildren.push(new TextRun(' ')); // Space after image
+        }
+      }
+
+      // Word text
       if (settings.display !== 'imageOnly') {
-        textRuns.push(new TextRun({ text: word.MOTS, bold: true }));
+        paragraphChildren.push(new TextRun({ text: word.MOTS, bold: true }));
       }
 
       // Phonemes if enabled
       if (settings.includePhonemes && word.PHONEMES) {
-        textRuns.push(new TextRun(` /${word.PHONEMES}/`));
+        paragraphChildren.push(new TextRun(` /${word.PHONEMES}/`));
       }
 
       // Category if enabled
       if (settings.includeCategories && word.SYNT) {
-        textRuns.push(new TextRun(` (${word.SYNT})`));
+        paragraphChildren.push(new TextRun(` (${word.SYNT})`));
       }
 
       children.push(
         new Paragraph({
-          children: textRuns,
-          spacing: { after: 100 },
+          children: paragraphChildren,
+          spacing: { after: 150 },
         })
       );
-    });
+    }
   }
 
   // Footer
@@ -276,7 +377,22 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
           padding-left: 2em;
         }
         .word-list li {
-          margin-bottom: 0.5em;
+          margin-bottom: 0.8em;
+          display: flex;
+          align-items: flex-start;
+          gap: 0.5em;
+        }
+        .word-item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.3em;
+        }
+        .word-image {
+          width: 80px;
+          height: 80px;
+          object-fit: cover;
+          border: 1px solid #ddd;
+          border-radius: 4px;
         }
         .phoneme {
           color: #666;
@@ -309,21 +425,32 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
   html += `<ul class="word-list">`;
 
   words.forEach((word) => {
-    let itemContent = '';
+    html += `<li><div class="word-item">`;
 
+    // Image
+    if ((settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"]) {
+      html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="word-image" />`;
+    }
+
+    // Text content
+    let textContent = '';
     if (settings.display !== 'imageOnly') {
-      itemContent += `<strong>${word.MOTS}</strong>`;
+      textContent += `<strong>${word.MOTS}</strong>`;
     }
 
     if (settings.includePhonemes && word.PHONEMES) {
-      itemContent += ` <span class="phoneme">/${word.PHONEMES}/</span>`;
+      textContent += ` <span class="phoneme">/${word.PHONEMES}/</span>`;
     }
 
     if (settings.includeCategories && word.SYNT) {
-      itemContent += ` <span class="category">(${word.SYNT})</span>`;
+      textContent += ` <span class="category">(${word.SYNT})</span>`;
     }
 
-    html += `<li>${itemContent}</li>`;
+    if (textContent) {
+      html += `<div>${textContent}</div>`;
+    }
+
+    html += `</div></li>`;
   });
 
   html += `</ul>`;
