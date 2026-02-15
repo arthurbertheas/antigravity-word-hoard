@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Modal - Premium Design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --violet-primary: #6C5CE7;
+            --violet-dark: #5B4CD6;
+            --violet-light: #E8E5FB;
+            --violet-ultralight: #F7F6FE;
+            --cream: #FAF9F6;
+            --cream-dark: #F0EDE6;
+            --text-primary: #2D2A2E;
+            --text-secondary: #6B6570;
+            --text-tertiary: #9B969D;
+            --border: #E6E3DC;
+            --shadow-sm: 0 2px 8px rgba(45, 42, 46, 0.04);
+            --shadow-md: 0 8px 24px rgba(45, 42, 46, 0.08);
+            --shadow-lg: 0 16px 48px rgba(45, 42, 46, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #F5F2EB 0%, #FAF9F6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Backdrop */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(45, 42, 46, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 50;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Modal Container */
+        .modal-container {
+            position: relative;
+            z-index: 51;
+            background: var(--cream);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            max-width: 1200px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Header */
+        .modal-header {
+            background: linear-gradient(135deg, var(--violet-ultralight) 0%, #FFFFFF 100%);
+            padding: 2rem 2.5rem;
+            border-bottom: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--violet-light) 0%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .modal-header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .modal-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .close-button {
+            background: white;
+            border: 1.5px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .close-button:hover {
+            background: var(--cream);
+            border-color: var(--violet-primary);
+            color: var(--violet-primary);
+            transform: rotate(90deg);
+        }
+
+        /* Main Content */
+        .modal-body {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 0;
+            height: 600px;
+        }
+
+        /* Options Panel */
+        .options-panel {
+            background: white;
+            border-right: 2px solid var(--border);
+            padding: 2rem 1.75rem;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--violet-light) transparent;
+        }
+
+        .options-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .options-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .options-panel::-webkit-scrollbar-thumb {
+            background: var(--violet-light);
+            border-radius: 3px;
+        }
+
+        .option-section {
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.4s ease-out backwards;
+        }
+
+        .option-section:nth-child(1) { animation-delay: 0.1s; }
+        .option-section:nth-child(2) { animation-delay: 0.15s; }
+        .option-section:nth-child(3) { animation-delay: 0.2s; }
+        .option-section:nth-child(4) { animation-delay: 0.25s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .option-label {
+            font-family: 'Fraunces', serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: block;
+            letter-spacing: 0.02em;
+        }
+
+        /* Custom Radio Buttons */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+        }
+
+        .radio-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--cream);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radio-label::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--violet-ultralight) 0%, var(--violet-light) 100%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            background: white;
+            border-color: var(--violet-primary);
+            box-shadow: 0 0 0 4px var(--violet-ultralight);
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label::before {
+            opacity: 0.15;
+        }
+
+        .radio-label:hover {
+            border-color: var(--violet-light);
+            transform: translateX(2px);
+        }
+
+        .radio-icon {
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid var(--border);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label .radio-icon {
+            border-color: var(--violet-primary);
+        }
+
+        .radio-icon::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: var(--violet-primary);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label .radio-icon::after {
+            transform: scale(1);
+        }
+
+        .radio-text {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            z-index: 1;
+        }
+
+        .radio-text-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+        }
+
+        .format-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        /* Select Dropdown */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-field {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--cream);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.2s ease;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B6570' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.25rem center;
+            padding-right: 3rem;
+        }
+
+        .select-field:hover {
+            border-color: var(--violet-light);
+        }
+
+        .select-field:focus {
+            outline: none;
+            border-color: var(--violet-primary);
+            box-shadow: 0 0 0 4px var(--violet-ultralight);
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .checkbox-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.875rem 1rem;
+            background: var(--cream);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-label:hover {
+            background: var(--cream-dark);
+        }
+
+        .checkbox-box {
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid var(--border);
+            border-radius: 6px;
+            position: relative;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .checkbox-option input[type="checkbox"]:checked + .checkbox-label .checkbox-box {
+            background: var(--violet-primary);
+            border-color: var(--violet-primary);
+        }
+
+        .checkbox-box::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 6px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg) scale(0);
+            transition: transform 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .checkbox-option input[type="checkbox"]:checked + .checkbox-label .checkbox-box::after {
+            transform: rotate(45deg) scale(1);
+        }
+
+        .checkbox-text {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            background: linear-gradient(135deg, var(--cream-dark) 0%, var(--cream) 100%);
+            padding: 2.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .preview-meta {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .preview-document {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            box-shadow:
+                0 1px 3px rgba(45, 42, 46, 0.05),
+                0 8px 24px rgba(45, 42, 46, 0.08),
+                0 0 0 1px rgba(45, 42, 46, 0.04);
+            min-height: 480px;
+            animation: fadeInUp 0.5s ease-out backwards;
+            animation-delay: 0.3s;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .preview-document:hover {
+            box-shadow:
+                0 2px 6px rgba(45, 42, 46, 0.06),
+                0 12px 32px rgba(45, 42, 46, 0.12),
+                0 0 0 1px rgba(45, 42, 46, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .doc-header {
+            border-bottom: 2px solid var(--cream-dark);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .doc-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+        }
+
+        .doc-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .doc-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .doc-word-item {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            padding: 0.625rem 0;
+        }
+
+        .doc-bullet {
+            color: var(--violet-primary);
+            font-weight: 700;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+
+        .doc-word {
+            font-size: 1.0625rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+
+        .doc-footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--cream-dark);
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Footer Actions */
+        .modal-footer {
+            background: white;
+            padding: 1.75rem 2.5rem;
+            border-top: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 14px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .btn-secondary {
+            background: var(--cream);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cream-dark);
+            border-color: var(--text-tertiary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--violet-primary) 0%, var(--violet-dark) 100%);
+            color: white;
+            box-shadow:
+                0 4px 12px rgba(108, 92, 231, 0.25),
+                0 1px 3px rgba(108, 92, 231, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            box-shadow:
+                0 6px 20px rgba(108, 92, 231, 0.35),
+                0 2px 6px rgba(108, 92, 231, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:hover::before {
+            opacity: 1;
+        }
+
+        .btn-icon {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Backdrop -->
+    <div class="modal-backdrop"></div>
+
+    <!-- Modal -->
+    <div class="modal-container">
+
+        <!-- Header -->
+        <header class="modal-header">
+            <div class="modal-header-content">
+                <div>
+                    <h1 class="modal-title">Exporter la liste</h1>
+                    <p class="modal-subtitle">5 mots sélectionnés</p>
+                </div>
+                <button class="close-button">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Body -->
+        <div class="modal-body">
+
+            <!-- Options Panel -->
+            <aside class="options-panel">
+
+                <!-- Format -->
+                <section class="option-section">
+                    <label class="option-label">Format d'export</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="format" id="format-pdf" checked>
+                            <label for="format-pdf" class="radio-label">
+                                <div class="radio-icon"></div>
+                                <div class="radio-text">
+                                    <svg class="format-icon" viewBox="0 0 24 24" fill="none">
+                                        <rect x="5" y="2" width="14" height="20" rx="2" stroke="#EF4444" stroke-width="2" fill="#FEE2E2"/>
+                                        <path d="M9 10h6M9 14h4" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                    <span class="radio-text-label">PDF</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="format" id="format-word">
+                            <label for="format-word" class="radio-label">
+                                <div class="radio-icon"></div>
+                                <div class="radio-text">
+                                    <svg class="format-icon" viewBox="0 0 24 24" fill="none">
+                                        <rect x="5" y="2" width="14" height="20" rx="2" stroke="#3B82F6" stroke-width="2" fill="#DBEAFE"/>
+                                        <path d="M9 10h6M9 14h4" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                    <span class="radio-text-label">Word</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="format" id="format-print">
+                            <label for="format-print" class="radio-label">
+                                <div class="radio-icon"></div>
+                                <div class="radio-text">
+                                    <svg class="format-icon" viewBox="0 0 24 24" fill="none">
+                                        <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" stroke="#10B981" stroke-width="2" fill="#D1FAE5"/>
+                                        <rect x="6" y="14" width="12" height="8" rx="1" stroke="#059669" stroke-width="2" fill="#D1FAE5"/>
+                                    </svg>
+                                    <span class="radio-text-label">Imprimer</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Display Mode -->
+                <section class="option-section">
+                    <label class="option-label">Mode d'affichage</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="display" id="display-word" checked>
+                            <label for="display-word" class="radio-label">
+                                <div class="radio-icon"></div>
+                                <div class="radio-text">
+                                    <span class="radio-text-label">Mot seul</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="display" id="display-image">
+                            <label for="display-image" class="radio-label">
+                                <div class="radio-icon"></div>
+                                <div class="radio-text">
+                                    <span class="radio-text-label">Image seule</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="display" id="display-both">
+                            <label for="display-both" class="radio-label">
+                                <div class="radio-icon"></div>
+                                <div class="radio-text">
+                                    <span class="radio-text-label">Mot + Image</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Layout -->
+                <section class="option-section">
+                    <label class="option-label">Mise en page</label>
+                    <div class="select-wrapper">
+                        <select class="select-field">
+                            <option>Liste simple (1 colonne)</option>
+                            <option>Grille 2 colonnes</option>
+                            <option>Grille 3 colonnes</option>
+                            <option>Flashcards</option>
+                            <option>Tableau détaillé</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- Options -->
+                <section class="option-section">
+                    <label class="option-label">Options complémentaires</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="opt-date" checked>
+                            <label for="opt-date" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Inclure la date</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="opt-phonemes">
+                            <label for="opt-phonemes" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Afficher les phonèmes</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="opt-numbers">
+                            <label for="opt-numbers" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Numéroter les mots</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="opt-categories">
+                            <label for="opt-categories" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Inclure les catégories</span>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+            </aside>
+
+            <!-- Preview Panel -->
+            <main class="preview-panel">
+                <div class="preview-header">
+                    <h2 class="preview-title">Aperçu du document</h2>
+                    <span class="preview-meta">Format A4 • Portrait</span>
+                </div>
+
+                <div class="preview-document">
+                    <div class="doc-header">
+                        <h3 class="doc-title">Mots à retravailler — 15/02/2026</h3>
+                        <p class="doc-meta">5 mots • Liste simple</p>
+                    </div>
+
+                    <div class="doc-content">
+                        <div class="doc-word-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">caquet</span>
+                        </div>
+                        <div class="doc-word-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">capitonnage</span>
+                        </div>
+                        <div class="doc-word-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">abeille</span>
+                        </div>
+                        <div class="doc-word-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">ail</span>
+                        </div>
+                        <div class="doc-word-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">allemagne</span>
+                        </div>
+                    </div>
+
+                    <div class="doc-footer">
+                        Généré depuis Ressources Orthophonie
+                    </div>
+                </div>
+            </main>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="modal-footer">
+            <button class="btn btn-secondary">
+                Annuler
+            </button>
+            <button class="btn btn-primary">
+                <svg class="btn-icon" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 4v8m0 0l-3-3m3 3l3-3M4 15a2 2 0 002 2h8a2 2 0 002-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Générer l'export
+            </button>
+        </footer>
+
+    </div>
+
+</body>
+</html>
