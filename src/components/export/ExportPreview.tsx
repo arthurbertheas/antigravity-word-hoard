@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Word } from '@/types/word';
 import { ExportSettings } from '@/types/export';
 
@@ -30,6 +31,10 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
     );
   }
 
+  const previewWords = useMemo(() => {
+    return words.slice(0, PREVIEW_WORD_LIMIT);
+  }, [words]);
+
   return (
     <div className="flex-1 bg-white px-6 py-7 overflow-y-auto">
       {/* Preview Header */}
@@ -54,7 +59,7 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
 
         {/* Word List Preview */}
         <div className="space-y-2">
-          {words.slice(0, PREVIEW_WORD_LIMIT).map((word) => (
+          {previewWords.map((word) => (
             <div key={`${word.MOTS}-${word.PHONEMES}`} className="flex items-baseline gap-2.5">
               <span className="text-sm font-semibold text-[#6C5CE7]">•</span>
               <div>
@@ -72,7 +77,7 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
           ))}
           {words.length > PREVIEW_WORD_LIMIT && (
             <div className="text-xs text-gray-400 italic pt-2">
-              ... et {words.length - PREVIEW_WORD_LIMIT} autres mots
+              ... et {words.length - previewWords.length} autres mots
             </div>
           )}
         </div>
