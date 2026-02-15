@@ -581,58 +581,121 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
           }
         }
 
-        h1 {
-          font-size: 18pt;
-          font-weight: bold;
-          margin-bottom: 0.5em;
-        }
-        .date {
-          font-size: 10pt;
-          color: #666;
-          margin-bottom: 0.3em;
-        }
-        .count {
-          font-size: 10pt;
-          margin-bottom: 1.5em;
-        }
-        .word-list {
-          list-style: ${settings.numberWords ? 'decimal' : 'disc'};
-          padding-left: 2em;
-        }
-        .word-list li {
-          margin-bottom: 0.8em;
-          display: flex;
-          align-items: flex-start;
-          gap: 0.5em;
-        }
-        .word-item {
+        /* List 1 Column Layout */
+        .word-list-1col {
           display: flex;
           flex-direction: column;
-          gap: 0.3em;
+          gap: 16px;
         }
-        .word-image {
-          width: 80px;
-          height: 80px;
+
+        .word-item-list {
+          background: linear-gradient(135deg, var(--color-bg-card) 0%, #FFFFFF 100%);
+          border: 1px solid var(--color-border);
+          border-radius: 12px;
+          padding: 18px 20px;
+          display: flex;
+          gap: 14px;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .word-item-list::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 4px;
+          height: 100%;
+          background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+        }
+
+        .word-number {
+          flex-shrink: 0;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-primary) 0%, #8B7FE8 100%);
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 15px;
+          box-shadow: 0 2px 8px rgba(108, 92, 231, 0.25);
+        }
+
+        .word-bullet {
+          flex-shrink: 0;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          color: var(--color-primary);
+          font-weight: 600;
+        }
+
+        .word-content-list {
+          flex: 1;
+          display: flex;
+          gap: 14px;
+          align-items: center;
+        }
+
+        .word-image-list {
+          flex-shrink: 0;
+          width: 64px;
+          height: 64px;
+          border-radius: 8px;
           object-fit: cover;
-          border: 1px solid #ddd;
-          border-radius: 4px;
+          border: 1px solid var(--color-border);
+          background: white;
         }
-        .phoneme {
-          color: #666;
-          font-size: 10pt;
+
+        .word-details {
+          flex: 1;
         }
-        .category {
-          color: #666;
-          font-size: 10pt;
+
+        .word-text {
+          font-family: var(--font-serif);
+          font-size: 22px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+          margin-bottom: 6px;
+          line-height: 1.3;
         }
-        .footer {
-          margin-top: 2em;
-          padding-top: 1em;
-          border-top: 1px solid #ddd;
-          text-align: center;
-          font-size: 9pt;
-          color: #999;
+
+        .word-meta {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+
+        .word-phoneme {
+          font-size: 14px;
+          color: var(--color-primary);
           font-style: italic;
+        }
+
+        .word-category {
+          display: inline-block;
+          font-size: 11px;
+          color: var(--color-text-secondary);
+          background: #EDF2F7;
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+        }
+
+        @media print {
+          .word-item-list {
+            page-break-inside: avoid;
+          }
         }
       </style>
     </head>
@@ -667,38 +730,53 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
       </div>
     </header>
   `;
-  html += `<ul class="word-list">`;
 
-  words.forEach((word) => {
-    html += `<li><div class="word-item">`;
+  // Generate content based on layout
+  if (settings.layout === 'list-1col') {
+    html += `<div class="word-list-1col">`;
 
-    // Image
-    if ((settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"]) {
-      html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="word-image" />`;
-    }
+    words.forEach((word, index) => {
+      html += `
+        <div class="word-item-list">
+          ${settings.numberWords
+            ? `<div class="word-number">${index + 1}</div>`
+            : `<div class="word-bullet">•</div>`
+          }
+          <div class="word-content-list">
+      `;
 
-    // Text content
-    let textContent = '';
-    if (settings.display !== 'imageOnly') {
-      textContent += `<strong>${word.MOTS}</strong>`;
-    }
+      // Image (if applicable)
+      if ((settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"]) {
+        html += `<img src="${word["image associée"]}" alt="${word.MOTS}" class="word-image-list" />`;
+      }
 
-    if (settings.includePhonemes && word.PHONEMES) {
-      textContent += ` <span class="phoneme">/${word.PHONEMES}/</span>`;
-    }
+      // Text content
+      if (settings.display !== 'imageOnly') {
+        html += `<div class="word-details">`;
+        html += `<div class="word-text">${word.MOTS}</div>`;
 
-    if (settings.includeCategories && word.SYNT) {
-      textContent += ` <span class="category">(${word.SYNT})</span>`;
-    }
+        if (settings.includePhonemes || settings.includeCategories) {
+          html += `<div class="word-meta">`;
+          if (settings.includePhonemes && word.PHONEMES) {
+            html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
+          }
+          if (settings.includeCategories && word.SYNT) {
+            html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          html += `</div>`;
+        }
 
-    if (textContent) {
-      html += `<div>${textContent}</div>`;
-    }
+        html += `</div>`;
+      }
 
-    html += `</div></li>`;
-  });
+      html += `
+          </div>
+        </div>
+      `;
+    });
 
-  html += `</ul>`;
+    html += `</div>`;
+  }
   html += `
     <footer class="document-footer">
       <div class="footer-brand">Généré depuis Ressources Orthophonie</div>
