@@ -255,16 +255,13 @@ export function FilterPanel({
                 <FilterSection
                     title="GRAPHÈMES"
                     icon={
-                        <svg className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            {/* Top block - A */}
-                            <rect x="6" y="1" width="10" height="10" rx="1.5" />
-                            <text x="11" y="8.5" textAnchor="middle" fill="currentColor" stroke="none" fontSize="7" fontWeight="700" fontFamily="sans-serif">A</text>
-                            {/* Bottom-left block - B */}
-                            <rect x="1" y="12" width="10" height="10" rx="1.5" />
-                            <text x="6" y="19.5" textAnchor="middle" fill="currentColor" stroke="none" fontSize="7" fontWeight="700" fontFamily="sans-serif">B</text>
-                            {/* Bottom-right block - C */}
-                            <rect x="12" y="12" width="10" height="10" rx="1.5" />
-                            <text x="17" y="19.5" textAnchor="middle" fill="currentColor" stroke="none" fontSize="7" fontWeight="700" fontFamily="sans-serif">C</text>
+                        <svg className="w-4 h-4 text-[rgb(var(--filter-accent))]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="5" y="0.5" width="9" height="9" rx="2" />
+                            <text x="9.5" y="7.2" textAnchor="middle" fill="currentColor" stroke="none" fontSize="6.5" fontWeight="800" fontFamily="system-ui">A</text>
+                            <rect x="0.5" y="10.5" width="9" height="9" rx="2" />
+                            <text x="5" y="17.2" textAnchor="middle" fill="currentColor" stroke="none" fontSize="6.5" fontWeight="800" fontFamily="system-ui">B</text>
+                            <rect x="10.5" y="10.5" width="9" height="9" rx="2" />
+                            <text x="15" y="17.2" textAnchor="middle" fill="currentColor" stroke="none" fontSize="6.5" fontWeight="800" fontFamily="system-ui">C</text>
                         </svg>
                     }
                     badge={filters.graphemeDisplay.length}
