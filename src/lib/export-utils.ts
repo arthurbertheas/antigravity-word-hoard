@@ -455,11 +455,6 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
 }
 
 export function exportToPrint(words: Word[], settings: ExportSettings): void {
-  // DEBUG: Log settings to console
-  console.log('[exportToPrint] Settings received:', settings);
-  console.log('[exportToPrint] Layout value:', settings.layout);
-  console.log('[exportToPrint] Layout type:', typeof settings.layout);
-
   // Create print content
   let html = `
     <!DOCTYPE html>
@@ -1307,21 +1302,13 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     iframeDoc.write(html);
     iframeDoc.close();
 
-    // Wait for content to load then print
-    iframe.onload = () => {
-      setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
+    // Flag to prevent double print
+    let printCalled = false;
 
-        // Remove iframe after printing
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-        }, 1000);
-      }, 250);
-    };
+    const doPrint = () => {
+      if (printCalled) return;
+      printCalled = true;
 
-    // Fallback if onload doesn't fire
-    setTimeout(() => {
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
 
@@ -1331,6 +1318,14 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
           document.body.removeChild(iframe);
         }
       }, 1000);
-    }, 500);
+    };
+
+    // Wait for content to load then print
+    iframe.onload = () => {
+      setTimeout(doPrint, 250);
+    };
+
+    // Fallback if onload doesn't fire
+    setTimeout(doPrint, 500);
   }
 }
