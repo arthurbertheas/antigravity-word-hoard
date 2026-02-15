@@ -13,7 +13,7 @@ import {
 import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List } from "lucide-react";
 
 import { cn } from '@/lib/utils';
-import { usePdfExport } from '@/hooks/usePdfExport';
+import { ExportPanel } from '@/components/export/ExportPanel';
 import { NewListModal } from './NewListModal';
 import { useToast } from "@/hooks/use-toast"
 import { useSelection } from '@/contexts/SelectionContext';
@@ -32,7 +32,7 @@ export function SidePanel() {
     const [activeTab, setActiveTab] = useState<TabType>('visual');
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
     const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
-    const { generatePdf } = usePdfExport();
+    const [showExportPanel, setShowExportPanel] = useState(false);
     const { toast } = useToast();
     const { clearSelection, addItems, setSelection, setIsFocusModeOpen } = useSelection();
 
@@ -111,23 +111,6 @@ export function SidePanel() {
                 title: "Liste chargée",
                 description: `Les ${failedWords.length} mots ratés sont maintenant dans votre sélection.`,
                 duration: 4000
-            });
-        }
-    };
-
-    const handleDownloadPdf = () => {
-        try {
-            const fileName = generatePdf({ queue, wordStatuses, startTime });
-            toast({
-                title: "PDF Téléchargé",
-                description: `Le rapport ${fileName} a été généré avec succès.`,
-            });
-        } catch (error) {
-            console.error("PDF generation failed:", error);
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Impossible de générer le PDF.",
             });
         }
     };
@@ -586,11 +569,11 @@ export function SidePanel() {
                             < div className="px-8 py-5 border-b border-border flex flex-col gap-2.5">
                                 <Button
                                     className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto"
-                                    onClick={handleDownloadPdf}
+                                    onClick={() => setShowExportPanel(true)}
                                 >
-                                    < Download className="w-4 h-4" />
-                                    < span > Enregistrer PDF</span >
-                                </Button >
+                                    <Download className="w-4 h-4" />
+                                    <span>Exporter</span>
+                                </Button>
                                 <Button
                                     className="w-full justify-between gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto group"
                                     onClick={() => togglePanelMode('stats')}
@@ -842,6 +825,13 @@ export function SidePanel() {
                     onViewRecap={handleViewRecap}
                 />
             </aside >
+
+            {showExportPanel && (
+                <ExportPanel
+                    selectedWords={queue.filter(w => w.MOTS !== 'Bravo !')}
+                    onClose={() => setShowExportPanel(false)}
+                />
+            )}
         </>
     );
 }
