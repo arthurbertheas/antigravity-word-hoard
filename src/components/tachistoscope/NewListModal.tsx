@@ -1,8 +1,6 @@
 import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, Download, ArrowRight, X } from "lucide-react";
-import { cn } from '@/lib/utils';
+import { AlertTriangle, Download } from "lucide-react";
 
 interface NewListModalProps {
     isOpen: boolean;
@@ -13,59 +11,47 @@ interface NewListModalProps {
 
 export function NewListModal({ isOpen, onClose, onDownloadAndContinue, onContinueWithoutSaving }: NewListModalProps) {
     return (
-        <Dialog.Root open={isOpen} onOpenChange={onClose}>
+        <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] animate-in fade-in duration-200" />
-                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90%] max-w-[420px] bg-card rounded-[20px] shadow-2xl border border-border z-[100] animate-in fade-in zoom-in-95 slide-in-from-left-1/2 slide-in-from-top-[48%] duration-200 p-6 focus:outline-none">
-                    <div className="flex flex-col items-center text-center">
-                        <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4">
-                            <AlertTriangle className="w-6 h-6 text-amber-600" />
+                <Dialog.Overlay className="fixed inset-0 bg-[#0F1423]/45 backdrop-blur-[4px] z-[100] animate-in fade-in duration-200" />
+                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90%] max-w-[420px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[101] animate-in zoom-in-95 slide-in-from-left-1/2 slide-in-from-top-[48%] duration-300 focus:outline-none overflow-hidden font-dm-sans">
+                    {/* Header */}
+                    <div className="px-6 pt-6 flex items-start gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-[#FFF8E1] flex items-center justify-center text-[#F59E0B] shrink-0">
+                            <AlertTriangle className="w-[18px] h-[18px]" strokeWidth={2.5} />
                         </div>
-
-                        <Dialog.Title className="text-xl font-bold font-sora text-foreground mb-2">
-                            Nouvelle liste
-                        </Dialog.Title>
-
-                        <Dialog.Description className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                            Attention, vous êtes sur le point d'abandonner la session en cours. Voulez-vous télécharger le rapport avant de continuer ?
-                        </Dialog.Description>
-
-                        <div className="w-full space-y-3">
-                            <Button
-                                onClick={onDownloadAndContinue}
-                                className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-[12px] shadow-md shadow-primary/20"
-                            >
-                                <Download className="w-4 h-4 mr-2" />
-                                Télécharger & Continuer
-                            </Button>
-
-                            <Button
-                                onClick={onContinueWithoutSaving}
-                                variant="outline"
-                                className="w-full border-border bg-transparent hover:bg-destructive/5 hover:text-destructive hover:border-destructive/30 font-semibold h-12 rounded-[12px] transition-colors"
-                            >
-                                Continuer sans sauvegarder
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                            </Button>
-
-                            <Button
-                                onClick={onClose}
-                                variant="ghost"
-                                className="w-full text-muted-foreground hover:text-foreground h-10 rounded-[10px]"
-                            >
-                                Annuler
-                            </Button>
+                        <div>
+                            <Dialog.Title className="text-base font-bold font-sora text-[#1A1A2E] mb-1">
+                                Nouvelle liste
+                            </Dialog.Title>
+                            <Dialog.Description className="text-[13.5px] text-[#6B7280] leading-relaxed">
+                                La session en cours sera perdue. Voulez-vous télécharger le rapport avant de continuer ?
+                            </Dialog.Description>
                         </div>
                     </div>
 
-                    <Dialog.Close asChild>
+                    {/* Actions */}
+                    <div className="p-6 flex gap-3 justify-end items-center">
                         <button
-                            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted transition-colors"
-                            aria-label="Fermer"
+                            onClick={onClose}
+                            className="px-4 py-3 rounded-[10px] border border-gray-200 bg-white text-[#9CA3AF] font-medium text-[15px] hover:bg-gray-50 transition-colors"
                         >
-                            <X className="w-4 h-4" />
+                            Annuler
                         </button>
-                    </Dialog.Close>
+                        <button
+                            onClick={onContinueWithoutSaving}
+                            className="px-4 py-3 rounded-[10px] border-[1.5px] border-[#6C5CE7] bg-white text-[#6C5CE7] font-semibold text-[15px] hover:bg-[#F0EDFF] transition-all"
+                        >
+                            Continuer
+                        </button>
+                        <button
+                            onClick={onDownloadAndContinue}
+                            className="px-4 py-3 rounded-[10px] bg-[#6C5CE7] text-white font-semibold text-[15px] shadow-[0_3px_10px_rgba(108,92,231,0.3)] hover:bg-[#5A4BD1] transition-all flex items-center gap-2"
+                        >
+                            <Download className="w-4 h-4" />
+                            Exporter & Continuer
+                        </button>
+                    </div>
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>
