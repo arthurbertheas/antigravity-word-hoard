@@ -455,6 +455,11 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
 }
 
 export function exportToPrint(words: Word[], settings: ExportSettings): void {
+  // DEBUG: Log settings to console
+  console.log('[exportToPrint] Settings received:', settings);
+  console.log('[exportToPrint] Layout value:', settings.layout);
+  console.log('[exportToPrint] Layout type:', typeof settings.layout);
+
   // Create print content
   let html = `
     <!DOCTYPE html>
