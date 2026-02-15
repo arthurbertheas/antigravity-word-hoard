@@ -10,7 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List } from "lucide-react";
+import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List, Type, ImageIcon, Layers } from "lucide-react";
 
 import { cn } from '@/lib/utils';
 import { ExportPanel } from '@/components/export/ExportPanel';
@@ -282,38 +282,118 @@ export function SidePanel() {
                                             />
                                         </div>
 
-                                        {/* --- MODE --- */}
+                                        {/* --- MODE D'AFFICHAGE --- */}
                                         <div className="flex items-center gap-2 mt-6 mb-3">
-                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Mode</span>
+                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Mode d'affichage</span>
                                             <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
                                         </div>
 
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
-                                            <div className="flex flex-col gap-3">
-                                                {([
-                                                    { value: 'wordOnly', label: 'Mot seul' },
-                                                    { value: 'image', label: 'Image seule' },
-                                                    { value: 'imageAndWord', label: 'Image + Mot' },
-                                                    { value: 'alternateWordFirst', label: 'Alternance Mot → Image' },
-                                                    { value: 'alternateImageFirst', label: 'Alternance Image → Mot' },
-                                                ] as const).map((mode) => (
-                                                    <label key={mode.value} className="flex items-center gap-2 cursor-pointer group">
-                                                        <input
-                                                            type="radio"
-                                                            name="displayMode"
-                                                            value={mode.value}
-                                                            checked={settings.displayMode === mode.value}
-                                                            onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
-                                                            className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                        />
-                                                        <span className={cn(
-                                                            "text-[14px] font-medium transition-colors",
-                                                            settings.displayMode === mode.value ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                        )}>{mode.label}</span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        </div>
+                                        {/* Content type cards */}
+                                        {(() => {
+                                            const hasImages = queue.some(w => w["image associée"]?.trim());
+                                            const contentMode = settings.displayMode === 'imageAndWord' ? 'both'
+                                                : (settings.displayMode === 'image' || settings.displayMode === 'alternateImageFirst') ? 'image'
+                                                : 'word';
+                                            const isDoubleFace = settings.displayMode === 'alternateWordFirst' || settings.displayMode === 'alternateImageFirst';
+
+                                            const setContentMode = (mode: 'word' | 'image' | 'both') => {
+                                                if (mode === 'both') {
+                                                    updateSettings({ displayMode: 'imageAndWord' });
+                                                } else if (mode === 'word') {
+                                                    updateSettings({ displayMode: isDoubleFace ? 'alternateWordFirst' : 'wordOnly' });
+                                                } else {
+                                                    updateSettings({ displayMode: isDoubleFace ? 'alternateImageFirst' : 'image' });
+                                                }
+                                            };
+
+                                            const toggleDoubleFace = () => {
+                                                if (isDoubleFace) {
+                                                    updateSettings({ displayMode: contentMode === 'image' ? 'image' : 'wordOnly' });
+                                                } else {
+                                                    updateSettings({ displayMode: contentMode === 'image' ? 'alternateImageFirst' : 'alternateWordFirst' });
+                                                }
+                                            };
+
+                                            const cards = [
+                                                { mode: 'word' as const, label: 'Mot', icon: Type, needsImage: false },
+                                                { mode: 'image' as const, label: 'Image', icon: ImageIcon, needsImage: true },
+                                                { mode: 'both' as const, label: 'Mot + Image', icon: Layers, needsImage: true },
+                                            ];
+
+                                            return (
+                                                <>
+                                                    <div className="flex gap-1.5">
+                                                        {cards.map(({ mode, label, icon: Icon, needsImage }) => {
+                                                            const disabled = needsImage && !hasImages;
+                                                            const active = contentMode === mode;
+                                                            return (
+                                                                <button
+                                                                    key={mode}
+                                                                    onClick={() => !disabled && setContentMode(mode)}
+                                                                    disabled={disabled}
+                                                                    className={cn(
+                                                                        "flex-1 flex flex-col items-center gap-2 py-3 px-2 rounded-[10px] border-[1.5px] transition-all relative",
+                                                                        disabled
+                                                                            ? "border-border bg-muted/50 opacity-40 cursor-not-allowed"
+                                                                            : active
+                                                                                ? "border-primary bg-primary/[0.03] shadow-[0_0_0_1px_rgba(108,92,231,0.15)]"
+                                                                                : "border-border bg-card hover:border-primary/30 hover:bg-[#FAFAFF] cursor-pointer"
+                                                                    )}
+                                                                >
+                                                                    {/* Radio dot */}
+                                                                    <div className={cn(
+                                                                        "absolute top-2 right-2 w-3.5 h-3.5 rounded-full border-[1.5px] flex items-center justify-center transition-all",
+                                                                        active ? "border-primary bg-primary" : "border-gray-300"
+                                                                    )}>
+                                                                        {active && <div className="w-[5px] h-[5px] rounded-full bg-white" />}
+                                                                    </div>
+
+                                                                    <div className={cn(
+                                                                        "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
+                                                                        active ? "bg-primary/[0.12]" : "bg-primary/[0.06]"
+                                                                    )}>
+                                                                        <Icon className="w-5 h-5 text-primary" />
+                                                                    </div>
+                                                                    <span className={cn(
+                                                                        "text-[11.5px] font-semibold transition-colors",
+                                                                        active ? "text-primary" : "text-foreground"
+                                                                    )}>{label}</span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+
+                                                    {/* No images hint */}
+                                                    {!hasImages && (
+                                                        <p className="text-[10px] text-muted-foreground italic mt-1.5">Aucune image dans cette liste</p>
+                                                    )}
+
+                                                    {/* Double face toggle */}
+                                                    {contentMode !== 'both' && hasImages && (
+                                                        <div
+                                                            onClick={toggleDoubleFace}
+                                                            className="flex items-center justify-between p-3 bg-muted rounded-[10px] mt-2 cursor-pointer transition-colors hover:bg-[#e8eaf0]"
+                                                        >
+                                                            <div className="flex items-center gap-2.5">
+                                                                <span className="text-[16px]">🃏</span>
+                                                                <div>
+                                                                    <div className="text-[13px] font-semibold text-foreground">Double face</div>
+                                                                    <div className="text-[10.5px] text-muted-foreground">
+                                                                        {contentMode === 'image' ? 'Le mot se dévoile au toucher' : "L'image se dévoile au toucher"}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <Switch
+                                                                checked={isDoubleFace}
+                                                                onCheckedChange={toggleDoubleFace}
+                                                                className="data-[state=checked]:bg-primary"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </>
+                                            );
+                                        })()}
 
                                         {/* --- RYTHME D'AFFICHAGE --- */}
                                         <div className="flex items-center gap-2 mt-6 mb-3">
