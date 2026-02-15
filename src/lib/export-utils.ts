@@ -336,14 +336,26 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     printWindow.document.write(html);
     printWindow.document.close();
 
-    // Wait for content to render then trigger print dialog
-    setTimeout(() => {
-      printWindow.print();
+    // Wait for document to be fully loaded before printing
+    const waitForLoad = () => {
+      if (printWindow.document.readyState === 'complete') {
+        // Focus the window to ensure print dialog appears
+        printWindow.focus();
 
-      // Close window after printing (user can cancel)
-      printWindow.onafterprint = () => {
-        printWindow.close();
-      };
-    }, 100);
+        // Small delay to ensure focus is set
+        setTimeout(() => {
+          printWindow.print();
+
+          // Close window after printing (user can cancel)
+          printWindow.onafterprint = () => {
+            printWindow.close();
+          };
+        }, 250);
+      } else {
+        setTimeout(waitForLoad, 50);
+      }
+    };
+
+    waitForLoad();
   }
 }
