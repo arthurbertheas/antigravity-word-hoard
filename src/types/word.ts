@@ -73,19 +73,19 @@ export const STRUCTURE_LABELS: Record<string, string> = {
 };
 
 export const GRAPHEME_LABELS: Record<string, string> = {
-    '1': 'Graphèmes simples non ambigus',
-    '2': 'Digraphes très simples (ou, eu, ch, gn)',
-    '3': 'Digraphes fréquents basiques',
-    '4': 'Consonnes contextuelles (c/s, g/j)',
-    '5': 'N contextuel',
-    '6': 'Voyelles contextuelles (en, ai, eau)',
-    '7': 'Voyelles complexes (oin, ien)',
-    '8': 'Graphies complexes',
-    '9': 'Voyelles nasales complexes',
-    '10': 'Graphies conditionnelles (gea, gui)',
-    '11': 'Graphies ail/eil',
-    '12': 'Diphtongues rares (oy, uy, ay)',
-    '13': 'E contextuel'
+    '1': 'Graphèmes très simples',
+    '2': 'ou, eu, ch, gn, c (/k/), g (/g/)',
+    '3': 'on, an, in, un, oi, qu, x, h',
+    '4': 'c, g, s contextuels',
+    '5': 'n contextuel',
+    '6': 'en, ai, au, eau, ei',
+    '7': 'oin, ien, ill, ieu',
+    '8': '-et, -er, -ez, ain, om, am, em, im, um',
+    '9': 'aim, ein, yn, ym',
+    '10': 'gea, geo, gue, gui',
+    '11': 'ail, all, eil, eill, ouill, euill, euil',
+    '12': 'oy, uy, ay',
+    '13': 'e contextuel'
 };
 
 export const FREQUENCY_LABELS: Record<string, string> = {
