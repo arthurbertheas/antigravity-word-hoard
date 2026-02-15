@@ -324,4 +324,4 @@ Voir fichier : `.interface-design/export-modal-clean.html`
 **Approbation :**
 - [x] Design UX validé
 - [x] Architecture technique validée
-- [ ] Implémentation (voir plan d'implémentation séparé)
+- [x] Implémentation ✅ (2026-02-15)
