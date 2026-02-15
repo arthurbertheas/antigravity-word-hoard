@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelection, getWordId } from "@/contexts/SelectionContext";
 import { Button } from "@/components/ui/button";
-import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save, Folder, Play } from "lucide-react";
+import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save, Folder, Play, FileDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSavedListsContext } from "@/contexts/SavedListsContext";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
@@ -14,6 +14,7 @@ import { ContextualFooterButton } from "@/components/saved-lists/ContextualFoote
 import { SavedList } from "@/lib/supabase";
 import { PanelHeader } from "@/components/ui/PanelHeader";
 import { Word } from "@/types/word";
+import { ExportPanel } from '@/components/export/ExportPanel';
 
 export function SelectionTray() {
   const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen, addItems } = useSelection();
@@ -24,6 +25,7 @@ export function SelectionTray() {
     return window.innerWidth <= 1440;
   });
   const [activeView, setActiveView] = useState<'main' | 'saved-lists'>('main');
+  const [showExportPanel, setShowExportPanel] = useState(false);
 
   // Saved Lists Context
   const {
@@ -158,6 +160,15 @@ export function SelectionTray() {
       }
     }
   };
+
+  if (showExportPanel) {
+    return (
+      <ExportPanel
+        selectedWords={selectedWords}
+        onClose={() => setShowExportPanel(false)}
+      />
+    );
+  }
 
   return (
     <aside className={cn(
@@ -395,6 +406,14 @@ export function SelectionTray() {
                 }
               }} />
 
+              <Button
+                className="w-full flex items-center justify-center gap-2 h-[48px] rounded-xl border-2 border-[#6C5CE7] text-[#6C5CE7] bg-white font-semibold text-sm hover:bg-[#F7F6FE] transition-all"
+                onClick={() => setShowExportPanel(true)}
+                disabled={selectedWords.length === 0}
+              >
+                <FileDown className="w-4 h-4" />
+                Exporter la liste
+              </Button>
 
               <Button
               className="w-full flex items-center justify-center gap-3 h-[52px] rounded-xl bg-[rgb(var(--filter-accent))] text-white font-sora font-bold text-base shadow-[0_4px_12px_rgba(var(--filter-accent),0.25)] hover:shadow-[0_6px_20px_rgba(var(--filter-accent),0.35)] hover:-translate-y-0.5 transition-all duration-300"

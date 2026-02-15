@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option A : Modale d'export</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700;800&display=swap');
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+        .font-sora {
+            font-family: 'Sora', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <!-- Simulation du contexte : Ma Liste en arrière-plan -->
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="flex h-[600px]">
+
+                <!-- Zone centrale (floutée pour simuler le contexte) -->
+                <div class="flex-1 bg-gray-50 blur-sm opacity-50 p-4">
+                    <div class="text-sm text-gray-500 mb-4">Zone centrale - Grille de mots</div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="h-20 bg-white rounded border"></div>
+                        <div class="h-20 bg-white rounded border"></div>
+                        <div class="h-20 bg-white rounded border"></div>
+                        <div class="h-20 bg-white rounded border"></div>
+                        <div class="h-20 bg-white rounded border"></div>
+                        <div class="h-20 bg-white rounded border"></div>
+                    </div>
+                </div>
+
+                <!-- Ma Liste (floutée) -->
+                <aside class="w-80 bg-gray-50 border-l blur-sm opacity-50 p-4">
+                    <div class="text-sm font-bold mb-4">Ma Liste</div>
+                    <div class="space-y-2">
+                        <div class="h-12 bg-white rounded border"></div>
+                        <div class="h-12 bg-white rounded border"></div>
+                        <div class="h-12 bg-white rounded border"></div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE D'EXPORT (Option A) -->
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-violet-50 to-purple-50 border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 font-sora">Exporter la liste</h2>
+                    <p class="text-sm text-gray-600 mt-0.5">5 mots sélectionnés</p>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-gray-500 hover:text-gray-700 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex h-[500px]">
+
+                <!-- Options (gauche) -->
+                <div class="w-80 border-r border-gray-200 p-6 overflow-y-auto bg-gray-50">
+
+                    <!-- Format -->
+                    <div class="mb-6">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Format</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-white border-2 border-violet-500 rounded-xl cursor-pointer hover:bg-violet-50 transition-all">
+                                <input type="radio" name="format" checked class="w-4 h-4 text-violet-600">
+                                <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900">PDF</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                                <input type="radio" name="format" class="w-4 h-4 text-violet-600">
+                                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900">Word</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                                <input type="radio" name="format" class="w-4 h-4 text-violet-600">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900">Imprimer</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Affichage -->
+                    <div class="mb-6">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Affichage</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 bg-white border-2 border-violet-500 rounded-xl cursor-pointer hover:bg-violet-50 transition-all">
+                                <input type="radio" name="display" checked class="w-4 h-4 text-violet-600">
+                                <span class="font-medium text-gray-900">Mot seul</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                                <input type="radio" name="display" class="w-4 h-4 text-violet-600">
+                                <span class="font-medium text-gray-900">Image seule</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                                <input type="radio" name="display" class="w-4 h-4 text-violet-600">
+                                <span class="font-medium text-gray-900">Mot + Image</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Mise en page -->
+                    <div class="mb-6">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Mise en page</label>
+                        <select class="w-full p-3 border-2 border-gray-200 rounded-xl font-medium text-gray-900 focus:border-violet-500 focus:outline-none">
+                            <option>Liste simple (1 colonne)</option>
+                            <option>Grille 2 colonnes</option>
+                            <option>Grille 3 colonnes</option>
+                            <option>Flashcards</option>
+                            <option>Tableau détaillé</option>
+                        </select>
+                    </div>
+
+                    <!-- Options supplémentaires -->
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" checked class="w-4 h-4 text-violet-600 rounded">
+                            <span class="text-sm text-gray-700">Inclure la date</span>
+                        </label>
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" class="w-4 h-4 text-violet-600 rounded">
+                            <span class="text-sm text-gray-700">Inclure les phonèmes</span>
+                        </label>
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" class="w-4 h-4 text-violet-600 rounded">
+                            <span class="text-sm text-gray-700">Numéroter les mots</span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <!-- Preview (droite) -->
+                <div class="flex-1 p-6 bg-white overflow-y-auto">
+                    <div class="mb-3 flex items-center justify-between">
+                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Aperçu</span>
+                        <span class="text-xs text-gray-400">Format A4</span>
+                    </div>
+
+                    <!-- Simulation d'un PDF -->
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-8 shadow-lg" style="aspect-ratio: 210/297;">
+                        <div class="space-y-6">
+                            <div class="border-b pb-3">
+                                <h3 class="text-2xl font-bold text-gray-900">Mots à retravailler — 15/02/2026</h3>
+                                <p class="text-sm text-gray-600 mt-1">5 mots</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-400">•</span>
+                                    <span class="text-gray-900 font-medium">caquet</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-400">•</span>
+                                    <span class="text-gray-900 font-medium">capitonnage</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-400">•</span>
+                                    <span class="text-gray-900 font-medium">abeille</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-400">•</span>
+                                    <span class="text-gray-900 font-medium">ail</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-400">•</span>
+                                    <span class="text-gray-900 font-medium">allemagne</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto pt-8 border-t text-xs text-gray-400 italic">
+                                Généré depuis Ressources Orthophonie
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer avec actions -->
+            <div class="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-between">
+                <button class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                    Annuler
+                </button>
+                <button class="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Générer l'export
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

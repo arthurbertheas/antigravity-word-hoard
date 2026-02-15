@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Modal - Clean Design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F8F9FA;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #1A1A1A;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 50;
+        }
+
+        .modal {
+            position: relative;
+            z-index: 51;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            font-size: 18px;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+
+        .close-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: none;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #9CA3AF;
+            transition: all 0.15s ease;
+        }
+
+        .close-btn:hover {
+            color: #1A1A1A;
+        }
+
+        /* Body */
+        .body {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            height: 500px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            border-right: 1px solid #E5E7EB;
+            padding: 24px 20px;
+            overflow-y: auto;
+            background: #FAFBFC;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .section-label .required {
+            color: #EF4444;
+            margin-left: 2px;
+        }
+
+        /* Radio Group */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .radio-item {
+            position: relative;
+        }
+
+        .radio-item input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: white;
+        }
+
+        .radio-label:hover {
+            border-color: #C4B8FF;
+        }
+
+        .radio-item input:checked + .radio-label {
+            border-color: #6C5CE7;
+            background: white;
+        }
+
+        .radio-circle {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #D1D5DB;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+
+        .radio-item input:checked + .radio-label .radio-circle {
+            border-color: #6C5CE7;
+        }
+
+        .radio-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 6px;
+            height: 6px;
+            background: #6C5CE7;
+            border-radius: 50%;
+            transition: transform 0.15s ease;
+        }
+
+        .radio-item input:checked + .radio-label .radio-circle::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .radio-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .radio-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .radio-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        /* Select */
+        .select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            background: white;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .select:hover {
+            border-color: #D1D5DB;
+        }
+
+        .select:focus {
+            outline: none;
+            border-color: #6C5CE7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 8px;
+        }
+
+        .checkbox-item {
+            position: relative;
+        }
+
+        .checkbox-item input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .checkbox-label:hover {
+            background: #F3F4F6;
+        }
+
+        .checkbox-box {
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 3px;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+            background: white;
+        }
+
+        .checkbox-item input:checked + .checkbox-label .checkbox-box {
+            background: #6C5CE7;
+            border-color: #6C5CE7;
+        }
+
+        .checkbox-box::after {
+            content: '';
+            position: absolute;
+            top: 0px;
+            left: 3.5px;
+            width: 3.5px;
+            height: 7px;
+            border: solid white;
+            border-width: 0 1.5px 1.5px 0;
+            transform: rotate(45deg) scale(0);
+            transition: transform 0.15s ease;
+        }
+
+        .checkbox-item input:checked + .checkbox-label .checkbox-box::after {
+            transform: rotate(45deg) scale(1);
+        }
+
+        .checkbox-text {
+            font-size: 12px;
+            font-weight: 400;
+            color: #374151;
+        }
+
+        /* Format Buttons (compact) */
+        .format-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .format-btn-item {
+            position: relative;
+        }
+
+        .format-btn-item input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .format-btn-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 8px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: white;
+        }
+
+        .format-btn-label:hover {
+            border-color: #C4B8FF;
+        }
+
+        .format-btn-item input:checked + .format-btn-label {
+            border-color: #6C5CE7;
+            background: #F7F6FE;
+        }
+
+        .format-btn-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .format-btn-text {
+            font-size: 11px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        /* Preview */
+        .preview {
+            background: white;
+            padding: 28px 24px;
+            overflow-y: auto;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .preview-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+
+        .preview-meta {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        .document {
+            background: #FAFBFC;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 28px;
+            box-shadow: none;
+            min-height: auto;
+        }
+
+        .doc-header {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 16px;
+        }
+
+        .doc-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 2px;
+        }
+
+        .doc-meta {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .doc-item {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .doc-bullet {
+            color: #6C5CE7;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .doc-word {
+            font-size: 14px;
+            color: #1A1A1A;
+            font-weight: 400;
+        }
+
+        .doc-footer {
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px solid #F3F4F6;
+            font-size: 11px;
+            color: #9CA3AF;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 24px;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            background: white;
+        }
+
+        .btn {
+            padding: 11px 24px;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #6B7280;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            color: #1A1A1A;
+        }
+
+        .btn-primary {
+            background: #6C5CE7;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5B4CD6;
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="backdrop"></div>
+
+    <div class="modal">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <span class="header-icon">📥</span>
+                <div class="header-title">Exporter la liste</div>
+            </div>
+            <button class="close-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="body">
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+
+                <!-- Affichage -->
+                <div class="section">
+                    <label class="section-label">Affichage <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="display" id="word-only" checked>
+                            <label for="word-only" class="radio-label">
+                                <div class="radio-circle"></div>
+                                <div class="radio-content">
+                                    <span class="radio-text">Mot seul</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="display" id="image-only">
+                            <label for="image-only" class="radio-label">
+                                <div class="radio-circle"></div>
+                                <div class="radio-content">
+                                    <span class="radio-text">Image seule</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="display" id="both">
+                            <label for="both" class="radio-label">
+                                <div class="radio-circle"></div>
+                                <div class="radio-content">
+                                    <span class="radio-text">Mot + Image</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mise en page -->
+                <div class="section">
+                    <label class="section-label">Mise en page</label>
+                    <select class="select">
+                        <option>Liste simple (1 colonne)</option>
+                        <option>Grille 2 colonnes</option>
+                        <option>Grille 3 colonnes</option>
+                        <option>Flashcards</option>
+                        <option>Tableau détaillé</option>
+                    </select>
+                </div>
+
+                <!-- Options -->
+                <div class="section">
+                    <label class="section-label">Options <span style="color: #9CA3AF; font-weight: 400; font-size: 12px;">(optionnel)</span></label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="date" checked>
+                            <label for="date" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Inclure la date</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="phonemes">
+                            <label for="phonemes" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Afficher les phonèmes</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="numbers">
+                            <label for="numbers" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Numéroter les mots</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="categories">
+                            <label for="categories" class="checkbox-label">
+                                <div class="checkbox-box"></div>
+                                <span class="checkbox-text">Inclure les catégories</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Format (compact) -->
+                <div class="section">
+                    <label class="section-label">Format <span class="required">*</span></label>
+                    <div class="format-buttons">
+                        <div class="format-btn-item">
+                            <input type="radio" name="format" id="pdf" checked>
+                            <label for="pdf" class="format-btn-label">
+                                <svg class="format-btn-icon" viewBox="0 0 24 24" fill="none">
+                                    <rect x="5" y="3" width="14" height="18" rx="2" stroke="#EF4444" stroke-width="1.5"/>
+                                    <path d="M8 8h8M8 12h5" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <span class="format-btn-text">PDF</span>
+                            </label>
+                        </div>
+                        <div class="format-btn-item">
+                            <input type="radio" name="format" id="word">
+                            <label for="word" class="format-btn-label">
+                                <svg class="format-btn-icon" viewBox="0 0 24 24" fill="none">
+                                    <rect x="5" y="3" width="14" height="18" rx="2" stroke="#3B82F6" stroke-width="1.5"/>
+                                    <path d="M8 8h8M8 12h5" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <span class="format-btn-text">Word</span>
+                            </label>
+                        </div>
+                        <div class="format-btn-item">
+                            <input type="radio" name="format" id="print">
+                            <label for="print" class="format-btn-label">
+                                <svg class="format-btn-icon" viewBox="0 0 24 24" fill="none">
+                                    <path d="M6 9V4h12v5M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" stroke="#10B981" stroke-width="1.5"/>
+                                    <rect x="6" y="14" width="12" height="7" rx="1" stroke="#059669" stroke-width="1.5"/>
+                                </svg>
+                                <span class="format-btn-text">Imprimer</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Preview -->
+            <div class="preview">
+                <div class="preview-header">
+                    <div class="preview-title">Aperçu <span style="color: #9CA3AF; font-weight: 400; font-size: 12px;">(5 mots)</span></div>
+                    <div class="preview-meta">Format A4</div>
+                </div>
+
+                <div class="document">
+                    <div class="doc-header">
+                        <div class="doc-title">Mots à retravailler — 15/02/2026</div>
+                        <div class="doc-meta">5 mots</div>
+                    </div>
+
+                    <div class="doc-list">
+                        <div class="doc-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">caquet</span>
+                        </div>
+                        <div class="doc-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">capitonnage</span>
+                        </div>
+                        <div class="doc-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">abeille</span>
+                        </div>
+                        <div class="doc-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">ail</span>
+                        </div>
+                        <div class="doc-item">
+                            <span class="doc-bullet">•</span>
+                            <span class="doc-word">allemagne</span>
+                        </div>
+                    </div>
+
+                    <div class="doc-footer">
+                        Généré depuis Ressources Orthophonie
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <button class="btn btn-secondary">Annuler</button>
+            <button class="btn btn-primary">
+                <svg class="btn-icon" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 3v7m0 0L5 7m3 3l3-3M3 12a1 1 0 001 1h8a1 1 0 001-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Générer l'export
+            </button>
+        </div>
+
+    </div>
+
+</body>
+</html>
