@@ -63,13 +63,13 @@ export const SYNT_LABELS: Record<SyntCategory, string> = {
 };
 
 export const STRUCTURE_LABELS: Record<string, string> = {
-    a: 'Syllabes simples (CV, CVCV)',
-    b: 'VCV ou CVC (voyelle initiale, consonne finale)',
+    a: 'Syllabes simples (CV)',
+    b: 'Voyelle initiale / consonne finale',
     c: 'E final muet',
     d: 'Consonnes doubles',
-    e: 'Consonnes finales muettes, h muet',
-    f: 'Groupes consonantiques simples (tr, pl...)',
-    g: 'Groupes consonantiques complexes, voyelles en hiatus'
+    e: 'Consonnes muettes',
+    f: 'CC et VV simples',
+    g: 'CC et VV complexes'
 };
 
 export const GRAPHEME_LABELS: Record<string, string> = {

@@ -226,11 +226,11 @@ export function FilterPanel({
             <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
 
                 {/* GROUP: FILTRES PRINCIPAUX */}
-                <FilterGroup label="Filtres principaux" variant="primary" />
+                <FilterGroup label="FILTRES PROGRESSIFS" variant="primary" />
 
                 {/* Structure syllabique */}
                 <FilterSection
-                    title="Structures"
+                    title="STRUCTURE SYLLABIQUE"
                     icon={<Layers className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.structures.length}
                     isOpen={openSections.structures}
