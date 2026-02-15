@@ -7,86 +7,96 @@ import { ExportSettings } from '@/types/export';
 export function exportToPDF(words: Word[], settings: ExportSettings): void {
   const doc = new jsPDF();
 
-  // Document settings
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 20;
-  const lineHeight = 7;
   let yPosition = margin;
 
-  // Helper to add new page if needed
-  const checkPageBreak = () => {
-    if (yPosition > pageHeight - margin) {
-      doc.addPage();
-      yPosition = margin;
-    }
-  };
-
-  // Title
+  // Add title and header
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.text('Mots à retravailler', margin, yPosition);
   yPosition += 10;
 
-  // Date if enabled
   if (settings.includeDate) {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    const dateStr = new Date().toLocaleDateString('fr-FR');
-    doc.text(dateStr, margin, yPosition);
+    doc.text(new Date().toLocaleDateString('fr-FR'), margin, yPosition);
     yPosition += 8;
   }
 
-  // Word count
-  doc.setFontSize(10);
   doc.text(`${words.length} mots`, margin, yPosition);
   yPosition += 12;
 
-  // Words list
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
+  // Grid layout handling
+  if (settings.layout === 'grid-2col' || settings.layout === 'grid-3col') {
+    const cols = settings.layout === 'grid-2col' ? 2 : 3;
+    const colWidth = (pageWidth - margin * 2 - (cols - 1) * 10) / cols;
+    const cellHeight = 20;
+    let currentCol = 0;
+    let currentRow = 0;
 
-  words.forEach((word, index) => {
-    checkPageBreak();
+    words.forEach((word, index) => {
+      const x = margin + currentCol * (colWidth + 10);
+      const y = yPosition + currentRow * cellHeight;
 
-    let text = '';
+      // Check page break
+      if (y > pageHeight - margin - cellHeight) {
+        doc.addPage();
+        yPosition = margin;
+        currentRow = 0;
+      }
 
-    // Number if enabled
-    if (settings.numberWords) {
-      text += `${index + 1}. `;
-    } else {
-      text += '• ';
-    }
+      // Draw cell border
+      doc.rect(x, y, colWidth, cellHeight);
 
-    // Word
-    if (settings.display !== 'imageOnly') {
-      text += word.MOTS;
-    }
+      // Word text
+      doc.setFontSize(11);
+      let text = settings.display !== 'imageOnly' ? word.MOTS : '';
+      if (settings.includePhonemes && word.PHONEMES) {
+        text += `\n/${word.PHONEMES}/`;
+      }
 
-    // Phonemes if enabled
-    if (settings.includePhonemes && word.PHONEMES) {
-      text += ` /${word.PHONEMES}/`;
-    }
+      doc.text(text, x + 5, y + 10);
 
-    // Category if enabled
-    if (settings.includeCategories && word.SYNT) {
-      text += ` (${word.SYNT})`;
-    }
+      currentCol++;
+      if (currentCol >= cols) {
+        currentCol = 0;
+        currentRow++;
+      }
+    });
+  } else {
+    // List layout (original implementation)
+    doc.setFontSize(12);
+    const lineHeight = 7;
 
-    doc.text(text, margin + 5, yPosition);
-    yPosition += lineHeight;
-  });
+    words.forEach((word, index) => {
+      if (yPosition > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
+      }
+
+      let text = settings.numberWords ? `${index + 1}. ` : '• ';
+      if (settings.display !== 'imageOnly') text += word.MOTS;
+      if (settings.includePhonemes && word.PHONEMES) text += ` /${word.PHONEMES}/`;
+      if (settings.includeCategories && word.SYNT) text += ` (${word.SYNT})`;
+
+      doc.text(text, margin + 5, yPosition);
+      yPosition += lineHeight;
+    });
+  }
 
   // Footer
-  yPosition = pageHeight - 15;
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
   doc.setTextColor(150);
-  doc.text('Généré depuis Ressources Orthophonie', pageWidth / 2, yPosition, {
-    align: 'center',
-  });
+  doc.text(
+    'Généré depuis Ressources Orthophonie',
+    pageWidth / 2,
+    pageHeight - 15,
+    { align: 'center' }
+  );
 
-  // Download
   const filename = `mots-${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(filename);
 }
