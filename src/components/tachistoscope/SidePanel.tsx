@@ -44,6 +44,14 @@ export function SidePanel() {
         return () => clearTimeout(timer);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Guard: reset displayMode to 'wordOnly' if current mode needs images but queue has none
+    const hasAnyImages = queue.some(w => w["image associée"]?.trim());
+    useEffect(() => {
+        if (!hasAnyImages && settings.displayMode !== 'wordOnly' && settings.displayMode !== 'alternateWordFirst') {
+            updateSettings({ displayMode: 'wordOnly' });
+        }
+    }, [hasAnyImages]); // eslint-disable-line react-hooks/exhaustive-deps
+
     // Saved Lists Context
     const { saveList, savedLists } = useSavedListsContext();
     const [isFailedListModalOpen, setIsFailedListModalOpen] = useState(false);
@@ -302,9 +310,11 @@ export function SidePanel() {
                                             const hasImages = wordsWithImages.length > 0;
                                             const allHaveImages = wordsWithImages.length === queue.length;
                                             const missingCount = queue.length - wordsWithImages.length;
-                                            const contentMode = settings.displayMode === 'imageAndWord' ? 'both'
+                                            const rawContentMode = settings.displayMode === 'imageAndWord' ? 'both'
                                                 : (settings.displayMode === 'image' || settings.displayMode === 'alternateImageFirst') ? 'image'
                                                 : 'word';
+                                            // Fallback to 'word' if current mode needs images but none available
+                                            const contentMode = (!hasImages && rawContentMode !== 'word') ? 'word' : rawContentMode;
                                             const isDoubleFace = settings.displayMode === 'alternateWordFirst' || settings.displayMode === 'alternateImageFirst';
 
                                             const setContentMode = (mode: 'word' | 'image' | 'both') => {
