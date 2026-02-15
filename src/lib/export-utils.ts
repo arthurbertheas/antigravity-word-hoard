@@ -335,8 +335,15 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
   if (printWindow) {
     printWindow.document.write(html);
     printWindow.document.close();
-    printWindow.onload = () => {
+
+    // Wait for content to render then trigger print dialog
+    setTimeout(() => {
       printWindow.print();
-    };
+
+      // Close window after printing (user can cancel)
+      printWindow.onafterprint = () => {
+        printWindow.close();
+      };
+    }, 100);
   }
 }
