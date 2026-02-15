@@ -215,38 +215,6 @@ export function SelectionTray() {
             hideBorder={true}
             action={
             <div className="flex items-center gap-3">
-                  {selectedWords.length > 0 &&
-              <div className="flex items-center gap-2 mr-2">
-                      {showClearConfirm ?
-                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
-                          <button
-                    onClick={() => setShowClearConfirm(false)}
-                    className="text-[10px] font-bold text-muted-foreground hover:text-foreground">
-
-                            Annuler
-                          </button>
-                          <button
-                    onClick={() => {
-                      clearSelection();
-                      setShowClearConfirm(false);
-                    }}
-                    className="text-[10px] font-bold text-destructive hover:underline">
-
-                            Confirmer
-                          </button>
-                        </div> :
-
-                <button
-                  onClick={handleClearRequest}
-                  className="text-[10px] uppercase font-bold text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 group">
-
-                          <Trash2 className="w-3 group-hover:scale-110 transition-transform" />
-                          Vider
-                        </button>
-                }
-                    </div>
-              }
-
                   <button
                 onClick={togglePanel}
                 className="flex-none w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
@@ -269,10 +237,36 @@ export function SelectionTray() {
 
 
             <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
-              <div className="flex items-baseline gap-2 mb-2">
+              <div className="flex items-center justify-between mb-2">
                 <div className="text-2xl font-black text-foreground">
                   {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
                 </div>
+                {selectedWords.length > 0 && (
+                  showClearConfirm ? (
+                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+                      <button
+                        onClick={() => setShowClearConfirm(false)}
+                        className="text-[11px] font-semibold text-[#9CA3AF] hover:text-[#1A1A2E] transition-colors">
+                        Annuler
+                      </button>
+                      <button
+                        onClick={() => {
+                          clearSelection();
+                          setShowClearConfirm(false);
+                        }}
+                        className="text-[11px] font-semibold text-[#EF4444] hover:underline transition-colors">
+                        Confirmer
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleClearRequest}
+                      className="flex items-center gap-1.5 text-[13px] font-medium text-[#9CA3AF] hover:text-[#EF4444] transition-colors group">
+                      <Trash2 className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                      Vider
+                    </button>
+                  )
+                )}
               </div>
 
               <div className="space-y-2">
