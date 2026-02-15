@@ -1,6 +1,7 @@
-import React from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { AlertTriangle, Download } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface NewListModalProps {
     isOpen: boolean;
@@ -11,49 +12,83 @@ interface NewListModalProps {
 
 export function NewListModal({ isOpen, onClose, onDownloadAndContinue, onContinueWithoutSaving }: NewListModalProps) {
     return (
-        <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-[#0F1423]/45 backdrop-blur-[4px] z-[100] animate-in fade-in duration-200" />
-                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[90%] max-w-[420px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] z-[101] animate-in zoom-in-95 slide-in-from-left-1/2 slide-in-from-top-[48%] duration-300 focus:outline-none overflow-hidden font-dm-sans">
-                    {/* Header */}
-                    <div className="px-6 pt-6 flex items-start gap-3.5">
-                        <div className="w-10 h-10 rounded-xl bg-[#FFF8E1] flex items-center justify-center text-[#F59E0B] shrink-0">
-                            <AlertTriangle className="w-[18px] h-[18px]" strokeWidth={2.5} />
-                        </div>
-                        <div>
-                            <Dialog.Title className="text-base font-bold font-sora text-[#1A1A2E] mb-1">
-                                Nouvelle liste
-                            </Dialog.Title>
-                            <Dialog.Description className="text-[13.5px] text-[#6B7280] leading-relaxed">
-                                La session en cours sera perdue. Voulez-vous télécharger le rapport avant de continuer ?
-                            </Dialog.Description>
-                        </div>
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent
+                className={cn(
+                    "sm:max-w-[380px] p-8 !rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)]",
+                    "border-none bg-white",
+                    "data-[state=open]:animate-in data-[state=closed]:animate-out",
+                    "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+                    "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
+                    "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+                    "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]"
+                )}
+                style={{
+                    borderRadius: '20px',
+                    width: '380px',
+                    maxWidth: '92vw',
+                    padding: '32px 28px',
+                    gap: '0'
+                }}
+            >
+                <div className="flex flex-col items-center text-center">
+                    {/* Icon */}
+                    <div className="w-[44px] h-[44px] rounded-full bg-[#FFF8E1] flex items-center justify-center mb-5">
+                        <AlertTriangle className="w-6 h-6 text-[#F59E0B]" strokeWidth={2.5} />
                     </div>
 
+                    {/* Title */}
+                    <h2 className="text-[17px] font-bold font-sora text-[#1A1A2E] mb-2 leading-tight">
+                        Nouvelle liste
+                    </h2>
+
+                    {/* Description */}
+                    <p className="text-[15px] font-medium font-['DM_Sans'] text-[#6B7280] mb-6 leading-relaxed">
+                        La session en cours sera perdue.<br />Voulez-vous télécharger le rapport ?
+                    </p>
+
                     {/* Actions */}
-                    <div className="p-6 flex gap-3 justify-end items-center">
-                        <button
+                    <div className="flex w-full gap-[10px] mt-2">
+                        <Button
+                            variant="outline"
                             onClick={onClose}
-                            className="px-4 py-3 rounded-[10px] border border-gray-200 bg-white text-[#9CA3AF] font-medium text-[15px] hover:bg-gray-50 transition-colors"
+                            className={cn(
+                                "flex-1 h-auto py-[11px] px-[16px]",
+                                "border-[1.5px] border-[#E5E7EB] bg-white",
+                                "text-[#9CA3AF] text-[14px] font-medium font-['DM_Sans']",
+                                "rounded-[10px] hover:bg-gray-50 hover:text-[#9CA3AF] transition-colors"
+                            )}
                         >
                             Annuler
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                            variant="outline"
                             onClick={onContinueWithoutSaving}
-                            className="px-4 py-3 rounded-[10px] border-[1.5px] border-[#6C5CE7] bg-white text-[#6C5CE7] font-semibold text-[15px] hover:bg-[#F0EDFF] transition-all"
+                            className={cn(
+                                "flex-1 h-auto py-[11px] px-[16px]",
+                                "border-[1.5px] border-[#6C5CE7] bg-white",
+                                "text-[#6C5CE7] text-[14px] font-semibold font-['DM_Sans']",
+                                "rounded-[10px] hover:bg-[#6C5CE7]/5 hover:text-[#6C5CE7] transition-colors"
+                            )}
                         >
                             Continuer
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={onDownloadAndContinue}
-                            className="px-4 py-3 rounded-[10px] bg-[#6C5CE7] text-white font-semibold text-[15px] shadow-[0_3px_10px_rgba(108,92,231,0.3)] hover:bg-[#5A4BD1] transition-all flex items-center gap-2"
+                            className={cn(
+                                "flex-1 h-auto py-[11px] px-[16px]",
+                                "bg-[#6C5CE7] text-white",
+                                "text-[14px] font-semibold font-['DM_Sans']",
+                                "rounded-[10px] shadow-[0_3px_10px_rgba(108,92,231,0.3)]",
+                                "hover:bg-[#5a4ad1] transition-all hover:shadow-[0_5px_15px_rgba(108,92,231,0.4)]"
+                            )}
                         >
-                            <Download className="w-4 h-4" />
-                            Exporter & Continuer
-                        </button>
+                            <Download className="w-4 h-4 mr-1.5" />
+                            Exporter
+                        </Button>
                     </div>
-                </Dialog.Content>
-            </Dialog.Portal>
-        </Dialog.Root>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
