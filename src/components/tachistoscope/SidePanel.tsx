@@ -36,6 +36,14 @@ export function SidePanel() {
     const { toast } = useToast();
     const { clearSelection, addItems, setSelection, setIsFocusModeOpen } = useSelection();
 
+    // Auto-open panel on mount with slide animation
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsPanelOpen(true);
+        }, 150);
+        return () => clearTimeout(timer);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     // Saved Lists Context
     const { saveList, savedLists } = useSavedListsContext();
     const [isFailedListModalOpen, setIsFailedListModalOpen] = useState(false);

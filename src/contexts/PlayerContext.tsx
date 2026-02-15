@@ -86,7 +86,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [phase, setPhase] = useState<PlayerPhase>('display');
     const [hasStarted, setHasStarted] = useState(false);
-    const [isPanelOpen, setIsPanelOpen] = useState(true);
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [panelMode, setPanelMode] = useState<PanelMode>('config');
     const [feedback, setFeedback] = useState<FeedbackType | null>(null);
     const [sessionLog, setSessionLog] = useState<SessionLog[]>([]);
