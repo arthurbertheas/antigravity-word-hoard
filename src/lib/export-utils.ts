@@ -458,19 +458,57 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
   // Create print content
   let html = `
     <!DOCTYPE html>
-    <html>
+    <html lang="fr">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Mots à retravailler</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
       <style>
-        @page {
-          margin: 2cm;
+        /* CSS Variables */
+        :root {
+          --color-primary: #6C5CE7;
+          --color-primary-light: #A29BFE;
+          --color-primary-dark: #5B4CD6;
+          --color-text-primary: #1A202C;
+          --color-text-secondary: #718096;
+          --color-text-muted: #A0AEC0;
+          --color-border: #E2E8F0;
+          --color-bg-card: #FAFBFC;
+          --font-serif: 'Crimson Pro', Georgia, serif;
+          --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
+
+        /* Reset */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        /* Base styles */
         body {
-          font-family: 'Arial', sans-serif;
-          font-size: 12pt;
+          font-family: var(--font-sans);
+          color: var(--color-text-primary);
           line-height: 1.6;
+          padding: 48px 40px;
+          background: white;
         }
+
+        @page {
+          size: A4;
+          margin: 20mm;
+        }
+
+        @media print {
+          body {
+            padding: 0;
+          }
+        }
+
         h1 {
           font-size: 18pt;
           font-weight: bold;
