@@ -208,7 +208,7 @@ export function SelectionTray() {
       <>
           <div className="border-b border-[#E5E7EB] relative z-40">
             <PanelHeader
-            title="Ma Liste"
+            title="Ma sélection"
             subtitle="Liste et actions"
             icon={<ListChecks className="w-4 h-4 text-[rgb(var(--filter-accent))]" />}
             onForward={undefined}
