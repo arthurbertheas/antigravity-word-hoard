@@ -24,12 +24,12 @@ import { SessionFinishModal } from './SessionFinishModal';
 import { useEffect } from 'react';
 import { PanelHeader } from '@/components/ui/PanelHeader';
 
-type TabType = 'visual' | 'timing' | 'focus' | 'sound';
+type TabType = 'affichage' | 'aides';
 
 export function SidePanel() {
     // Click-outside logic implemented
     const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, setQueue, currentIndex, setCurrentIndex, wordStatuses, cycleWordStatus, startTime, resetSession, setIsPlaying, setPhase, setHasStarted } = usePlayer();
-    const [activeTab, setActiveTab] = useState<TabType>('visual');
+    const [activeTab, setActiveTab] = useState<TabType>('affichage');
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
     const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
     const [showExportPanel, setShowExportPanel] = useState(false);
@@ -167,10 +167,8 @@ export function SidePanel() {
     };
 
     const tabs: { id: TabType; label: string }[] = [
-        { id: 'visual', label: 'Visuel' },
-        { id: 'timing', label: 'Timing' },
-        { id: 'focus', label: 'Focus' },
-        { id: 'sound', label: 'Son' },
+        { id: 'affichage', label: 'Affichage' },
+        { id: 'aides', label: 'Aides à la lecture' },
     ];
 
     return (
@@ -245,291 +243,254 @@ export function SidePanel() {
 
                             {/* Content */}
                             < div className="flex-1 overflow-y-auto px-8 py-6">
-                                {
-                                    activeTab === 'visual' && (
-                                        <div className="space-y-7">
-                                            < div className="space-y-3.5">
-                                                < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Typographie</label>
-                                                < Select
-                                                    value={settings.fontFamily}
-                                                    onValueChange={(v: any) => updateSettings({ fontFamily: v })
-                                                    }
-                                                >
-                                                    <SelectTrigger className="w-full bg-card text-sm font-medium text-foreground h-[52px] px-4 rounded-[10px] border-[1.5px] border-border hover:border-primary/30 transition-colors">
-                                                        < SelectValue placeholder="Choisir une police" />
-                                                    </SelectTrigger >
-                                                    <SelectContent className="bg-card border-border z-[200]">
-                                                        < SelectItem value="arial">Arial</SelectItem>
-                                                        < SelectItem value="verdana">Verdana</SelectItem>
-                                                        < SelectItem value="mdi-ecole">MDI École</SelectItem>
-                                                        < SelectItem value="opendyslexic">OpenDyslexic</SelectItem>
-                                                    </SelectContent >
-                                                </Select >
-                                            </div >
+                                {/* ========== TAB: AFFICHAGE ========== */}
+                                {activeTab === 'affichage' && (
+                                    <div className="space-y-2">
+                                        {/* --- TYPOGRAPHIE --- */}
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Typographie</span>
+                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
+                                        </div>
 
-                                            <div className="space-y-3.5">
-                                                < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Mode d'affichage</label>
-                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
-                                                    <span className="text-[13px] font-medium text-muted-foreground">Affichage du mot</span>
-                                                    <div className="flex flex-col gap-3">
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="displayMode"
-                                                                value="wordOnly"
-                                                                checked={settings.displayMode === 'wordOnly'}
-                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.displayMode === 'wordOnly' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Mot</span>
-                                                        </label>
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="displayMode"
-                                                                value="image"
-                                                                checked={settings.displayMode === 'image'}
-                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.displayMode === 'image' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Image</span>
-                                                        </label>
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="displayMode"
-                                                                value="imageAndWord"
-                                                                checked={settings.displayMode === 'imageAndWord'}
-                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.displayMode === 'imageAndWord' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Image + Mot</span>
-                                                        </label>
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="displayMode"
-                                                                value="alternateWordFirst"
-                                                                checked={settings.displayMode === 'alternateWordFirst'}
-                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.displayMode === 'alternateWordFirst' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Alternance Mot→Image</span>
-                                                        </label>
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="displayMode"
-                                                                value="alternateImageFirst"
-                                                                checked={settings.displayMode === 'alternateImageFirst'}
-                                                                onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.displayMode === 'alternateImageFirst' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Alternance Image→Mot</span>
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                        <Select
+                                            value={settings.fontFamily}
+                                            onValueChange={(v: any) => updateSettings({ fontFamily: v })}
+                                        >
+                                            <SelectTrigger className="w-full bg-card text-sm font-medium text-foreground h-[48px] px-4 rounded-[10px] border-[1.5px] border-border hover:border-primary/30 transition-colors">
+                                                <SelectValue placeholder="Choisir une police" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-card border-border z-[200]">
+                                                <SelectItem value="arial">Arial</SelectItem>
+                                                <SelectItem value="verdana">Verdana</SelectItem>
+                                                <SelectItem value="mdi-ecole">MDI École</SelectItem>
+                                                <SelectItem value="opendyslexic">OpenDyslexic</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-[13px] font-medium text-muted-foreground">Taille</span>
+                                                <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.fontSize}x</span>
                                             </div>
+                                            <Slider
+                                                value={[settings.fontSize]}
+                                                min={5}
+                                                max={30}
+                                                step={1}
+                                                onValueChange={([v]) => updateSettings({ fontSize: v })}
+                                                className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
+                                            />
+                                        </div>
 
-                                            <div className="space-y-3.5">
-                                                < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Taille et Espacement</label>
-                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
-                                                    <span className="text-[13px] font-medium text-muted-foreground">Mode d'espacement</span>
-                                                    <div className="flex gap-4 items-center">
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="spacingMode"
-                                                                value="letters"
-                                                                checked={settings.spacingMode === 'letters'}
-                                                                onChange={(e) => updateSettings({ spacingMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.spacingMode === 'letters' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Lettres</span>
-                                                        </label>
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="spacingMode"
-                                                                value="graphemes"
-                                                                checked={settings.spacingMode === 'graphemes'}
-                                                                onChange={(e) => updateSettings({ spacingMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.spacingMode === 'graphemes' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Graphèmes</span>
-                                                        </label>
-                                                        <label className="flex items-center gap-2 cursor-pointer group">
-                                                            <input
-                                                                type="radio"
-                                                                name="spacingMode"
-                                                                value="syllables"
-                                                                checked={settings.spacingMode === 'syllables'}
-                                                                onChange={(e) => updateSettings({ spacingMode: e.target.value as any })}
-                                                                className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
-                                                            />
-                                                            <span className={cn(
-                                                                "text-[14px] font-medium transition-colors",
-                                                                settings.spacingMode === 'syllables' ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                                                            )}>Syllabes</span>
-                                                        </label>
+                                        {/* --- MODE --- */}
+                                        <div className="flex items-center gap-2 mt-6 mb-3">
+                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Mode</span>
+                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
+                                        </div>
+
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                            <div className="flex flex-col gap-3">
+                                                {([
+                                                    { value: 'wordOnly', label: 'Mot seul' },
+                                                    { value: 'image', label: 'Image seule' },
+                                                    { value: 'imageAndWord', label: 'Image + Mot' },
+                                                    { value: 'alternateWordFirst', label: 'Alternance Mot → Image' },
+                                                    { value: 'alternateImageFirst', label: 'Alternance Image → Mot' },
+                                                ] as const).map((mode) => (
+                                                    <label key={mode.value} className="flex items-center gap-2 cursor-pointer group">
+                                                        <input
+                                                            type="radio"
+                                                            name="displayMode"
+                                                            value={mode.value}
+                                                            checked={settings.displayMode === mode.value}
+                                                            onChange={(e) => updateSettings({ displayMode: e.target.value as any })}
+                                                            className="w-4 h-4 text-primary border-gray-300 focus:ring-primary accent-primary"
+                                                        />
+                                                        <span className={cn(
+                                                            "text-[14px] font-medium transition-colors",
+                                                            settings.displayMode === mode.value ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                                        )}>{mode.label}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* --- RYTHME D'AFFICHAGE --- */}
+                                        <div className="flex items-center gap-2 mt-6 mb-3">
+                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Rythme d'affichage</span>
+                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
+                                        </div>
+
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-[13px] font-medium text-muted-foreground">Durée d'affichage</span>
+                                                <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.speedMs / 1000).toFixed(1)}s</span>
+                                            </div>
+                                            <Slider
+                                                value={[settings.speedMs]}
+                                                min={100}
+                                                max={5000}
+                                                step={100}
+                                                onValueChange={([v]) => updateSettings({ speedMs: v })}
+                                                className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
+                                            />
+                                        </div>
+
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-[13px] font-medium text-muted-foreground">Pause entre les mots</span>
+                                                <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.gapMs / 1000).toFixed(1)}s</span>
+                                            </div>
+                                            <Slider
+                                                value={[settings.gapMs]}
+                                                min={100}
+                                                max={5000}
+                                                step={100}
+                                                onValueChange={([v]) => updateSettings({ gapMs: v })}
+                                                className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* ========== TAB: AIDES À LA LECTURE ========== */}
+                                {activeTab === 'aides' && (
+                                    <div className="space-y-2">
+                                        {/* --- ESPACEMENTS --- */}
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Espacements</span>
+                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
+                                        </div>
+
+                                        {/* Spacing mode visual cards */}
+                                        <div className="flex flex-col gap-2">
+                                            {([
+                                                { value: 'letters', label: 'Lettres', desc: 'Espace entre chaque lettre', preview: 'c h a t o n' },
+                                                { value: 'graphemes', label: 'Graphèmes', desc: 'Regroupe les sons écrits', preview: 'ch  a  t  on' },
+                                                { value: 'syllables', label: 'Syllabes', desc: 'Découpe syllabique du mot', preview: 'cha  ton' },
+                                            ] as const).map((mode) => (
+                                                <div
+                                                    key={mode.value}
+                                                    onClick={() => updateSettings({ spacingMode: mode.value })}
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-3 rounded-[10px] border-[1.5px] cursor-pointer transition-all",
+                                                        settings.spacingMode === mode.value
+                                                            ? "border-primary bg-primary/[0.03] shadow-[0_0_0_1px_rgba(108,92,231,0.15)]"
+                                                            : "border-border bg-card hover:border-primary/30 hover:bg-[#FAFAFF]"
+                                                    )}
+                                                >
+                                                    {/* Radio dot */}
+                                                    <div className={cn(
+                                                        "w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                                                        settings.spacingMode === mode.value
+                                                            ? "border-primary bg-primary"
+                                                            : "border-gray-300 bg-white"
+                                                    )}>
+                                                        {settings.spacingMode === mode.value && (
+                                                            <div className="w-[6px] h-[6px] rounded-full bg-white" />
+                                                        )}
+                                                    </div>
+
+                                                    {/* Text */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className={cn(
+                                                            "text-[13px] font-semibold mb-0.5 transition-colors",
+                                                            settings.spacingMode === mode.value ? "text-primary" : "text-foreground"
+                                                        )}>{mode.label}</div>
+                                                        <div className="text-[10.5px] text-muted-foreground">{mode.desc}</div>
+                                                    </div>
+
+                                                    {/* Visual preview */}
+                                                    <div className="text-[13px] font-semibold text-primary bg-primary/[0.06] px-2.5 py-1 rounded-md whitespace-nowrap flex-shrink-0 font-mono">
+                                                        {mode.preview}
                                                     </div>
                                                 </div>
+                                            ))}
+                                        </div>
 
-                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
-                                                    < div className="flex justify-between items-center mb-3">
-                                                        < span className="text-[13px] font-medium text-muted-foreground">Zoom</span>
-                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.fontSize}x</span>
-                                                    </div >
-                                                    <Slider
-                                                        value={[settings.fontSize]}
-                                                        min={5}
-                                                        max={30}
-                                                        step={1}
-                                                        onValueChange={([v]) => updateSettings({ fontSize: v })}
-                                                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
-                                                    />
-                                                </div >
-                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
-                                                    < div className="flex justify-between items-center mb-3">
-                                                        < span className="text-[13px] font-medium text-muted-foreground">Espacement</span>
-                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.spacingValue / 10).toFixed(1)}x</span>
-                                                    </div >
-                                                    <Slider
-                                                        value={[settings.spacingValue]}
-                                                        min={0}
-                                                        max={settings.spacingMode === 'letters' ? 30 : 20}
-                                                        step={1}
-                                                        onValueChange={([v]) => updateSettings({ spacingValue: v })}
-                                                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
-                                                    />
-                                                </div >
-                                            </div >
-                                        </div >
-                                    )
-                                }
+                                        {/* Écart slider */}
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 mt-2">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-[13px] font-medium text-muted-foreground">Écart</span>
+                                                <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.spacingValue / 10).toFixed(1)}x</span>
+                                            </div>
+                                            <Slider
+                                                value={[settings.spacingValue]}
+                                                min={0}
+                                                max={settings.spacingMode === 'letters' ? 30 : 20}
+                                                step={1}
+                                                onValueChange={([v]) => updateSettings({ spacingValue: v })}
+                                                className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
+                                            />
+                                        </div>
 
-                                {
-                                    activeTab === 'timing' && (
-                                        <div className="space-y-7">
-                                            < div className="space-y-3.5">
-                                                < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Durées d'affichage</label>
-                                                < div className="bg-muted p-4 rounded-[10px] space-y-3">
-                                                    < div className="flex justify-between items-center mb-3">
-                                                        < span className="text-[13px] font-medium text-muted-foreground">Exposition</span>
-                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.speedMs / 1000).toFixed(1)}s</span>
-                                                    </div >
-                                                    <Slider
-                                                        value={[settings.speedMs]}
-                                                        min={100}
-                                                        max={5000}
-                                                        step={100}
-                                                        onValueChange={([v]) => updateSettings({ speedMs: v })}
-                                                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
-                                                    />
-                                                </div >
-                                                <div className="bg-muted p-4 rounded-[10px] space-y-3">
-                                                    < div className="flex justify-between items-center mb-3">
-                                                        < span className="text-[13px] font-medium text-muted-foreground">Pause inter-mots</span>
-                                                        < span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.gapMs / 1000).toFixed(1)}s</span>
-                                                    </div >
-                                                    <Slider
-                                                        value={[settings.gapMs]}
-                                                        min={100}
-                                                        max={5000}
-                                                        step={100}
-                                                        onValueChange={([v]) => updateSettings({ gapMs: v })}
-                                                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
-                                                    />
-                                                </div >
-                                            </div >
-                                        </div >
-                                    )
-                                }
+                                        {/* --- REPÈRES VISUELS --- */}
+                                        <div className="flex items-center gap-2 mt-6 mb-3">
+                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Repères visuels</span>
+                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
+                                        </div>
 
-                                {
-                                    activeTab === 'focus' && (
-                                        <div className="space-y-7">
-                                            < div className="space-y-3.5">
-                                                < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Mise en avant</label>
-                                                < div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
-                                                    < div className="flex-1 pr-4">
-                                                        < div className="text-sm font-semibold text-foreground mb-0.5">Voyelles</div>
-                                                        < div className="text-[11px] text-muted-foreground">Coloration rouge</div>
-                                                    </div >
-                                                    <Switch
-                                                        checked={settings.highlightVowels}
-                                                        onCheckedChange={(v) => updateSettings({ highlightVowels: v })}
-                                                        className="data-[state=checked]:bg-primary"
-                                                    />
-                                                </div >
-                                                <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
-                                                    < div className="flex-1 pr-4">
-                                                        < div className="text-sm font-semibold text-foreground mb-0.5">Lettres Muettes</div>
-                                                        < div className="text-[11px] text-muted-foreground">Coloration grise</div>
-                                                    </div >
-                                                    <Switch
-                                                        checked={settings.highlightSilent}
-                                                        onCheckedChange={(v) => updateSettings({ highlightSilent: v })}
-                                                        className="data-[state=checked]:bg-primary"
-                                                    />
-                                                </div >
-                                                <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
-                                                    < div className="flex-1 pr-4">
-                                                        < div className="text-sm font-semibold text-foreground mb-0.5">Point de Fixation</div>
-                                                        < div className="text-[11px] text-muted-foreground">Afficher pendant pause</div>
-                                                    </div >
-                                                    <Switch
-                                                        checked={settings.showFocusPoint}
-                                                        onCheckedChange={(v) => updateSettings({ showFocusPoint: v })}
-                                                        className="data-[state=checked]:bg-primary"
-                                                    />
-                                                </div >
-                                            </div >
-                                        </div >
-                                    )
-                                }
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                            <div className="flex-1 pr-4">
+                                                <div className="text-sm font-semibold text-foreground mb-0.5">
+                                                    Voyelles en couleur
+                                                    <span className="inline-block ml-1.5 text-[9px] font-bold uppercase tracking-[0.05em] text-[#DC2626] bg-[#DC2626]/[0.08] px-1.5 py-0.5 rounded-[5px]">Rouge</span>
+                                                </div>
+                                                <div className="text-[11px] text-muted-foreground">Coloration des voyelles pour faciliter le décodage</div>
+                                            </div>
+                                            <Switch
+                                                checked={settings.highlightVowels}
+                                                onCheckedChange={(v) => updateSettings({ highlightVowels: v })}
+                                                className="data-[state=checked]:bg-primary"
+                                            />
+                                        </div>
 
-                                {
-                                    activeTab === 'sound' && (
-                                        <div className="space-y-7">
-                                            < div className="space-y-3.5">
-                                                < label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Feedback audio</label>
-                                                < div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
-                                                    < div className="flex-1 pr-4">
-                                                        < div className="text-sm font-semibold text-foreground mb-0.5">Son</div>
-                                                        < div className="text-[11px] text-muted-foreground">Bip à chaque mot</div>
-                                                    </div >
-                                                    <Switch
-                                                        checked={settings.enableSound}
-                                                        onCheckedChange={(v) => updateSettings({ enableSound: v })}
-                                                        className="data-[state=checked]:bg-primary"
-                                                    />
-                                                </div >
-                                            </div >
-                                        </div >
-                                    )
-                                }
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                            <div className="flex-1 pr-4">
+                                                <div className="text-sm font-semibold text-foreground mb-0.5">
+                                                    Lettres muettes
+                                                    <span className="inline-block ml-1.5 text-[9px] font-bold uppercase tracking-[0.05em] text-[#9CA3AF] bg-[#9CA3AF]/[0.12] px-1.5 py-0.5 rounded-[5px]">Gris</span>
+                                                </div>
+                                                <div className="text-[11px] text-muted-foreground">Atténuation visuelle des lettres non prononcées</div>
+                                            </div>
+                                            <Switch
+                                                checked={settings.highlightSilent}
+                                                onCheckedChange={(v) => updateSettings({ highlightSilent: v })}
+                                                className="data-[state=checked]:bg-primary"
+                                            />
+                                        </div>
+
+                                        {/* --- GUIDAGE ATTENTIONNEL --- */}
+                                        <div className="flex items-center gap-2 mt-6 mb-3">
+                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Guidage attentionnel</span>
+                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
+                                        </div>
+
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                            <div className="flex-1 pr-4">
+                                                <div className="text-sm font-semibold text-foreground mb-0.5">Point de fixation</div>
+                                                <div className="text-[11px] text-muted-foreground">Croix centrée affichée pendant la pause</div>
+                                            </div>
+                                            <Switch
+                                                checked={settings.showFocusPoint}
+                                                onCheckedChange={(v) => updateSettings({ showFocusPoint: v })}
+                                                className="data-[state=checked]:bg-primary"
+                                            />
+                                        </div>
+
+                                        <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] transition-colors hover:bg-[#e8eaf0]">
+                                            <div className="flex-1 pr-4">
+                                                <div className="text-sm font-semibold text-foreground mb-0.5">Signal sonore</div>
+                                                <div className="text-[11px] text-muted-foreground">Bip avant l'affichage de chaque mot</div>
+                                            </div>
+                                            <Switch
+                                                checked={settings.enableSound}
+                                                onCheckedChange={(v) => updateSettings({ enableSound: v })}
+                                                className="data-[state=checked]:bg-primary"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div >
                         </>
                     )}
