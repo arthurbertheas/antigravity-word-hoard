@@ -174,28 +174,11 @@
 
   html {
     scroll-behavior: smooth;
-    height: 100vh !important;
-    max-height: 100vh !important;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
-    height: 100vh !important;
-    max-height: 100vh !important;
-    position: relative;
-  }
-
-  /* Force all radix-ui portals to not overflow */
-  body > div[data-radix-portal],
-  body > div[data-radix-popper-content-wrapper] {
-    position: fixed !important;
-    pointer-events: none;
-  }
-
-  body > div[data-radix-portal] > *,
-  body > div[data-radix-popper-content-wrapper] > * {
-    pointer-events: auto;
   }
 
   h1,
