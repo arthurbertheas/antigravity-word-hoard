@@ -66,9 +66,9 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
               </span>
               <div className="flex flex-col gap-1.5">
                 {/* Image */}
-                {(settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word.IMAGE_URL && (
+                {(settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word["image associée"] && (
                   <img
-                    src={word.IMAGE_URL}
+                    src={word["image associée"]}
                     alt={word.MOTS}
                     className="w-16 h-16 object-cover rounded border border-gray-200"
                   />
