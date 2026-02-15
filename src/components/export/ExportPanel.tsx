@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
 import { ExportSettings, DEFAULT_EXPORT_SETTINGS, ExportPanelProps } from '@/types/export';
 import { ExportOptions } from './ExportOptions';
@@ -31,6 +31,22 @@ export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
       toast.error('Erreur lors de l\'export. Veuillez réessayer.');
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // ESC to close
+      if (e.key === 'Escape') {
+        onClose();
+      }
+      // Ctrl/Cmd + Enter to export
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        handleExport();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, handleExport]);
 
   return (
     <aside className="shrink-0 bg-white flex flex-col h-full border-l border-gray-200 w-full">
