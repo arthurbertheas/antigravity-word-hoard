@@ -10,7 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List, Type, ImageIcon, Layers } from "lucide-react";
+import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List, Type, ImageIcon, Layers, Info } from "lucide-react";
 
 import { cn } from '@/lib/utils';
 import { ExportPanel } from '@/components/export/ExportPanel';
@@ -267,9 +267,9 @@ export function SidePanel() {
                                             </SelectContent>
                                         </Select>
 
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40">
                                             <div className="flex justify-between items-center mb-1">
-                                                <span className="text-[13px] font-medium text-muted-foreground">Taille</span>
+                                                <span className="text-[13px] font-medium text-foreground/70">Taille</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.fontSize}x</span>
                                             </div>
                                             <Slider
@@ -334,7 +334,7 @@ export function SidePanel() {
                                                                     className={cn(
                                                                         "flex-1 flex flex-col items-center gap-2 py-3 px-2 rounded-[10px] border-[1.5px] transition-all relative",
                                                                         disabled
-                                                                            ? "border-border bg-muted/50 opacity-40 cursor-not-allowed"
+                                                                            ? "border-border/60 bg-muted/40 opacity-60 cursor-not-allowed"
                                                                             : active
                                                                                 ? "border-primary bg-primary/[0.03] shadow-[0_0_0_1px_rgba(108,92,231,0.15)]"
                                                                                 : "border-border bg-card hover:border-primary/30 hover:bg-[#FAFAFF] cursor-pointer"
@@ -365,7 +365,10 @@ export function SidePanel() {
 
                                                     {/* No images hint */}
                                                     {!hasImages && (
-                                                        <p className="text-[10px] text-muted-foreground italic mt-1.5">Aucune image dans cette liste</p>
+                                                        <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-1.5">
+                                                            <Info className="w-3 h-3 flex-shrink-0" />
+                                                            Aucune image dans cette liste
+                                                        </p>
                                                     )}
 
                                                     {/* Double face toggle */}
@@ -401,9 +404,9 @@ export function SidePanel() {
                                             <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
                                         </div>
 
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40">
                                             <div className="flex justify-between items-center mb-1">
-                                                <span className="text-[13px] font-medium text-muted-foreground">Durée d'affichage</span>
+                                                <span className="text-[13px] font-medium text-foreground/70">Durée d'affichage</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.speedMs / 1000).toFixed(1)}s</span>
                                             </div>
                                             <Slider
@@ -416,9 +419,9 @@ export function SidePanel() {
                                             />
                                         </div>
 
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40">
                                             <div className="flex justify-between items-center mb-1">
-                                                <span className="text-[13px] font-medium text-muted-foreground">Pause entre les mots</span>
+                                                <span className="text-[13px] font-medium text-foreground/70">Pause entre les mots</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.gapMs / 1000).toFixed(1)}s</span>
                                             </div>
                                             <Slider
@@ -489,9 +492,9 @@ export function SidePanel() {
                                         </div>
 
                                         {/* Écart slider */}
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 mt-2">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40 mt-2">
                                             <div className="flex justify-between items-center mb-1">
-                                                <span className="text-[13px] font-medium text-muted-foreground">Écart</span>
+                                                <span className="text-[13px] font-medium text-foreground/70">Écart</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.spacingValue / 10).toFixed(1)}x</span>
                                             </div>
                                             <Slider
