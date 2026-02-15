@@ -166,39 +166,19 @@
     @apply border-border;
   }
 
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
+  html,
+  body,
+  #root {
+    @apply h-full overflow-hidden;
   }
 
   html {
-    height: 100%;
-    width: 100%;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden;
-    overscroll-behavior: none;
-    touch-action: pan-y;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
-    height: 100%;
-    width: 100%;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden;
-    overscroll-behavior: none;
-    touch-action: pan-y;
-    position: relative;
-  }
-
-  #root {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
   }
 
   h1,
