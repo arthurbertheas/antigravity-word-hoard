@@ -397,8 +397,7 @@ export function SelectionTray() {
               disabled={selectedWords.length === 0}>
 
                 <Play fill="white" className="w-5 h-5" />
-                Lancer la sélection
-                <ChevronRight className="w-4 h-4" strokeWidth={3} />
+                Lancer le diaporama
               </Button>
             </div>
           </div>
