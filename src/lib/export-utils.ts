@@ -509,6 +509,50 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
           }
         }
 
+        /* Header Section */
+        .document-header {
+          border-bottom: 3px solid transparent;
+          border-image: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+          border-image-slice: 1;
+          padding-bottom: 24px;
+          margin-bottom: 40px;
+        }
+
+        .header-title {
+          font-family: var(--font-serif);
+          font-size: 32px;
+          font-weight: 700;
+          color: var(--color-text-primary);
+          letter-spacing: -0.5px;
+          margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+          font-size: 15px;
+          color: var(--color-primary);
+          font-weight: 500;
+          margin-bottom: 12px;
+        }
+
+        .header-meta {
+          display: flex;
+          gap: 24px;
+          font-size: 13px;
+          color: var(--color-text-secondary);
+        }
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .meta-icon {
+          width: 16px;
+          height: 16px;
+          color: var(--color-primary);
+        }
+
         h1 {
           font-size: 18pt;
           font-weight: bold;
@@ -565,14 +609,36 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
       </style>
     </head>
     <body>
-      <h1>Mots à retravailler</h1>
+  `;
+
+  html += `
+    <header class="document-header">
+      <h1 class="header-title">Mots à retravailler</h1>
+      <p class="header-subtitle">Liste d'exercices personnalisée</p>
+      <div class="header-meta">
   `;
 
   if (settings.includeDate) {
-    html += `<div class="date">${new Date().toLocaleDateString('fr-FR')}</div>`;
+    html += `
+        <div class="meta-item">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span>${new Date().toLocaleDateString('fr-FR')}</span>
+        </div>
+    `;
   }
 
-  html += `<div class="count">${words.length} mots</div>`;
+  html += `
+        <div class="meta-item">
+          <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+          </svg>
+          <span>${words.length} mots sélectionnés</span>
+        </div>
+      </div>
+    </header>
+  `;
   html += `<ul class="word-list">`;
 
   words.forEach((word) => {
