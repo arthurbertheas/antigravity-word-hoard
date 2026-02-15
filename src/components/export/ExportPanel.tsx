@@ -52,7 +52,7 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
       {/* Modal */}
       <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none">
         <div
-          className="relative bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] w-full max-w-4xl max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 fade-in duration-300 overflow-hidden font-dm-sans"
+          className="relative bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] w-full max-w-4xl max-h-[80vh] flex flex-col pointer-events-auto animate-in zoom-in-95 fade-in duration-300 overflow-hidden font-dm-sans"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
