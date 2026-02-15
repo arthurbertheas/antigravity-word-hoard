@@ -330,32 +330,44 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
   html += `<div class="footer">Généré depuis Ressources Orthophonie</div>`;
   html += `</body></html>`;
 
-  // Open print window with security features
-  const printWindow = window.open('', '_blank', 'noopener,noreferrer');
-  if (printWindow) {
-    printWindow.document.write(html);
-    printWindow.document.close();
+  // Use hidden iframe instead of popup (works with Firefox + uBlock)
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'absolute';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = 'none';
+  document.body.appendChild(iframe);
 
-    // Wait for document to be fully loaded before printing
-    const waitForLoad = () => {
-      if (printWindow.document.readyState === 'complete') {
-        // Focus the window to ensure print dialog appears
-        printWindow.focus();
+  const iframeDoc = iframe.contentWindow?.document;
+  if (iframeDoc) {
+    iframeDoc.open();
+    iframeDoc.write(html);
+    iframeDoc.close();
 
-        // Small delay to ensure focus is set
+    // Wait for content to load then print
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+
+        // Remove iframe after printing
         setTimeout(() => {
-          printWindow.print();
-
-          // Close window after printing (user can cancel)
-          printWindow.onafterprint = () => {
-            printWindow.close();
-          };
-        }, 250);
-      } else {
-        setTimeout(waitForLoad, 50);
-      }
+          document.body.removeChild(iframe);
+        }, 1000);
+      }, 250);
     };
 
-    waitForLoad();
+    // Fallback if onload doesn't fire
+    setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+
+      // Remove iframe after printing
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      }, 1000);
+    }, 500);
   }
 }
