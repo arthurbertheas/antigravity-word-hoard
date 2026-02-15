@@ -1,4 +1,4 @@
-import { ExportSettings } from '@/types/export';
+import { ExportSettings, ExportDisplay, ExportLayout, ExportFormat } from '@/types/export';
 import { FileText, FileImage, Printer } from 'lucide-react';
 
 interface ExportOptionsProps {
@@ -37,8 +37,10 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
                 name="display"
                 value={option}
                 checked={settings.display === option}
-                onChange={(e) => updateSetting('display', e.target.value as any)}
+                onChange={(e) => updateSetting('display', e.target.value as ExportDisplay)}
                 className="sr-only"
+                role="radio"
+                aria-checked={settings.display === option}
               />
               <div
                 className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
@@ -68,7 +70,7 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
         </label>
         <select
           value={settings.layout}
-          onChange={(e) => updateSetting('layout', e.target.value as any)}
+          onChange={(e) => updateSetting('layout', e.target.value as ExportLayout)}
           className="w-full px-3 py-2.5 border-[1.5px] border-gray-200 rounded-lg font-medium text-sm text-gray-700 focus:border-[#6C5CE7] focus:outline-none bg-white"
         >
           <option value="list-1col">Liste simple (1 colonne)</option>
@@ -152,8 +154,10 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
                 name="format"
                 value={value}
                 checked={settings.format === value}
-                onChange={(e) => updateSetting('format', e.target.value as any)}
+                onChange={(e) => updateSetting('format', e.target.value as ExportFormat)}
                 className="sr-only"
+                role="radio"
+                aria-checked={settings.format === value}
               />
               <Icon className={`w-6 h-6 ${color}`} />
               <span className="text-[11px] font-medium text-gray-700">{label}</span>
