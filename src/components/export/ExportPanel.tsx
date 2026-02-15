@@ -4,13 +4,32 @@ import { ExportSettings, DEFAULT_EXPORT_SETTINGS, ExportPanelProps } from '@/typ
 import { ExportOptions } from './ExportOptions';
 import { ExportPreview } from './ExportPreview';
 import { Button } from '@/components/ui/button';
+import { exportToPDF, exportToWord, exportToPrint } from '@/lib/export-utils';
+import { toast } from 'sonner';
 
 export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
   const [settings, setSettings] = useState<ExportSettings>(DEFAULT_EXPORT_SETTINGS);
 
-  const handleExport = () => {
-    // TODO: Implement actual export logic
-    console.log('Exporting with settings:', settings);
+  const handleExport = async () => {
+    try {
+      switch (settings.format) {
+        case 'pdf':
+          exportToPDF(selectedWords, settings);
+          toast.success('PDF téléchargé avec succès !');
+          break;
+        case 'word':
+          await exportToWord(selectedWords, settings);
+          toast.success('Document Word téléchargé avec succès !');
+          break;
+        case 'print':
+          exportToPrint(selectedWords, settings);
+          toast.success('Fenêtre d\'impression ouverte');
+          break;
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Erreur lors de l\'export. Veuillez réessayer.');
+    }
   };
 
   return (
