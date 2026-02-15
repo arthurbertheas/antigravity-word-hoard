@@ -146,198 +146,473 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
   const margin = 20;
   let yPosition = margin;
 
-  // Add title and header
-  doc.setFontSize(18);
+  // Clinical Elegance colors
+  const primaryColor = [108, 92, 231]; // #6C5CE7
+  const lightGray = [250, 251, 252]; // #FAFBFC
+  const borderGray = [226, 232, 240]; // #E2E8F0
+  const textGray = [113, 128, 150]; // #718096
+
+  // === HEADER ===
+  // Title
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(26, 32, 44); // Dark text
   doc.text('Mots à retravailler', margin, yPosition);
-  yPosition += 10;
+  yPosition += 8;
 
+  // Subtitle
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...primaryColor);
+  doc.text('Liste d\'exercices personnalisée', margin, yPosition);
+  yPosition += 8;
+
+  // Meta info (date + word count)
+  doc.setFontSize(10);
+  doc.setTextColor(...textGray);
+  let metaText = '';
   if (settings.includeDate) {
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(new Date().toLocaleDateString('fr-FR'), margin, yPosition);
-    yPosition += 8;
+    metaText = `📅 ${new Date().toLocaleDateString('fr-FR')}    `;
   }
+  metaText += `🏷️  ${words.length} mots sélectionnés`;
+  doc.text(metaText, margin, yPosition);
+  yPosition += 5;
 
-  doc.text(`${words.length} mots`, margin, yPosition);
+  // Gradient border (simulated with violet line)
+  doc.setDrawColor(...primaryColor);
+  doc.setLineWidth(1);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
   yPosition += 12;
 
-  // Grid layout handling
+  // === LOAD IMAGES ===
+  const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
+  const imageDataMap = new Map<string, string>();
+
+  if (hasImages) {
+    console.log('[PDF] Loading images for', words.length, 'words');
+    let loadedCount = 0;
+    for (const word of words) {
+      if (word["image associée"]) {
+        const imageData = await loadImageAsBase64(word["image associée"]);
+        if (imageData) {
+          imageDataMap.set(word.MOTS, imageData);
+          loadedCount++;
+        }
+      }
+    }
+    console.log('[PDF] Successfully loaded', loadedCount, 'images out of', words.filter(w => w["image associée"]).length);
+  }
+
+  // === CONTENT BASED ON LAYOUT ===
   if (settings.layout === 'grid-2col' || settings.layout === 'grid-3col') {
     const cols = settings.layout === 'grid-2col' ? 2 : 3;
-    const colWidth = (pageWidth - margin * 2 - (cols - 1) * 10) / cols;
-    const cellHeight = 20;
+    const gap = 5;
+    const colWidth = (pageWidth - margin * 2 - gap * (cols - 1)) / cols;
+    const cardHeight = hasImages ? 35 : 25;
+    const imageSize = settings.layout === 'grid-3col' ? 12 : 16;
+
     let currentCol = 0;
     let currentRow = 0;
 
-    words.forEach((word, index) => {
-      let x = margin + currentCol * (colWidth + 10);
-      let y = yPosition + currentRow * cellHeight;
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+      let x = margin + currentCol * (colWidth + gap);
+      let y = yPosition + currentRow * (cardHeight + gap);
 
       // Check page break
-      if (y > pageHeight - margin - cellHeight) {
+      if (y + cardHeight > pageHeight - margin - 20) {
         doc.addPage();
         yPosition = margin;
         currentRow = 0;
         currentCol = 0;
-        // Recalculate positions with new page values
-        x = margin + currentCol * (colWidth + 10);
-        y = yPosition + currentRow * cellHeight;
+        x = margin;
+        y = yPosition;
       }
 
-      // Draw cell border
-      doc.rect(x, y, colWidth, cellHeight);
+      // Card background (light gray)
+      doc.setFillColor(...lightGray);
+      doc.setDrawColor(...borderGray);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(x, y, colWidth, cardHeight, 2, 2, 'FD');
+
+      // Violet left border
+      doc.setFillColor(...primaryColor);
+      doc.rect(x, y, 1, cardHeight, 'F');
+
+      let contentX = x + 5;
+      let contentY = y + 6;
+
+      // Number or bullet
+      if (settings.numberWords) {
+        // Violet circle with number
+        doc.setFillColor(...primaryColor);
+        doc.circle(contentX + 3, contentY + 1, 3, 'F');
+        doc.setFontSize(settings.layout === 'grid-3col' ? 8 : 9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255); // White
+        doc.text(`${index + 1}`, contentX + 3, contentY + 2, { align: 'center' });
+        contentX += 10;
+      } else {
+        doc.setFontSize(14);
+        doc.setTextColor(...primaryColor);
+        doc.text('•', contentX, contentY + 2);
+        contentX += 6;
+      }
+
+      // Image
+      if (hasImages && imageDataMap.has(word.MOTS)) {
+        const imageData = imageDataMap.get(word.MOTS);
+        if (imageData) {
+          doc.addImage(imageData, 'PNG', contentX, contentY - 2, imageSize, imageSize);
+          contentX += imageSize + 3;
+        }
+      }
 
       // Word text
-      doc.setFontSize(11);
-      let text = settings.display !== 'imageOnly' ? word.MOTS : '';
-      if (settings.includePhonemes && word.PHONEMES) {
-        text += `\n/${word.PHONEMES}/`;
-      }
+      if (settings.display !== 'imageOnly') {
+        doc.setFontSize(settings.layout === 'grid-3col' ? 10 : 12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(26, 32, 44);
+        doc.text(word.MOTS, contentX, contentY + 3);
+        contentY += 6;
 
-      doc.text(text, x + 5, y + 10);
+        // Phoneme
+        if (settings.includePhonemes && word.PHONEMES) {
+          doc.setFontSize(settings.layout === 'grid-3col' ? 8 : 9);
+          doc.setFont('helvetica', 'italic');
+          doc.setTextColor(...primaryColor);
+          doc.text(`/${word.PHONEMES}/`, contentX, contentY + 3);
+          contentY += 5;
+        }
+
+        // Category
+        if (settings.includeCategories && word.SYNT) {
+          doc.setFontSize(settings.layout === 'grid-3col' ? 7 : 8);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...textGray);
+          doc.text(word.SYNT.toUpperCase(), contentX, contentY + 3);
+        }
+      }
 
       currentCol++;
       if (currentCol >= cols) {
         currentCol = 0;
         currentRow++;
       }
-    });
-  } else {
-    // List layout with optional images
-    doc.setFontSize(12);
-    const lineHeight = 7;
-    const imageSize = 20; // 20mm square images
-
-    // Load all images if needed
-    const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
-    const imageDataMap = new Map<string, string>();
-
-    if (hasImages) {
-      console.log('[PDF] Loading images for', words.length, 'words');
-      let loadedCount = 0;
-      for (const word of words) {
-        if (word["image associée"]) {
-          const imageData = await loadImageAsBase64(word["image associée"]);
-          if (imageData) {
-            imageDataMap.set(word.MOTS, imageData);
-            loadedCount++;
-          }
-        }
-      }
-      console.log('[PDF] Successfully loaded', loadedCount, 'images out of', words.filter(w => w["image associée"]).length);
     }
+  } else {
+    // List layout (1 column)
+    const cardHeight = hasImages ? 30 : 18;
+    const imageSize = 16;
 
     for (let index = 0; index < words.length; index++) {
       const word = words[index];
-      const hasImage = hasImages && imageDataMap.has(word.MOTS);
-      const itemHeight = hasImage ? imageSize + 5 : lineHeight;
 
       // Check page break
-      if (yPosition + itemHeight > pageHeight - margin) {
+      if (yPosition + cardHeight > pageHeight - margin - 20) {
         doc.addPage();
         yPosition = margin;
       }
 
-      let xOffset = margin + 5;
+      const x = margin;
+      const y = yPosition;
+
+      // Card background
+      doc.setFillColor(...lightGray);
+      doc.setDrawColor(...borderGray);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(x, y, pageWidth - margin * 2, cardHeight, 2, 2, 'FD');
+
+      // Violet left border
+      doc.setFillColor(...primaryColor);
+      doc.rect(x, y, 1, cardHeight, 'F');
+
+      let contentX = x + 5;
+      let contentY = y + cardHeight / 2;
 
       // Number or bullet
-      let prefix = settings.numberWords ? `${index + 1}. ` : '• ';
-      doc.text(prefix, xOffset, yPosition + (hasImage ? imageSize / 2 : 0));
-      xOffset += 10;
+      if (settings.numberWords) {
+        doc.setFillColor(...primaryColor);
+        doc.circle(contentX + 3, contentY, 3, 'F');
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`${index + 1}`, contentX + 3, contentY + 1, { align: 'center' });
+        contentX += 10;
+      } else {
+        doc.setFontSize(16);
+        doc.setTextColor(...primaryColor);
+        doc.text('•', contentX, contentY + 1);
+        contentX += 8;
+      }
 
       // Image
-      if (hasImage) {
+      if (hasImages && imageDataMap.has(word.MOTS)) {
         const imageData = imageDataMap.get(word.MOTS);
         if (imageData) {
-          doc.addImage(imageData, 'PNG', xOffset, yPosition, imageSize, imageSize);
-          xOffset += imageSize + 5;
+          doc.addImage(imageData, 'PNG', contentX, contentY - imageSize / 2, imageSize, imageSize);
+          contentX += imageSize + 5;
         }
       }
 
-      // Text
+      // Word text
       if (settings.display !== 'imageOnly') {
-        let text = word.MOTS;
-        if (settings.includePhonemes && word.PHONEMES) text += ` /${word.PHONEMES}/`;
-        if (settings.includeCategories && word.SYNT) text += ` (${word.SYNT})`;
-        doc.text(text, xOffset, yPosition + (hasImage ? imageSize / 2 : 0));
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(26, 32, 44);
+        doc.text(word.MOTS, contentX, contentY);
+
+        // Phoneme & Category on same line
+        let extraX = contentX + doc.getTextWidth(word.MOTS) + 5;
+        if (settings.includePhonemes && word.PHONEMES) {
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'italic');
+          doc.setTextColor(...primaryColor);
+          doc.text(`/${word.PHONEMES}/`, extraX, contentY);
+          extraX += doc.getTextWidth(`/${word.PHONEMES}/`) + 5;
+        }
+        if (settings.includeCategories && word.SYNT) {
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...textGray);
+          doc.text(`(${word.SYNT})`, extraX, contentY);
+        }
       }
 
-      yPosition += itemHeight;
+      yPosition += cardHeight + 4;
     }
   }
 
-  // Footer
-  doc.setFontSize(8);
+  // === FOOTER ===
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'italic');
-  doc.setTextColor(150);
-  doc.text(
-    'Généré depuis Ressources Orthophonie',
-    pageWidth / 2,
-    pageHeight - 15,
-    { align: 'center' }
-  );
+  doc.setTextColor(160, 174, 192);
+  doc.text('Généré depuis Ressources Orthophonie', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
   const filename = `mots-${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(filename);
 }
 
 export async function exportToWord(words: Word[], settings: ExportSettings): Promise<void> {
-  const children: Paragraph[] = [];
+  const children: (Paragraph | Table)[] = [];
 
+  // Clinical Elegance violet color
+  const primaryColor = '6C5CE7'; // Violet
+  const textGray = '718096';
+
+  // === HEADER ===
   // Title
   children.push(
     new Paragraph({
-      text: 'Mots à retravailler',
-      heading: 'Heading1',
-      spacing: { after: 200 },
+      children: [
+        new TextRun({
+          text: 'Mots à retravailler',
+          bold: true,
+          size: 32, // 16pt
+          color: '1A202C', // Dark
+        }),
+      ],
+      spacing: { after: 150 },
     })
   );
 
-  // Date if enabled
+  // Subtitle
+  children.push(
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: 'Liste d\'exercices personnalisée',
+          size: 22, // 11pt
+          color: primaryColor,
+        }),
+      ],
+      spacing: { after: 150 },
+    })
+  );
+
+  // Meta info
+  const metaRuns: TextRun[] = [];
   if (settings.includeDate) {
-    children.push(
-      new Paragraph({
-        text: new Date().toLocaleDateString('fr-FR'),
-        spacing: { after: 100 },
+    metaRuns.push(
+      new TextRun({
+        text: `📅 ${new Date().toLocaleDateString('fr-FR')}    `,
+        size: 20,
+        color: textGray,
       })
     );
   }
-
-  // Word count
+  metaRuns.push(
+    new TextRun({
+      text: `🏷️  ${words.length} mots sélectionnés`,
+      size: 20,
+      color: textGray,
+    })
+  );
   children.push(
     new Paragraph({
-      text: `${words.length} mots`,
+      children: metaRuns,
+      spacing: { after: 100 },
+    })
+  );
+
+  // Separator line (using border)
+  children.push(
+    new Paragraph({
+      text: '',
+      border: {
+        bottom: {
+          color: primaryColor,
+          space: 1,
+          style: 'single',
+          size: 6,
+        },
+      },
       spacing: { after: 300 },
     })
   );
 
-  // Grid layout using tables
+  // === LOAD IMAGES ===
+  const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
+  const imageDataMap = new Map<string, Uint8Array>();
+
+  if (hasImages) {
+    console.log('[Word] Loading images for', words.length, 'words');
+    let loadedCount = 0;
+    for (const word of words) {
+      if (word["image associée"]) {
+        const imageData = await loadImageAsArrayBuffer(word["image associée"]);
+        if (imageData) {
+          imageDataMap.set(word.MOTS, imageData);
+          loadedCount++;
+        }
+      }
+    }
+    console.log('[Word] Successfully loaded', loadedCount, 'images out of', words.filter(w => w["image associée"]).length);
+  }
+
+  // === CONTENT BASED ON LAYOUT ===
   if (settings.layout === 'grid-2col' || settings.layout === 'grid-3col') {
     const cols = settings.layout === 'grid-2col' ? 2 : 3;
     const rows: TableRow[] = [];
+    const imageSize = settings.layout === 'grid-3col' ? 60 : 80;
 
     for (let i = 0; i < words.length; i += cols) {
       const cells: TableCell[] = [];
 
       for (let j = 0; j < cols; j++) {
         const word = words[i + j];
+        const index = i + j;
+
         if (word) {
-          const textRuns: TextRun[] = [];
-          if (settings.display !== 'imageOnly') {
-            textRuns.push(new TextRun({ text: word.MOTS, bold: true }));
+          const cellChildren: (Paragraph | ImageRun)[] = [];
+          const textRuns: (TextRun | ImageRun)[] = [];
+
+          // Number or bullet
+          if (settings.numberWords) {
+            textRuns.push(
+              new TextRun({
+                text: `${index + 1}. `,
+                bold: true,
+                color: primaryColor,
+              })
+            );
+          } else {
+            textRuns.push(
+              new TextRun({
+                text: '• ',
+                bold: true,
+                color: primaryColor,
+                size: 24,
+              })
+            );
           }
+
+          // Image
+          if (hasImages && imageDataMap.has(word.MOTS)) {
+            const imageData = imageDataMap.get(word.MOTS);
+            if (imageData) {
+              cellChildren.push(
+                new Paragraph({
+                  children: [
+                    new ImageRun({
+                      data: imageData,
+                      transformation: {
+                        width: imageSize,
+                        height: imageSize,
+                      },
+                    }),
+                  ],
+                  spacing: { after: 100 },
+                })
+              );
+            }
+          }
+
+          // Word text
+          if (settings.display !== 'imageOnly') {
+            textRuns.push(
+              new TextRun({
+                text: word.MOTS,
+                bold: true,
+                size: settings.layout === 'grid-3col' ? 20 : 24,
+              })
+            );
+          }
+
+          // Phoneme
           if (settings.includePhonemes && word.PHONEMES) {
-            textRuns.push(new TextRun(`\n/${word.PHONEMES}/`));
+            textRuns.push(
+              new TextRun({
+                text: ` /${word.PHONEMES}/`,
+                italics: true,
+                color: primaryColor,
+                size: settings.layout === 'grid-3col' ? 18 : 20,
+              })
+            );
+          }
+
+          // Category
+          if (settings.includeCategories && word.SYNT) {
+            textRuns.push(
+              new TextRun({
+                text: ` ${word.SYNT.toUpperCase()}`,
+                color: textGray,
+                size: settings.layout === 'grid-3col' ? 16 : 18,
+              })
+            );
+          }
+
+          if (textRuns.length > 0) {
+            cellChildren.push(
+              new Paragraph({
+                children: textRuns,
+              })
+            );
           }
 
           cells.push(
             new TableCell({
-              children: [new Paragraph({ children: textRuns })],
+              children: cellChildren,
               width: { size: 100 / cols, type: WidthType.PERCENTAGE },
+              margins: {
+                top: 150,
+                bottom: 150,
+                left: 150,
+                right: 150,
+              },
+              shading: {
+                fill: 'FAFBFC', // Light gray background
+              },
+              borders: {
+                top: { style: 'single', size: 1, color: 'E2E8F0' },
+                bottom: { style: 'single', size: 1, color: 'E2E8F0' },
+                left: { style: 'single', size: 6, color: primaryColor }, // Violet left border
+                right: { style: 'single', size: 1, color: 'E2E8F0' },
+              },
             })
           );
         } else {
+          // Empty cell
           cells.push(
             new TableCell({
               children: [new Paragraph('')],
@@ -357,35 +632,29 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
       })
     );
   } else {
-    // List layout with optional images
-    const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
-    const imageDataMap = new Map<string, Uint8Array>();
-
-    // Load all images if needed
-    if (hasImages) {
-      console.log('[Word] Loading images for', words.length, 'words');
-      let loadedCount = 0;
-      for (const word of words) {
-        if (word["image associée"]) {
-          const imageData = await loadImageAsArrayBuffer(word["image associée"]);
-          if (imageData) {
-            imageDataMap.set(word.MOTS, imageData);
-            loadedCount++;
-          }
-        }
-      }
-      console.log('[Word] Successfully loaded', loadedCount, 'images out of', words.filter(w => w["image associée"]).length);
-    }
-
+    // List layout (1 column)
     for (let index = 0; index < words.length; index++) {
       const word = words[index];
       const paragraphChildren: (TextRun | ImageRun)[] = [];
 
       // Number or bullet
       if (settings.numberWords) {
-        paragraphChildren.push(new TextRun(`${index + 1}. `));
+        paragraphChildren.push(
+          new TextRun({
+            text: `${index + 1}. `,
+            bold: true,
+            color: primaryColor,
+          })
+        );
       } else {
-        paragraphChildren.push(new TextRun('• '));
+        paragraphChildren.push(
+          new TextRun({
+            text: '• ',
+            bold: true,
+            color: primaryColor,
+            size: 28,
+          })
+        );
       }
 
       // Image
@@ -407,35 +676,93 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
 
       // Word text
       if (settings.display !== 'imageOnly') {
-        paragraphChildren.push(new TextRun({ text: word.MOTS, bold: true }));
+        paragraphChildren.push(
+          new TextRun({
+            text: word.MOTS,
+            bold: true,
+            size: 24,
+          })
+        );
       }
 
-      // Phonemes if enabled
+      // Phoneme
       if (settings.includePhonemes && word.PHONEMES) {
-        paragraphChildren.push(new TextRun(` /${word.PHONEMES}/`));
+        paragraphChildren.push(
+          new TextRun({
+            text: ` /${word.PHONEMES}/`,
+            italics: true,
+            color: primaryColor,
+            size: 20,
+          })
+        );
       }
 
-      // Category if enabled
+      // Category
       if (settings.includeCategories && word.SYNT) {
-        paragraphChildren.push(new TextRun(` (${word.SYNT})`));
+        paragraphChildren.push(
+          new TextRun({
+            text: ` (${word.SYNT})`,
+            color: textGray,
+            size: 18,
+          })
+        );
       }
 
       children.push(
         new Paragraph({
           children: paragraphChildren,
-          spacing: { after: 150 },
+          spacing: { after: 200 },
+          shading: {
+            fill: 'FAFBFC', // Light gray background
+          },
+          border: {
+            left: {
+              color: primaryColor,
+              space: 1,
+              style: 'single',
+              size: 12, // Violet left border
+            },
+            top: {
+              color: 'E2E8F0',
+              space: 1,
+              style: 'single',
+              size: 3,
+            },
+            bottom: {
+              color: 'E2E8F0',
+              space: 1,
+              style: 'single',
+              size: 3,
+            },
+            right: {
+              color: 'E2E8F0',
+              space: 1,
+              style: 'single',
+              size: 3,
+            },
+          },
+          indent: {
+            left: 200,
+            right: 200,
+          },
         })
       );
     }
   }
 
-  // Footer
+  // === FOOTER ===
   children.push(
     new Paragraph({
-      text: 'Généré depuis Ressources Orthophonie',
+      children: [
+        new TextRun({
+          text: 'Généré depuis Ressources Orthophonie',
+          italics: true,
+          color: 'A0AEC0', // Light gray
+          size: 18,
+        }),
+      ],
       alignment: AlignmentType.CENTER,
-      italics: true,
-      spacing: { before: 400 },
+      spacing: { before: 600 },
     })
   );
 
