@@ -57,7 +57,7 @@ function SessionStats({ words, wordStatuses, currentIndex }: { words: Word[]; wo
   ];
 
   return (
-    <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="mb-4 p-3.5 bg-[#F8F9FC] rounded-xl border border-[#F3F4F6]">
       {/* Progress bar */}
       <div className="flex h-2 rounded-full overflow-hidden mb-3">
         {barSegments.map((seg, i) => (
@@ -68,25 +68,25 @@ function SessionStats({ words, wordStatuses, currentIndex }: { words: Word[]; wo
       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS.validated.border }} />
-          <span className="text-gray-600">{stats.validated} validé{stats.validated > 1 ? 's' : ''}</span>
+          <span className="text-[#6B7280]">{stats.validated} validé{stats.validated > 1 ? 's' : ''}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS.failed.border }} />
-          <span className="text-gray-600">{stats.failed} raté{stats.failed > 1 ? 's' : ''}</span>
+          <span className="text-[#6B7280]">{stats.failed} raté{stats.failed > 1 ? 's' : ''}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS.neutral.border }} />
-          <span className="text-gray-600">{stats.neutral} non noté{stats.neutral > 1 ? 's' : ''}</span>
+          <span className="text-[#6B7280]">{stats.neutral} non noté{stats.neutral > 1 ? 's' : ''}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS['not-seen'].border }} />
-          <span className="text-gray-600">{stats.notSeen} pas vu{stats.notSeen > 1 ? 's' : ''}</span>
+          <span className="text-[#6B7280]">{stats.notSeen} pas vu{stats.notSeen > 1 ? 's' : ''}</span>
         </div>
       </div>
       {/* Success rate */}
-      <div className="mt-2 pt-2 border-t border-gray-200 text-center">
+      <div className="mt-2.5 pt-2.5 border-t border-[#F3F4F6] text-center">
         <span className="text-sm font-bold" style={{ color: STATUS_COLORS.validated.text }}>{stats.rate}%</span>
-        <span className="text-[11px] text-gray-500 ml-1">de réussite</span>
+        <span className="text-[11px] text-[#9CA3AF] ml-1">de réussite</span>
       </div>
     </div>
   );
@@ -99,9 +99,9 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
   if (words.length === 0) {
     return (
       <div className="flex-1 bg-white px-6 py-7 flex items-center justify-center">
-        <div className="text-center text-gray-400">
-          <p className="text-sm">Aucun mot sélectionné</p>
-          <p className="text-xs mt-2">Sélectionnez des mots pour voir l'aperçu</p>
+        <div className="text-center text-[#9CA3AF]">
+          <p className="text-[13.5px]">Aucun mot sélectionné</p>
+          <p className="text-[12px] mt-2">Sélectionnez des mots pour voir l'aperçu</p>
         </div>
       </div>
     );
@@ -115,21 +115,21 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
     <div className="flex-1 bg-white px-6 py-7 overflow-y-auto">
       {/* Preview Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="text-sm font-semibold text-gray-900">
-          Aperçu <span className="text-xs font-normal text-gray-500">({words.length} mots)</span>
+        <div className="text-[13.5px] font-semibold text-[#1A1A2E]">
+          Aperçu <span className="text-[12px] font-normal text-[#9CA3AF]">({words.length} mots)</span>
         </div>
-        <div className="text-xs text-gray-400">Format A4</div>
+        <div className="text-[11px] text-[#9CA3AF]">Format A4</div>
       </div>
 
       {/* Document Preview */}
-      <div className="bg-[#FAFBFC] border border-gray-200 rounded-lg p-7 min-h-[400px]">
+      <div className="bg-[#F8F9FC] border border-[#F3F4F6] rounded-xl p-7 min-h-[400px]">
         {/* Document Header */}
         {settings.includeDate && (
-          <div className="pb-3 mb-4 border-b border-gray-200">
-            <h3 className="text-base font-semibold text-gray-900">
+          <div className="pb-3 mb-4 border-b border-[#F3F4F6]">
+            <h3 className="text-base font-bold font-sora text-[#1A1A2E]">
               {isSessionMode ? 'Résultats de session' : 'Mots à retravailler'} — {formatDate()}
             </h3>
-            <p className="text-xs text-gray-600 mt-0.5">{words.length} mots</p>
+            <p className="text-[12px] text-[#6B7280] mt-0.5">{words.length} mots</p>
           </div>
         )}
 
@@ -157,7 +157,7 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
                 key={`${word.MOTS}-${word.PHONEMES}`}
                 className={
                   settings.layout === 'grid-2col' || settings.layout === 'grid-3col'
-                    ? 'flex flex-col gap-2 p-3 bg-white border border-gray-200 rounded-lg'
+                    ? 'flex flex-col gap-2 p-3 bg-white border border-[#E5E7EB] rounded-xl'
                     : 'flex items-center gap-2.5'
                 }
                 style={statusColors ? { borderLeftColor: statusColors.border, borderLeftWidth: '3px' } : undefined}
@@ -184,8 +184,8 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
                       alt={word.MOTS}
                       className={
                         settings.layout === 'grid-3col'
-                          ? 'w-12 h-12 object-cover rounded border border-gray-200'
-                          : 'w-16 h-16 object-cover rounded border border-gray-200'
+                          ? 'w-12 h-12 object-cover rounded-lg border border-[#E5E7EB]'
+                          : 'w-16 h-16 object-cover rounded-lg border border-[#E5E7EB]'
                       }
                     />
                   )}
@@ -195,17 +195,17 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
                     {settings.display !== 'imageOnly' && (
                       <span className={
                         settings.layout === 'grid-3col'
-                          ? 'text-xs text-gray-900 font-medium'
-                          : 'text-sm text-gray-900'
+                          ? 'text-[12px] text-[#1A1A2E] font-medium'
+                          : 'text-[13.5px] text-[#1A1A2E]'
                       }>
                         {word.MOTS}
                       </span>
                     )}
                     {settings.includePhonemes && word.PHONEMES && (
-                      <span className="text-xs text-gray-500 ml-2">/{word.PHONEMES}/</span>
+                      <span className="text-[11px] text-[#9CA3AF] ml-2">/{word.PHONEMES}/</span>
                     )}
                     {settings.includeCategories && word.SYNT && (
-                      <span className="text-xs text-gray-500 ml-2">({word.SYNT})</span>
+                      <span className="text-[11px] text-[#9CA3AF] ml-2">({word.SYNT})</span>
                     )}
                   </div>
                 </div>
@@ -214,13 +214,13 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
           })}
         </div>
         {words.length > PREVIEW_WORD_LIMIT && (
-          <div className="text-xs text-gray-400 italic pt-2">
+          <div className="text-[11px] text-[#9CA3AF] italic pt-3">
             ... et {words.length - previewWords.length} autres mots
           </div>
         )}
 
         {/* Footer */}
-        <div className="mt-5 pt-3 border-t border-gray-100 text-[11px] text-gray-400 italic text-center">
+        <div className="mt-5 pt-3 border-t border-[#F3F4F6] text-[11px] text-[#9CA3AF] italic text-center">
           Généré depuis Ressources Orthophonie
         </div>
       </div>

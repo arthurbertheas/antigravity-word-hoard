@@ -15,21 +15,21 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
   };
 
   return (
-    <div className="w-[340px] border-r border-gray-200 px-5 py-6 overflow-y-auto bg-[#FAFBFC]">
+    <div className="w-[340px] border-r border-[#F3F4F6] px-6 py-6 overflow-y-auto bg-[#F8F9FC]">
 
       {/* Affichage Section */}
-      <div className="mb-5">
-        <label className="text-xs font-semibold text-gray-900 mb-2.5 block">
-          Affichage <span className="text-red-500">*</span>
+      <div className="mb-6">
+        <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3 block">
+          Affichage
         </label>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {(['wordOnly', 'imageOnly', 'wordAndImage'] as const).map((option) => (
             <label
               key={option}
-              className={`flex items-center gap-2.5 px-3 py-2.5 border-[1.5px] rounded-lg cursor-pointer transition-all ${
+              className={`flex items-center gap-3 px-3.5 py-3 border-[1.5px] rounded-xl cursor-pointer transition-all ${
                 settings.display === option
-                  ? 'border-[#6C5CE7] bg-white'
-                  : 'border-gray-200 bg-white hover:border-[#C4B8FF]'
+                  ? 'border-[#6C5CE7] bg-white shadow-[0_2px_8px_rgba(108,92,231,0.08)]'
+                  : 'border-[#E5E7EB] bg-white hover:border-[#C4B8FF]'
               }`}
             >
               <input
@@ -43,17 +43,17 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
                 aria-checked={settings.display === option}
               />
               <div
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                className={`w-[18px] h-[18px] rounded-full border-[2px] flex items-center justify-center transition-colors ${
                   settings.display === option
                     ? 'border-[#6C5CE7]'
                     : 'border-gray-300'
                 }`}
               >
                 {settings.display === option && (
-                  <div className="w-2 h-2 rounded-full bg-[#6C5CE7]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#6C5CE7]" />
                 )}
               </div>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-[13.5px] font-medium text-[#1A1A2E]">
                 {option === 'wordOnly' && 'Mot seul'}
                 {option === 'imageOnly' && 'Image seule'}
                 {option === 'wordAndImage' && 'Mot + Image'}
@@ -64,14 +64,14 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
       </div>
 
       {/* Mise en page Section */}
-      <div className="mb-5">
-        <label className="text-xs font-semibold text-gray-900 mb-2.5 block">
-          Mise en page <span className="text-red-500">*</span>
+      <div className="mb-6">
+        <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3 block">
+          Mise en page
         </label>
         <select
           value={settings.layout}
           onChange={(e) => updateSetting('layout', e.target.value as ExportLayout)}
-          className="w-full px-3 py-2.5 border-[1.5px] border-gray-200 rounded-lg font-medium text-sm text-gray-700 focus:border-[#6C5CE7] focus:outline-none bg-white"
+          className="w-full px-3.5 py-3 border-[1.5px] border-[#E5E7EB] rounded-xl font-medium text-[13.5px] text-[#1A1A2E] focus:border-[#6C5CE7] focus:outline-none bg-white transition-colors"
         >
           <option value="list-1col">Liste simple (1 colonne)</option>
           <option value="grid-2col">Grille 2 colonnes</option>
@@ -80,11 +80,11 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
       </div>
 
       {/* Options Section */}
-      <div className="mb-5">
-        <label className="text-xs font-semibold text-gray-900 mb-2.5 block">
-          Options <span className="text-xs font-normal text-gray-500">(optionnel)</span>
+      <div className="mb-6">
+        <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3 block">
+          Options
         </label>
-        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-2">
           {[
             { key: 'includeDate' as const, label: 'Inclure la date' },
             { key: 'includePhonemes' as const, label: 'Inclure les phonèmes' },
@@ -93,7 +93,7 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
           ].map(({ key, label }) => (
             <label
               key={key}
-              className="flex items-center gap-2 px-2.5 py-1.5 hover:bg-gray-50 rounded-lg cursor-pointer transition-all"
+              className="flex items-center gap-2.5 px-3 py-2 hover:bg-white rounded-lg cursor-pointer transition-all"
             >
               <input
                 type="checkbox"
@@ -102,27 +102,27 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
                 className="sr-only"
               />
               <div
-                className={`w-3.5 h-3.5 border-[1.5px] rounded flex items-center justify-center ${
+                className={`w-[18px] h-[18px] border-[2px] rounded-[5px] flex items-center justify-center transition-all ${
                   settings[key] ? 'bg-[#6C5CE7] border-[#6C5CE7]' : 'border-gray-300 bg-white'
                 }`}
               >
                 {settings[key] && (
                   <svg
-                    className="w-2.5 h-2.5 text-white"
+                    className="w-3 h-3 text-white"
                     viewBox="0 0 12 10"
                     fill="none"
                   >
                     <path
                       d="M1 5L4.5 8.5L11 1.5"
                       stroke="currentColor"
-                      strokeWidth="2"
+                      strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
                   </svg>
                 )}
               </div>
-              <span className="text-xs text-gray-700">{label}</span>
+              <span className="text-[12px] text-[#6B7280] font-medium">{label}</span>
             </label>
           ))}
         </div>
@@ -130,21 +130,21 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
 
       {/* Format Section */}
       <div>
-        <label className="text-xs font-semibold text-gray-900 mb-2.5 block">
-          Format <span className="text-red-500">*</span>
+        <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3 block">
+          Format
         </label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2.5">
           {[
-            { value: 'pdf' as const, icon: FileText, color: 'text-red-500', label: 'PDF' },
-            { value: 'word' as const, icon: FileImage, color: 'text-blue-500', label: 'Word' },
-            { value: 'print' as const, icon: Printer, color: 'text-green-500', label: 'Imprimer' },
-          ].map(({ value, icon: Icon, color, label }) => (
+            { value: 'pdf' as const, icon: FileText, color: '#EF4444', bgColor: '#FEF2F2', label: 'PDF' },
+            { value: 'word' as const, icon: FileImage, color: '#3B82F6', bgColor: '#EFF6FF', label: 'Word' },
+            { value: 'print' as const, icon: Printer, color: '#10B981', bgColor: '#ECFDF5', label: 'Imprimer' },
+          ].map(({ value, icon: Icon, color, bgColor, label }) => (
             <label
               key={value}
-              className={`flex flex-col items-center gap-1.5 px-2 py-3 border-[1.5px] rounded-lg cursor-pointer transition-all ${
+              className={`flex flex-col items-center gap-2 px-2 py-3.5 border-[1.5px] rounded-xl cursor-pointer transition-all ${
                 settings.format === value
-                  ? 'border-[#6C5CE7] bg-[#F7F6FE]'
-                  : 'border-gray-200 bg-white hover:border-[#C4B8FF]'
+                  ? 'border-[#6C5CE7] bg-[#F0EDFF] shadow-[0_2px_8px_rgba(108,92,231,0.08)]'
+                  : 'border-[#E5E7EB] bg-white hover:border-[#C4B8FF]'
               }`}
             >
               <input
@@ -157,8 +157,13 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
                 role="radio"
                 aria-checked={settings.format === value}
               />
-              <Icon className={`w-6 h-6 ${color}`} />
-              <span className="text-[11px] font-medium text-gray-700">{label}</span>
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: bgColor }}
+              >
+                <Icon className="w-5 h-5" style={{ color }} />
+              </div>
+              <span className="text-[11px] font-semibold text-[#6B7280]">{label}</span>
             </label>
           ))}
         </div>

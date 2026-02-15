@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Download } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 import { ExportSettings, DEFAULT_EXPORT_SETTINGS, ExportPanelProps } from '@/types/export';
 import { ExportOptions } from './ExportOptions';
 import { ExportPreview } from './ExportPreview';
-import { Button } from '@/components/ui/button';
 import { exportToPDF, exportToWord, exportToPrint } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
@@ -35,16 +34,9 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // ESC to close
-      if (e.key === 'Escape') {
-        onClose();
-      }
-      // Ctrl/Cmd + Enter to export
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        handleExport();
-      }
+      if (e.key === 'Escape') onClose();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleExport();
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, handleExport]);
@@ -53,30 +45,31 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 z-50 animate-in fade-in duration-200"
+        className="fixed inset-0 bg-[#0F1423]/45 backdrop-blur-[4px] z-[100] animate-in fade-in duration-200"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none">
         <div
-          className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 fade-in duration-200"
+          className="relative bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] w-full max-w-4xl max-h-[90vh] flex flex-col pointer-events-auto animate-in zoom-in-95 fade-in duration-300 overflow-hidden font-dm-sans"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="text-lg">{isSessionMode ? '📊' : '📥'}</span>
-              <div className="text-base font-semibold text-gray-900">{isSessionMode ? 'Exporter les résultats' : 'Exporter la liste'}</div>
+          <div className="px-6 py-5 border-b border-[#F3F4F6] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#F0EDFF] flex items-center justify-center text-[#6C5CE7] shrink-0">
+                <Download className="w-[18px] h-[18px]" strokeWidth={2.5} />
+              </div>
+              <h2 className="text-base font-bold font-sora text-[#1A1A2E]">
+                {isSessionMode ? 'Exporter les résultats' : 'Exporter la liste'}
+              </h2>
             </div>
             <button
               onClick={onClose}
-              className="flex-none w-7 h-7 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-all"
-              title="Fermer"
+              className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-[#9CA3AF] hover:text-[#1A1A2E] transition-colors"
             >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M13.5 4.5L4.5 13.5M4.5 4.5L13.5 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+              <X className="w-4 h-4" strokeWidth={2} />
             </button>
           </div>
 
@@ -87,20 +80,20 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-5 border-t border-gray-200 flex items-center justify-end gap-3">
+          <div className="px-6 py-5 border-t border-[#F3F4F6] flex items-center justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
+              className="px-5 py-3 rounded-[10px] border border-gray-200 bg-white text-[#9CA3AF] font-medium text-[15px] hover:bg-gray-50 transition-colors"
             >
               Annuler
             </button>
-            <Button
+            <button
               onClick={handleExport}
-              className="px-6 py-3 bg-[#6C5CE7] hover:bg-[#5B4CD6] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+              className="px-6 py-3 rounded-[10px] bg-[#6C5CE7] text-white font-semibold text-[15px] shadow-[0_3px_10px_rgba(108,92,231,0.3)] hover:bg-[#5A4BD1] transition-all flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
               Générer l'export
-            </Button>
+            </button>
           </div>
         </div>
       </div>
