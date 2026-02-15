@@ -8,7 +8,7 @@ export const CONSONNES: string[] = [
 ];
 
 export const VOYELLES: string[] = [
-    'a', 'u', 'y', 'i', 'o', 'ɔ', 'e', 'œ', 'ø', 'ɛ', 'ɔ̃', 'ã', 'ɛ̃', 'œ̃', 'w', 'ɥ', 'j'
+    'a', 'u', 'y', 'i', 'o', 'ɔ', 'e', 'œ', 'ø', 'ɛ', 'õ', 'ã', 'ɛ̃', 'œ̃', 'w', 'ɥ', 'j'
 ];
 
 // Keep backward compat
