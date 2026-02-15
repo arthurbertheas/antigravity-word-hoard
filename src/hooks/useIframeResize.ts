@@ -15,8 +15,9 @@ export function useIframeResize(isFocusMode: boolean = false) {
                     // Webflow promotes the iframe to fixed fullscreen (100vw/100vh).
                     return;
                 } else {
-                    // NORMAL MODE: Match content height
-                    height = document.body.scrollHeight;
+                    // NORMAL MODE: Use window height to prevent scroll
+                    // Using scrollHeight can cause overflow - use innerHeight instead
+                    height = window.innerHeight;
                 }
 
                 // Send to parent
