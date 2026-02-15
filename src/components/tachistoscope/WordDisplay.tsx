@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Word } from '@/types/word';
 import { cn } from '@/lib/utils';
 import { usePlayer } from '@/contexts/PlayerContext';
@@ -19,7 +19,17 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
     // State for alternating modes - tracks whether we show the alternate element
     const [showAlternate, setShowAlternate] = useState(false);
 
-    // Reset alternate state when word changes
+    // Synchronous reset: prevent flash of stale alternate state when word changes
+    const prevWordRef = useRef(`${word.MOTS}-${word.PHONEMES}`);
+    const wordKey = `${word.MOTS}-${word.PHONEMES}`;
+    const wordChanged = prevWordRef.current !== wordKey;
+    if (wordChanged) {
+        prevWordRef.current = wordKey;
+    }
+    // Override showAlternate to false on the render where word changes (before effect fires)
+    const effectiveShowAlternate = wordChanged ? false : showAlternate;
+
+    // Reset alternate state when word changes (for subsequent renders)
     useEffect(() => {
         setShowAlternate(false);
     }, [word.MOTS, word.PHONEMES]);
@@ -265,12 +275,12 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
 
     if (settings.displayMode === 'alternateWordFirst') {
         // Alternating mode: starts with word, toggles to image
-        shouldShowWord = !showAlternate;
-        shouldShowImage = hasImage && showAlternate;
+        shouldShowWord = !effectiveShowAlternate;
+        shouldShowImage = hasImage && effectiveShowAlternate;
     } else if (settings.displayMode === 'alternateImageFirst') {
         // Alternating mode: starts with image, toggles to word
-        shouldShowImage = hasImage && !showAlternate;
-        shouldShowWord = showAlternate;
+        shouldShowImage = hasImage && !effectiveShowAlternate;
+        shouldShowWord = effectiveShowAlternate;
     } else {
         // Static modes
         shouldShowImage = hasImage && (settings.displayMode === 'image' || settings.displayMode === 'imageAndWord');
