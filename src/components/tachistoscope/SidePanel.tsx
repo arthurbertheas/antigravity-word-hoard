@@ -827,10 +827,12 @@ export function SidePanel() {
             </aside >
 
             {showExportPanel && (
-                <ExportPanel
-                    selectedWords={queue.filter(w => w.MOTS !== 'Bravo !')}
-                    onClose={() => setShowExportPanel(false)}
-                />
+                <div className="relative z-[80]">
+                    <ExportPanel
+                        selectedWords={queue.filter(w => w.MOTS !== 'Bravo !')}
+                        onClose={() => setShowExportPanel(false)}
+                    />
+                </div>
             )}
         </>
     );
