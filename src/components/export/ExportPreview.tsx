@@ -10,7 +10,7 @@ interface ExportPreviewProps {
   currentIndex?: number;
 }
 
-const PREVIEW_WORD_LIMIT = 10;
+const PREVIEW_WORD_LIMIT = 6;
 
 const formatDate = () => {
   const today = new Date();
