@@ -290,7 +290,10 @@ export function SidePanel() {
 
                                         {/* Content type cards */}
                                         {(() => {
-                                            const hasImages = queue.some(w => w["image associée"]?.trim());
+                                            const wordsWithImages = queue.filter(w => w["image associée"]?.trim());
+                                            const hasImages = wordsWithImages.length > 0;
+                                            const allHaveImages = wordsWithImages.length === queue.length;
+                                            const missingCount = queue.length - wordsWithImages.length;
                                             const contentMode = settings.displayMode === 'imageAndWord' ? 'both'
                                                 : (settings.displayMode === 'image' || settings.displayMode === 'alternateImageFirst') ? 'image'
                                                 : 'word';
@@ -363,11 +366,17 @@ export function SidePanel() {
                                                         })}
                                                     </div>
 
-                                                    {/* No images hint */}
+                                                    {/* No images / mixed list hint */}
                                                     {!hasImages && (
                                                         <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-1.5">
                                                             <Info className="w-3 h-3 flex-shrink-0" />
                                                             Aucune image dans cette liste
+                                                        </p>
+                                                    )}
+                                                    {hasImages && !allHaveImages && contentMode !== 'word' && (
+                                                        <p className="flex items-center gap-1.5 text-[11px] text-amber-600 mt-1.5">
+                                                            <Info className="w-3 h-3 flex-shrink-0" />
+                                                            {missingCount} mot{missingCount > 1 ? 's' : ''} sans image — {missingCount > 1 ? 'ils' : 'il'} s'afficher{missingCount > 1 ? 'ont' : 'a'} en texte seul
                                                         </p>
                                                     )}
 
