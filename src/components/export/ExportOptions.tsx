@@ -23,45 +23,17 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
         <div className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Contenu</div>
 
         {/* Affichage */}
-        <div className="space-y-1.5">
-          {(['wordOnly', 'imageOnly', 'wordAndImage'] as const).map((option) => (
-            <label
-              key={option}
-              className={cn(
-                'flex items-center gap-2.5 px-3 py-2.5 rounded-lg cursor-pointer transition-all',
-                settings.display === option
-                  ? 'bg-[#F0EDFF]'
-                  : 'hover:bg-[#F8F9FC]'
-              )}
-            >
-              <input
-                type="radio"
-                name="display"
-                value={option}
-                checked={settings.display === option}
-                onChange={(e) => updateSetting('display', e.target.value as ExportDisplay)}
-                className="sr-only"
-              />
-              <div
-                className={cn(
-                  'w-[16px] h-[16px] rounded-full border-[2px] flex items-center justify-center transition-colors',
-                  settings.display === option ? 'border-[#6C5CE7]' : 'border-gray-300'
-                )}
-              >
-                {settings.display === option && (
-                  <div className="w-2 h-2 rounded-full bg-[#6C5CE7]" />
-                )}
-              </div>
-              <span className={cn(
-                'text-[13px] font-medium',
-                settings.display === option ? 'text-[#6C5CE7]' : 'text-[#1A1A2E]'
-              )}>
-                {option === 'wordOnly' && 'Mot seul'}
-                {option === 'imageOnly' && 'Image seule'}
-                {option === 'wordAndImage' && 'Mot + Image'}
-              </span>
-            </label>
-          ))}
+        <div>
+          <div className="text-[11px] text-[#9CA3AF] font-medium mb-2">Affichage</div>
+          <select
+            value={settings.display}
+            onChange={(e) => updateSetting('display', e.target.value as ExportDisplay)}
+            className="w-full px-3 py-2.5 border-[1.5px] border-[#E5E7EB] rounded-lg font-medium text-[13px] text-[#1A1A2E] focus:border-[#6C5CE7] focus:outline-none bg-white transition-colors"
+          >
+            <option value="wordOnly">Mot seul</option>
+            <option value="imageOnly">Image seule</option>
+            <option value="wordAndImage">Mot + Image</option>
+          </select>
         </div>
 
         {/* Séparateur */}
