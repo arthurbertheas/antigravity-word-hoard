@@ -69,7 +69,7 @@ export function UnifiedListSelector({
                     ) : (
                         <>
                             <div className="text-[11px] font-[500] text-[#8b8fa8] uppercase tracking-[0.3px] mb-0.5 font-['DM_Sans']">
-                                Liste de travail
+                                Listes enregistrées
                             </div>
                             <div className="font-['Sora'] text-[14px] font-[600] text-[#1A1A2E]">
                                 Aucune liste
