@@ -31,6 +31,21 @@ export function WordDisplay({ word, forceVisible = false }: WordDisplayProps & {
         }
     };
 
+    // Left Control key toggles alternate display (same as click)
+    useEffect(() => {
+        if (settings.displayMode !== 'alternateWordFirst' && settings.displayMode !== 'alternateImageFirst') return;
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === 'ControlLeft') {
+                e.preventDefault();
+                setShowAlternate(prev => !prev);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [settings.displayMode]);
+
     // Parse GPMATCH for precise grapheme-phoneme mapping
     const parsedGraphemes = useMemo(() => {
         try {
