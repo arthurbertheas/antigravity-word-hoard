@@ -313,6 +313,9 @@ export function FilterPanel({
                     </div>
                 </FilterSection>
 
+                {/* GROUP: FILTRES COMPLÉMENTAIRES */}
+                <FilterGroup label="Filtres complémentaires" variant="secondary" />
+
                 {/* Syllabes */}
                 <FilterSection
                     title="Syllabes"
@@ -346,8 +349,8 @@ export function FilterPanel({
                     </div>
                 </FilterSection>
 
-                {/* GROUP: FILTRES COMPLÉMENTAIRES */}
-                <FilterGroup label="Filtres complémentaires" variant="secondary" />
+                {/* GROUP: RECHERCHE CIBLÉE */}
+                <FilterGroup label="RECHERCHE CIBLÉE" variant="secondary" />
 
                 {/* Recherche */}
                 <SearchFilter
