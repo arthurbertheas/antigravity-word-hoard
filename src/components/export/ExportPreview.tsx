@@ -58,22 +58,34 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
         )}
 
         {/* Word List Preview */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {previewWords.map((word, index) => (
-            <div key={`${word.MOTS}-${word.PHONEMES}`} className="flex items-baseline gap-2.5">
-              <span className="text-sm font-semibold text-[#6C5CE7]">
+            <div key={`${word.MOTS}-${word.PHONEMES}`} className="flex items-start gap-2.5">
+              <span className="text-sm font-semibold text-[#6C5CE7] mt-0.5">
                 {settings.numberWords ? `${index + 1}.` : '•'}
               </span>
-              <div>
-                {settings.display !== 'imageOnly' && (
-                  <span className="text-sm text-gray-900">{word.MOTS}</span>
+              <div className="flex flex-col gap-1.5">
+                {/* Image */}
+                {(settings.display === 'imageOnly' || settings.display === 'wordAndImage') && word.IMAGE_URL && (
+                  <img
+                    src={word.IMAGE_URL}
+                    alt={word.MOTS}
+                    className="w-16 h-16 object-cover rounded border border-gray-200"
+                  />
                 )}
-                {settings.includePhonemes && word.PHONEMES && (
-                  <span className="text-xs text-gray-500 ml-2">/{word.PHONEMES}/</span>
-                )}
-                {settings.includeCategories && word.SYNT && (
-                  <span className="text-xs text-gray-500 ml-2">({word.SYNT})</span>
-                )}
+
+                {/* Text content */}
+                <div>
+                  {settings.display !== 'imageOnly' && (
+                    <span className="text-sm text-gray-900">{word.MOTS}</span>
+                  )}
+                  {settings.includePhonemes && word.PHONEMES && (
+                    <span className="text-xs text-gray-500 ml-2">/{word.PHONEMES}/</span>
+                  )}
+                  {settings.includeCategories && word.SYNT && (
+                    <span className="text-xs text-gray-500 ml-2">({word.SYNT})</span>
+                  )}
+                </div>
               </div>
             </div>
           ))}
