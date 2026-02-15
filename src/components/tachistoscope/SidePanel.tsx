@@ -120,7 +120,6 @@ export function SidePanel() {
     };
 
     const handleNewListConfirm = () => {
-        handleDownloadPdf();
         setIsFocusModeOpen(false); // Close Tachi first
         setIsNewListModalOpen(false);
         resetSession();
@@ -762,10 +761,10 @@ export function SidePanel() {
                                         <div className="pt-5 border-t border-border">
                                             <Button
                                                 className="w-full justify-center gap-2 px-5 py-3.5 bg-primary text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-primary/90 transition-all shadow-[0_4px_12px_rgba(79,70,229,0.25)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.35)] hover:-translate-y-px h-auto"
-                                                onClick={handleDownloadPdf}
+                                                onClick={() => setShowExportPanel(true)}
                                             >
                                                 <Download className="w-4.5 h-4.5" />
-                                                Télécharger le PDF
+                                                Exporter
                                             </Button>
                                         </div>
                                     </>
