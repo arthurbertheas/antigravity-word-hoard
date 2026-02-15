@@ -76,8 +76,6 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
           <option value="list-1col">Liste simple (1 colonne)</option>
           <option value="grid-2col">Grille 2 colonnes</option>
           <option value="grid-3col">Grille 3 colonnes</option>
-          <option value="flashcards">Flashcards</option>
-          <option value="table">Tableau détaillé</option>
         </select>
       </div>
 

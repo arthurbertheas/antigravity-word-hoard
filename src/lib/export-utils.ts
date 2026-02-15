@@ -330,8 +330,8 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
   html += `<div class="footer">Généré depuis Ressources Orthophonie</div>`;
   html += `</body></html>`;
 
-  // Open print window
-  const printWindow = window.open('', '_blank');
+  // Open print window with security features
+  const printWindow = window.open('', '_blank', 'noopener,noreferrer');
   if (printWindow) {
     printWindow.document.write(html);
     printWindow.document.close();
