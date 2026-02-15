@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, Layers, BarChart3, Image } from "lucide-react";
+import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, MessageSquareText, Layers, Image } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
@@ -285,8 +285,8 @@ export function FilterPanel({
 
                 {/* Code appui lexical (formerly Fréquence) */}
                 <FilterSection
-                    title="Code appui lexical"
-                    icon={<BarChart3 className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
+                    title="APPUI LEXICAL"
+                    icon={<MessageSquareText className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.frequencies.length}
                     isOpen={openSections.frequencies || false}
                     onToggle={() => toggleSection('frequencies')}

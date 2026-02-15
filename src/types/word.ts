@@ -89,10 +89,10 @@ export const GRAPHEME_LABELS: Record<string, string> = {
 };
 
 export const FREQUENCY_LABELS: Record<string, string> = {
-    '1': 'Fréquent',
-    '2': 'Peu fréquent',
-    '3': 'Très peu fréquent',
-    '4': 'Rare / Inconnu'
+    '1': 'Mots très familiers',
+    '2': 'Mots familiers',
+    '3': 'Mots peu familiers',
+    '4': 'Mots non familiers'
 };
 
 // Filter Tag for Graphemes and Phonemes
