@@ -161,17 +161,9 @@ export function SelectionTray() {
     }
   };
 
-  if (showExportPanel) {
-    return (
-      <ExportPanel
-        selectedWords={selectedWords}
-        onClose={() => setShowExportPanel(false)}
-      />
-    );
-  }
-
   return (
-    <aside className={cn(
+    <>
+      <aside className={cn(
       "shrink-0 bg-card/10 flex flex-col h-full border-l border-[rgb(var(--filter-border))] transition-width-smooth overflow-hidden relative",
       isCollapsed ? "w-[64px]" : "w-80"
     )}>
@@ -482,7 +474,16 @@ export function SelectionTray() {
         onConfirm={handleConfirmDetach}
         listName={currentListId ? savedLists.find((l) => l.id === currentListId)?.name || '' : ''} />
 
+    </aside>
 
-    </aside>);
+      {/* Export Modal */}
+      {showExportPanel && (
+        <ExportPanel
+          selectedWords={selectedWords}
+          onClose={() => setShowExportPanel(false)}
+        />
+      )}
+    </>
+  );
 
 }
