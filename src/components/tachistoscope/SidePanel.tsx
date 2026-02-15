@@ -267,7 +267,7 @@ export function SidePanel() {
                                             </SelectContent>
                                         </Select>
 
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border">
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="text-[13px] font-medium text-foreground/70">Taille</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{settings.fontSize}x</span>
@@ -404,7 +404,7 @@ export function SidePanel() {
                                             <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
                                         </div>
 
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border">
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="text-[13px] font-medium text-foreground/70">Durée d'affichage</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.speedMs / 1000).toFixed(1)}s</span>
@@ -419,7 +419,7 @@ export function SidePanel() {
                                             />
                                         </div>
 
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border">
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="text-[13px] font-medium text-foreground/70">Pause entre les mots</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.gapMs / 1000).toFixed(1)}s</span>
