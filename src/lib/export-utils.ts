@@ -3,6 +3,8 @@ import { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableC
 import { saveAs } from 'file-saver';
 import { Word } from '@/types/word';
 import { ExportSettings } from '@/types/export';
+import { WordStatus } from '@/contexts/PlayerContext';
+import { STATUS_COLORS, getWordExportStatus, ExportWordStatus } from '@/types/export';
 
 // Helper function to convert SVG to PNG
 async function convertSvgToPng(svgDataUrl: string, width: number = 200, height: number = 200): Promise<string | null> {
@@ -138,8 +140,9 @@ async function loadImageAsArrayBuffer(url: string): Promise<Uint8Array | null> {
   }
 }
 
-export async function exportToPDF(words: Word[], settings: ExportSettings): Promise<void> {
+export async function exportToPDF(words: Word[], settings: ExportSettings, wordStatuses?: Map<string, WordStatus>, currentIndex?: number): Promise<void> {
   const doc = new jsPDF();
+  const isSessionMode = !!wordStatuses;
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -157,7 +160,7 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(26, 32, 44); // Dark text
-  doc.text('Mots à retravailler', margin, yPosition);
+  doc.text(isSessionMode ? 'Résultats de session' : 'Mots à retravailler', margin, yPosition);
   yPosition += 8;
 
   // Subtitle
@@ -183,6 +186,60 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
   doc.setLineWidth(1);
   doc.line(margin, yPosition, pageWidth - margin, yPosition);
   yPosition += 12;
+
+  // === SESSION STATS (only in session mode) ===
+  if (isSessionMode) {
+    const stats = { validated: 0, failed: 0, neutral: 0, 'not-seen': 0 };
+    words.forEach((word, index) => {
+      const status = getWordExportStatus(word, index, wordStatuses!, currentIndex!);
+      stats[status]++;
+    });
+    const total = words.length;
+    const successRate = total > 0 ? Math.round((stats.validated / total) * 100) : 0;
+
+    // Stats text line
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    let statsX = margin;
+
+    // Validated count
+    doc.setTextColor(5, 150, 105); // #059669
+    doc.text(`${stats.validated} validés`, statsX, yPosition);
+    statsX += doc.getTextWidth(`${stats.validated} validés`) + 3;
+    doc.setTextColor(...textGray);
+    doc.text(' · ', statsX, yPosition);
+    statsX += doc.getTextWidth(' · ') + 1;
+
+    // Failed count
+    doc.setTextColor(220, 38, 38); // #DC2626
+    doc.text(`${stats.failed} ratés`, statsX, yPosition);
+    statsX += doc.getTextWidth(`${stats.failed} ratés`) + 3;
+    doc.setTextColor(...textGray);
+    doc.text(' · ', statsX, yPosition);
+    statsX += doc.getTextWidth(' · ') + 1;
+
+    // Neutral count
+    doc.setTextColor(100, 116, 139); // #64748B
+    doc.text(`${stats.neutral} non notés`, statsX, yPosition);
+    statsX += doc.getTextWidth(`${stats.neutral} non notés`) + 3;
+    doc.setTextColor(...textGray);
+    doc.text(' · ', statsX, yPosition);
+    statsX += doc.getTextWidth(' · ') + 1;
+
+    // Not-seen count
+    doc.setTextColor(203, 213, 225); // #CBD5E1
+    doc.text(`${stats['not-seen']} pas encore vus`, statsX, yPosition);
+
+    yPosition += 6;
+
+    // Success rate
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(5, 150, 105); // #059669
+    doc.text(`${successRate}% de réussite`, margin, yPosition);
+    yPosition += 10;
+  }
 
   // === LOAD IMAGES ===
   const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
@@ -229,18 +286,43 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
         y = yPosition;
       }
 
+      // Get word status for session mode
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+
       // Card background (light gray)
       doc.setFillColor(...lightGray);
       doc.setDrawColor(...borderGray);
       doc.setLineWidth(0.2);
       doc.roundedRect(x, y, colWidth, cardHeight, 2, 2, 'FD');
 
-      // Violet left border
-      doc.setFillColor(...primaryColor);
+      // Left border - use status color in session mode, violet otherwise
+      if (statusColors) {
+        const r = parseInt(statusColors.border.slice(1, 3), 16);
+        const g = parseInt(statusColors.border.slice(3, 5), 16);
+        const b = parseInt(statusColors.border.slice(5, 7), 16);
+        doc.setFillColor(r, g, b);
+      } else {
+        doc.setFillColor(...primaryColor);
+      }
       doc.rect(x, y, 1, cardHeight, 'F');
 
       let contentX = x + 5;
       let contentY = y + 6;
+
+      // Status indicator circle (session mode)
+      if (isSessionMode && statusColors) {
+        const r = parseInt(statusColors.border.slice(1, 3), 16);
+        const g = parseInt(statusColors.border.slice(3, 5), 16);
+        const b = parseInt(statusColors.border.slice(5, 7), 16);
+        doc.setFillColor(r, g, b);
+        doc.circle(contentX + 3, contentY + 1, 3, 'F');
+        doc.setFontSize(settings.layout === 'grid-3col' ? 7 : 8);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(statusColors.symbol, contentX + 3, contentY + 2, { align: 'center' });
+        contentX += 10;
+      }
 
       // Number or bullet
       if (settings.numberWords) {
@@ -252,7 +334,7 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
         doc.setTextColor(255, 255, 255); // White
         doc.text(`${index + 1}`, contentX + 3, contentY + 2, { align: 'center' });
         contentX += 10;
-      } else {
+      } else if (!isSessionMode) {
         doc.setFontSize(14);
         doc.setTextColor(...primaryColor);
         doc.text('•', contentX, contentY + 2);
@@ -314,6 +396,10 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
         yPosition = margin;
       }
 
+      // Get word status for session mode
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+
       const x = margin;
       const y = yPosition;
 
@@ -323,12 +409,33 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
       doc.setLineWidth(0.2);
       doc.roundedRect(x, y, pageWidth - margin * 2, cardHeight, 2, 2, 'FD');
 
-      // Violet left border
-      doc.setFillColor(...primaryColor);
+      // Left border - use status color in session mode, violet otherwise
+      if (statusColors) {
+        const r = parseInt(statusColors.border.slice(1, 3), 16);
+        const g = parseInt(statusColors.border.slice(3, 5), 16);
+        const b = parseInt(statusColors.border.slice(5, 7), 16);
+        doc.setFillColor(r, g, b);
+      } else {
+        doc.setFillColor(...primaryColor);
+      }
       doc.rect(x, y, 1, cardHeight, 'F');
 
       let contentX = x + 5;
       let contentY = y + cardHeight / 2;
+
+      // Status indicator circle (session mode)
+      if (isSessionMode && statusColors) {
+        const r = parseInt(statusColors.border.slice(1, 3), 16);
+        const g = parseInt(statusColors.border.slice(3, 5), 16);
+        const b = parseInt(statusColors.border.slice(5, 7), 16);
+        doc.setFillColor(r, g, b);
+        doc.circle(contentX + 3, contentY, 3, 'F');
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(statusColors.symbol, contentX + 3, contentY + 1, { align: 'center' });
+        contentX += 10;
+      }
 
       // Number or bullet
       if (settings.numberWords) {
@@ -339,7 +446,7 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
         doc.setTextColor(255, 255, 255);
         doc.text(`${index + 1}`, contentX + 3, contentY + 1, { align: 'center' });
         contentX += 10;
-      } else {
+      } else if (!isSessionMode) {
         doc.setFontSize(16);
         doc.setTextColor(...primaryColor);
         doc.text('•', contentX, contentY + 1);
@@ -393,8 +500,9 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
   doc.save(filename);
 }
 
-export async function exportToWord(words: Word[], settings: ExportSettings): Promise<void> {
+export async function exportToWord(words: Word[], settings: ExportSettings, wordStatuses?: Map<string, WordStatus>, currentIndex?: number): Promise<void> {
   const children: (Paragraph | Table)[] = [];
+  const isSessionMode = !!wordStatuses;
 
   // Clinical Elegance violet color
   const primaryColor = '6C5CE7'; // Violet
@@ -406,7 +514,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
     new Paragraph({
       children: [
         new TextRun({
-          text: 'Mots à retravailler',
+          text: isSessionMode ? 'Résultats de session' : 'Mots à retravailler',
           bold: true,
           size: 32, // 16pt
           color: '1A202C', // Dark
@@ -471,6 +579,74 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
     })
   );
 
+  // === SESSION STATS (only in session mode) ===
+  if (isSessionMode) {
+    const stats = { validated: 0, failed: 0, neutral: 0, 'not-seen': 0 };
+    words.forEach((word, index) => {
+      const status = getWordExportStatus(word, index, wordStatuses!, currentIndex!);
+      stats[status]++;
+    });
+    const total = words.length;
+    const successRate = total > 0 ? Math.round((stats.validated / total) * 100) : 0;
+
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${stats.validated} validés`,
+            color: STATUS_COLORS.validated.text.slice(1), // remove #
+            size: 20,
+          }),
+          new TextRun({
+            text: ' · ',
+            color: textGray,
+            size: 20,
+          }),
+          new TextRun({
+            text: `${stats.failed} ratés`,
+            color: STATUS_COLORS.failed.text.slice(1),
+            size: 20,
+          }),
+          new TextRun({
+            text: ' · ',
+            color: textGray,
+            size: 20,
+          }),
+          new TextRun({
+            text: `${stats.neutral} non notés`,
+            color: STATUS_COLORS.neutral.text.slice(1),
+            size: 20,
+          }),
+          new TextRun({
+            text: ' · ',
+            color: textGray,
+            size: 20,
+          }),
+          new TextRun({
+            text: `${stats['not-seen']} pas encore vus`,
+            color: STATUS_COLORS['not-seen'].text.slice(1),
+            size: 20,
+          }),
+        ],
+        spacing: { after: 100 },
+      })
+    );
+
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${successRate}% de réussite`,
+            bold: true,
+            color: STATUS_COLORS.validated.text.slice(1),
+            size: 22,
+          }),
+        ],
+        spacing: { after: 300 },
+      })
+    );
+  }
+
   // === LOAD IMAGES ===
   const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
   const imageDataMap = new Map<string, Uint8Array>();
@@ -507,6 +683,22 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
           const cellChildren: (Paragraph | ImageRun)[] = [];
           const textRuns: (TextRun | ImageRun)[] = [];
 
+          // Get word status for session mode
+          const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+          const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+
+          // Status symbol (session mode)
+          if (isSessionMode && statusColors) {
+            textRuns.push(
+              new TextRun({
+                text: `${statusColors.symbol} `,
+                bold: true,
+                color: statusColors.text.slice(1),
+                size: settings.layout === 'grid-3col' ? 20 : 24,
+              })
+            );
+          }
+
           // Number or bullet
           if (settings.numberWords) {
             textRuns.push(
@@ -516,7 +708,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
                 color: primaryColor,
               })
             );
-          } else {
+          } else if (!isSessionMode) {
             textRuns.push(
               new TextRun({
                 text: '• ',
@@ -590,6 +782,9 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
             );
           }
 
+          // Left border color - use status color in session mode, violet otherwise
+          const leftBorderColor = (isSessionMode && statusColors) ? statusColors.border.slice(1) : primaryColor;
+
           cells.push(
             new TableCell({
               children: cellChildren,
@@ -606,7 +801,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
               borders: {
                 top: { style: 'single', size: 1, color: 'E2E8F0' },
                 bottom: { style: 'single', size: 1, color: 'E2E8F0' },
-                left: { style: 'single', size: 6, color: primaryColor }, // Violet left border
+                left: { style: 'single', size: 6, color: leftBorderColor }, // Status or violet left border
                 right: { style: 'single', size: 1, color: 'E2E8F0' },
               },
             })
@@ -637,6 +832,22 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
       const word = words[index];
       const paragraphChildren: (TextRun | ImageRun)[] = [];
 
+      // Get word status for session mode
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+
+      // Status symbol (session mode)
+      if (isSessionMode && statusColors) {
+        paragraphChildren.push(
+          new TextRun({
+            text: `${statusColors.symbol} `,
+            bold: true,
+            color: statusColors.text.slice(1),
+            size: 24,
+          })
+        );
+      }
+
       // Number or bullet
       if (settings.numberWords) {
         paragraphChildren.push(
@@ -646,7 +857,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
             color: primaryColor,
           })
         );
-      } else {
+      } else if (!isSessionMode) {
         paragraphChildren.push(
           new TextRun({
             text: '• ',
@@ -708,6 +919,9 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
         );
       }
 
+      // Left border color - use status color in session mode, violet otherwise
+      const leftBorderColor = (isSessionMode && statusColors) ? statusColors.border.slice(1) : primaryColor;
+
       children.push(
         new Paragraph({
           children: paragraphChildren,
@@ -717,10 +931,10 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
           },
           border: {
             left: {
-              color: primaryColor,
+              color: leftBorderColor,
               space: 1,
               style: 'single',
-              size: 12, // Violet left border
+              size: 12, // Status or violet left border
             },
             top: {
               color: 'E2E8F0',
@@ -781,7 +995,8 @@ export async function exportToWord(words: Word[], settings: ExportSettings): Pro
   saveAs(blob, filename);
 }
 
-export function exportToPrint(words: Word[], settings: ExportSettings): void {
+export function exportToPrint(words: Word[], settings: ExportSettings, wordStatuses?: Map<string, WordStatus>, currentIndex?: number): void {
+  const isSessionMode = !!wordStatuses;
   // Create print content
   let html = `
     <!DOCTYPE html>
@@ -789,7 +1004,7 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Mots à retravailler</title>
+      <title>${isSessionMode ? 'Résultats de session' : 'Mots à retravailler'}</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1300,6 +1515,111 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
             page-break-inside: avoid;
           }
         }
+
+        /* Session Stats Section */
+        .session-stats {
+          margin-bottom: 32px;
+          padding: 20px 24px;
+          background: linear-gradient(135deg, #FAFBFC 0%, #FFFFFF 100%);
+          border: 1px solid var(--color-border);
+          border-radius: 12px;
+        }
+
+        .session-progress-bar {
+          display: flex;
+          height: 8px;
+          border-radius: 4px;
+          overflow: hidden;
+          margin-bottom: 14px;
+          background: #F1F5F9;
+        }
+
+        .session-progress-bar .segment-validated {
+          background: #10B981;
+        }
+
+        .session-progress-bar .segment-failed {
+          background: #F87171;
+        }
+
+        .session-progress-bar .segment-neutral {
+          background: #94A3B8;
+        }
+
+        .session-progress-bar .segment-not-seen {
+          background: #E2E8F0;
+        }
+
+        .session-counters {
+          font-size: 13px;
+          color: var(--color-text-secondary);
+          margin-bottom: 6px;
+        }
+
+        .session-counters .count-validated { color: #059669; font-weight: 500; }
+        .session-counters .count-failed { color: #DC2626; font-weight: 500; }
+        .session-counters .count-neutral { color: #64748B; font-weight: 500; }
+        .session-counters .count-not-seen { color: #CBD5E1; font-weight: 500; }
+        .session-counters .separator { color: #94A3B8; margin: 0 6px; }
+
+        .session-success-rate {
+          font-size: 15px;
+          font-weight: 600;
+          color: #059669;
+        }
+
+        /* Status indicator badge */
+        .status-badge {
+          flex-shrink: 0;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 14px;
+          line-height: 1;
+        }
+
+        .status-badge-validated { background: #ECFDF5; border: 2px solid #10B981; color: #059669; }
+        .status-badge-failed { background: #FEF2F2; border: 2px solid #F87171; color: #DC2626; }
+        .status-badge-neutral { background: #F8FAFC; border: 2px solid #94A3B8; color: #64748B; }
+        .status-badge-not-seen { background: #F9FAFB; border: 2px solid #E2E8F0; color: #CBD5E1; }
+
+        /* Status left border overrides */
+        .word-item-list.status-validated::before,
+        .word-card.status-validated::before { background: #10B981 !important; }
+        .word-item-list.status-failed::before,
+        .word-card.status-failed::before { background: #F87171 !important; }
+        .word-item-list.status-neutral::before,
+        .word-card.status-neutral::before { background: #94A3B8 !important; }
+        .word-item-list.status-not-seen::before,
+        .word-card.status-not-seen::before { background: #E2E8F0 !important; }
+
+        /* Flashcard status top border overrides */
+        .flashcard.status-validated::before { background: #10B981 !important; }
+        .flashcard.status-failed::before { background: #F87171 !important; }
+        .flashcard.status-neutral::before { background: #94A3B8 !important; }
+        .flashcard.status-not-seen::before { background: #E2E8F0 !important; }
+
+        /* Table status indicator */
+        .table-status {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          font-weight: 700;
+          font-size: 12px;
+          line-height: 1;
+        }
+
+        .table-status-validated { background: #ECFDF5; border: 2px solid #10B981; color: #059669; }
+        .table-status-failed { background: #FEF2F2; border: 2px solid #F87171; color: #DC2626; }
+        .table-status-neutral { background: #F8FAFC; border: 2px solid #94A3B8; color: #64748B; }
+        .table-status-not-seen { background: #F9FAFB; border: 2px solid #E2E8F0; color: #CBD5E1; }
       </style>
     </head>
     <body>
@@ -1307,7 +1627,7 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
 
   html += `
     <header class="document-header">
-      <h1 class="header-title">Mots à retravailler</h1>
+      <h1 class="header-title">${isSessionMode ? 'Résultats de session' : 'Mots à retravailler'}</h1>
       <p class="header-subtitle">Liste d'exercices personnalisée</p>
       <div class="header-meta">
   `;
@@ -1334,16 +1654,57 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     </header>
   `;
 
+  // === SESSION STATS (only in session mode) ===
+  if (isSessionMode) {
+    const stats = { validated: 0, failed: 0, neutral: 0, 'not-seen': 0 };
+    words.forEach((word, index) => {
+      const status = getWordExportStatus(word, index, wordStatuses!, currentIndex!);
+      stats[status]++;
+    });
+    const total = words.length;
+    const successRate = total > 0 ? Math.round((stats.validated / total) * 100) : 0;
+
+    const validatedPct = total > 0 ? (stats.validated / total) * 100 : 0;
+    const failedPct = total > 0 ? (stats.failed / total) * 100 : 0;
+    const neutralPct = total > 0 ? (stats.neutral / total) * 100 : 0;
+    const notSeenPct = total > 0 ? (stats['not-seen'] / total) * 100 : 0;
+
+    html += `
+      <div class="session-stats">
+        <div class="session-progress-bar">
+          ${validatedPct > 0 ? `<div class="segment-validated" style="width: ${validatedPct}%"></div>` : ''}
+          ${failedPct > 0 ? `<div class="segment-failed" style="width: ${failedPct}%"></div>` : ''}
+          ${neutralPct > 0 ? `<div class="segment-neutral" style="width: ${neutralPct}%"></div>` : ''}
+          ${notSeenPct > 0 ? `<div class="segment-not-seen" style="width: ${notSeenPct}%"></div>` : ''}
+        </div>
+        <div class="session-counters">
+          <span class="count-validated">${stats.validated} validés</span>
+          <span class="separator">·</span>
+          <span class="count-failed">${stats.failed} ratés</span>
+          <span class="separator">·</span>
+          <span class="count-neutral">${stats.neutral} non notés</span>
+          <span class="separator">·</span>
+          <span class="count-not-seen">${stats['not-seen']} pas encore vus</span>
+        </div>
+        <div class="session-success-rate">${successRate}% de réussite</div>
+      </div>
+    `;
+  }
+
   // Generate content based on layout
   if (settings.layout === 'list-1col') {
     html += `<div class="word-list-1col">`;
 
     words.forEach((word, index) => {
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusClass = wordStatus ? ` status-${wordStatus}` : '';
+
       html += `
-        <div class="word-item-list">
+        <div class="word-item-list${statusClass}">
+          ${isSessionMode && wordStatus ? `<div class="status-badge status-badge-${wordStatus}">${STATUS_COLORS[wordStatus].symbol}</div>` : ''}
           ${settings.numberWords
             ? `<div class="word-number">${index + 1}</div>`
-            : `<div class="word-bullet">•</div>`
+            : (!isSessionMode ? `<div class="word-bullet">•</div>` : '')
           }
           <div class="word-content-list">
       `;
@@ -1384,11 +1745,15 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     html += `<div class="word-grid-2col">`;
 
     words.forEach((word, index) => {
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusClass = wordStatus ? ` status-${wordStatus}` : '';
+
       html += `
-        <div class="word-card">
+        <div class="word-card${statusClass}">
+          ${isSessionMode && wordStatus ? `<div class="status-badge status-badge-${wordStatus}">${STATUS_COLORS[wordStatus].symbol}</div>` : ''}
           ${settings.numberWords
             ? `<div class="word-number">${index + 1}</div>`
-            : `<div class="word-bullet">•</div>`
+            : (!isSessionMode ? `<div class="word-bullet">•</div>` : '')
           }
           <div class="word-card-content">
       `;
@@ -1429,11 +1794,15 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     html += `<div class="word-grid-3col">`;
 
     words.forEach((word, index) => {
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusClass = wordStatus ? ` status-${wordStatus}` : '';
+
       html += `
-        <div class="word-card">
+        <div class="word-card${statusClass}">
+          ${isSessionMode && wordStatus ? `<div class="status-badge status-badge-${wordStatus}">${STATUS_COLORS[wordStatus].symbol}</div>` : ''}
           ${settings.numberWords
             ? `<div class="word-number">${index + 1}</div>`
-            : `<div class="word-bullet">•</div>`
+            : (!isSessionMode ? `<div class="word-bullet">•</div>` : '')
           }
           <div class="word-card-content">
       `;
@@ -1472,7 +1841,14 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     html += `<div class="word-flashcards">`;
 
     words.forEach((word, index) => {
-      html += `<div class="flashcard">`;
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusClass = wordStatus ? ` status-${wordStatus}` : '';
+
+      html += `<div class="flashcard${statusClass}">`;
+
+      if (isSessionMode && wordStatus) {
+        html += `<div class="status-badge status-badge-${wordStatus}" style="margin-bottom: 4px;">${STATUS_COLORS[wordStatus].symbol}</div>`;
+      }
 
       if (settings.numberWords) {
         html += `<div class="flashcard-number">${index + 1}</div>`;
@@ -1506,6 +1882,10 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     html += `<table class="word-table">`;
     html += `<thead><tr>`;
 
+    if (isSessionMode) {
+      html += `<th>Statut</th>`;
+    }
+
     if (settings.numberWords) {
       html += `<th>#</th>`;
     }
@@ -1530,7 +1910,13 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     html += `<tbody>`;
 
     words.forEach((word, index) => {
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+
       html += `<tr>`;
+
+      if (isSessionMode && wordStatus) {
+        html += `<td style="text-align: center;"><span class="table-status table-status-${wordStatus}">${STATUS_COLORS[wordStatus].symbol}</span></td>`;
+      }
 
       if (settings.numberWords) {
         html += `<td class="table-number">${index + 1}</td>`;
@@ -1568,11 +1954,15 @@ export function exportToPrint(words: Word[], settings: ExportSettings): void {
     html += `<div class="word-list-1col">`;
 
     words.forEach((word, index) => {
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusClass = wordStatus ? ` status-${wordStatus}` : '';
+
       html += `
-        <div class="word-item-list">
+        <div class="word-item-list${statusClass}">
+          ${isSessionMode && wordStatus ? `<div class="status-badge status-badge-${wordStatus}">${STATUS_COLORS[wordStatus].symbol}</div>` : ''}
           ${settings.numberWords
             ? `<div class="word-number">${index + 1}</div>`
-            : `<div class="word-bullet">•</div>`
+            : (!isSessionMode ? `<div class="word-bullet">•</div>` : '')
           }
           <div class="word-content-list">
       `;

@@ -7,22 +7,23 @@ import { Button } from '@/components/ui/button';
 import { exportToPDF, exportToWord, exportToPrint } from '@/lib/export-utils';
 import { toast } from 'sonner';
 
-export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
+export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex }: ExportPanelProps) {
   const [settings, setSettings] = useState<ExportSettings>(DEFAULT_EXPORT_SETTINGS);
+  const isSessionMode = !!wordStatuses;
 
   const handleExport = useCallback(async () => {
     try {
       switch (settings.format) {
         case 'pdf':
-          await exportToPDF(selectedWords, settings);
+          await exportToPDF(selectedWords, settings, wordStatuses, currentIndex);
           toast.success('PDF téléchargé avec succès !');
           break;
         case 'word':
-          await exportToWord(selectedWords, settings);
+          await exportToWord(selectedWords, settings, wordStatuses, currentIndex);
           toast.success('Document Word téléchargé avec succès !');
           break;
         case 'print':
-          exportToPrint(selectedWords, settings);
+          exportToPrint(selectedWords, settings, wordStatuses, currentIndex);
           toast.success('Fenêtre d\'impression ouverte');
           break;
       }
@@ -30,7 +31,7 @@ export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
       console.error('Export error:', error);
       toast.error('Erreur lors de l\'export. Veuillez réessayer.');
     }
-  }, [selectedWords, settings]);
+  }, [selectedWords, settings, wordStatuses, currentIndex]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -65,8 +66,8 @@ export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
           {/* Header */}
           <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="text-lg">📥</span>
-              <div className="text-base font-semibold text-gray-900">Exporter la liste</div>
+              <span className="text-lg">{isSessionMode ? '📊' : '📥'}</span>
+              <div className="text-base font-semibold text-gray-900">{isSessionMode ? 'Exporter les résultats' : 'Exporter la liste'}</div>
             </div>
             <button
               onClick={onClose}
@@ -82,7 +83,7 @@ export function ExportPanel({ selectedWords, onClose }: ExportPanelProps) {
           {/* Body: Options + Preview */}
           <div className="flex-1 flex overflow-hidden min-h-0">
             <ExportOptions settings={settings} onChange={setSettings} />
-            <ExportPreview words={selectedWords} settings={settings} />
+            <ExportPreview words={selectedWords} settings={settings} wordStatuses={wordStatuses} currentIndex={currentIndex} />
           </div>
 
           {/* Footer */}

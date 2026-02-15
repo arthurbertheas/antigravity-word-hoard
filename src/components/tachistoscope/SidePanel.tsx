@@ -830,6 +830,8 @@ export function SidePanel() {
                 <div className="relative z-[80]">
                     <ExportPanel
                         selectedWords={queue.filter(w => w.MOTS !== 'Bravo !')}
+                        wordStatuses={wordStatuses}
+                        currentIndex={currentIndex}
                         onClose={() => setShowExportPanel(false)}
                     />
                 </div>
