@@ -4,7 +4,51 @@ import { saveAs } from 'file-saver';
 import { Word } from '@/types/word';
 import { ExportSettings } from '@/types/export';
 
-// Helper function to load image as base64
+// Helper function to convert SVG to PNG
+async function convertSvgToPng(svgDataUrl: string, width: number = 200, height: number = 200): Promise<string | null> {
+  try {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+
+        // Fill white background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, width, height);
+
+        // Draw image
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to PNG
+        const pngDataUrl = canvas.toDataURL('image/png');
+        console.log('[SVG→PNG] Converted successfully, length:', pngDataUrl.length);
+        resolve(pngDataUrl);
+      };
+
+      img.onerror = (error) => {
+        console.error('[SVG→PNG] Failed to load image:', error);
+        reject(error);
+      };
+
+      img.src = svgDataUrl;
+    });
+  } catch (error) {
+    console.error('[SVG→PNG] Conversion error:', error);
+    return null;
+  }
+}
+
+// Helper function to load image as base64 (with SVG support for PDF)
 async function loadImageAsBase64(url: string): Promise<string | null> {
   try {
     console.log('[PDF] Loading image:', url);
@@ -15,12 +59,25 @@ async function loadImageAsBase64(url: string): Promise<string | null> {
     }
     const blob = await response.blob();
     console.log('[PDF] Image blob loaded:', blob.type, blob.size, 'bytes');
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const result = reader.result as string;
         console.log('[PDF] Image converted to base64, length:', result.length);
-        resolve(result);
+
+        // If SVG, convert to PNG
+        if (blob.type === 'image/svg+xml') {
+          console.log('[PDF] Detected SVG, converting to PNG...');
+          const pngData = await convertSvgToPng(result, 200, 200);
+          if (pngData) {
+            resolve(pngData);
+          } else {
+            reject(new Error('Failed to convert SVG to PNG'));
+          }
+        } else {
+          resolve(result);
+        }
       };
       reader.onerror = (error) => {
         console.error('[PDF] FileReader error:', error);
@@ -34,7 +91,7 @@ async function loadImageAsBase64(url: string): Promise<string | null> {
   }
 }
 
-// Helper function to load image as ArrayBuffer for Word
+// Helper function to load image as ArrayBuffer for Word (with SVG support)
 async function loadImageAsArrayBuffer(url: string): Promise<Uint8Array | null> {
   try {
     console.log('[Word] Loading image:', url);
@@ -43,9 +100,38 @@ async function loadImageAsArrayBuffer(url: string): Promise<Uint8Array | null> {
       console.error('[Word] Failed to fetch image:', response.status, response.statusText);
       return null;
     }
-    const arrayBuffer = await response.arrayBuffer();
-    console.log('[Word] Image loaded:', arrayBuffer.byteLength, 'bytes');
-    return new Uint8Array(arrayBuffer);
+
+    const blob = await response.blob();
+    console.log('[Word] Image loaded:', blob.type, blob.size, 'bytes');
+
+    // If SVG, convert to PNG first
+    if (blob.type === 'image/svg+xml') {
+      console.log('[Word] Detected SVG, converting to PNG...');
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const svgDataUrl = reader.result as string;
+          const pngDataUrl = await convertSvgToPng(svgDataUrl, 200, 200);
+
+          if (!pngDataUrl) {
+            reject(new Error('Failed to convert SVG to PNG'));
+            return;
+          }
+
+          // Convert PNG data URL to ArrayBuffer
+          const pngResponse = await fetch(pngDataUrl);
+          const pngArrayBuffer = await pngResponse.arrayBuffer();
+          resolve(new Uint8Array(pngArrayBuffer));
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } else {
+      // Regular image (PNG, JPEG, etc.)
+      const arrayBuffer = await response.arrayBuffer();
+      return new Uint8Array(arrayBuffer);
+    }
   } catch (error) {
     console.error('[Word] Error loading image:', url, error);
     return null;
@@ -164,7 +250,7 @@ export async function exportToPDF(words: Word[], settings: ExportSettings): Prom
       if (hasImage) {
         const imageData = imageDataMap.get(word.MOTS);
         if (imageData) {
-          doc.addImage(imageData, 'JPEG', xOffset, yPosition, imageSize, imageSize);
+          doc.addImage(imageData, 'PNG', xOffset, yPosition, imageSize, imageSize);
           xOffset += imageSize + 5;
         }
       }
