@@ -59,9 +59,11 @@ export function ExportPreview({ words, settings }: ExportPreviewProps) {
 
         {/* Word List Preview */}
         <div className="space-y-2">
-          {previewWords.map((word) => (
+          {previewWords.map((word, index) => (
             <div key={`${word.MOTS}-${word.PHONEMES}`} className="flex items-baseline gap-2.5">
-              <span className="text-sm font-semibold text-[#6C5CE7]">•</span>
+              <span className="text-sm font-semibold text-[#6C5CE7]">
+                {settings.numberWords ? `${index + 1}.` : '•'}
+              </span>
               <div>
                 {settings.display !== 'imageOnly' && (
                   <span className="text-sm text-gray-900">{word.MOTS}</span>
