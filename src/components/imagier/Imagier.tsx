@@ -72,14 +72,19 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     const printContainer = document.querySelector('.imagier-print-container');
     if (!printContainer) return;
 
-    // Create hidden iframe — its own document will be printed (avoids page-break issues)
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;border:none;opacity:0;';
-    document.body.appendChild(iframe);
-
-    const doc = iframe.contentDocument;
-    const win = iframe.contentWindow;
-    if (!doc || !win) { iframe.remove(); return; }
+    // Extract ALL CSS rules as inline text (avoids external resource loading)
+    // This is the only approach proven to produce page 2 in the print dialog.
+    let allCSS = '';
+    for (const sheet of Array.from(document.styleSheets)) {
+      try {
+        for (const rule of Array.from(sheet.cssRules)) {
+          allCSS += rule.cssText + '\n';
+        }
+      } catch {
+        // Cross-origin stylesheet — include as @import
+        if (sheet.href) allCSS += `@import url("${sheet.href}");\n`;
+      }
+    }
 
     // PDF filename timestamp
     const now = new Date();
@@ -91,38 +96,36 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     const pdfTitle = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
     const orientation = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
 
-    // Collect ALL stylesheets from parent document (Tailwind, fonts, app CSS)
-    const parentStyles: string[] = [];
-    document.querySelectorAll('link[rel="stylesheet"]').forEach(el => {
-      parentStyles.push(el.outerHTML);
-    });
-    document.querySelectorAll('style').forEach(el => {
-      parentStyles.push(`<style>${el.innerHTML}</style>`);
-    });
+    // Create iframe with real viewport (NOT 0×0 — browser can't compute page breaks otherwise)
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:absolute;left:-200vw;top:0;width:100vw;height:100vh;border:none;';
+    document.body.appendChild(iframe);
 
-    // Write iframe document with all styles + print content
+    const doc = iframe.contentDocument;
+    const win = iframe.contentWindow;
+    if (!doc || !win) { iframe.remove(); return; }
+
     doc.open();
     doc.write(`<!DOCTYPE html><html><head>
       <meta charset="utf-8">
       <title>${pdfTitle}</title>
-      ${parentStyles.join('\n')}
+      <style>${allCSS}</style>
       <style>
         @page { margin: 0; size: ${orientation}; }
         html, body { margin: 0; padding: 0; }
-        .imagier-print-container { position: static !important; left: auto !important; opacity: 1 !important; pointer-events: auto !important; }
         .imagier-print-page { page-break-after: always; page-break-inside: avoid; }
         .imagier-print-page:last-child { page-break-after: auto; }
         [draggable] { cursor: default !important; }
+        .print\\:hidden { display: none !important; }
       </style>
     </head><body>${printContainer.innerHTML}</body></html>`);
     doc.close();
 
-    // Wait for stylesheets + images to load, then print
+    // Wait for images to load, then print
     let printed = false;
     const doPrint = () => {
       if (printed) return;
       printed = true;
-      // Wait for fonts too
       const fontsReady = doc.fonts?.ready ?? Promise.resolve();
       fontsReady.then(() => {
         win.focus();
@@ -131,20 +134,10 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
       });
     };
 
-    // Count pending resources
+    // Count pending images
     let pending = 0;
     const onReady = () => { if (--pending <= 0) doPrint(); };
 
-    // Stylesheets
-    doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
-      if (!(link as HTMLLinkElement).sheet) {
-        pending++;
-        link.addEventListener('load', onReady);
-        link.addEventListener('error', onReady);
-      }
-    });
-
-    // Images
     doc.querySelectorAll('img').forEach(img => {
       if (!img.complete) {
         pending++;
@@ -153,10 +146,8 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
       }
     });
 
-    // If everything already loaded, print now
-    if (pending === 0) setTimeout(doPrint, 100);
-
-    // Fallback timeout (5s)
+    if (pending === 0) setTimeout(doPrint, 300);
+    // Fallback timeout
     setTimeout(doPrint, 5000);
   }, [settings.orientation]);
 
