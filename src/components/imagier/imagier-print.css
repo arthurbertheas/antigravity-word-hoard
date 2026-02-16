@@ -7,23 +7,32 @@
 .imagier-phon { font-size: 9px; }
 .imagier-det { font-size: 10px; }
 
-/* Print container: hidden on screen */
+/* Print container: hidden on screen but KEPT IN FLOW.
+   Using display:none breaks Chrome/Safari page break calculation
+   because the browser never lays out the multi-page content. */
 .imagier-print-container {
-  display: none;
+  position: fixed;
+  left: -200vw;
+  top: 0;
+  width: 210mm;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 @media print {
-  /* Note: @page size is injected dynamically via <style> in the portal
-     to support landscape/portrait switching */
-
   /* Hide everything in body except the print container */
   body > *:not(.imagier-print-container) {
     display: none !important;
   }
 
-  /* Show the print container */
+  /* Show the print container — reset all hiding */
   .imagier-print-container {
-    display: block !important;
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   /* Each print page fills exactly one printed page */
