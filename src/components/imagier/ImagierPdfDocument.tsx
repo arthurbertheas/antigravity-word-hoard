@@ -80,8 +80,7 @@ const s = StyleSheet.create({
   headerSubtitle: {
     fontSize: 11,
     color: '#9CA3AF',
-    fontWeight: 500,
-    fontStyle: 'italic',
+    fontWeight: 400,
   },
   headerCount: {
     fontSize: 11,
@@ -166,7 +165,6 @@ const s = StyleSheet.create({
   },
   phoneme: {
     fontSize: PHON_FONT_SIZE,
-    fontStyle: 'italic',
     color: '#6C5CE7',
     opacity: 0.8,
     marginTop: 1,
@@ -229,10 +227,16 @@ function PdfCard({ word, settings }: { word: Word; settings: ImagierSettings }) 
 
   return (
     <View style={[s.card, cardStyle]}>
-      {/* Image */}
+      {/* Image — fetch as buffer so react-pdf detects format from binary data */}
       {imageUrl && (
         <View style={s.imageContainer}>
-          <Image src={imageUrl} style={s.image} />
+          <Image
+            source={async () => {
+              const res = await fetch(imageUrl);
+              return await res.arrayBuffer();
+            }}
+            style={s.image}
+          />
         </View>
       )}
 
