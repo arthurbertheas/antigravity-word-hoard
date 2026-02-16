@@ -72,8 +72,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     const printContainer = document.querySelector('.imagier-print-container');
     if (!printContainer) return;
 
-    // Extract ALL CSS rules as inline text (avoids external resource loading)
-    // This is the only approach proven to produce page 2 in the print dialog.
+    // Extract ALL CSS rules as inline text (no external loading needed)
     let allCSS = '';
     for (const sheet of Array.from(document.styleSheets)) {
       try {
@@ -81,7 +80,6 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
           allCSS += rule.cssText + '\n';
         }
       } catch {
-        // Cross-origin stylesheet — include as @import
         if (sheet.href) allCSS += `@import url("${sheet.href}");\n`;
       }
     }
@@ -96,59 +94,34 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     const pdfTitle = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
     const orientation = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
 
-    // Create iframe with real viewport (NOT 0×0 — browser can't compute page breaks otherwise)
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:absolute;left:-200vw;top:0;width:100vw;height:100vh;border:none;';
-    document.body.appendChild(iframe);
+    // Open a real window — unlike iframes, the browser's print engine
+    // treats it as a full document and page-break-after works correctly.
+    const printWin = window.open('', '_blank');
+    if (!printWin) return;
 
-    const doc = iframe.contentDocument;
-    const win = iframe.contentWindow;
-    if (!doc || !win) { iframe.remove(); return; }
-
-    doc.open();
-    doc.write(`<!DOCTYPE html><html><head>
-      <meta charset="utf-8">
-      <title>${pdfTitle}</title>
-      <style>${allCSS}</style>
-      <style>
-        @page { margin: 0; size: ${orientation}; }
-        html, body { margin: 0; padding: 0; }
-        .imagier-print-page { page-break-after: always; page-break-inside: avoid; }
-        .imagier-print-page:last-child { page-break-after: auto; }
-        [draggable] { cursor: default !important; }
-        .print\\:hidden { display: none !important; }
-      </style>
-    </head><body>${printContainer.innerHTML}</body></html>`);
-    doc.close();
-
-    // Wait for images to load, then print
-    let printed = false;
-    const doPrint = () => {
-      if (printed) return;
-      printed = true;
-      const fontsReady = doc.fonts?.ready ?? Promise.resolve();
-      fontsReady.then(() => {
-        win.focus();
-        win.print();
-        setTimeout(() => iframe.remove(), 500);
-      });
-    };
-
-    // Count pending images
-    let pending = 0;
-    const onReady = () => { if (--pending <= 0) doPrint(); };
-
-    doc.querySelectorAll('img').forEach(img => {
-      if (!img.complete) {
-        pending++;
-        img.addEventListener('load', onReady);
-        img.addEventListener('error', onReady);
-      }
-    });
-
-    if (pending === 0) setTimeout(doPrint, 300);
-    // Fallback timeout
-    setTimeout(doPrint, 5000);
+    printWin.document.open();
+    printWin.document.write(`<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <title>${pdfTitle}</title>
+  <style>${allCSS}</style>
+  <style>
+    @page { margin: 0; size: ${orientation}; }
+    html, body { margin: 0; padding: 0; }
+    .imagier-print-page { page-break-after: always; page-break-inside: avoid; }
+    .imagier-print-page:last-child { page-break-after: auto; }
+    [draggable] { cursor: default !important; }
+    .print\\:hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  ${printContainer.innerHTML}
+  <script>
+    window.onafterprint = function() { window.close(); };
+    window.onload = function() { window.print(); };
+  <\/script>
+</body></html>`);
+    printWin.document.close();
   }, [settings.orientation]);
 
   // Escape to close
