@@ -101,17 +101,17 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
 
       for (let i = 0; i < pages.length; i++) {
         const canvas = await html2canvas(pages[i], {
-          scale: 3,
+          scale: 4,
           useCORS: true,
           backgroundColor: '#ffffff',
         });
 
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
         if (i > 0) pdf.addPage();
 
         const w = isLandscape ? 297 : 210;
         const h = isLandscape ? 210 : 297;
-        pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+        pdf.addImage(imgData, 'JPEG', 0, 0, w, h);
       }
 
       // Restore hidden state
@@ -142,12 +142,12 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  // Build print pages — exact same markup as ImagierPreview for pixel-perfect output
+  // Build print pages — exact same dimensions as ImagierPreview for pixel-perfect output
   const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
   const isLandscape = settings.orientation === 'landscape';
-  // A4 at 96 DPI — larger than screen preview for better PDF quality
-  const pageW = isLandscape ? 1123 : 794;
-  const pageH = isLandscape ? 794 : 1123;
+  // Same A4 proportions as ImagierPreview (72 DPI) — html2canvas scale handles quality
+  const pageW = isLandscape ? 842 : 595;
+  const pageH = isLandscape ? 595 : 842;
 
   const printPages = [];
   for (let p = 0; p < totalPages; p++) {
@@ -159,7 +159,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
         className="imagier-print-page bg-white flex flex-col overflow-hidden"
         style={{ width: pageW, height: pageH }}
       >
-        <div className="flex-1 min-h-0 flex flex-col p-8">
+        <div className="flex-1 min-h-0 flex flex-col p-6">
           {/* Page header */}
           {settings.showHeader && (
             <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
