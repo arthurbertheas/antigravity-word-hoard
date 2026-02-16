@@ -6,14 +6,3 @@
 .imagier-syll { font-size: 10px; }
 .imagier-phon { font-size: 9px; }
 .imagier-det { font-size: 10px; }
-
-/* Print container: hidden on screen, used as HTML source for iframe printing.
-   The Imagier overlay (position: fixed) already covers it visually,
-   but we also hide it explicitly for safety. */
-.imagier-print-container {
-  position: fixed;
-  left: -9999px;
-  top: 0;
-  opacity: 0;
-  pointer-events: none;
-}
