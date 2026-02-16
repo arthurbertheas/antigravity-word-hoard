@@ -15,11 +15,12 @@ interface ImagierPanelProps {
   removedCount: number;
   onReorder: (from: number, to: number) => void;
   onPrint: () => void;
+  isOpen: boolean;
 }
 
 type TabId = 'layout' | 'content' | 'order';
 
-export function ImagierPanel({ settings, updateSetting, words, removedCount, onReorder, onPrint }: ImagierPanelProps) {
+export function ImagierPanel({ settings, updateSetting, words, removedCount, onReorder, onPrint, isOpen }: ImagierPanelProps) {
   const [activeTab, setActiveTab] = useState<TabId>('layout');
   const [listDragSrc, setListDragSrc] = useState<number | null>(null);
   const [listDragOver, setListDragOver] = useState<number | null>(null);
@@ -28,7 +29,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
   const landscapeOptions = LAYOUT_OPTIONS.filter(o => o.orientation === 'landscape');
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-[400px] bg-white border-l border-[#E5E7EB] flex flex-col print:hidden z-20 shadow-[-4px_0_24px_rgba(0,0,0,0.06)]">
+    <div className={`absolute right-0 top-0 bottom-0 w-[400px] bg-white border-l border-[#E5E7EB] flex flex-col print:hidden z-20 shadow-[-4px_0_24px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <PanelHeader
         title="Imagier"
         subtitle="Mise en page et impression"

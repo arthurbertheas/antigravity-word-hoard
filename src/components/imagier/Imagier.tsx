@@ -21,6 +21,7 @@ export function Imagier({ words, isOpen, onClose }: ImagierProps) {
 function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void }) {
   const [settings, setSettings] = useState<ImagierSettings>(DEFAULT_IMAGIER_SETTINGS);
   const [currentPage, setCurrentPage] = useState(0);
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
 
   const { withImages, removedCount } = useMemo(
     () => filterWordsWithImages(words),
@@ -88,6 +89,8 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
           totalPages={totalPages}
           onPageChange={setCurrentPage}
           onReorder={handleReorder}
+          isPanelOpen={isPanelOpen}
+          onTogglePanel={() => setIsPanelOpen(p => !p)}
         />
         <ImagierPanel
           settings={settings}
@@ -96,6 +99,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
           removedCount={removedCount}
           onReorder={handleReorder}
           onPrint={handlePrint}
+          isOpen={isPanelOpen}
         />
       </div>
     </div>
