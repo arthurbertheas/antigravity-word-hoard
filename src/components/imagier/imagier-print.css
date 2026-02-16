@@ -13,10 +13,8 @@
 }
 
 @media print {
-  @page {
-    margin: 0;
-    size: A4;
-  }
+  /* Note: @page size is injected dynamically via <style> in the portal
+     to support landscape/portrait switching */
 
   /* Hide everything in body except the print container */
   body > *:not(.imagier-print-container) {
@@ -28,9 +26,8 @@
     display: block !important;
   }
 
-  /* Each print page: exact A4 sizing, page break control */
+  /* Each print page fills exactly one printed page */
   .imagier-print-page {
-    box-sizing: border-box;
     overflow: hidden;
   }
 

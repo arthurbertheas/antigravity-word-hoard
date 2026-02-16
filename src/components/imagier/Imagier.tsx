@@ -83,8 +83,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
 
   // Build print pages (all pages, not just current)
   const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
-  const pageW = settings.orientation === 'portrait' ? 595 : 842;
-  const pageH = settings.orientation === 'portrait' ? 842 : 595;
+  const isLandscape = settings.orientation === 'landscape';
 
   const printPages = [];
   for (let p = 0; p < totalPages; p++) {
@@ -95,13 +94,14 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
         key={p}
         className="imagier-print-page"
         style={{
-          width: `${pageW}px`,
-          height: `${pageH}px`,
-          padding: '24px',
+          width: isLandscape ? '297mm' : '210mm',
+          height: isLandscape ? '210mm' : '297mm',
+          padding: '8mm',
           display: 'flex',
           flexDirection: 'column',
           background: 'white',
-          pageBreakAfter: p < totalPages - 1 ? 'always' : 'auto',
+          boxSizing: 'border-box' as const,
+          breakAfter: p < totalPages - 1 ? 'page' : 'auto',
         }}
       >
         {/* Page header */}
@@ -194,6 +194,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
       {/* Print-only pages — rendered as portal to body so CSS can easily target them */}
       {createPortal(
         <div className="imagier-print-container">
+          <style>{`@media print { @page { margin: 0; size: ${isLandscape ? 'A4 landscape' : 'A4'}; } }`}</style>
           {printPages}
         </div>,
         document.body
