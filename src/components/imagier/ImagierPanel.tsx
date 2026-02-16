@@ -267,7 +267,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                       }}
                       style={{ borderTop: listDragOver === i ? '2px solid #6C5CE7' : undefined }}
                     >
-                      <GripVertical className="w-3.5 h-3.5 text-[#CBD5E1] flex-shrink-0 cursor-grab" />
+                      <GripVertical className="w-4 h-4 text-[#9CA3AF] flex-shrink-0 cursor-grab" />
                       {w["image associée"] && (
                         <div className="w-7 h-7 rounded-md overflow-hidden flex-shrink-0 bg-[#F1F5F9]">
                           <img src={w["image associée"]} alt="" className="w-full h-full object-contain" />
