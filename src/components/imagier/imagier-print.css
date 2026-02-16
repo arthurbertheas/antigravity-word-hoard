@@ -7,43 +7,13 @@
 .imagier-phon { font-size: 9px; }
 .imagier-det { font-size: 10px; }
 
-/* Print container: invisible on screen but FULLY LAID OUT at real size.
-   Do NOT use clip/width:1px/display:none — browsers won't paginate
-   content that wasn't laid out at its actual dimensions. */
+/* Print container: hidden on screen, used as HTML source for iframe printing.
+   The Imagier overlay (position: fixed) already covers it visually,
+   but we also hide it explicitly for safety. */
 .imagier-print-container {
-  position: absolute;
-  left: 0;
+  position: fixed;
+  left: -9999px;
   top: 0;
-  z-index: -1;
   opacity: 0;
   pointer-events: none;
-}
-
-@media print {
-  /* Hide the entire app */
-  #root {
-    display: none !important;
-  }
-
-  /* Show the print container */
-  .imagier-print-container {
-    position: static !important;
-    z-index: auto !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-
-  /* Every page forces a page break after (except the last) */
-  .imagier-print-page {
-    page-break-after: always;
-    page-break-inside: avoid;
-  }
-  .imagier-print-page:last-child {
-    page-break-after: auto;
-  }
-
-  /* No cursor/hover in print */
-  .imagier-print-container [draggable] {
-    cursor: default !important;
-  }
 }

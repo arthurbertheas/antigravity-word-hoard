@@ -69,26 +69,95 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   }, []);
 
   const handlePrint = useCallback(() => {
-    // Inject @page rule for orientation (dynamic, so can't be in static CSS)
-    const pageStyle = document.createElement('style');
-    pageStyle.id = 'imagier-page-style';
-    pageStyle.textContent = `@page { margin: 0; size: ${settings.orientation === 'landscape' ? 'A4 landscape' : 'A4'}; }`;
-    document.head.appendChild(pageStyle);
+    const printContainer = document.querySelector('.imagier-print-container');
+    if (!printContainer) return;
 
-    // Set document title for PDF filename
-    const prevTitle = document.title;
+    // Create hidden iframe — its own document will be printed (avoids page-break issues)
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;border:none;opacity:0;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument;
+    const win = iframe.contentWindow;
+    if (!doc || !win) { iframe.remove(); return; }
+
+    // PDF filename timestamp
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, '0');
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const yy = String(now.getFullYear()).slice(-2);
     const hh = String(now.getHours()).padStart(2, '0');
     const min = String(now.getMinutes()).padStart(2, '0');
-    document.title = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
+    const pdfTitle = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
+    const orientation = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
 
-    window.print();
+    // Collect ALL stylesheets from parent document (Tailwind, fonts, app CSS)
+    const parentStyles: string[] = [];
+    document.querySelectorAll('link[rel="stylesheet"]').forEach(el => {
+      parentStyles.push(el.outerHTML);
+    });
+    document.querySelectorAll('style').forEach(el => {
+      parentStyles.push(`<style>${el.innerHTML}</style>`);
+    });
 
-    document.title = prevTitle;
-    pageStyle.remove();
+    // Write iframe document with all styles + print content
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head>
+      <meta charset="utf-8">
+      <title>${pdfTitle}</title>
+      ${parentStyles.join('\n')}
+      <style>
+        @page { margin: 0; size: ${orientation}; }
+        html, body { margin: 0; padding: 0; }
+        .imagier-print-container { position: static !important; left: auto !important; opacity: 1 !important; pointer-events: auto !important; }
+        .imagier-print-page { page-break-after: always; page-break-inside: avoid; }
+        .imagier-print-page:last-child { page-break-after: auto; }
+        [draggable] { cursor: default !important; }
+      </style>
+    </head><body>${printContainer.innerHTML}</body></html>`);
+    doc.close();
+
+    // Wait for stylesheets + images to load, then print
+    let printed = false;
+    const doPrint = () => {
+      if (printed) return;
+      printed = true;
+      // Wait for fonts too
+      const fontsReady = doc.fonts?.ready ?? Promise.resolve();
+      fontsReady.then(() => {
+        win.focus();
+        win.print();
+        setTimeout(() => iframe.remove(), 500);
+      });
+    };
+
+    // Count pending resources
+    let pending = 0;
+    const onReady = () => { if (--pending <= 0) doPrint(); };
+
+    // Stylesheets
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+      if (!(link as HTMLLinkElement).sheet) {
+        pending++;
+        link.addEventListener('load', onReady);
+        link.addEventListener('error', onReady);
+      }
+    });
+
+    // Images
+    doc.querySelectorAll('img').forEach(img => {
+      if (!img.complete) {
+        pending++;
+        img.addEventListener('load', onReady);
+        img.addEventListener('error', onReady);
+      }
+    });
+
+    // If everything already loaded, print now
+    if (pending === 0) setTimeout(doPrint, 100);
+
+    // Fallback timeout (5s)
+    setTimeout(doPrint, 5000);
   }, [settings.orientation]);
 
   // Escape to close
