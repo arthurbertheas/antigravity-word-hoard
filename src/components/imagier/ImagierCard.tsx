@@ -49,7 +49,7 @@ export function ImagierCard({
             src={imageUrl}
             alt={word.MOTS}
             className="max-w-full max-h-full object-contain"
-            loading="eager"
+            loading="lazy"
           />
         </div>
       )}
