@@ -59,8 +59,8 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
         <div className="flex-1 overflow-y-auto">
 
           {/* ========== TAB: MISE EN PAGE ========== */}
-          <PanelTabsContent value="layout">
-            <div className="px-5 py-6 space-y-2">
+          <PanelTabsContent value="layout" className="px-5 py-6">
+            <div className="space-y-2">
               {/* Disposition — unified grid + orientation strip */}
               <SectionHeader label="Disposition" />
               <div className="flex gap-2 overflow-x-auto py-0.5">
@@ -109,51 +109,47 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
 
               {/* Options de page */}
               <SectionHeader label="Options de page" className="mt-6" />
-              <div className="space-y-2">
-                <ToggleRow
-                  icon={<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>}
-                  label="En-tête de page"
-                  desc="Titre, sous-titre et compteur"
-                  checked={settings.showHeader}
-                  onCheckedChange={() => updateSetting('showHeader', !settings.showHeader)}
-                >
-                  <input
-                    type="text"
-                    value={settings.title}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={e => updateSetting('title', e.target.value)}
-                    placeholder="ex : Les animaux, Le son [s]..."
-                    className="w-full px-3 py-2 border-[1.5px] border-[#E5E7EB] rounded-[10px] text-[13px] font-['DM_Sans'] font-medium text-[#1A1A2E] bg-white placeholder:text-[#9CA3AF] placeholder:font-normal focus:outline-none focus:border-[#6C5CE7] focus:shadow-[0_0_0_3px_rgba(108,92,231,0.12)] transition-all"
-                  />
-                  <div className="h-1.5" />
-                  <input
-                    type="text"
-                    value={settings.subtitle}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={e => updateSetting('subtitle', e.target.value)}
-                    placeholder="Sous-titre (nom patient, date...)"
-                    className="w-full px-3 py-[7px] border-[1.5px] border-[#E5E7EB] rounded-[10px] text-xs font-['DM_Sans'] font-medium text-[#6B7280] bg-white placeholder:text-[#9CA3AF] placeholder:font-normal focus:outline-none focus:border-[#6C5CE7] focus:shadow-[0_0_0_3px_rgba(108,92,231,0.12)] transition-all"
-                  />
-                </ToggleRow>
-                <ToggleRow
-                  icon={<Scissors className="w-4 h-4" />}
-                  label="Traits de découpe"
-                  desc="Pointillés pour découper"
-                  checked={settings.cuttingGuides}
-                  onCheckedChange={() => updateSetting('cuttingGuides', !settings.cuttingGuides)}
+              <ToggleRow
+                icon={<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>}
+                label="En-tête de page"
+                desc="Titre, sous-titre et compteur"
+                checked={settings.showHeader}
+                onCheckedChange={() => updateSetting('showHeader', !settings.showHeader)}
+              >
+                <input
+                  type="text"
+                  value={settings.title}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={e => updateSetting('title', e.target.value)}
+                  placeholder="ex : Les animaux, Le son [s]..."
+                  className="w-full px-3 py-2 border-[1.5px] border-[#E5E7EB] rounded-[10px] text-[13px] font-['DM_Sans'] font-medium text-[#1A1A2E] bg-white placeholder:text-[#9CA3AF] placeholder:font-normal focus:outline-none focus:border-[#6C5CE7] focus:shadow-[0_0_0_3px_rgba(108,92,231,0.12)] transition-all"
                 />
-              </div>
+                <div className="h-1.5" />
+                <input
+                  type="text"
+                  value={settings.subtitle}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={e => updateSetting('subtitle', e.target.value)}
+                  placeholder="Sous-titre (nom patient, date...)"
+                  className="w-full px-3 py-[7px] border-[1.5px] border-[#E5E7EB] rounded-[10px] text-xs font-['DM_Sans'] font-medium text-[#6B7280] bg-white placeholder:text-[#9CA3AF] placeholder:font-normal focus:outline-none focus:border-[#6C5CE7] focus:shadow-[0_0_0_3px_rgba(108,92,231,0.12)] transition-all"
+                />
+              </ToggleRow>
+              <ToggleRow
+                icon={<Scissors className="w-4 h-4" />}
+                label="Traits de découpe"
+                desc="Pointillés pour découper"
+                checked={settings.cuttingGuides}
+                onCheckedChange={() => updateSetting('cuttingGuides', !settings.cuttingGuides)}
+              />
 
               {/* Warning */}
               {removedCount > 0 && (
-                <div className="mt-4">
-                  <div className="flex items-start gap-2.5 p-3 bg-[#FFFBEB] border border-[#FDE68A] rounded-[10px] text-xs leading-relaxed text-[#92400E]">
-                    <div className="w-[18px] h-[18px] rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-extrabold flex-shrink-0 mt-px">
-                      !
-                    </div>
-                    <div>
-                      <strong>{removedCount} mot{removedCount > 1 ? 's' : ''} sans image</strong> {removedCount > 1 ? 'ont été retirés' : 'a été retiré'} automatiquement de l'imagier.
-                    </div>
+                <div className="flex items-start gap-2.5 p-3 bg-[#FFFBEB] border border-[#FDE68A] rounded-[10px] text-xs leading-relaxed text-[#92400E] mt-4">
+                  <div className="w-[18px] h-[18px] rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-[10px] font-extrabold flex-shrink-0 mt-px">
+                    !
+                  </div>
+                  <div>
+                    <strong>{removedCount} mot{removedCount > 1 ? 's' : ''} sans image</strong> {removedCount > 1 ? 'ont été retirés' : 'a été retiré'} automatiquement de l'imagier.
                   </div>
                 </div>
               )}
@@ -161,13 +157,11 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
           </PanelTabsContent>
 
           {/* ========== TAB: CONTENU ========== */}
-          <PanelTabsContent value="content">
-            <div className="px-5 py-6 space-y-2">
+          <PanelTabsContent value="content" className="px-5 py-6">
+            <div className="space-y-2">
               <SectionHeader label="Texte du mot" />
-              <div className="space-y-2">
-                <ToggleRow icon="Aa" label="Mot" desc="Le mot écrit sous l'image" checked={settings.showWord} onCheckedChange={() => updateSetting('showWord', !settings.showWord)} />
-                <ToggleRow icon="le" label="Déterminant" desc="Affiche le/la/un/une devant le mot" checked={settings.showDeterminer} onCheckedChange={() => updateSetting('showDeterminer', !settings.showDeterminer)} />
-              </div>
+              <ToggleRow icon="Aa" label="Mot" desc="Le mot écrit sous l'image" checked={settings.showWord} onCheckedChange={() => updateSetting('showWord', !settings.showWord)} />
+              <ToggleRow icon="le" label="Déterminant" desc="Affiche le/la/un/une devant le mot" checked={settings.showDeterminer} onCheckedChange={() => updateSetting('showDeterminer', !settings.showDeterminer)} />
 
               {/* Casse */}
               <SectionHeader label="Casse du mot" className="mt-6" />
@@ -219,59 +213,55 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
 
               {/* Additional info */}
               <SectionHeader label="Informations supplémentaires" className="mt-6" />
-              <div className="space-y-2">
-                <ToggleRow icon="a-b" label="Segmentation syllabique" desc="Affiche la décomposition (cha-peau)" checked={settings.showSyllBreak} onCheckedChange={() => updateSetting('showSyllBreak', !settings.showSyllBreak)} />
-                <ToggleRow icon="/a/" label="Transcription phonétique" desc="API sous le mot" checked={settings.showPhoneme} onCheckedChange={() => updateSetting('showPhoneme', !settings.showPhoneme)} />
-                <ToggleRow icon="NC" label="Catégorie syntaxique" desc="Nom, verbe, adjectif..." checked={settings.showCategory} onCheckedChange={() => updateSetting('showCategory', !settings.showCategory)} />
-                <ToggleRow icon="2s" label="Nombre de syllabes" desc="Badge avec le compte syllabique" checked={settings.showSyllCount} onCheckedChange={() => updateSetting('showSyllCount', !settings.showSyllCount)} />
-              </div>
+              <ToggleRow icon="a-b" label="Segmentation syllabique" desc="Affiche la décomposition (cha-peau)" checked={settings.showSyllBreak} onCheckedChange={() => updateSetting('showSyllBreak', !settings.showSyllBreak)} />
+              <ToggleRow icon="/a/" label="Transcription phonétique" desc="API sous le mot" checked={settings.showPhoneme} onCheckedChange={() => updateSetting('showPhoneme', !settings.showPhoneme)} />
+              <ToggleRow icon="NC" label="Catégorie syntaxique" desc="Nom, verbe, adjectif..." checked={settings.showCategory} onCheckedChange={() => updateSetting('showCategory', !settings.showCategory)} />
+              <ToggleRow icon="2s" label="Nombre de syllabes" desc="Badge avec le compte syllabique" checked={settings.showSyllCount} onCheckedChange={() => updateSetting('showSyllCount', !settings.showSyllCount)} />
             </div>
           </PanelTabsContent>
 
           {/* ========== TAB: ORDRE ========== */}
-          <PanelTabsContent value="order">
-            <div className="px-5 py-6 space-y-2">
+          <PanelTabsContent value="order" className="px-5 py-6">
+            <div className="space-y-2">
               <SectionHeader label="Ordre des mots" badge={`${words.length} mots`} />
-              <div className="flex flex-col gap-1.5">
-                {words.map((w, i) => (
-                  <div
-                    key={w.uid || w.MOTS + i}
-                    className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-[10px] cursor-grab select-none transition-all border border-[#F1F5F9] hover:border-[#E5E7EB] bg-[#FAFBFC] ${listDragSrc === i ? 'opacity-40' : ''}`}
-                    draggable
-                    onDragStart={() => setListDragSrc(i)}
-                    onDragEnd={() => { setListDragSrc(null); setListDragOver(null); }}
-                    onDragOver={(e) => { e.preventDefault(); setListDragOver(i); }}
-                    onDragLeave={() => setListDragOver(null)}
-                    onDrop={() => {
-                      if (listDragSrc !== null && listDragSrc !== i) {
-                        onReorder(listDragSrc, i);
-                      }
-                      setListDragSrc(null);
-                      setListDragOver(null);
-                    }}
-                    style={{ borderTop: listDragOver === i ? '2px solid #6C5CE7' : undefined }}
-                  >
-                    <div className="text-[#E5E7EB] text-[10px] cursor-grab tracking-[-1px]">⁞⁞</div>
-                    {w["image associée"] && (
-                      <div className="w-7 h-7 rounded-md overflow-hidden flex-shrink-0 bg-[#F1F5F9]">
-                        <img src={w["image associée"]} alt="" className="w-full h-full object-contain" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-medium text-[#1A1A2E]">
-                        {getDeterminer(w) ? getDeterminer(w) + ' ' : ''}{w.MOTS}
-                      </div>
-                      <div className="text-[10px] text-[#9CA3AF] italic">
-                        {formatPhonemes(w.PHONEMES)} · {w.NBSYLL} syll.
-                      </div>
+              {words.map((w, i) => (
+                <div
+                  key={w.uid || w.MOTS + i}
+                  className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-[10px] cursor-grab select-none transition-all border border-[#F1F5F9] hover:border-[#E5E7EB] bg-[#FAFBFC] ${listDragSrc === i ? 'opacity-40' : ''}`}
+                  draggable
+                  onDragStart={() => setListDragSrc(i)}
+                  onDragEnd={() => { setListDragSrc(null); setListDragOver(null); }}
+                  onDragOver={(e) => { e.preventDefault(); setListDragOver(i); }}
+                  onDragLeave={() => setListDragOver(null)}
+                  onDrop={() => {
+                    if (listDragSrc !== null && listDragSrc !== i) {
+                      onReorder(listDragSrc, i);
+                    }
+                    setListDragSrc(null);
+                    setListDragOver(null);
+                  }}
+                  style={{ borderTop: listDragOver === i ? '2px solid #6C5CE7' : undefined }}
+                >
+                  <div className="text-[#E5E7EB] text-[10px] cursor-grab tracking-[-1px]">⁞⁞</div>
+                  {w["image associée"] && (
+                    <div className="w-7 h-7 rounded-md overflow-hidden flex-shrink-0 bg-[#F1F5F9]">
+                      <img src={w["image associée"]} alt="" className="w-full h-full object-contain" />
                     </div>
-                    <div className="font-sora text-[11px] font-bold text-[#9CA3AF] min-w-[22px] text-center">
-                      {String(i + 1).padStart(2, '0')}
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-medium text-[#1A1A2E]">
+                      {getDeterminer(w) ? getDeterminer(w) + ' ' : ''}{w.MOTS}
+                    </div>
+                    <div className="text-[10px] text-[#9CA3AF] italic">
+                      {formatPhonemes(w.PHONEMES)} · {w.NBSYLL} syll.
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="text-center mt-3 text-[11px] text-[#9CA3AF] italic">
+                  <div className="font-sora text-[11px] font-bold text-[#9CA3AF] min-w-[22px] text-center">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                </div>
+              ))}
+              <div className="text-center pt-3 text-[11px] text-[#9CA3AF] italic">
                 Glissez pour réorganiser l'ordre d'impression
               </div>
             </div>
