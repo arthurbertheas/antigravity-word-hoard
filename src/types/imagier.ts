@@ -24,7 +24,7 @@ export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
   grid: '3x3',
   orientation: 'portrait',
   showHeader: true,
-  title: 'Mon imagier',
+  title: '',
   subtitle: '',
   cuttingGuides: true,
   showWord: true,

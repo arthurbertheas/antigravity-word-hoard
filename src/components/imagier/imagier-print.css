@@ -8,20 +8,50 @@
 .imagier-det { font-size: 10px; }
 
 @media print {
-  /* Hide everything except imagier */
-  body > *:not(.imagier-overlay) {
-    display: none !important;
-  }
-
-  .imagier-overlay {
-    position: static !important;
-    background: white !important;
-    z-index: auto !important;
-  }
-
-  /* Page setup */
   @page {
     margin: 10mm;
     size: A4;
+  }
+
+  /* Allow content to flow for printing */
+  html, body, #root {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Convert the fixed overlay to normal document flow */
+  .imagier-overlay {
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    z-index: auto !important;
+    display: block !important;
+  }
+
+  /* Reset inner flex containers so they don't clip */
+  .imagier-overlay > div {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    flex: none !important;
+  }
+
+  /* Preview container: reset absolute positioning */
+  .imagier-preview {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    background: white !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+  }
+
+  /* A4 page: remove scale transform, let browser handle print scaling */
+  .imagier-page {
+    transform: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 }

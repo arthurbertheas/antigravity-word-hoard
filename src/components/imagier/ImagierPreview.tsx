@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { Word } from '@/types/word';
 import { ImagierSettings, getGridMax, getGridDimensions } from '@/types/imagier';
 import { ImagierCard } from './ImagierCard';
-import { ChevronLeft, ChevronRight, Move } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeftRight, Move } from 'lucide-react';
 
 // A4 proportions at 72 DPI (scaled for screen)
 const PAGE_W_PORTRAIT = 595;
@@ -24,6 +24,13 @@ export function ImagierPreview({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [showDragHint, setShowDragHint] = useState(true);
+
+  // Auto-dismiss drag hint after 4 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => setShowDragHint(false), 4000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const pageW = settings.orientation === 'portrait' ? PAGE_W_PORTRAIT : PAGE_H_PORTRAIT;
   const pageH = settings.orientation === 'portrait' ? PAGE_H_PORTRAIT : PAGE_W_PORTRAIT;
@@ -85,7 +92,7 @@ export function ImagierPreview({
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 flex flex-col items-center justify-center bg-[#ECEDF2] overflow-hidden"
+      className="imagier-preview absolute inset-0 flex flex-col items-center justify-center bg-[#ECEDF2] overflow-hidden"
       style={{
         backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(108,92,231,0.03) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(162,155,254,0.03) 0%, transparent 50%)',
       }}
@@ -98,7 +105,7 @@ export function ImagierPreview({
 
       {/* A4 Page — fixed dimensions, CSS-scaled to fit */}
       <div
-        className="bg-white rounded-sm flex flex-col relative overflow-hidden transition-[transform] duration-300 origin-center
+        className="imagier-page bg-white rounded-sm flex flex-col relative overflow-hidden transition-[transform] duration-300 origin-center
           shadow-[0_1px_4px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.05),0_16px_48px_rgba(0,0,0,0.04)]"
         style={{
           width: `${pageW}px`,
@@ -113,9 +120,11 @@ export function ImagierPreview({
           {settings.showHeader && (
             <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
               <div className="flex flex-col gap-0.5">
-                <div className="font-sora text-lg font-extrabold text-[#1A1A2E] tracking-tight">
-                  {settings.title || 'Mon imagier'}
-                </div>
+                {settings.title && (
+                  <div className="font-sora text-lg font-extrabold text-[#1A1A2E] tracking-tight">
+                    {settings.title}
+                  </div>
+                )}
                 {settings.subtitle && (
                   <div className="text-[11px] text-[#9CA3AF] font-medium italic">
                     {settings.subtitle}
@@ -158,7 +167,7 @@ export function ImagierPreview({
             <span className="text-[9px] text-[#CBD5E1]">Imagier phonétique</span>
             <span className="text-[9px] text-[#CBD5E1]">
               <span className="inline-block w-1 h-1 rounded-full bg-[#A29BFE] mr-1 align-middle" />
-              Ressources Orthophonie
+              MaterielOrthophonie.fr
             </span>
           </div>
         </div>
@@ -187,8 +196,8 @@ export function ImagierPreview({
         </div>
       )}
 
-      {/* Drag hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[11px] text-[#9CA3AF] bg-white/90 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-black/5 flex items-center gap-1.5 pointer-events-none print:hidden">
+      {/* Drag hint — auto-dismisses after 4s */}
+      <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 text-[11px] text-[#9CA3AF] bg-white/90 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-black/5 flex items-center gap-1.5 pointer-events-none print:hidden transition-opacity duration-700 ${showDragHint ? 'opacity-100' : 'opacity-0'}`}>
         <Move className="w-3.5 h-3.5 opacity-50" />
         Glissez les cartes pour réorganiser
       </div>

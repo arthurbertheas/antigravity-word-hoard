@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Word } from '@/types/word';
 import { ImagierSettings, LAYOUT_OPTIONS } from '@/types/imagier';
-import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer } from 'lucide-react';
+import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer, GripVertical } from 'lucide-react';
 import { getDeterminer, formatPhonemes } from '@/utils/imagier-utils';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { PanelHeader } from '@/components/ui/PanelHeader';
@@ -267,7 +267,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                       }}
                       style={{ borderTop: listDragOver === i ? '2px solid #6C5CE7' : undefined }}
                     >
-                      <div className="text-[#E5E7EB] text-[10px] cursor-grab tracking-[-1px]">⁞⁞</div>
+                      <GripVertical className="w-3.5 h-3.5 text-[#CBD5E1] flex-shrink-0 cursor-grab" />
                       {w["image associée"] && (
                         <div className="w-7 h-7 rounded-md overflow-hidden flex-shrink-0 bg-[#F1F5F9]">
                           <img src={w["image associée"]} alt="" className="w-full h-full object-contain" />
