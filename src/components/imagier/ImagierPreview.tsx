@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { Word } from '@/types/word';
 import { ImagierSettings, getGridMax, getGridDimensions } from '@/types/imagier';
 import { ImagierCard } from './ImagierCard';
-import { ChevronLeft, ChevronRight, Minus, Plus, Move, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Minus, Plus, Move } from 'lucide-react';
 
 // A4 proportions at 72 DPI (scaled for screen)
 const PAGE_W_PORTRAIT = 595;
@@ -15,12 +15,10 @@ interface ImagierPreviewProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   onReorder: (from: number, to: number) => void;
-  isPanelOpen: boolean;
-  onTogglePanel: () => void;
 }
 
 export function ImagierPreview({
-  words, settings, currentPage, totalPages, onPageChange, onReorder, isPanelOpen, onTogglePanel,
+  words, settings, currentPage, totalPages, onPageChange, onReorder,
 }: ImagierPreviewProps) {
   const [dragSrcIndex, setDragSrcIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -40,17 +38,15 @@ export function ImagierPreview({
   const pageW = settings.orientation === 'portrait' ? PAGE_W_PORTRAIT : PAGE_H_PORTRAIT;
   const pageH = settings.orientation === 'portrait' ? PAGE_H_PORTRAIT : PAGE_W_PORTRAIT;
 
-  // Auto-scale: fit page within available space
+  // Auto-scale: fit page within available space (container is already flex-sized)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const compute = () => {
-      const panelW = isPanelOpen ? 440 : 0;
-      const gap = 24;
+      const hPad = 48;
       const vPad = 80;
-      const availW = el.clientWidth - panelW - 2 * gap;
-      const maxScaleW = availW / pageW;
+      const maxScaleW = (el.clientWidth - hPad) / pageW;
       const maxScaleH = (el.clientHeight - vPad) / pageH;
       const s = Math.min(maxScaleW, maxScaleH, 1);
       setAutoScale(Math.max(0.3, s));
@@ -60,7 +56,7 @@ export function ImagierPreview({
     const ro = new ResizeObserver(compute);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [pageW, pageH, isPanelOpen]);
+  }, [pageW, pageH]);
 
   // Reset zoom override when orientation changes
   useEffect(() => { setZoomOverride(null); }, [settings.orientation]);
@@ -145,14 +141,6 @@ export function ImagierPreview({
                 className="w-6 h-6 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F1F5F9] hover:text-[#1A1A2E] transition-colors"
               >
                 <Plus className="w-3 h-3" />
-              </button>
-              <div className="w-px h-4 bg-[#E5E7EB]" />
-              <button
-                onClick={onTogglePanel}
-                className="w-6 h-6 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F1F5F9] hover:text-[#1A1A2E] transition-colors"
-                title={isPanelOpen ? 'Masquer le panneau' : 'Afficher le panneau'}
-              >
-                {isPanelOpen ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
               </button>
             </div>
           </div>

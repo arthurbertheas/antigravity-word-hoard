@@ -81,17 +81,17 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
         wordCount={orderedWords.length}
         onClose={onClose}
       />
-      <div className="flex-1 relative overflow-hidden">
-        <ImagierPreview
-          words={orderedWords}
-          settings={settings}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          onReorder={handleReorder}
-          isPanelOpen={isPanelOpen}
-          onTogglePanel={() => setIsPanelOpen(p => !p)}
-        />
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 relative">
+          <ImagierPreview
+            words={orderedWords}
+            settings={settings}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            onReorder={handleReorder}
+          />
+        </div>
         <ImagierPanel
           settings={settings}
           updateSetting={updateSetting}
@@ -100,6 +100,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
           onReorder={handleReorder}
           onPrint={handlePrint}
           isOpen={isPanelOpen}
+          onToggle={() => setIsPanelOpen(p => !p)}
         />
       </div>
     </div>

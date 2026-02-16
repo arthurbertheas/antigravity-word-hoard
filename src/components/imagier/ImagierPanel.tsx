@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Word } from '@/types/word';
 import { ImagierSettings, LAYOUT_OPTIONS } from '@/types/imagier';
-import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer, GripVertical } from 'lucide-react';
+import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getDeterminer, formatPhonemes } from '@/utils/imagier-utils';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { PanelHeader } from '@/components/ui/PanelHeader';
@@ -16,11 +16,12 @@ interface ImagierPanelProps {
   onReorder: (from: number, to: number) => void;
   onPrint: () => void;
   isOpen: boolean;
+  onToggle: () => void;
 }
 
 type TabId = 'layout' | 'content' | 'order';
 
-export function ImagierPanel({ settings, updateSetting, words, removedCount, onReorder, onPrint, isOpen }: ImagierPanelProps) {
+export function ImagierPanel({ settings, updateSetting, words, removedCount, onReorder, onPrint, isOpen, onToggle }: ImagierPanelProps) {
   const [activeTab, setActiveTab] = useState<TabId>('layout');
   const [listDragSrc, setListDragSrc] = useState<number | null>(null);
   const [listDragOver, setListDragOver] = useState<number | null>(null);
@@ -29,17 +30,64 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
   const landscapeOptions = LAYOUT_OPTIONS.filter(o => o.orientation === 'landscape');
 
   return (
-    <div className={`absolute right-0 top-0 bottom-0 w-[400px] bg-white border-l border-[#E5E7EB] flex flex-col print:hidden z-20 shadow-[-4px_0_24px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-      <PanelHeader
-        title="Imagier"
-        subtitle="Mise en page et impression"
-        icon={
-          <div className="w-8 h-8 rounded-[10px] bg-[#F5F3FF] flex items-center justify-center text-[#6C5CE7]">
-            <LayoutGrid className="w-4 h-4" />
+    <aside className={`shrink-0 bg-white flex flex-col h-full border-l border-[#E5E7EB] transition-width-smooth overflow-hidden print:hidden z-20 shadow-[-4px_0_24px_rgba(0,0,0,0.06)] ${isOpen ? 'w-[400px]' : 'w-[64px]'}`}>
+
+      {/* ===== Collapsed mini-bar ===== */}
+      {!isOpen && (
+        <div className="flex flex-col items-center py-4 gap-4 h-full animate-in fade-in duration-300">
+          <button
+            onClick={onToggle}
+            className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0"
+            title="Ouvrir le panneau"
+          >
+            <ChevronLeft className="w-4 h-4" strokeWidth={1.8} />
+          </button>
+
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-10 h-10 rounded-[12px] bg-[#F0EDFF] flex items-center justify-center text-[#6C5CE7]">
+              <LayoutGrid className="w-5 h-5" />
+            </div>
+            {words.length > 0 && (
+              <div className="min-w-[24px] h-6 rounded-lg bg-[#6C5CE7] text-white text-[12px] font-bold font-['IBM_Plex_Mono'] flex items-center justify-center px-1.5 shadow-sm">
+                {words.length}
+              </div>
+            )}
           </div>
-        }
-        hideBorder
-      />
+
+          <div className="flex-1" />
+
+          <button
+            onClick={onPrint}
+            className="w-11 h-11 rounded-[14px] bg-[#6C5CE7] text-white flex items-center justify-center shadow-[0_3px_12px_rgba(108,92,231,0.35)] transition-all hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.4)] mb-2"
+            title="Imprimer l'imagier"
+          >
+            <Printer className="w-[18px] h-[18px]" />
+          </button>
+        </div>
+      )}
+
+      {/* ===== Expanded panel ===== */}
+      {isOpen && (
+        <>
+          <PanelHeader
+            title="Imagier"
+            subtitle="Mise en page et impression"
+            icon={
+              <div className="w-8 h-8 rounded-[10px] bg-[#F5F3FF] flex items-center justify-center text-[#6C5CE7]">
+                <LayoutGrid className="w-4 h-4" />
+              </div>
+            }
+            hideBorder
+            action={
+              <button
+                onClick={onToggle}
+                className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
+                title="Réduire le panneau"
+              >
+                <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
+              </button>
+            }
+          />
       {/* Divider between header and tabs */}
       <div className="border-b border-[#F1F5F9]" />
       <PanelTabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabId)} className="flex-1 flex flex-col overflow-hidden">
@@ -307,7 +355,9 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
           Imprimer l'imagier
         </button>
       </div>
-    </div>
+        </>
+      )}
+    </aside>
   );
 }
 
