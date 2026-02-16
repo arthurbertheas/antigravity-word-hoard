@@ -7,7 +7,8 @@
 .imagier-phon { font-size: 9px; }
 .imagier-det { font-size: 10px; }
 
-/* Print container: visually hidden on screen */
+/* Print container: visually hidden on screen (sr-only).
+   Content is still laid out by the browser — just clipped. */
 .imagier-print-container {
   position: absolute;
   width: 1px;
@@ -18,13 +19,34 @@
   pointer-events: none;
 }
 
-/* Toggled ON by JS right before window.print() */
-.imagier-print-container.imagier-print-active {
-  position: static;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  clip: auto;
-  white-space: normal;
-  pointer-events: auto;
+@media print {
+  /* Hide the entire app */
+  #root {
+    display: none !important;
+  }
+
+  /* Un-hide the print container */
+  .imagier-print-container {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+    pointer-events: auto !important;
+  }
+
+  /* Every page forces a break AFTER it (except the last) */
+  .imagier-print-page {
+    page-break-after: always;
+    page-break-inside: avoid;
+  }
+  .imagier-print-page:last-child {
+    page-break-after: auto;
+  }
+
+  /* No cursor/hover in print */
+  .imagier-print-container [draggable] {
+    cursor: default !important;
+  }
 }

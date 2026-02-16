@@ -69,29 +69,13 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   }, []);
 
   const handlePrint = useCallback(() => {
-    const printEl = document.querySelector('.imagier-print-container') as HTMLElement | null;
-    const root = document.getElementById('root');
-    if (!printEl) return;
-
-    // 1. Inject @page + break rules
+    // Inject @page rule for orientation (dynamic, so can't be in static CSS)
     const pageStyle = document.createElement('style');
     pageStyle.id = 'imagier-page-style';
-    const orient = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
-    pageStyle.textContent = `
-      @page { margin: 0; size: ${orient}; }
-      .imagier-print-page + .imagier-print-page {
-        page-break-before: always !important;
-        break-before: page !important;
-      }
-    `;
+    pageStyle.textContent = `@page { margin: 0; size: ${settings.orientation === 'landscape' ? 'A4 landscape' : 'A4'}; }`;
     document.head.appendChild(pageStyle);
 
-    // 2. Hide app, show print container
-    if (root) root.style.display = 'none';
-    printEl.style.cssText = '';
-    printEl.classList.add('imagier-print-active');
-
-    // 3. Set document title for PDF filename
+    // Set document title for PDF filename
     const prevTitle = document.title;
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, '0');
@@ -101,18 +85,10 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     const min = String(now.getMinutes()).padStart(2, '0');
     document.title = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
 
-    // 4. Double rAF ensures layout is computed before print dialog
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        window.print();
+    window.print();
 
-        // 5. Restore everything
-        document.title = prevTitle;
-        if (root) root.style.display = '';
-        printEl.classList.remove('imagier-print-active');
-        pageStyle.remove();
-      });
-    });
+    document.title = prevTitle;
+    pageStyle.remove();
   }, [settings.orientation]);
 
   // Escape to close
