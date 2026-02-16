@@ -24,7 +24,7 @@ export function ImagierCard({
     <div
       className={`
         group flex flex-col items-center justify-between bg-white relative cursor-grab select-none
-        transition-all duration-200 p-1.5
+        min-h-0 overflow-hidden transition-all duration-200 p-1.5
         ${settings.cuttingGuides
           ? 'rounded-none border border-dashed border-[#CBD5E1]'
           : 'rounded-lg border-[1.5px] border-[#E5E7EB] hover:border-[#A29BFE] hover:shadow-[0_2px_12px_rgba(108,92,231,0.1)]'

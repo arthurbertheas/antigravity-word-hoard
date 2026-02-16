@@ -48,3 +48,12 @@ export function getGridMax(grid: GridLayout): number {
   const opt = GRID_OPTIONS.find(g => g.value === grid);
   return opt ? opt.cols * opt.rows : 9;
 }
+
+/** Swap cols/rows for non-square grids when in landscape */
+export function getGridDimensions(grid: GridLayout, orientation: Orientation): { cols: number; rows: number } {
+  const opt = GRID_OPTIONS.find(g => g.value === grid)!;
+  if (orientation === 'landscape' && opt.cols !== opt.rows) {
+    return { cols: opt.rows, rows: opt.cols };
+  }
+  return { cols: opt.cols, rows: opt.rows };
+}

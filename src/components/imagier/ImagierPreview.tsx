@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Word } from '@/types/word';
-import { ImagierSettings, getGridMax, GRID_OPTIONS } from '@/types/imagier';
+import { ImagierSettings, getGridMax, getGridDimensions } from '@/types/imagier';
 import { ImagierCard } from './ImagierCard';
 import { ChevronLeft, ChevronRight, Move } from 'lucide-react';
 
@@ -57,7 +57,7 @@ export function ImagierPreview({
   const max = getGridMax(settings.grid);
   const start = currentPage * max;
   const visibleWords = words.slice(start, start + max);
-  const gridOpt = GRID_OPTIONS.find(g => g.value === settings.grid)!;
+  const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
 
   const handleDragStart = useCallback((index: number) => {
     setDragSrcIndex(start + index);
@@ -108,7 +108,7 @@ export function ImagierPreview({
       >
         <div className="absolute inset-0 border border-black/[0.06] rounded-sm pointer-events-none z-[1]" />
 
-        <div className="flex-1 flex flex-col p-6">
+        <div className="flex-1 min-h-0 flex flex-col p-6">
           {/* Page header */}
           {settings.showHeader && (
             <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
@@ -128,14 +128,14 @@ export function ImagierPreview({
             </div>
           )}
 
-          {/* Cards grid — explicit rows so cards never overflow */}
+          {/* Cards grid — explicit rows, min-h-0 so flex shrinks properly */}
           <div
-            className={`flex-1 grid
+            className={`flex-1 min-h-0 grid
               ${settings.cuttingGuides ? 'gap-0' : settings.grid === '2x3' ? 'gap-3' : settings.grid === '4x4' ? 'gap-1.5' : settings.grid === '3x4' ? 'gap-2' : 'gap-2.5'}
             `}
             style={{
-              gridTemplateColumns: `repeat(${gridOpt.cols}, 1fr)`,
-              gridTemplateRows: `repeat(${gridOpt.rows}, 1fr)`,
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
             }}
           >
             {visibleWords.map((word, i) => (
@@ -154,7 +154,7 @@ export function ImagierPreview({
           </div>
 
           {/* Page footer */}
-          <div className="flex justify-between items-center pt-2 border-t border-[#F1F5F9] mt-auto">
+          <div className="flex justify-between items-center pt-2 border-t border-[#F1F5F9] flex-shrink-0">
             <span className="text-[9px] text-[#CBD5E1]">Imagier phonétique</span>
             <span className="text-[9px] text-[#CBD5E1]">
               <span className="inline-block w-1 h-1 rounded-full bg-[#A29BFE] mr-1 align-middle" />
