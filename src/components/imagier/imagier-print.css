@@ -7,9 +7,7 @@
 .imagier-phon { font-size: 9px; }
 .imagier-det { font-size: 10px; }
 
-/* Print source container: visually hidden on screen.
-   Content is rendered by React (portal) so we can grab innerHTML
-   for the print iframe. Must stay in DOM and be laid out. */
+/* Print container: visually hidden on screen */
 .imagier-print-container {
   position: absolute;
   width: 1px;
@@ -18,4 +16,15 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   pointer-events: none;
+}
+
+/* Toggled ON by JS right before window.print() */
+.imagier-print-container.imagier-print-active {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  pointer-events: auto;
 }

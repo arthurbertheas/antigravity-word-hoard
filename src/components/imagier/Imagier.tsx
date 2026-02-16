@@ -69,63 +69,49 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   }, []);
 
   const handlePrint = useCallback(() => {
-    const src = document.querySelector('.imagier-print-container');
-    if (!src) return;
+    const printEl = document.querySelector('.imagier-print-container') as HTMLElement | null;
+    const root = document.getElementById('root');
+    if (!printEl) return;
 
-    // Timestamp for PDF filename
+    // 1. Inject @page + break rules
+    const pageStyle = document.createElement('style');
+    pageStyle.id = 'imagier-page-style';
+    const orient = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
+    pageStyle.textContent = `
+      @page { margin: 0; size: ${orient}; }
+      .imagier-print-page + .imagier-print-page {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+    `;
+    document.head.appendChild(pageStyle);
+
+    // 2. Hide app, show print container
+    if (root) root.style.display = 'none';
+    printEl.style.cssText = '';
+    printEl.classList.add('imagier-print-active');
+
+    // 3. Set document title for PDF filename
+    const prevTitle = document.title;
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, '0');
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const yy = String(now.getFullYear()).slice(-2);
     const hh = String(now.getHours()).padStart(2, '0');
     const min = String(now.getMinutes()).padStart(2, '0');
-    const title = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
+    document.title = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
 
-    // Create isolated iframe — its own document means native page breaks
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;';
-    document.body.appendChild(iframe);
+    // 4. Double rAF ensures layout is computed before print dialog
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.print();
 
-    const doc = iframe.contentDocument!;
-    doc.open();
-    doc.write('<!DOCTYPE html><html><head>');
-    doc.write(`<title>${title}</title>`);
-
-    // Copy parent stylesheets (Tailwind + custom CSS)
-    Array.from(document.styleSheets).forEach(sheet => {
-      try {
-        const css = Array.from(sheet.cssRules).map(r => r.cssText).join('\n');
-        doc.write(`<style>${css}</style>`);
-      } catch {
-        if (sheet.href) doc.write(`<link rel="stylesheet" href="${sheet.href}">`);
-      }
-    });
-
-    // Page setup + break rules
-    const orient = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
-    doc.write(`<style>
-      @page { margin: 0; size: ${orient}; }
-      body { margin: 0; }
-      .imagier-print-page + .imagier-print-page {
-        page-break-before: always !important;
-        break-before: page !important;
-      }
-    </style>`);
-
-    doc.write('</head><body>');
-    doc.write(src.innerHTML);
-    doc.write('</body></html>');
-    doc.close();
-
-    // Wait for images to load, then print
-    const images = Array.from(doc.querySelectorAll('img'));
-    const loaded = images.map(img =>
-      img.complete ? Promise.resolve() : new Promise<void>(r => { img.onload = img.onerror = () => r(); })
-    );
-    Promise.all(loaded).then(() => {
-      iframe.contentWindow!.focus();
-      iframe.contentWindow!.print();
-      setTimeout(() => { try { document.body.removeChild(iframe); } catch {} }, 1000);
+        // 5. Restore everything
+        document.title = prevTitle;
+        if (root) root.style.display = '';
+        printEl.classList.remove('imagier-print-active');
+        pageStyle.remove();
+      });
     });
   }, [settings.orientation]);
 
