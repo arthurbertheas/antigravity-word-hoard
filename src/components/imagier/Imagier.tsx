@@ -79,9 +79,8 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
       <ImagierTopbar
         wordCount={orderedWords.length}
         onClose={onClose}
-        onPrint={handlePrint}
       />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 relative overflow-hidden">
         <ImagierPreview
           words={orderedWords}
           settings={settings}
@@ -96,6 +95,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
           words={orderedWords}
           removedCount={removedCount}
           onReorder={handleReorder}
+          onPrint={handlePrint}
         />
       </div>
     </div>

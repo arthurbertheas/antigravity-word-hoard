@@ -28,16 +28,23 @@ export function ImagierPreview({
   const pageW = settings.orientation === 'portrait' ? PAGE_W_PORTRAIT : PAGE_H_PORTRAIT;
   const pageH = settings.orientation === 'portrait' ? PAGE_H_PORTRAIT : PAGE_W_PORTRAIT;
 
-  // Auto-scale: fit the A4 page inside the available container
+  // Auto-scale: page is centered on the full viewport width.
+  // Scale so the page's right edge stays left of the overlay panel.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const compute = () => {
-      const pad = 80; // padding around the page
-      const availW = el.clientWidth - pad;
-      const availH = el.clientHeight - pad;
-      const s = Math.min(availW / pageW, availH / pageH, 1);
+      const panelW = 440;
+      const gap = 24;
+      const vPad = 80;
+      // Page center = container center (full width).
+      // Right edge must stay left of panel:
+      //   containerW/2 + pageW*s/2 <= containerW - panelW - gap
+      //   s <= (containerW - 2*panelW - 2*gap) / pageW
+      const maxScaleW = (el.clientWidth - 2 * panelW - 2 * gap) / pageW;
+      const maxScaleH = (el.clientHeight - vPad) / pageH;
+      const s = Math.min(maxScaleW, maxScaleH, 1);
       setScale(Math.max(0.3, s));
     };
 
@@ -78,7 +85,7 @@ export function ImagierPreview({
   return (
     <div
       ref={containerRef}
-      className="flex-1 flex flex-col items-center justify-center p-6 bg-[#ECEDF2] overflow-hidden relative"
+      className="absolute inset-0 flex flex-col items-center justify-center bg-[#ECEDF2] overflow-hidden"
       style={{
         backgroundImage: 'radial-gradient(circle at 30% 20%, rgba(108,92,231,0.03) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(162,155,254,0.03) 0%, transparent 50%)',
       }}
@@ -121,12 +128,15 @@ export function ImagierPreview({
             </div>
           )}
 
-          {/* Cards grid */}
+          {/* Cards grid — explicit rows so cards never overflow */}
           <div
-            className={`flex-1 grid content-start
+            className={`flex-1 grid
               ${settings.cuttingGuides ? 'gap-0' : settings.grid === '2x3' ? 'gap-3' : settings.grid === '4x4' ? 'gap-1.5' : settings.grid === '3x4' ? 'gap-2' : 'gap-2.5'}
             `}
-            style={{ gridTemplateColumns: `repeat(${gridOpt.cols}, 1fr)` }}
+            style={{
+              gridTemplateColumns: `repeat(${gridOpt.cols}, 1fr)`,
+              gridTemplateRows: `repeat(${gridOpt.rows}, 1fr)`,
+            }}
           >
             {visibleWords.map((word, i) => (
               <ImagierCard
