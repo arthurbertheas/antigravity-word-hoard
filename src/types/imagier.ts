@@ -28,7 +28,7 @@ export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
   subtitle: '',
   cuttingGuides: true,
   showWord: true,
-  showDeterminer: true,
+  showDeterminer: false,
   casse: 'lower',
   fontSize: 'medium',
   showSyllBreak: true,
