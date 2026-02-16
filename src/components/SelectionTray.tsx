@@ -16,7 +16,7 @@ import { PanelHeader } from "@/components/ui/PanelHeader";
 import { Word } from "@/types/word";
 import { ExportPanel } from '@/components/export/ExportPanel';
 
-export function SelectionTray() {
+export function SelectionTray({ onOpenImagier }: { onOpenImagier: () => void }) {
   const { selectedWords, clearSelection, removeItem, setIsFocusModeOpen, addItems } = useSelection();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -385,6 +385,15 @@ export function SelectionTray() {
               >
                 <FileDown className="w-4 h-4" />
                 Exporter la liste
+              </Button>
+
+              <Button
+                className="w-full flex items-center justify-center gap-2 h-[48px] rounded-xl border-2 border-[#6C5CE7] text-[#6C5CE7] bg-white font-semibold text-sm hover:bg-[#F7F6FE] transition-all"
+                onClick={onOpenImagier}
+                disabled={selectedWords.length === 0 || !selectedWords.some(w => w["image associée"]?.trim())}
+              >
+                <ImageIcon className="w-4 h-4" />
+                Créer un imagier
               </Button>
 
               <Button

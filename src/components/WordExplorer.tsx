@@ -26,6 +26,7 @@ const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48, 96];
 import { WordBank } from "./WordBank";
 import { SelectionTray } from "./SelectionTray";
 import { Tachistoscope } from "./tachistoscope/Tachistoscope";
+import { Imagier } from "./imagier/Imagier";
 import { ActiveFiltersBar } from "./ActiveFiltersBar";
 import { ResultsHeader } from "./ResultsHeader";
 import { SavedListsProvider } from "@/contexts/SavedListsContext";
@@ -43,9 +44,10 @@ export function WordExplorer() {
 function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
     const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, selectRandom, deselectRandom, clearSelection } = useSelection();
+    const [isImagierOpen, setIsImagierOpen] = useState(false);
 
     // V9/10: Adaptive Resize Logic
-    useIframeResize(isFocusModeOpen);
+    useIframeResize(isFocusModeOpen || isImagierOpen);
 
     // Reset ONLY random selection when filters change
     // Manual selection (individual words, select all) should persist
@@ -93,12 +95,13 @@ function WordExplorerContent() {
 
     // Send Focus Mode state to parent for fullscreen promotion
     useEffect(() => {
-        console.log("Focus Mode Change:", isFocusModeOpen);
+        const isOverlayOpen = isFocusModeOpen || isImagierOpen;
+        console.log("Focus Mode Change:", isOverlayOpen);
         window.parent.postMessage({
             type: 'focus_mode_change',
-            isOpen: isFocusModeOpen
+            isOpen: isOverlayOpen
         }, '*');
-    }, [isFocusModeOpen]);
+    }, [isFocusModeOpen, isImagierOpen]);
 
     return (
         <div className="flex bg-white h-full w-full overflow-hidden">
@@ -187,13 +190,20 @@ function WordExplorerContent() {
             </main>
 
             {/* Zone C: My List - Destination (Sandwich) */}
-            <SelectionTray />
+            <SelectionTray onOpenImagier={() => setIsImagierOpen(true)} />
 
             {/* Tachistoscope Overlay (Immersive Reader) */}
             <Tachistoscope
                 words={selectedWords}
                 isOpen={isFocusModeOpen}
                 onClose={() => setIsFocusModeOpen(false)}
+            />
+
+            {/* Imagier Overlay (Print Builder) */}
+            <Imagier
+                words={selectedWords}
+                isOpen={isImagierOpen}
+                onClose={() => setIsImagierOpen(false)}
             />
         </div>
     );

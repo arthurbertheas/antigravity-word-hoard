@@ -1,0 +1,27 @@
+/* Imagier font size classes (used by ImagierCard) */
+.imagier-font-small { font-size: 10px !important; }
+.imagier-font-medium { font-size: 12px !important; }
+.imagier-font-large { font-size: 15px !important; }
+
+.imagier-syll { font-size: 10px; }
+.imagier-phon { font-size: 9px; }
+.imagier-det { font-size: 10px; }
+
+@media print {
+  /* Hide everything except imagier */
+  body > *:not(.imagier-overlay) {
+    display: none !important;
+  }
+
+  .imagier-overlay {
+    position: static !important;
+    background: white !important;
+    z-index: auto !important;
+  }
+
+  /* Page setup */
+  @page {
+    margin: 10mm;
+    size: A4;
+  }
+}
