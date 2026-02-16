@@ -13,8 +13,8 @@ interface SavedListsContextType {
     setIsModified: (val: boolean) => void;
     setCurrentListId: (id: string | null) => void;
     loadLists: () => Promise<void>;
-    saveList: (name: string, description: string, words: Word[], tags: string[]) => Promise<string | null>;
-    updateList: (listId: string, name: string, description: string, words: Word[], tags: string[]) => Promise<boolean>;
+    saveList: (name: string, description: string | undefined, words: Word[], tags: string[] | undefined) => Promise<string | null>;
+    updateList: (listId: string, name: string, description: string | undefined, words: Word[], tags: string[] | undefined) => Promise<boolean>;
     deleteList: (listId: string) => Promise<boolean>;
     loadList: (listId: string) => Promise<Word[] | null>;
 }
@@ -79,7 +79,7 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
         }
     }, [userId, loadLists]);
 
-    const saveList = async (name: string, description: string, words: Word[], tags: string[]) => {
+    const saveList = async (name: string, description: string | undefined, words: Word[], tags: string[] | undefined) => {
         if (!userId) return null;
         try {
             const listData = {
@@ -88,7 +88,7 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
                 description: description || null,
                 words,
                 word_count: words.length,
-                tags: tags.length > 0 ? tags : null,
+                tags: tags && tags.length > 0 ? tags : null,
                 last_used: new Date().toISOString()
             };
 
@@ -117,7 +117,7 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
         }
     };
 
-    const updateList = async (listId: string, name: string, description: string, words: Word[], tags: string[]) => {
+    const updateList = async (listId: string, name: string, description: string | undefined, words: Word[], tags: string[] | undefined) => {
         try {
             const { error } = await supabase
                 .from('user_word_lists')
@@ -126,7 +126,7 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
                     description: description || null,
                     words,
                     word_count: words.length,
-                    tags: tags.length > 0 ? tags : null,
+                    tags: tags && tags.length > 0 ? tags : null,
                     last_used: new Date().toISOString()
                 })
                 .eq('id', listId);
@@ -136,9 +136,10 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
             setIsModified(false);
             toast({ title: 'Liste mise à jour', description: `"${name}" a été modifiée` });
             return true;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating list:', error);
-            toast({ title: 'Erreur', description: 'Impossible de mettre à jour la liste', variant: 'destructive' });
+            const msg = error?.message || error?.details || 'Impossible de mettre à jour la liste';
+            toast({ title: 'Erreur', description: msg, variant: 'destructive' });
             return false;
         }
     };
