@@ -183,9 +183,9 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                 <SectionHeader label="Casse du mot" />
                 <div className="flex gap-1.5">
                   {([
-                    { value: 'lower' as const, label: 'minuscule', display: 'chat' },
-                    { value: 'upper' as const, label: 'MAJUSCULE', display: 'CHAT' },
-                    { value: 'capitalize' as const, label: 'Capitale', display: 'Chat' },
+                    { value: 'lower' as const, label: 'minuscule', display: 'chaton' },
+                    { value: 'upper' as const, label: 'MAJUSCULE', display: 'CHATON' },
+                    { value: 'capitalize' as const, label: 'Capitale', display: 'Chaton' },
                   ]).map(opt => (
                     <button
                       key={opt.value}
