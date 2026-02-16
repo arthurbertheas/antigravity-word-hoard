@@ -1,10 +1,12 @@
 import { Word } from '@/types/word';
 import { CasseMode } from '@/types/imagier';
 
-/** Map SYNT category to French determiner */
+/** Map SYNT category to French determiner (with elision) */
 export function getDeterminer(word: Word): string {
-  if (word.SYNT === 'NC') return 'le';
-  return '';
+  if (word.SYNT !== 'NC') return '';
+  const first = word.MOTS?.trim().toLowerCase().charAt(0) || '';
+  if ('aeiouyàâéèêëïîôùûüæœh'.includes(first)) return "l'";
+  return 'le';
 }
 
 export function applyCasse(text: string, mode: CasseMode): string {
