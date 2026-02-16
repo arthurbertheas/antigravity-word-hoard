@@ -69,7 +69,16 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   }, []);
 
   const handlePrint = useCallback(() => {
+    const prevTitle = document.title;
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, '0');
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const yy = String(now.getFullYear()).slice(-2);
+    const hh = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    document.title = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
     window.print();
+    document.title = prevTitle;
   }, []);
 
   // Escape to close
@@ -92,16 +101,15 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     printPages.push(
       <div
         key={p}
-        className="imagier-print-page"
+        className={`imagier-print-page ${p < totalPages - 1 ? 'imagier-print-page-break' : ''}`}
         style={{
           width: isLandscape ? '297mm' : '210mm',
-          height: isLandscape ? '210mm' : '297mm',
+          minHeight: isLandscape ? '210mm' : '297mm',
           padding: '8mm',
           display: 'flex',
           flexDirection: 'column',
           background: 'white',
           boxSizing: 'border-box' as const,
-          breakAfter: p < totalPages - 1 ? 'page' : 'auto',
         }}
       >
         {/* Page header */}
