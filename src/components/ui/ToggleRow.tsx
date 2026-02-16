@@ -18,7 +18,7 @@ export function ToggleRow({ icon, label, desc, checked, onCheckedChange, childre
                 "flex flex-wrap items-center justify-between py-2.5 px-3.5 rounded-[10px] border-[1.5px] cursor-pointer transition-all",
                 checked
                     ? "bg-[#F5F3FF] border-[rgba(108,92,231,0.15)]"
-                    : "border-transparent hover:bg-[#FAFBFC]",
+                    : "bg-[#FAFBFC] border-[#F1F5F9] hover:border-[#E5E7EB]",
                 className,
             )}
             onClick={() => onCheckedChange(!checked)}

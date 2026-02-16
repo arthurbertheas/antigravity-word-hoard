@@ -39,23 +39,25 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
         }
         hideBorder
       />
-      <PanelTabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabId)}>
+      {/* Divider between header and tabs */}
+      <div className="border-b border-[#F1F5F9]" />
+      <PanelTabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabId)} className="flex-1 flex flex-col overflow-hidden">
         <PanelTabsList>
           <PanelTabsTrigger value="layout">
-            <LayoutGrid className="w-[15px] h-[15px]" />
+            <LayoutGrid className={`w-[15px] h-[15px] ${activeTab === 'layout' ? 'text-[#6C5CE7]' : 'opacity-60'}`} />
             Mise en page
           </PanelTabsTrigger>
           <PanelTabsTrigger value="content">
-            <FileText className="w-[15px] h-[15px]" />
+            <FileText className={`w-[15px] h-[15px] ${activeTab === 'content' ? 'text-[#6C5CE7]' : 'opacity-60'}`} />
             Contenu
           </PanelTabsTrigger>
           <PanelTabsTrigger value="order">
-            <ArrowDownUp className="w-[15px] h-[15px]" />
+            <ArrowDownUp className={`w-[15px] h-[15px] ${activeTab === 'order' ? 'text-[#6C5CE7]' : 'opacity-60'}`} />
             Ordre
           </PanelTabsTrigger>
         </PanelTabsList>
 
-        {/* Tab content */}
+        {/* Tab content — scrollable area */}
         <div className="flex-1 overflow-y-auto">
 
           {/* ========== TAB: MISE EN PAGE ========== */}
