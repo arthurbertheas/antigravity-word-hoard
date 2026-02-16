@@ -15,13 +15,14 @@ interface ImagierPanelProps {
   removedCount: number;
   onReorder: (from: number, to: number) => void;
   onPrint: () => void;
+  isPrinting?: boolean;
   isOpen: boolean;
   onToggle: () => void;
 }
 
 type TabId = 'layout' | 'content' | 'order';
 
-export function ImagierPanel({ settings, updateSetting, words, removedCount, onReorder, onPrint, isOpen, onToggle }: ImagierPanelProps) {
+export function ImagierPanel({ settings, updateSetting, words, removedCount, onReorder, onPrint, isPrinting, isOpen, onToggle }: ImagierPanelProps) {
   const [activeTab, setActiveTab] = useState<TabId>('layout');
   const [listDragSrc, setListDragSrc] = useState<number | null>(null);
   const [listDragOver, setListDragOver] = useState<number | null>(null);
@@ -58,10 +59,14 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
 
           <button
             onClick={onPrint}
-            className="w-11 h-11 rounded-[14px] bg-[#6C5CE7] text-white flex items-center justify-center shadow-[0_3px_12px_rgba(108,92,231,0.35)] transition-all hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.4)] mb-2"
-            title="Imprimer l'imagier"
+            disabled={isPrinting}
+            className={`w-11 h-11 rounded-[14px] bg-[#6C5CE7] text-white flex items-center justify-center shadow-[0_3px_12px_rgba(108,92,231,0.35)] transition-all mb-2 ${isPrinting ? 'opacity-60 cursor-wait' : 'hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.4)]'}`}
+            title="Exporter l'imagier en PDF"
           >
-            <Printer className="w-[18px] h-[18px]" />
+            {isPrinting
+              ? <div className="w-[18px] h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              : <Printer className="w-[18px] h-[18px]" />
+            }
           </button>
         </div>
       )}
@@ -349,10 +354,14 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
       <div className="flex-shrink-0 px-5 py-4 border-t border-[#E5E7EB] bg-[#FAFBFC]">
         <button
           onClick={onPrint}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-[14px] text-[14px] font-bold font-sora bg-[#6C5CE7] text-white shadow-[0_3px_12px_rgba(108,92,231,0.25)] hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.35)] transition-all"
+          disabled={isPrinting}
+          className={`w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-[14px] text-[14px] font-bold font-sora bg-[#6C5CE7] text-white shadow-[0_3px_12px_rgba(108,92,231,0.25)] transition-all ${isPrinting ? 'opacity-60 cursor-wait' : 'hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.35)]'}`}
         >
-          <Printer className="w-4 h-4" />
-          Imprimer l'imagier
+          {isPrinting
+            ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            : <Printer className="w-4 h-4" />
+          }
+          {isPrinting ? 'Génération du PDF…' : 'Exporter en PDF'}
         </button>
       </div>
         </>

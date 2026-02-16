@@ -7,6 +7,8 @@ import { ImagierTopbar } from './ImagierTopbar';
 import { ImagierPreview } from './ImagierPreview';
 import { ImagierPanel } from './ImagierPanel';
 import { ImagierCard } from './ImagierCard';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import './imagier-print.css';
 
 interface ImagierProps {
@@ -28,6 +30,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   const [settings, setSettings] = useState<ImagierSettings>(DEFAULT_IMAGIER_SETTINGS);
   const [currentPage, setCurrentPage] = useState(0);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   const { withImages, removedCount } = useMemo(
     () => filterWordsWithImages(words),
@@ -68,61 +71,67 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     });
   }, []);
 
-  const handlePrint = useCallback(() => {
-    const printContainer = document.querySelector('.imagier-print-container');
-    if (!printContainer) return;
+  const handlePrint = useCallback(async () => {
+    const container = document.querySelector('.imagier-print-container') as HTMLElement;
+    if (!container || isPrinting) return;
 
-    // Extract ALL CSS rules as inline text (no external loading needed)
-    let allCSS = '';
-    for (const sheet of Array.from(document.styleSheets)) {
-      try {
-        for (const rule of Array.from(sheet.cssRules)) {
-          allCSS += rule.cssText + '\n';
-        }
-      } catch {
-        if (sheet.href) allCSS += `@import url("${sheet.href}");\n`;
+    setIsPrinting(true);
+    try {
+      // Make container visible for html2canvas (still behind the z-100 overlay)
+      container.style.cssText = 'position:absolute;left:0;top:0;opacity:1;pointer-events:none;z-index:-1;';
+
+      // Force lazy images to load
+      const images = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
+      images.forEach(img => { img.loading = 'eager'; });
+      await Promise.all(images.map(img =>
+        img.complete ? Promise.resolve() : new Promise<void>(resolve => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        })
+      ));
+
+      const pages = Array.from(container.querySelectorAll('.imagier-print-page')) as HTMLElement[];
+      const isLandscape = settings.orientation === 'landscape';
+
+      const pdf = new jsPDF({
+        orientation: isLandscape ? 'landscape' : 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      for (let i = 0; i < pages.length; i++) {
+        const canvas = await html2canvas(pages[i], {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        if (i > 0) pdf.addPage();
+
+        const w = isLandscape ? 297 : 210;
+        const h = isLandscape ? 210 : 297;
+        pdf.addImage(imgData, 'JPEG', 0, 0, w, h);
       }
+
+      // Restore hidden state
+      container.style.cssText = '';
+
+      // Download PDF
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yy = String(now.getFullYear()).slice(-2);
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      pdf.save(`Imagier phonétique - ${dd}-${mm}-${yy} - ${hh}h${min}.pdf`);
+    } finally {
+      setIsPrinting(false);
+      // Ensure container is re-hidden even if an error occurred
+      const c = document.querySelector('.imagier-print-container') as HTMLElement;
+      if (c) c.style.cssText = '';
     }
-
-    // PDF filename timestamp
-    const now = new Date();
-    const dd = String(now.getDate()).padStart(2, '0');
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const yy = String(now.getFullYear()).slice(-2);
-    const hh = String(now.getHours()).padStart(2, '0');
-    const min = String(now.getMinutes()).padStart(2, '0');
-    const pdfTitle = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
-    const orientation = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
-
-    // Open a real window — unlike iframes, the browser's print engine
-    // treats it as a full document and page-break-after works correctly.
-    const printWin = window.open('', '_blank');
-    if (!printWin) return;
-
-    printWin.document.open();
-    printWin.document.write(`<!DOCTYPE html>
-<html><head>
-  <meta charset="utf-8">
-  <title>${pdfTitle}</title>
-  <style>${allCSS}</style>
-  <style>
-    @page { margin: 0; size: ${orientation}; }
-    html, body { margin: 0; padding: 0; }
-    .imagier-print-page { page-break-after: always; page-break-inside: avoid; }
-    .imagier-print-page:last-child { page-break-after: auto; }
-    [draggable] { cursor: default !important; }
-    .print\\:hidden { display: none !important; }
-  </style>
-</head>
-<body>
-  ${printContainer.innerHTML}
-  <script>
-    window.onafterprint = function() { window.close(); };
-    window.onload = function() { window.print(); };
-  <\/script>
-</body></html>`);
-    printWin.document.close();
-  }, [settings.orientation]);
+  }, [settings.orientation, isPrinting]);
 
   // Escape to close
   useEffect(() => {
@@ -236,6 +245,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
             removedCount={removedCount}
             onReorder={handleReorder}
             onPrint={handlePrint}
+            isPrinting={isPrinting}
             isOpen={isPanelOpen}
             onToggle={() => setIsPanelOpen(p => !p)}
           />
