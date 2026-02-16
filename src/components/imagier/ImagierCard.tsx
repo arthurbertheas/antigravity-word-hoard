@@ -23,8 +23,8 @@ export function ImagierCard({
   return (
     <div
       className={`
-        group flex flex-col items-center p-2 pb-1.5 bg-white relative cursor-grab select-none overflow-hidden
-        transition-all duration-200
+        group flex flex-col items-center justify-between bg-white relative cursor-grab select-none
+        transition-all duration-200 p-1.5
         ${settings.cuttingGuides
           ? 'rounded-none border border-dashed border-[#CBD5E1]'
           : 'rounded-lg border-[1.5px] border-[#E5E7EB] hover:border-[#A29BFE] hover:shadow-[0_2px_12px_rgba(108,92,231,0.1)]'
@@ -42,57 +42,62 @@ export function ImagierCard({
         ⁞⁞
       </div>
 
-      {/* Image */}
+      {/* Image — flex-1 with min-0 so it shrinks to leave room for text */}
       {imageUrl && (
-        <div className="w-[88%] aspect-square rounded-md mb-1 overflow-hidden">
+        <div className="flex-1 min-h-0 w-full flex items-center justify-center rounded-md overflow-hidden mb-1">
           <img
             src={imageUrl}
             alt={word.MOTS}
-            className="w-full h-full object-contain"
+            className="max-w-full max-h-full object-contain"
             loading="lazy"
           />
         </div>
       )}
 
-      {/* Determiner */}
-      {settings.showDeterminer && getDeterminer(word) && (
-        <div className="text-[10px] text-[#9CA3AF] font-medium -mb-px imagier-det">
-          {getDeterminer(word)}
-        </div>
-      )}
-
-      {/* Word */}
-      {settings.showWord && (
-        <div className={`font-sora font-bold text-[#1A1A2E] text-center leading-tight imagier-word imagier-font-${settings.fontSize}`}>
-          {applyCasse(word.MOTS, settings.casse)}
-        </div>
-      )}
-
-      {/* Syllable break */}
-      {settings.showSyllBreak && word["segmentation syllabique"] && (
-        <div className="text-[#6B7280] font-medium mt-px tracking-wide imagier-syll">
-          {applyCasse(word["segmentation syllabique"], settings.casse)}
-        </div>
-      )}
-
-      {/* Phoneme */}
-      {settings.showPhoneme && word.PHONEMES && (
-        <div className="italic text-[#6C5CE7] mt-px opacity-80 imagier-phon">
-          {formatPhonemes(word.PHONEMES)}
-        </div>
-      )}
-
-      {/* Badges */}
-      <div className="flex gap-1 mt-0.5 imagier-badges">
-        {settings.showCategory && (
-          <span className="text-[7px] font-bold text-[#9CA3AF] bg-[#FAFBFC] px-1 py-px rounded uppercase tracking-wide">
-            {word.SYNT}
-          </span>
+      {/* Text zone — flex-shrink-0 so it's always visible */}
+      <div className="flex flex-col items-center flex-shrink-0 w-full">
+        {/* Determiner */}
+        {settings.showDeterminer && getDeterminer(word) && (
+          <div className="imagier-det text-[#9CA3AF] font-medium leading-none">
+            {getDeterminer(word)}
+          </div>
         )}
-        {settings.showSyllCount && (
-          <span className="text-[7px] font-bold text-[#9CA3AF] bg-[#FAFBFC] px-1 py-px rounded">
-            {word.NBSYLL} syll.
-          </span>
+
+        {/* Word */}
+        {settings.showWord && (
+          <div className={`font-sora font-bold text-[#1A1A2E] text-center leading-tight imagier-word imagier-font-${settings.fontSize}`}>
+            {applyCasse(word.MOTS, settings.casse)}
+          </div>
+        )}
+
+        {/* Syllable break */}
+        {settings.showSyllBreak && word["segmentation syllabique"] && (
+          <div className="imagier-syll text-[#6B7280] font-medium tracking-wide leading-none mt-px">
+            {applyCasse(word["segmentation syllabique"], settings.casse)}
+          </div>
+        )}
+
+        {/* Phoneme */}
+        {settings.showPhoneme && word.PHONEMES && (
+          <div className="imagier-phon italic text-[#6C5CE7] opacity-80 leading-none mt-px">
+            {formatPhonemes(word.PHONEMES)}
+          </div>
+        )}
+
+        {/* Badges */}
+        {(settings.showCategory || settings.showSyllCount) && (
+          <div className="flex gap-1 mt-0.5 imagier-badges">
+            {settings.showCategory && (
+              <span className="text-[7px] font-bold text-[#9CA3AF] bg-[#FAFBFC] px-1 py-px rounded uppercase tracking-wide">
+                {word.SYNT}
+              </span>
+            )}
+            {settings.showSyllCount && (
+              <span className="text-[7px] font-bold text-[#9CA3AF] bg-[#FAFBFC] px-1 py-px rounded">
+                {word.NBSYLL} syll.
+              </span>
+            )}
+          </div>
         )}
       </div>
     </div>

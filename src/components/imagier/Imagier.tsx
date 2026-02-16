@@ -78,7 +78,6 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     <div className="fixed inset-0 z-[100] bg-[#ECEDF2] flex flex-col imagier-overlay">
       <ImagierTopbar
         wordCount={orderedWords.length}
-        orientation={settings.orientation}
         onClose={onClose}
         onPrint={handlePrint}
       />

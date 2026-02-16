@@ -6,6 +6,7 @@ export type FontSizeMode = 'small' | 'medium' | 'large';
 export interface ImagierSettings {
   grid: GridLayout;
   orientation: Orientation;
+  showHeader: boolean;
   title: string;
   subtitle: string;
   cuttingGuides: boolean;
@@ -22,6 +23,7 @@ export interface ImagierSettings {
 export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
   grid: '3x3',
   orientation: 'portrait',
+  showHeader: true,
   title: 'Mon imagier',
   subtitle: '',
   cuttingGuides: true,

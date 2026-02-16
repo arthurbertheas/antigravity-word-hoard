@@ -106,7 +106,19 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
               </div>
             </Section>
 
+            {/* Show header toggle */}
+            <Section noBorder>
+              <ToggleRow
+                icon={<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>}
+                label="En-tête de page"
+                desc="Titre, sous-titre et compteur de mots"
+                isOn={settings.showHeader}
+                onToggle={() => updateSetting('showHeader', !settings.showHeader)}
+              />
+            </Section>
+
             {/* Title */}
+            {settings.showHeader && (
             <Section label="Titre" icon={<svg className="w-[13px] h-[13px] opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>}>
               <input
                 type="text"
@@ -127,6 +139,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                 Le titre et sous-titre apparaissent en haut de chaque page
               </div>
             </Section>
+            )}
 
             {/* Cutting guides */}
             <Section noBorder>
