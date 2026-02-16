@@ -28,7 +28,7 @@ export function ImagierPreview({
 
   // Auto-dismiss drag hint after 4 seconds
   useEffect(() => {
-    const timer = setTimeout(() => setShowDragHint(false), 4000);
+    const timer = setTimeout(() => setShowDragHint(false), 10000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -175,7 +175,7 @@ export function ImagierPreview({
 
       {/* Page navigation */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3.5 mt-4 print:hidden">
+        <div className="flex items-center justify-center gap-3.5 mt-1.5 print:hidden">
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 0}
