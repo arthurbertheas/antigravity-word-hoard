@@ -104,7 +104,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
         className={`imagier-print-page ${p < totalPages - 1 ? 'imagier-print-page-break' : ''}`}
         style={{
           width: isLandscape ? '297mm' : '210mm',
-          minHeight: isLandscape ? '210mm' : '297mm',
+          height: isLandscape ? '210mm' : '297mm',
           padding: '8mm',
           display: 'flex',
           flexDirection: 'column',

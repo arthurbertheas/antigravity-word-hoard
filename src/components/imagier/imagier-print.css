@@ -30,11 +30,13 @@
   .imagier-print-page {
     overflow: hidden;
     page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   /* Force page break between pages */
   .imagier-print-page-break {
     page-break-after: always !important;
+    break-after: page !important;
   }
 
   /* Cards in print: no drag cursor, no hover effects */
