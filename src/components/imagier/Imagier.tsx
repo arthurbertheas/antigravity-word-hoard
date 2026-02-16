@@ -101,17 +101,17 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
 
       for (let i = 0; i < pages.length; i++) {
         const canvas = await html2canvas(pages[i], {
-          scale: 2,
+          scale: 3,
           useCORS: true,
           backgroundColor: '#ffffff',
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const imgData = canvas.toDataURL('image/png');
         if (i > 0) pdf.addPage();
 
         const w = isLandscape ? 297 : 210;
         const h = isLandscape ? 210 : 297;
-        pdf.addImage(imgData, 'JPEG', 0, 0, w, h);
+        pdf.addImage(imgData, 'PNG', 0, 0, w, h);
       }
 
       // Restore hidden state
@@ -142,9 +142,11 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  // Build print pages (all pages, not just current)
+  // Build print pages — exact same markup as ImagierPreview for pixel-perfect output
   const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
   const isLandscape = settings.orientation === 'landscape';
+  const pageW = isLandscape ? 842 : 595;
+  const pageH = isLandscape ? 595 : 842;
 
   const printPages = [];
   for (let p = 0; p < totalPages; p++) {
@@ -153,68 +155,64 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     printPages.push(
       <div
         key={p}
-        className="imagier-print-page"
-        style={{
-          width: isLandscape ? '297mm' : '210mm',
-          height: isLandscape ? '210mm' : '297mm',
-          padding: '8mm',
-          display: 'flex',
-          flexDirection: 'column',
-          background: 'white',
-          boxSizing: 'border-box' as const,
-        }}
+        className="imagier-print-page bg-white flex flex-col overflow-hidden"
+        style={{ width: pageW, height: pageH }}
       >
-        {/* Page header */}
-        {settings.showHeader && (
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingBottom: '10px', borderBottom: '2.5px solid #6C5CE7', marginBottom: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {settings.title && (
-                <div style={{ fontFamily: 'Sora, sans-serif', fontSize: '18px', fontWeight: 800, color: '#1A1A2E', letterSpacing: '-0.02em' }}>
-                  {settings.title}
-                </div>
-              )}
-              {settings.subtitle && (
-                <div style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500, fontStyle: 'italic' }}>
-                  {settings.subtitle}
-                </div>
-              )}
+        <div className="flex-1 min-h-0 flex flex-col p-6">
+          {/* Page header — identical to ImagierPreview */}
+          {settings.showHeader && (
+            <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
+              <div className="flex flex-col gap-0.5">
+                {settings.title && (
+                  <div className="font-sora text-lg font-extrabold text-[#1A1A2E] tracking-tight">
+                    {settings.title}
+                  </div>
+                )}
+                {settings.subtitle && (
+                  <div className="text-[11px] text-[#9CA3AF] font-medium italic">
+                    {settings.subtitle}
+                  </div>
+                )}
+              </div>
+              <div className="text-[11px] text-[#9CA3AF] font-medium">
+                {pageWords.length} mots
+              </div>
             </div>
-            <div style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500 }}>
-              {pageWords.length} mots
-            </div>
+          )}
+
+          {/* Cards grid — identical to ImagierPreview */}
+          <div
+            className={`flex-1 min-h-0 grid
+              ${settings.cuttingGuides ? 'gap-0' : settings.grid === '2x3' ? 'gap-3' : settings.grid === '4x4' ? 'gap-1.5' : settings.grid === '3x4' ? 'gap-2' : 'gap-2.5'}
+            `}
+            style={{
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+            }}
+          >
+            {pageWords.map((word, i) => (
+              <ImagierCard
+                key={word.uid || word.MOTS + i}
+                word={word}
+                settings={settings}
+                index={i}
+                onDragStart={noop}
+                onDragOver={noopDrag}
+                onDrop={noop}
+                isDragging={false}
+                isDragOver={false}
+              />
+            ))}
           </div>
-        )}
 
-        {/* Cards grid */}
-        <div
-          style={{
-            flex: 1,
-            minHeight: 0,
-            display: 'grid',
-            gridTemplateColumns: `repeat(${cols}, 1fr)`,
-            gridTemplateRows: `repeat(${rows}, 1fr)`,
-            gap: settings.cuttingGuides ? '0px' : settings.grid === '2x3' ? '12px' : settings.grid === '4x4' ? '6px' : settings.grid === '3x4' ? '8px' : '10px',
-          }}
-        >
-          {pageWords.map((word, i) => (
-            <ImagierCard
-              key={word.uid || word.MOTS + i}
-              word={word}
-              settings={settings}
-              index={i}
-              onDragStart={noop}
-              onDragOver={noopDrag}
-              onDrop={noop}
-              isDragging={false}
-              isDragOver={false}
-            />
-          ))}
-        </div>
-
-        {/* Page footer */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #F1F5F9', flexShrink: 0 }}>
-          <span style={{ fontSize: '9px', color: '#CBD5E1' }}>Imagier phonétique</span>
-          <span style={{ fontSize: '9px', color: '#CBD5E1' }}>MaterielOrthophonie.fr</span>
+          {/* Page footer — identical to ImagierPreview */}
+          <div className="flex justify-between items-center pt-2 border-t border-[#F1F5F9] flex-shrink-0">
+            <span className="text-[9px] text-[#CBD5E1]">Imagier phonétique</span>
+            <span className="text-[9px] text-[#CBD5E1]">
+              <span className="inline-block w-1 h-1 rounded-full bg-[#A29BFE] mr-1 align-middle" />
+              MaterielOrthophonie.fr
+            </span>
+          </div>
         </div>
       </div>
     );
