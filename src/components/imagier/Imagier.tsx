@@ -1,10 +1,12 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Word } from '@/types/word';
-import { ImagierSettings, DEFAULT_IMAGIER_SETTINGS, getGridMax } from '@/types/imagier';
+import { ImagierSettings, DEFAULT_IMAGIER_SETTINGS, getGridMax, getGridDimensions } from '@/types/imagier';
 import { filterWordsWithImages } from '@/utils/imagier-utils';
 import { ImagierTopbar } from './ImagierTopbar';
 import { ImagierPreview } from './ImagierPreview';
 import { ImagierPanel } from './ImagierPanel';
+import { ImagierCard } from './ImagierCard';
 import './imagier-print.css';
 
 interface ImagierProps {
@@ -17,6 +19,10 @@ export function Imagier({ words, isOpen, onClose }: ImagierProps) {
   if (!isOpen) return null;
   return <ImagierContent words={words} onClose={onClose} />;
 }
+
+// No-op handlers for print cards (no drag in print)
+const noop = () => {};
+const noopDrag = (_e: React.DragEvent, _i: number) => {};
 
 function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void }) {
   const [settings, setSettings] = useState<ImagierSettings>(DEFAULT_IMAGIER_SETTINGS);
@@ -75,34 +81,123 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  // Build print pages (all pages, not just current)
+  const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
+  const pageW = settings.orientation === 'portrait' ? 595 : 842;
+  const pageH = settings.orientation === 'portrait' ? 842 : 595;
+
+  const printPages = [];
+  for (let p = 0; p < totalPages; p++) {
+    const start = p * max;
+    const pageWords = orderedWords.slice(start, start + max);
+    printPages.push(
+      <div
+        key={p}
+        className="imagier-print-page"
+        style={{
+          width: `${pageW}px`,
+          height: `${pageH}px`,
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'white',
+          pageBreakAfter: p < totalPages - 1 ? 'always' : 'auto',
+        }}
+      >
+        {/* Page header */}
+        {settings.showHeader && (
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingBottom: '10px', borderBottom: '2.5px solid #6C5CE7', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {settings.title && (
+                <div style={{ fontFamily: 'Sora, sans-serif', fontSize: '18px', fontWeight: 800, color: '#1A1A2E', letterSpacing: '-0.02em' }}>
+                  {settings.title}
+                </div>
+              )}
+              {settings.subtitle && (
+                <div style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500, fontStyle: 'italic' }}>
+                  {settings.subtitle}
+                </div>
+              )}
+            </div>
+            <div style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500 }}>
+              {pageWords.length} mots
+            </div>
+          </div>
+        )}
+
+        {/* Cards grid */}
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateColumns: `repeat(${cols}, 1fr)`,
+            gridTemplateRows: `repeat(${rows}, 1fr)`,
+            gap: settings.cuttingGuides ? '0px' : settings.grid === '2x3' ? '12px' : settings.grid === '4x4' ? '6px' : settings.grid === '3x4' ? '8px' : '10px',
+          }}
+        >
+          {pageWords.map((word, i) => (
+            <ImagierCard
+              key={word.uid || word.MOTS + i}
+              word={word}
+              settings={settings}
+              index={i}
+              onDragStart={noop}
+              onDragOver={noopDrag}
+              onDrop={noop}
+              isDragging={false}
+              isDragOver={false}
+            />
+          ))}
+        </div>
+
+        {/* Page footer */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #F1F5F9', flexShrink: 0 }}>
+          <span style={{ fontSize: '9px', color: '#CBD5E1' }}>Imagier phonétique</span>
+          <span style={{ fontSize: '9px', color: '#CBD5E1' }}>MaterielOrthophonie.fr</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="fixed inset-0 z-[100] bg-[#ECEDF2] flex flex-col imagier-overlay">
-      <ImagierTopbar
-        wordCount={orderedWords.length}
-        onClose={onClose}
-      />
-      <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 relative">
-          <ImagierPreview
-            words={orderedWords}
+    <>
+      <div className="fixed inset-0 z-[100] bg-[#ECEDF2] flex flex-col imagier-overlay">
+        <ImagierTopbar
+          wordCount={orderedWords.length}
+          onClose={onClose}
+        />
+        <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 relative">
+            <ImagierPreview
+              words={orderedWords}
+              settings={settings}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              onReorder={handleReorder}
+            />
+          </div>
+          <ImagierPanel
             settings={settings}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            updateSetting={updateSetting}
+            words={orderedWords}
+            removedCount={removedCount}
             onReorder={handleReorder}
+            onPrint={handlePrint}
+            isOpen={isPanelOpen}
+            onToggle={() => setIsPanelOpen(p => !p)}
           />
         </div>
-        <ImagierPanel
-          settings={settings}
-          updateSetting={updateSetting}
-          words={orderedWords}
-          removedCount={removedCount}
-          onReorder={handleReorder}
-          onPrint={handlePrint}
-          isOpen={isPanelOpen}
-          onToggle={() => setIsPanelOpen(p => !p)}
-        />
       </div>
-    </div>
+
+      {/* Print-only pages — rendered as portal to body so CSS can easily target them */}
+      {createPortal(
+        <div className="imagier-print-container">
+          {printPages}
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

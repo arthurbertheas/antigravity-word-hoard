@@ -7,51 +7,35 @@
 .imagier-phon { font-size: 9px; }
 .imagier-det { font-size: 10px; }
 
+/* Print container: hidden on screen */
+.imagier-print-container {
+  display: none;
+}
+
 @media print {
   @page {
     margin: 10mm;
     size: A4;
   }
 
-  /* Allow content to flow for printing */
-  html, body, #root {
-    height: auto !important;
-    overflow: visible !important;
+  /* Hide everything in body except the print container */
+  body > *:not(.imagier-print-container) {
+    display: none !important;
   }
 
-  /* Convert the fixed overlay to normal document flow */
-  .imagier-overlay {
-    position: static !important;
-    height: auto !important;
-    overflow: visible !important;
-    background: white !important;
-    z-index: auto !important;
+  /* Show the print container */
+  .imagier-print-container {
     display: block !important;
   }
 
-  /* Reset inner flex containers so they don't clip */
-  .imagier-overlay > div {
-    position: static !important;
-    overflow: visible !important;
-    height: auto !important;
-    flex: none !important;
+  /* Each print page: exact A4 sizing, page break control */
+  .imagier-print-page {
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
-  /* Preview container: reset absolute positioning */
-  .imagier-preview {
-    position: static !important;
-    overflow: visible !important;
-    height: auto !important;
-    background: white !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
-  }
-
-  /* A4 page: remove scale transform, let browser handle print scaling */
-  .imagier-page {
-    transform: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
+  /* Cards in print: no drag cursor, no hover effects */
+  .imagier-print-container [draggable] {
+    cursor: default !important;
   }
 }
