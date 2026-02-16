@@ -4,6 +4,7 @@ import { ImagierSettings, GRID_OPTIONS } from '@/types/imagier';
 import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer } from 'lucide-react';
 import { getDeterminer, formatPhonemes } from '@/utils/imagier-utils';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import { PanelHeader } from '@/components/ui/PanelHeader';
 import { PanelTabs, PanelTabsList, PanelTabsTrigger, PanelTabsContent } from '@/components/ui/PanelTabs';
 import { ToggleRow } from '@/components/ui/ToggleRow';
 
@@ -25,6 +26,16 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
 
   return (
     <div className="absolute right-0 top-0 bottom-0 w-[400px] bg-white border-l border-[#E5E7EB] flex flex-col print:hidden z-20 shadow-[-4px_0_24px_rgba(0,0,0,0.06)]">
+      <PanelHeader
+        title="Imagier"
+        subtitle="Mise en page et impression"
+        icon={
+          <div className="w-8 h-8 rounded-[10px] bg-[#F5F3FF] flex items-center justify-center text-[#6C5CE7]">
+            <LayoutGrid className="w-4 h-4" />
+          </div>
+        }
+        hideBorder
+      />
       <PanelTabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabId)}>
         <PanelTabsList>
           <PanelTabsTrigger value="layout">
@@ -293,7 +304,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
       <div className="flex-shrink-0 px-5 py-4 border-t border-[#E5E7EB] bg-[#FAFBFC]">
         <button
           onClick={onPrint}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[14px] font-bold font-sora bg-[#6C5CE7] text-white shadow-[0_2px_8px_rgba(108,92,231,0.3)] hover:bg-[#5A4BD1] hover:-translate-y-px transition-all"
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-[14px] text-[14px] font-bold font-sora bg-[#6C5CE7] text-white shadow-[0_3px_12px_rgba(108,92,231,0.25)] hover:bg-[#5A4BD1] hover:-translate-y-px hover:shadow-[0_5px_16px_rgba(108,92,231,0.35)] transition-all"
         >
           <Printer className="w-4 h-4" />
           Imprimer l'imagier

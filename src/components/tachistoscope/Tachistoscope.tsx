@@ -4,9 +4,8 @@ import { Word } from '@/types/word';
 import { WordDisplay } from './WordDisplay';
 import { ControlBar } from './ControlBar';
 import { SidePanel } from './SidePanel';
-import { X } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 import { playBeep } from '@/utils/audio';
+import { DiapoTopbar } from './DiapoTopbar';
 import confetti from 'canvas-confetti';
 
 interface TachistoscopeProps {
@@ -407,24 +406,20 @@ function TachistoscopeContent({ onClose, words }: { onClose: () => void, words: 
 
 
     return (
-        <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
-            {/* Close Button - Hidden when SidePanel is open to prevent z-index conflict */}
-            {!isPanelOpen && (
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="fixed top-6 right-6 z-[110] hover:bg-zinc-100"
-                    onClick={onClose}
-                >
-                    <X className="w-6 h-6" />
-                </Button>
-            )}
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col">
+            {/* Unified Topbar */}
+            <DiapoTopbar
+                wordCount={words.length}
+                onClose={onClose}
+            />
 
             {/* Main Reading Area */}
-            <WordDisplay
-                word={showPreview ? PREVIEW_WORD : queue[currentIndex]}
-                forceVisible={showPreview || currentIndex >= words.length} // Force visible for FIN word (index >= original length)
-            />
+            <div className="flex-1 relative flex items-center justify-center">
+                <WordDisplay
+                    word={showPreview ? PREVIEW_WORD : queue[currentIndex]}
+                    forceVisible={showPreview || currentIndex >= words.length} // Force visible for FIN word (index >= original length)
+                />
+            </div>
 
             {/* Logic Hub */}
             <PlayerEngine />

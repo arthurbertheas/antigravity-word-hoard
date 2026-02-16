@@ -22,7 +22,7 @@ import { CreateFailedListModal } from './CreateFailedListModal';
 import { SaveListModal } from '@/components/saved-lists/SaveListModal';
 import { SessionFinishModal } from './SessionFinishModal';
 import { useEffect } from 'react';
-import { PanelTopbar } from '@/components/ui/PanelTopbar';
+import { PanelHeader } from '@/components/ui/PanelHeader';
 import { PanelTabs, PanelTabsList, PanelTabsTrigger, PanelTabsContent } from '@/components/ui/PanelTabs';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 
@@ -205,19 +205,21 @@ export function SidePanel() {
                     : "translate-x-full opacity-0 duration-0 pointer-events-none",
                 panelMode === 'stats' ? "w-[520px]" : "w-[400px]"
             )}>
-                {/* Harmonized Header */}
-                <PanelTopbar
+                {/* Panel Header (matching mockup panel-header pattern) */}
+                <PanelHeader
                     title={panelMode === 'config' ? 'Configuration' :
                         panelMode === 'stats' ? 'Statistiques' : 'Session en cours'}
+                    subtitle={panelMode === 'config' ? "Réglages d'affichage" :
+                        panelMode === 'stats' ? 'Résumé de la session' : 'Liste et actions'}
                     icon={
                         panelMode === 'config'
-                            ? <Settings className="w-3.5 h-3.5 text-[#6C5CE7]" />
+                            ? <div className="w-8 h-8 rounded-[10px] bg-[#F5F3FF] flex items-center justify-center"><Settings className="w-4 h-4 text-[#6C5CE7]" /></div>
                             : panelMode === 'session'
-                                ? <span className="w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center"><Clock className="w-3 h-3 text-red-500" /></span>
-                                : undefined
+                                ? <div className="w-8 h-8 rounded-[10px] bg-[#FEF2F2] flex items-center justify-center"><Clock className="w-4 h-4 text-[#EF4444]" /></div>
+                                : <div className="w-8 h-8 rounded-[10px] bg-[#F5F3FF] flex items-center justify-center"><BarChart3 className="w-4 h-4 text-[#6C5CE7]" /></div>
                     }
-                    onClose={() => setIsPanelOpen(false)}
                     onBack={panelMode === 'stats' ? () => togglePanelMode('session') : undefined}
+                    hideBorder
                 />
 
                 {/* MODE CONFIG */}
@@ -625,10 +627,8 @@ export function SidePanel() {
                             </div >
 
                             {/* Word List */}
-                            < div className="flex-1 overflow-y-auto px-5 py-5">
-                                < div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-3.5">
-                                    Liste des mots({queue.length})
-                                </div >
+                            <div className="flex-1 overflow-y-auto px-5 py-5">
+                                <SectionHeader label="Liste des mots" badge={`${queue.filter(w => w.MOTS !== 'Bravo !').length}`} />
                                 <div className="space-y-2">
                                     {
                                         queue.filter(word => word.MOTS !== 'Bravo !').map((word, index) => {
@@ -668,26 +668,26 @@ export function SidePanel() {
                             </div >
 
                             {/* Footer */}
-                            < div className="px-5 py-5 border-t border-border space-y-3">
+                            <div className="px-5 py-4 border-t border-border bg-[#FAFBFC] space-y-2">
                                 {failedWords.length > 0 && (
                                     <button
                                         onClick={handleCreateFailedList}
-                                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-[#C4B8FF] bg-[#F8F6FF] text-[#6C5CE7] font-dm-sans text-[14px] font-semibold hover:bg-[#EDEAFF] hover:border-[#6C5CE7] transition-all duration-200"
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-[12px] border-2 border-dashed border-[#C4B8FF] bg-[#F5F3FF] text-[#6C5CE7] text-[13px] font-semibold hover:bg-[#EDEAFF] hover:border-[#6C5CE7] transition-all"
                                     >
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                            <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M1 4v6h6" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
                                         </svg>
-                                        Créer liste des mots ratés
+                                        Reprendre les mots ratés ({failedWords.length})
                                     </button>
                                 )}
-                                < Button
-                                    className="w-full justify-center gap-2 px-5 py-3.5 bg-destructive text-white text-[15px] font-bold font-sora rounded-[14px] hover:bg-destructive/90 transition-all h-auto"
+                                <Button
+                                    className="w-full justify-center gap-2 px-4 py-3 bg-destructive text-white text-[14px] font-bold font-sora rounded-[14px] hover:bg-destructive/90 shadow-[0_3px_12px_rgba(239,68,68,0.25)] hover:shadow-[0_5px_16px_rgba(239,68,68,0.35)] transition-all h-auto"
                                     onClick={handleConfirmFinishSession}
                                 >
-                                    < Square className="w-4 h-4" />
+                                    <Square className="w-4 h-4" />
                                     Terminer la session
-                                </Button >
-                            </div >
+                                </Button>
+                            </div>
                         </>
                     )
                 }
