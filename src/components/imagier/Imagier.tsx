@@ -3,6 +3,7 @@ import { pdf } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
 import { ImagierSettings, DEFAULT_IMAGIER_SETTINGS, getGridMax } from '@/types/imagier';
 import { filterWordsWithImages } from '@/utils/imagier-utils';
+import { loadImageAsBase64ForImagier } from '@/utils/imagier-image-utils';
 import { ImagierTopbar } from './ImagierTopbar';
 import { ImagierPreview } from './ImagierPreview';
 import { ImagierPanel } from './ImagierPanel';
@@ -70,7 +71,7 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
 
     setIsPrinting(true);
     try {
-      // Pre-fetch all images as base64 data URIs (react-pdf can't reliably load URLs)
+      // Pre-fetch all images as PNG base64 (SVGs are converted via canvas)
       const imageMap = new Map<string, string>();
       const urls = [...new Set(
         orderedWords
@@ -78,16 +79,8 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
           .filter(Boolean) as string[]
       )];
       await Promise.all(urls.map(async (url) => {
-        try {
-          const res = await fetch(url);
-          const blob = await res.blob();
-          const dataUri = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(blob);
-          });
-          imageMap.set(url, dataUri);
-        } catch { /* skip failed images */ }
+        const dataUri = await loadImageAsBase64ForImagier(url);
+        if (dataUri) imageMap.set(url, dataUri);
       }));
 
       // Generate PDF blob using @react-pdf/renderer
