@@ -44,6 +44,18 @@ export const GRID_OPTIONS: { value: GridLayout; cols: number; rows: number; labe
   { value: '4x4', cols: 4, rows: 4, label: '4×4' },
 ];
 
+/** Combined grid + orientation options for the layout strip */
+export const LAYOUT_OPTIONS: { grid: GridLayout; orientation: Orientation; label: string; cols: number; rows: number }[] = [
+  // Portrait
+  { grid: '2x3', orientation: 'portrait', label: '2×3', cols: 2, rows: 3 },
+  { grid: '3x3', orientation: 'portrait', label: '3×3', cols: 3, rows: 3 },
+  { grid: '3x4', orientation: 'portrait', label: '3×4', cols: 3, rows: 4 },
+  { grid: '4x4', orientation: 'portrait', label: '4×4', cols: 4, rows: 4 },
+  // Landscape
+  { grid: '2x3', orientation: 'landscape', label: '3×2', cols: 3, rows: 2 },
+  { grid: '3x4', orientation: 'landscape', label: '4×3', cols: 4, rows: 3 },
+];
+
 export function getGridMax(grid: GridLayout): number {
   const opt = GRID_OPTIONS.find(g => g.value === grid);
   return opt ? opt.cols * opt.rows : 9;
