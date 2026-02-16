@@ -220,23 +220,18 @@ const s = StyleSheet.create({
 
 /* ─── Card component ─── */
 
-function PdfCard({ word, settings }: { word: Word; settings: ImagierSettings }) {
+function PdfCard({ word, settings, imageMap }: { word: Word; settings: ImagierSettings; imageMap: Map<string, string> }) {
   const imageUrl = word['image associée']?.trim();
+  const imageSrc = imageUrl ? imageMap.get(imageUrl) : undefined;
   const det = getDeterminer(word);
   const cardStyle = settings.cuttingGuides ? s.cardCutting : s.cardNormal;
 
   return (
     <View style={[s.card, cardStyle]}>
-      {/* Image — fetch as buffer so react-pdf detects format from binary data */}
-      {imageUrl && (
+      {/* Image from pre-fetched base64 data URI */}
+      {imageSrc && (
         <View style={s.imageContainer}>
-          <Image
-            source={async () => {
-              const res = await fetch(imageUrl);
-              return await res.arrayBuffer();
-            }}
-            style={s.image}
-          />
+          <Image src={imageSrc} style={s.image} />
         </View>
       )}
 
@@ -288,9 +283,10 @@ function PdfCard({ word, settings }: { word: Word; settings: ImagierSettings }) 
 interface ImagierPdfDocumentProps {
   words: Word[];
   settings: ImagierSettings;
+  imageMap: Map<string, string>;
 }
 
-export function ImagierPdfDocument({ words, settings }: ImagierPdfDocumentProps) {
+export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocumentProps) {
   const max = getGridMax(settings.grid);
   const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
   const totalPages = Math.max(1, Math.ceil(words.length / max));
@@ -349,6 +345,7 @@ export function ImagierPdfDocument({ words, settings }: ImagierPdfDocumentProps)
                         key={word.uid || word.MOTS + colIndex}
                         word={word}
                         settings={settings}
+                        imageMap={imageMap}
                       />
                     ) : (
                       // Empty placeholder to keep grid alignment

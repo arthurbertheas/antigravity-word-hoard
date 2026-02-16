@@ -70,9 +70,29 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
 
     setIsPrinting(true);
     try {
+      // Pre-fetch all images as base64 data URIs (react-pdf can't reliably load URLs)
+      const imageMap = new Map<string, string>();
+      const urls = [...new Set(
+        orderedWords
+          .map(w => w['image associée']?.trim())
+          .filter(Boolean) as string[]
+      )];
+      await Promise.all(urls.map(async (url) => {
+        try {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          const dataUri = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+          imageMap.set(url, dataUri);
+        } catch { /* skip failed images */ }
+      }));
+
       // Generate PDF blob using @react-pdf/renderer
       const blob = await pdf(
-        <ImagierPdfDocument words={orderedWords} settings={settings} />
+        <ImagierPdfDocument words={orderedWords} settings={settings} imageMap={imageMap} />
       ).toBlob();
 
       // Trigger download
