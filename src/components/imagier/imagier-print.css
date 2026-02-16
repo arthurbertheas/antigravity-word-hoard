@@ -28,15 +28,14 @@
 
   /* Each print page fills exactly one printed page */
   .imagier-print-page {
-    overflow: hidden;
     page-break-inside: avoid;
     break-inside: avoid;
   }
 
-  /* Force page break between pages */
-  .imagier-print-page-break {
-    page-break-after: always !important;
-    break-after: page !important;
+  /* Force new physical page before pages 2, 3, etc. */
+  .imagier-print-page + .imagier-print-page {
+    page-break-before: always !important;
+    break-before: page !important;
   }
 
   /* Cards in print: no drag cursor, no hover effects */
