@@ -248,7 +248,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
             <div className="flex flex-col gap-6 py-5">
               <div className="px-5">
                 <SectionHeader label="Ordre des mots" badge={`${words.length} mots`} />
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5" onDragOver={e => e.preventDefault()}>
                   {words.map((w, i) => (
                     <div
                       key={w.uid || w.MOTS + i}
