@@ -69,17 +69,65 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   }, []);
 
   const handlePrint = useCallback(() => {
-    const prevTitle = document.title;
+    const src = document.querySelector('.imagier-print-container');
+    if (!src) return;
+
+    // Timestamp for PDF filename
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, '0');
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const yy = String(now.getFullYear()).slice(-2);
     const hh = String(now.getHours()).padStart(2, '0');
     const min = String(now.getMinutes()).padStart(2, '0');
-    document.title = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
-    window.print();
-    document.title = prevTitle;
-  }, []);
+    const title = `Imagier phonétique - ${dd}/${mm}/${yy} - ${hh}h${min}`;
+
+    // Create isolated iframe — its own document means native page breaks
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument!;
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head>');
+    doc.write(`<title>${title}</title>`);
+
+    // Copy parent stylesheets (Tailwind + custom CSS)
+    Array.from(document.styleSheets).forEach(sheet => {
+      try {
+        const css = Array.from(sheet.cssRules).map(r => r.cssText).join('\n');
+        doc.write(`<style>${css}</style>`);
+      } catch {
+        if (sheet.href) doc.write(`<link rel="stylesheet" href="${sheet.href}">`);
+      }
+    });
+
+    // Page setup + break rules
+    const orient = settings.orientation === 'landscape' ? 'A4 landscape' : 'A4';
+    doc.write(`<style>
+      @page { margin: 0; size: ${orient}; }
+      body { margin: 0; }
+      .imagier-print-page + .imagier-print-page {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+    </style>`);
+
+    doc.write('</head><body>');
+    doc.write(src.innerHTML);
+    doc.write('</body></html>');
+    doc.close();
+
+    // Wait for images to load, then print
+    const images = Array.from(doc.querySelectorAll('img'));
+    const loaded = images.map(img =>
+      img.complete ? Promise.resolve() : new Promise<void>(r => { img.onload = img.onerror = () => r(); })
+    );
+    Promise.all(loaded).then(() => {
+      iframe.contentWindow!.focus();
+      iframe.contentWindow!.print();
+      setTimeout(() => { try { document.body.removeChild(iframe); } catch {} }, 1000);
+    });
+  }, [settings.orientation]);
 
   // Escape to close
   useEffect(() => {
@@ -199,12 +247,9 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
         </div>
       </div>
 
-      {/* Print-only pages — rendered as portal to body so CSS can easily target them */}
+      {/* Print source — hidden portal, its innerHTML is grabbed by handlePrint */}
       {createPortal(
-        <div className="imagier-print-container">
-          <style>{`@media print { @page { margin: 0; size: ${isLandscape ? 'A4 landscape' : 'A4'}; } }`}</style>
-          {printPages}
-        </div>,
+        <div className="imagier-print-container">{printPages}</div>,
         document.body
       )}
     </>
