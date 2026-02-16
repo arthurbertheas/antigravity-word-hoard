@@ -68,7 +68,20 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
     });
   }, []);
 
-  const handlePrint = useCallback(() => {
+  const handlePrint = useCallback(async () => {
+    // Make print container visible off-screen so images can load
+    const printEl = document.querySelector('.imagier-print-container') as HTMLElement | null;
+    if (printEl) {
+      printEl.style.cssText = 'position:fixed;left:-9999px;top:0;display:block;';
+      // Wait for all images inside to load
+      const imgs = Array.from(printEl.querySelectorAll('img'));
+      await Promise.all(
+        imgs.map(img => img.complete ? Promise.resolve() : new Promise<void>(r => { img.onload = img.onerror = () => r(); }))
+      );
+      // Reset — let @media print CSS take over
+      printEl.style.cssText = '';
+    }
+
     const prevTitle = document.title;
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, '0');
