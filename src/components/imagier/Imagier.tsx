@@ -145,8 +145,9 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   // Build print pages — exact same markup as ImagierPreview for pixel-perfect output
   const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
   const isLandscape = settings.orientation === 'landscape';
-  const pageW = isLandscape ? 842 : 595;
-  const pageH = isLandscape ? 595 : 842;
+  // A4 at 96 DPI — larger than screen preview for better PDF quality
+  const pageW = isLandscape ? 1123 : 794;
+  const pageH = isLandscape ? 794 : 1123;
 
   const printPages = [];
   for (let p = 0; p < totalPages; p++) {
@@ -158,8 +159,8 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
         className="imagier-print-page bg-white flex flex-col overflow-hidden"
         style={{ width: pageW, height: pageH }}
       >
-        <div className="flex-1 min-h-0 flex flex-col p-6">
-          {/* Page header — identical to ImagierPreview */}
+        <div className="flex-1 min-h-0 flex flex-col p-8">
+          {/* Page header */}
           {settings.showHeader && (
             <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
               <div className="flex flex-col gap-0.5">
