@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Spacing Mode Redesign</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #1a1a2e;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 60px;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .column-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #6C5CE7;
+    padding: 6px 14px;
+    background: rgba(108,92,231,0.1);
+    border-radius: 20px;
+  }
+  .column-label.bad {
+    color: #9CA3AF;
+    background: rgba(156,163,175,0.15);
+  }
+
+  .card-wrapper {
+    width: 304px;
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+  }
+
+  /* Section divider */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .section-divider span {
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    color: #6C5CE7;
+  }
+  .section-divider .line {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(to right, rgba(108,92,231,0.4), transparent);
+  }
+
+  /* =========================================
+     OPTION A: Old boring chips
+     ========================================= */
+  .old-card {
+    background: #f8f8fb;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .old-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6B7280;
+    margin-bottom: 10px;
+  }
+  .chip-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid #E5E7EB;
+    background: white;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip.active {
+    background: #6C5CE7;
+    border-color: #6C5CE7;
+    color: white;
+    box-shadow: 0 2px 8px rgba(108,92,231,0.3);
+  }
+
+  /* =========================================
+     OPTION B: Visual preview cards
+     ========================================= */
+  .mode-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mode-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #E5E7EB;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .mode-card:hover {
+    border-color: rgba(108,92,231,0.35);
+    background: #FAFAFF;
+  }
+  .mode-card.active {
+    border-color: #6C5CE7;
+    background: rgba(108,92,231,0.03);
+    box-shadow: 0 0 0 1px rgba(108,92,231,0.15);
+  }
+
+  /* Radio dot */
+  .mode-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #D1D5DB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .mode-card.active .mode-radio {
+    border-color: #6C5CE7;
+    background: #6C5CE7;
+  }
+  .mode-card.active .mode-radio::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  /* Text content */
+  .mode-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .mode-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A1A2E;
+    margin-bottom: 2px;
+    transition: color 0.15s;
+  }
+  .mode-card.active .mode-title {
+    color: #6C5CE7;
+  }
+  .mode-desc {
+    font-size: 10.5px;
+    color: #9CA3AF;
+    line-height: 1.3;
+  }
+
+  /* Visual preview */
+  .mode-preview {
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6C5CE7;
+    background: rgba(108,92,231,0.06);
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+  .mode-preview .sep {
+    display: inline-block;
+    width: 4px;
+  }
+
+  /* Slider underneath */
+  .slider-section {
+    margin-top: 12px;
+  }
+  .slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .slider-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6B7280;
+  }
+  .slider-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6C5CE7;
+  }
+  .slider-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(108,92,231,0.12);
+    border-radius: 3px;
+    position: relative;
+  }
+  .slider-fill {
+    height: 100%;
+    background: #6C5CE7;
+    border-radius: 3px;
+    position: relative;
+  }
+  .slider-thumb {
+    width: 18px;
+    height: 18px;
+    background: #6C5CE7;
+    border-radius: 50%;
+    position: absolute;
+    right: -9px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 6px rgba(108,92,231,0.4);
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== AVANT (old) ====== -->
+<div class="column">
+  <div class="column-label bad">Avant</div>
+  <div class="card-wrapper">
+    <div class="section-divider">
+      <span>Espacements</span>
+      <div class="line"></div>
+    </div>
+    <div class="old-card" style="margin-bottom: 10px;">
+      <div class="old-label">Mode</div>
+      <div class="chip-group">
+        <div class="chip active">Lettres</div>
+        <div class="chip">Graphèmes</div>
+        <div class="chip">Syllabes</div>
+      </div>
+    </div>
+    <div class="old-card">
+      <div class="slider-row">
+        <span class="slider-label">Écart</span>
+        <span class="slider-value">0.2x</span>
+      </div>
+      <div class="slider-track">
+        <div class="slider-fill" style="width: 7%;"><div class="slider-thumb"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== APRÈS (new) ====== -->
+<div class="column">
+  <div class="column-label">Proposition</div>
+  <div class="card-wrapper">
+    <div class="section-divider">
+      <span>Espacements</span>
+      <div class="line"></div>
+    </div>
+
+    <div class="mode-cards">
+      <div class="mode-card active" onclick="selectMode(this)">
+        <div class="mode-radio"></div>
+        <div class="mode-text">
+          <div class="mode-title">Lettres</div>
+          <div class="mode-desc">Espace entre chaque lettre</div>
+        </div>
+        <div class="mode-preview">c h a t o n</div>
+      </div>
+
+      <div class="mode-card" onclick="selectMode(this)">
+        <div class="mode-radio"></div>
+        <div class="mode-text">
+          <div class="mode-title">Graphèmes</div>
+          <div class="mode-desc">Regroupe les sons écrits</div>
+        </div>
+        <div class="mode-preview">ch<span class="sep"></span>a<span class="sep"></span>t<span class="sep"></span>on</div>
+      </div>
+
+      <div class="mode-card" onclick="selectMode(this)">
+        <div class="mode-radio"></div>
+        <div class="mode-text">
+          <div class="mode-title">Syllabes</div>
+          <div class="mode-desc">Découpe syllabique du mot</div>
+        </div>
+        <div class="mode-preview">cha<span class="sep"></span>ton</div>
+      </div>
+    </div>
+
+    <div class="slider-section">
+      <div class="slider-row">
+        <span class="slider-label">Écart</span>
+        <span class="slider-value">0.2x</span>
+      </div>
+      <div class="slider-track">
+        <div class="slider-fill" style="width: 7%;"><div class="slider-thumb"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function selectMode(card) {
+  card.closest('.mode-cards').querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+}
+</script>
+
+</body>
+</html>

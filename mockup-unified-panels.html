@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Panneaux unifiés (Imagier + Diapo)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: #F3F4F8; color: #1A1A2E; }
+
+  /* ===== DESIGN TOKENS ===== */
+  :root {
+    --primary: #6C5CE7;
+    --primary-light: #F5F3FF;
+    --primary-hover: #5A4BD1;
+    --primary-glow: rgba(108,92,231,0.12);
+    --surface: #FFFFFF;
+    --surface-muted: #FAFBFC;
+    --border: #E5E7EB;
+    --border-light: #F1F5F9;
+    --text-primary: #1A1A2E;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --destructive: #EF4444;
+    --panel-width: 400px;
+    --topbar-height: 44px;
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 14px;
+  }
+
+  /* ===== LAYOUT ===== */
+  .page { display: flex; flex-direction: column; gap: 48px; padding: 40px; max-width: 1400px; margin: 0 auto; }
+  .showcase { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .showcase-label {
+    font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--primary);
+    padding: 16px 24px; border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .showcase-label::before {
+    content: ''; display: block; width: 4px; height: 16px;
+    background: linear-gradient(135deg, var(--primary), #A29BFE); border-radius: 2px;
+  }
+  .showcase-body { display: flex; gap: 32px; padding: 24px; background: #F8F9FC; overflow-x: auto; }
+  .panel-frame { flex-shrink: 0; width: var(--panel-width); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; max-height: 640px; }
+
+  /* ===== TOPBAR (unified for both overlays) ===== */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; height: var(--topbar-height); background: var(--surface);
+    border-bottom: 1px solid var(--border); flex-shrink: 0; position: relative;
+  }
+  .topbar-close {
+    width: 32px; height: 32px; border-radius: var(--radius-sm); border: none;
+    background: transparent; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; color: var(--text-muted); transition: all 0.15s;
+  }
+  .topbar-close:hover { color: var(--primary); background: var(--primary-light); }
+  .topbar-center {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .topbar-icon {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--primary), #A29BFE);
+    display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;
+  }
+  .topbar-title { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .topbar-badge {
+    font-size: 10px; font-weight: 600; color: var(--primary); background: var(--primary-light);
+    padding: 1px 8px; border-radius: 99px;
+  }
+  .topbar-spacer { width: 32px; }
+
+  /* ===== PANEL HEADER (shared component) ===== */
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: var(--surface);
+    border-bottom: 1px solid var(--border-light); flex-shrink: 0;
+  }
+  .panel-header-left { display: flex; align-items: center; gap: 10px; }
+  .panel-header-icon {
+    width: 32px; height: 32px; border-radius: var(--radius-md);
+    background: var(--primary-light); display: flex; align-items: center;
+    justify-content: center; color: var(--primary);
+  }
+  .panel-header-text {}
+  .panel-header-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .panel-header-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  /* ===== TABS (unified pill-style) ===== */
+  .tabs-bar {
+    display: flex; gap: 4px; padding: 6px;
+    margin: 12px 20px; background: var(--surface-muted);
+    border-radius: var(--radius-md); border: 1px solid var(--border-light);
+  }
+  .tab-btn {
+    flex: 1; padding: 8px 4px; border: none; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
+    justify-content: center; gap: 5px; background: transparent; color: var(--text-muted);
+  }
+  .tab-btn.active {
+    background: var(--surface); color: var(--text-primary);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .tab-btn:not(.active):hover { color: var(--text-secondary); }
+  .tab-icon { width: 14px; height: 14px; opacity: 0.6; }
+  .tab-btn.active .tab-icon { opacity: 1; color: var(--primary); }
+
+  /* ===== SECTION HEADERS (unified purple + gradient line) ===== */
+  /* Sections use 20px horizontal padding. Vertical rhythm is handled by
+     the gap on .panel-scroll (between top-level groups) and internal
+     spacing within each section. No border-bottom — the headers themselves
+     and the whitespace are sufficient separators. */
+  .section { padding: 0 20px; }
+  .section-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  /* For tightly related items inside a section, use .section-group */
+  .section-group { display: flex; flex-direction: column; gap: 10px; }
+  .section-label {
+    font-family: 'Sora', sans-serif; font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary);
+    white-space: nowrap;
+  }
+  .section-line {
+    flex: 1; height: 1.5px;
+    background: linear-gradient(to right, rgba(108,92,231,0.35), transparent);
+  }
+  .section-badge {
+    font-size: 10px; font-weight: 600; color: var(--primary);
+    background: var(--primary-light); padding: 2px 8px; border-radius: 99px;
+  }
+
+  /* ===== TOGGLE ROW (unified) ===== */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-radius: var(--radius-md);
+    border: 1.5px solid transparent; cursor: pointer; transition: all 0.15s;
+    background: var(--surface-muted); border-color: var(--border-light);
+  }
+  .toggle-row:hover { border-color: var(--border); }
+  .toggle-row.active { background: var(--primary-light); border-color: rgba(108,92,231,0.15); }
+  .toggle-row-left { display: flex; align-items: center; gap: 10px; }
+  .toggle-row-icon {
+    width: 32px; height: 32px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; font-family: 'Sora', sans-serif;
+    background: var(--surface-muted); color: var(--text-muted); flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .toggle-row.active .toggle-row-icon { background: white; color: var(--primary); box-shadow: 0 1px 4px rgba(108,92,231,0.12); }
+  .toggle-row-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+  .toggle-row.active .toggle-row-label { color: var(--text-primary); }
+  .toggle-row-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  /* ===== SWITCH (unified) ===== */
+  .switch {
+    width: 40px; height: 22px; border-radius: 99px; position: relative;
+    background: #D1D5DB; cursor: pointer; transition: background 0.15s; flex-shrink: 0;
+  }
+  .switch.on { background: var(--primary); }
+  .switch-thumb {
+    width: 18px; height: 18px; border-radius: 50%; background: white;
+    position: absolute; top: 2px; left: 2px; transition: left 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .switch.on .switch-thumb { left: 20px; }
+
+  /* ===== CARD SELECTOR (grid, orientation, display mode) ===== */
+  .card-selector { display: grid; gap: 8px; }
+  .card-selector.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-selector.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-selector.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  .card-option {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 12px 4px; border: 1.5px solid var(--border); border-radius: var(--radius-md);
+    cursor: pointer; transition: all 0.15s; background: var(--surface);
+  }
+  .card-option:hover { border-color: #A29BFE; }
+  .card-option.active {
+    border-color: var(--primary); background: var(--primary-light);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
+  .card-option-icon {
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); transition: color 0.15s;
+  }
+  .card-option.active .card-option-icon { color: var(--primary); }
+  .card-option-label { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .card-option.active .card-option-label { color: var(--primary); }
+  .card-option-sub { font-size: 10px; color: var(--text-muted); }
+
+  /* ===== SLIDER (unified) ===== */
+  .slider-box {
+    background: var(--surface-muted); padding: 14px 16px; border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+  }
+  .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .slider-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .slider-value { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--primary); }
+  .slider-track { width: 100%; height: 6px; background: #E5E7EB; border-radius: 3px; position: relative; }
+  .slider-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--primary); border-radius: 3px; opacity: 0.2; }
+  .slider-thumb {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 18px; height: 18px; border-radius: 50%; background: var(--primary);
+    box-shadow: 0 2px 6px rgba(108,92,231,0.3);
+  }
+
+  /* ===== INPUT (unified) ===== */
+  .input-field {
+    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+    border-radius: var(--radius-md); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; color: var(--text-primary);
+    background: var(--surface); transition: all 0.15s; outline: none;
+  }
+  .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+  .input-field::placeholder { color: var(--text-muted); font-weight: 400; }
+  .input-field.small { font-size: 12px; padding: 8px 14px; color: var(--text-secondary); }
+  .input-hint { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 6px; }
+
+  /* ===== STAT CARDS ===== */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-card {
+    background: var(--surface-muted); padding: 14px; border-radius: var(--radius-md);
+    text-align: center; border: 1px solid var(--border-light);
+  }
+  .stat-value { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 800; color: var(--primary); }
+  .stat-value span { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+  .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+  /* ===== ACTION BUTTONS (session) ===== */
+  .action-btn {
+    width: 100%; display: flex; align-items: center; gap: 10px;
+    padding: 11px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-md);
+    background: var(--surface); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--text-primary); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .action-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+  .action-btn-icon { width: 18px; height: 18px; color: var(--text-muted); }
+  .action-btn:hover .action-btn-icon { color: var(--primary); }
+
+  /* ===== WORD LIST (unified) ===== */
+  .word-list { display: flex; flex-direction: column; gap: 6px; }
+  .word-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 14px;
+    background: var(--surface-muted); border-radius: var(--radius-md);
+    border-left: 3px solid transparent; transition: all 0.15s;
+    cursor: pointer; border: 1px solid var(--border-light);
+  }
+  .word-item:hover { border-color: var(--border); }
+  .word-item.current { border-left: 3px solid var(--primary); background: var(--primary-light); }
+  .word-item.validated { border-left: 3px solid #6ee7b7; }
+  .word-item.failed { border-left: 3px solid #f87171; }
+  .word-index {
+    font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700;
+    min-width: 22px; text-align: center; color: var(--text-muted);
+  }
+  .word-item.current .word-index { color: var(--primary); }
+  .word-item.validated .word-index { color: #6ee7b7; }
+  .word-item.failed .word-index { color: #f87171; }
+  .word-name { flex: 1; font-size: 14px; font-weight: 500; }
+  .word-thumb { width: 28px; height: 28px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #f1f5f9; }
+  .word-meta { font-size: 10px; color: var(--text-muted); font-style: italic; }
+
+  /* ===== FOOTER CTA (unified) ===== */
+  .panel-footer {
+    flex-shrink: 0; padding: 16px 20px; border-top: 1px solid var(--border);
+    background: var(--surface-muted);
+  }
+  .cta-primary {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 16px; border: none; border-radius: var(--radius-xl);
+    font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700;
+    color: white; cursor: pointer; transition: all 0.15s;
+    background: var(--primary); box-shadow: 0 3px 12px rgba(108,92,231,0.25);
+  }
+  .cta-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(108,92,231,0.35); }
+  .cta-primary.destructive { background: var(--destructive); box-shadow: 0 3px 12px rgba(239,68,68,0.25); }
+  .cta-primary.destructive:hover { background: #DC2626; box-shadow: 0 5px 16px rgba(239,68,68,0.35); }
+  .cta-secondary {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; border: 2px dashed #C4B8FF; border-radius: var(--radius-lg);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--primary); cursor: pointer; transition: all 0.15s;
+    background: var(--primary-light); margin-bottom: 8px;
+  }
+  .cta-secondary:hover { background: #EDEAFF; border-color: var(--primary); }
+
+  /* ===== SCROLLABLE AREA ===== */
+  .panel-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; padding: 20px 0; }
+
+  /* ===== ANNOTATIONS ===== */
+  .annotations { padding: 32px 40px; }
+  .annotation-title {
+    font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800;
+    color: var(--text-primary); margin-bottom: 8px;
+  }
+  .annotation-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; max-width: 700px; margin-bottom: 24px; }
+  .token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .token-card {
+    padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border);
+    background: white;
+  }
+  .token-name { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }
+  .token-value { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-primary); }
+  .token-swatch { width: 100%; height: 32px; border-radius: 6px; margin-bottom: 8px; }
+
+  /* Topbar showcase */
+  .topbar-showcase { display: flex; flex-direction: column; gap: 12px; padding: 24px; background: #F8F9FC; }
+  .topbar-frame { border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ===== INTRO ===== -->
+  <div class="annotations">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#6C5CE7,#A29BFE);display:flex;align-items:center;justify-content:center;color:white;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <div>
+        <div class="annotation-title" style="margin-bottom:0">Design System — Panneaux latéraux</div>
+        <div style="font-size:12px;color:var(--text-muted);">Harmonisation Imagier + Diaporama + Sélection</div>
+      </div>
+    </div>
+    <div class="annotation-desc">
+      Un système de composants partagés pour tous les panneaux latéraux de l'application.
+      Mêmes tokens, mêmes composants primitifs, même rythme visuel — seul le contenu change.
+    </div>
+
+    <!-- Design Tokens -->
+    <div style="font-family:'Sora',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary);margin-bottom:12px;">Tokens partagés</div>
+    <div class="token-grid">
+      <div class="token-card">
+        <div class="token-name">Largeur panneau</div>
+        <div class="token-value">400px</div>
+      </div>
+      <div class="token-card">
+        <div class="token-name">Hauteur topbar</div>
+        <div class="token-value">44px</div>
+      </div>
+      <div class="token-card">
+        <div class="token-name">Tabs</div>
+        <div class="token-value">Pill-style (bg-muted)</div>
+      </div>
+      <div class="token-card">
+        <div class="token-name">Section headers</div>
+        <div class="token-value">Purple + gradient line</div>
+      </div>
+      <div class="token-card">
+        <div class="token-name">Border radius</div>
+        <div class="token-value">10px (cards), 14px (CTA)</div>
+      </div>
+      <div class="token-card">
+        <div class="token-name">Footer CTA</div>
+        <div class="token-value">Sora 14px bold, h-48px</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOPBARS ===== -->
+  <div class="showcase">
+    <div class="showcase-label">Topbars — Même pattern pour les deux overlays</div>
+    <div class="topbar-showcase">
+      <!-- Imagier topbar -->
+      <div class="topbar-frame">
+        <div class="topbar">
+          <button class="topbar-close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+          <div class="topbar-center">
+            <div class="topbar-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <span class="topbar-title">Imagier phonétique</span>
+            <span class="topbar-badge">4 images</span>
+          </div>
+          <div class="topbar-spacer"></div>
+        </div>
+      </div>
+      <!-- Diapo topbar -->
+      <div class="topbar-frame">
+        <div class="topbar">
+          <button class="topbar-close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+          <div class="topbar-center">
+            <div class="topbar-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+            <span class="topbar-title">Diaporama</span>
+            <span class="topbar-badge">4 mots</span>
+          </div>
+          <div class="topbar-spacer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANELS SIDE BY SIDE ===== -->
+  <div class="showcase">
+    <div class="showcase-label">Panneaux — Configuration (Imagier vs Diapo)</div>
+    <div class="showcase-body">
+
+      <!-- ========== IMAGIER PANEL ========== -->
+      <div class="panel-frame" style="background:white;">
+        <!-- Header -->
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div class="panel-header-text">
+              <div class="panel-header-title">Imagier</div>
+              <div class="panel-header-subtitle">Mise en page et impression</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs (pill-style) -->
+        <div class="tabs-bar">
+          <button class="tab-btn active">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Mise en page
+          </button>
+          <button class="tab-btn">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Contenu
+          </button>
+          <button class="tab-btn">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Ordre
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="panel-scroll">
+          <!-- Disposition + Orientation (related: page geometry) -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Disposition</span>
+              <div class="section-line"></div>
+            </div>
+            <!-- Layout strip: mini page thumbnails combining grid + orientation -->
+            <div style="display:flex;gap:8px;overflow-x:auto;padding:2px 0;">
+              <!-- 2×3 portrait -->
+              <div class="layout-thumb" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+                <div style="width:36px;height:50px;border-radius:4px;border:1.5px solid var(--border);background:var(--surface);padding:3px;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,1fr);gap:2px;transition:all 0.15s;">
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                </div>
+                <span style="font-family:'Sora',sans-serif;font-size:9px;font-weight:600;color:var(--text-muted);">2×3</span>
+              </div>
+              <!-- 3×3 portrait (active) -->
+              <div class="layout-thumb active" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+                <div style="width:36px;height:50px;border-radius:4px;border:1.5px solid var(--primary);background:var(--primary-light);padding:3px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;box-shadow:0 0 0 3px var(--primary-glow);transition:all 0.15s;">
+                  <div style="background:#6C5CE7;border-radius:1px;"></div><div style="background:#6C5CE7;border-radius:1px;"></div><div style="background:#6C5CE7;border-radius:1px;"></div>
+                  <div style="background:#6C5CE7;border-radius:1px;"></div><div style="background:#6C5CE7;border-radius:1px;"></div><div style="background:#6C5CE7;border-radius:1px;"></div>
+                  <div style="background:#6C5CE7;border-radius:1px;"></div><div style="background:#6C5CE7;border-radius:1px;"></div><div style="background:#6C5CE7;border-radius:1px;"></div>
+                </div>
+                <span style="font-family:'Sora',sans-serif;font-size:9px;font-weight:600;color:var(--primary);">3×3</span>
+              </div>
+              <!-- 3×4 portrait -->
+              <div class="layout-thumb" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+                <div style="width:36px;height:50px;border-radius:4px;border:1.5px solid var(--border);background:var(--surface);padding:3px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:1.5px;transition:all 0.15s;">
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                </div>
+                <span style="font-family:'Sora',sans-serif;font-size:9px;font-weight:600;color:var(--text-muted);">3×4</span>
+              </div>
+              <!-- 4×4 portrait -->
+              <div class="layout-thumb" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+                <div style="width:36px;height:50px;border-radius:4px;border:1.5px solid var(--border);background:var(--surface);padding:3px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:1.5px;transition:all 0.15s;">
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                </div>
+                <span style="font-family:'Sora',sans-serif;font-size:9px;font-weight:600;color:var(--text-muted);">4×4</span>
+              </div>
+              <!-- Separator -->
+              <div style="width:1px;flex-shrink:0;background:var(--border-light);margin:4px 0;"></div>
+              <!-- 3×2 landscape -->
+              <div class="layout-thumb" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+                <div style="width:50px;height:36px;border-radius:4px;border:1.5px solid var(--border);background:var(--surface);padding:3px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:2px;transition:all 0.15s;margin-top:7px;">
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                </div>
+                <span style="font-family:'Sora',sans-serif;font-size:9px;font-weight:600;color:var(--text-muted);">3×2</span>
+              </div>
+              <!-- 4×3 landscape -->
+              <div class="layout-thumb" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+                <div style="width:50px;height:36px;border-radius:4px;border:1.5px solid var(--border);background:var(--surface);padding:3px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:1.5px;transition:all 0.15s;margin-top:7px;">
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                  <div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div><div style="background:#E5E7EB;border-radius:1px;"></div>
+                </div>
+                <span style="font-family:'Sora',sans-serif;font-size:9px;font-weight:600;color:var(--text-muted);">4×3</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Options + Titre (related: page content settings) -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Options de page</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <!-- En-tête: toggle + nested inputs when active -->
+              <div class="toggle-row active" style="flex-wrap:wrap;">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">T</div>
+                  <div>
+                    <div class="toggle-row-label">En-tête de page</div>
+                    <div class="toggle-row-desc">Titre, sous-titre et compteur</div>
+                  </div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+                <!-- Nested inputs (only when toggle is ON) -->
+                <div style="width:100%;display:flex;flex-direction:column;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(108,92,231,0.1);">
+                  <input class="input-field" value="Mon imagier" style="font-size:13px;padding:8px 12px;" />
+                  <input class="input-field small" placeholder="Sous-titre (nom patient, date...)" style="padding:7px 12px;" />
+                </div>
+              </div>
+              <div class="toggle-row active">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">✂</div>
+                  <div>
+                    <div class="toggle-row-label">Traits de découpe</div>
+                    <div class="toggle-row-desc">Pointillés pour découper</div>
+                  </div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div class="panel-footer">
+          <button class="cta-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimer l'imagier
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== DIAPO CONFIG PANEL ========== -->
+      <div class="panel-frame" style="background:white;">
+        <!-- Header -->
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </div>
+            <div class="panel-header-text">
+              <div class="panel-header-title">Configuration</div>
+              <div class="panel-header-subtitle">Réglages d'affichage</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-bar">
+          <button class="tab-btn active">Affichage</button>
+          <button class="tab-btn">Aides à la lecture</button>
+        </div>
+
+        <!-- Content -->
+        <div class="panel-scroll">
+          <!-- Typography + Size (related: both about text appearance) -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Typographie</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <div style="padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-md);display:flex;justify-content:space-between;align-items:center;cursor:pointer;">
+                <span style="font-size:14px;font-weight:500;">OpenDyslexic</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="slider-box">
+              <div class="slider-header">
+                <span class="slider-label">Taille</span>
+                <span class="slider-value">10x</span>
+              </div>
+              <div class="slider-track">
+                <div class="slider-fill" style="width:60%;"></div>
+                <div class="slider-thumb" style="left:60%;"></div>
+              </div>
+            </div>
+            </div><!-- /section-group -->
+          </div>
+
+          <!-- Display mode + Double face (related: both about what's shown) -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Mode d'affichage</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <div class="card-selector cols-3">
+                <div class="card-option active">
+                  <div class="card-option-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+                  </div>
+                  <div class="card-option-label">Mot</div>
+                </div>
+                <div class="card-option">
+                  <div class="card-option-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                  <div class="card-option-label">Image</div>
+                </div>
+                <div class="card-option">
+                  <div class="card-option-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                  </div>
+                  <div class="card-option-label">Mot + Image</div>
+                </div>
+              </div>
+              <div class="toggle-row">
+              <div class="toggle-row-left">
+                <div class="toggle-row-icon">🃏</div>
+                <div>
+                  <div class="toggle-row-label">Double face</div>
+                  <div class="toggle-row-desc">L'image se dévoile au toucher</div>
+                </div>
+              </div>
+              <div class="switch"><div class="switch-thumb"></div></div>
+            </div>
+            </div><!-- /section-group -->
+          </div>
+
+          <!-- Timing sliders -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Rythme d'affichage</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="slider-box" style="margin-bottom:8px;">
+              <div class="slider-header">
+                <span class="slider-label">Durée d'affichage</span>
+                <span class="slider-value">2.4s</span>
+              </div>
+              <div class="slider-track">
+                <div class="slider-fill" style="width:35%;"></div>
+                <div class="slider-thumb" style="left:35%;"></div>
+              </div>
+            </div>
+            <div class="slider-box">
+              <div class="slider-header">
+                <span class="slider-label">Pause entre les mots</span>
+                <span class="slider-value">2.0s</span>
+              </div>
+              <div class="slider-track">
+                <div class="slider-fill" style="width:30%;"></div>
+                <div class="slider-thumb" style="left:30%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== DIAPO AIDES À LA LECTURE PANEL ========== -->
+      <div class="panel-frame" style="background:white;">
+        <!-- Header -->
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </div>
+            <div class="panel-header-text">
+              <div class="panel-header-title">Configuration</div>
+              <div class="panel-header-subtitle">Réglages d'affichage</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs — Aides active -->
+        <div class="tabs-bar">
+          <button class="tab-btn">Affichage</button>
+          <button class="tab-btn active">Aides à la lecture</button>
+        </div>
+
+        <div class="panel-scroll">
+          <!-- Espacements -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Espacements</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <!-- Spacing modes: radio-style list cards (matching live site) -->
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <!-- Lettres (active) -->
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-md);border:1.5px solid var(--primary);background:var(--primary-light);box-shadow:0 0 0 3px var(--primary-glow);cursor:pointer;transition:all 0.15s;">
+                  <!-- Radio dot -->
+                  <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary);background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <div style="width:6px;height:6px;border-radius:50%;background:white;"></div>
+                  </div>
+                  <!-- Text -->
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;font-weight:600;color:var(--primary);margin-bottom:2px;">Lettres</div>
+                    <div style="font-size:10.5px;color:var(--text-muted);">Espace entre chaque lettre</div>
+                  </div>
+                  <!-- Inline preview -->
+                  <div style="font-size:13px;font-weight:600;color:var(--primary);background:rgba(108,92,231,0.06);padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',monospace;">c h a t o n</div>
+                </div>
+                <!-- Graphèmes -->
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-md);border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.15s;">
+                  <div style="width:18px;height:18px;border-radius:50%;border:2px solid #D1D5DB;background:white;flex-shrink:0;"></div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;">Graphèmes</div>
+                    <div style="font-size:10.5px;color:var(--text-muted);">Regroupe les sons écrits</div>
+                  </div>
+                  <div style="font-size:13px;font-weight:600;color:var(--primary);background:rgba(108,92,231,0.06);padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',monospace;">ch  a  t  on</div>
+                </div>
+                <!-- Syllabes -->
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-md);border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.15s;">
+                  <div style="width:18px;height:18px;border-radius:50%;border:2px solid #D1D5DB;background:white;flex-shrink:0;"></div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;">Syllabes</div>
+                    <div style="font-size:10.5px;color:var(--text-muted);">Découpe syllabique du mot</div>
+                  </div>
+                  <div style="font-size:13px;font-weight:600;color:var(--primary);background:rgba(108,92,231,0.06);padding:4px 10px;border-radius:6px;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',monospace;">cha  ton</div>
+                </div>
+              </div>
+              <!-- Écart slider -->
+              <div class="slider-box">
+                <div class="slider-header">
+                  <span class="slider-label">Écart</span>
+                  <span class="slider-value">2x</span>
+                </div>
+                <div class="slider-track">
+                  <div class="slider-fill" style="width:15%;"></div>
+                  <div class="slider-thumb" style="left:15%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Repères visuels -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Repères visuels</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <!-- Voyelles en couleur — with inline ROUGE badge (matching live site) -->
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:14px;background:var(--surface-muted);border-radius:var(--radius-md);border:1px solid var(--border-light);transition:all 0.15s;">
+                <div style="flex:1;padding-right:16px;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">
+                    Voyelles en couleur
+                    <span style="display:inline-block;margin-left:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#DC2626;background:rgba(220,38,38,0.08);padding:2px 6px;border-radius:5px;">Rouge</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text-muted);">Coloration des voyelles pour faciliter le décodage</div>
+                </div>
+                <div class="switch"><div class="switch-thumb"></div></div>
+              </div>
+              <!-- Lettres muettes — with inline GRIS badge (matching live site) -->
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:14px;background:var(--surface-muted);border-radius:var(--radius-md);border:1px solid var(--border-light);transition:all 0.15s;">
+                <div style="flex:1;padding-right:16px;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">
+                    Lettres muettes
+                    <span style="display:inline-block;margin-left:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#9CA3AF;background:rgba(156,163,175,0.12);padding:2px 6px;border-radius:5px;">Gris</span>
+                  </div>
+                  <div style="font-size:11px;color:var(--text-muted);">Atténuation visuelle des lettres non prononcées</div>
+                </div>
+                <div class="switch"><div class="switch-thumb"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guidage attentionnel -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Guidage attentionnel</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <!-- Point de fixation — simple card without icon (matching live site) -->
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:14px;background:var(--surface-muted);border-radius:var(--radius-md);border:1px solid var(--border-light);transition:all 0.15s;">
+                <div style="flex:1;padding-right:16px;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">Point de fixation</div>
+                  <div style="font-size:11px;color:var(--text-muted);">Croix centrée affichée pendant la pause</div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+              </div>
+              <!-- Signal sonore -->
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:14px;background:var(--surface-muted);border-radius:var(--radius-md);border:1px solid var(--border-light);transition:all 0.15s;">
+                <div style="flex:1;padding-right:16px;">
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">Signal sonore</div>
+                  <div style="font-size:11px;color:var(--text-muted);">Bip avant l'affichage de chaque mot</div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== DIAPO SESSION PANEL ========== -->
+      <div class="panel-frame" style="background:white;">
+        <!-- Header -->
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-icon" style="background:#FEF2F2;color:#EF4444;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="panel-header-text">
+              <div class="panel-header-title">Session en cours</div>
+              <div class="panel-header-subtitle">Liste et actions</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="panel-scroll">
+          <!-- Stats -->
+          <div class="section">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">2<span>/4</span></div>
+                <div class="stat-label">Succès</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">50<span>%</span></div>
+                <div class="stat-label">Taux</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="section">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <button class="action-btn">
+                <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Exporter
+              </button>
+              <button class="action-btn">
+                <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Voir statistiques
+              </button>
+              <button class="action-btn">
+                <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                Relancer la liste
+              </button>
+            </div>
+          </div>
+
+          <!-- Word list -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Liste des mots (4)</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="word-list">
+              <div class="word-item validated">
+                <div class="word-index">01</div>
+                <div class="word-name">allemagne</div>
+                <div style="font-size:13px;color:#6ee7b7;">✓</div>
+              </div>
+              <div class="word-item failed">
+                <div class="word-index">02</div>
+                <div class="word-name">chat</div>
+                <div style="font-size:13px;color:#f87171;">✗</div>
+              </div>
+              <div class="word-item current">
+                <div class="word-index">03</div>
+                <div class="word-name">abeille</div>
+                <div style="font-size:11px;color:var(--primary);">▶</div>
+              </div>
+              <div class="word-item">
+                <div class="word-index">04</div>
+                <div class="word-name" style="color:var(--text-muted);">ail</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div class="panel-footer">
+          <button class="cta-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            Reprendre les mots ratés (1)
+          </button>
+          <button class="cta-primary destructive">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+            Terminer la session
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== IMAGIER: TABS CONTENU & ORDRE ===== -->
+  <div class="showcase">
+    <div class="showcase-label">Imagier — Onglets Contenu & Ordre</div>
+    <div class="showcase-body">
+
+      <!-- ========== CONTENU TAB ========== -->
+      <div class="panel-frame" style="background:white;">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div class="panel-header-text">
+              <div class="panel-header-title">Imagier</div>
+              <div class="panel-header-subtitle">Mise en page et impression</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs — Contenu active -->
+        <div class="tabs-bar">
+          <button class="tab-btn">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Mise en page
+          </button>
+          <button class="tab-btn active">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Contenu
+          </button>
+          <button class="tab-btn">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Ordre
+          </button>
+        </div>
+
+        <div class="panel-scroll">
+          <!-- Texte du mot -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Texte du mot</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <div class="toggle-row active">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">Aa</div>
+                  <div>
+                    <div class="toggle-row-label">Mot</div>
+                    <div class="toggle-row-desc">Le mot écrit sous l'image</div>
+                  </div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+              </div>
+              <div class="toggle-row active">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">le</div>
+                  <div>
+                    <div class="toggle-row-label">Déterminant</div>
+                    <div class="toggle-row-desc">Affiche le/la/un/une devant le mot</div>
+                  </div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+              </div>
+
+              <!-- Casse du mot -->
+              <div style="margin-top:4px;">
+                <div style="font-family:'Sora',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:8px;">Casse du mot</div>
+                <div style="display:flex;gap:6px;">
+                  <div style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;transition:all 0.15s;">
+                    <div style="font-size:14px;font-weight:600;color:var(--text-secondary);">chat</div>
+                    <div style="font-size:9px;color:var(--text-muted);margin-top:2px;">minuscule</div>
+                  </div>
+                  <div style="flex:1;padding:8px 4px;border:1.5px solid var(--primary);border-radius:var(--radius-sm);text-align:center;cursor:pointer;background:var(--primary-light);box-shadow:0 0 0 3px var(--primary-glow);">
+                    <div style="font-size:14px;font-weight:600;color:var(--primary);">CHAT</div>
+                    <div style="font-size:9px;color:var(--primary);margin-top:2px;">MAJUSCULE</div>
+                  </div>
+                  <div style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;transition:all 0.15s;">
+                    <div style="font-size:14px;font-weight:600;color:var(--text-secondary);">Chat</div>
+                    <div style="font-size:9px;color:var(--text-muted);margin-top:2px;">Capitale</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Taille de police -->
+              <div style="margin-top:4px;">
+                <div style="font-family:'Sora',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:8px;">Taille de police</div>
+                <div style="display:flex;gap:6px;">
+                  <div style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;">
+                    <div style="font-size:11px;font-weight:700;color:var(--text-secondary);">A</div>
+                    <div style="font-size:9px;color:var(--text-muted);margin-top:2px;">Petit</div>
+                  </div>
+                  <div style="flex:1;padding:8px 4px;border:1.5px solid var(--primary);border-radius:var(--radius-sm);text-align:center;cursor:pointer;background:var(--primary-light);box-shadow:0 0 0 3px var(--primary-glow);">
+                    <div style="font-size:15px;font-weight:700;color:var(--primary);">A</div>
+                    <div style="font-size:9px;color:var(--primary);margin-top:2px;">Moyen</div>
+                  </div>
+                  <div style="flex:1;padding:8px 4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;">
+                    <div style="font-size:20px;font-weight:700;color:var(--text-secondary);">A</div>
+                    <div style="font-size:9px;color:var(--text-muted);margin-top:2px;">Grand</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Informations supplémentaires -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Informations supplémentaires</span>
+              <div class="section-line"></div>
+            </div>
+            <div class="section-group">
+              <div class="toggle-row active">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">a-b</div>
+                  <div>
+                    <div class="toggle-row-label">Segmentation syllabique</div>
+                    <div class="toggle-row-desc">Affiche la décomposition (cha-peau)</div>
+                  </div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+              </div>
+              <div class="toggle-row active">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">/a/</div>
+                  <div>
+                    <div class="toggle-row-label">Transcription phonétique</div>
+                    <div class="toggle-row-desc">API sous le mot</div>
+                  </div>
+                </div>
+                <div class="switch on"><div class="switch-thumb"></div></div>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">NC</div>
+                  <div>
+                    <div class="toggle-row-label">Catégorie syntaxique</div>
+                    <div class="toggle-row-desc">Nom, verbe, adjectif...</div>
+                  </div>
+                </div>
+                <div class="switch"><div class="switch-thumb"></div></div>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-row-left">
+                  <div class="toggle-row-icon">2s</div>
+                  <div>
+                    <div class="toggle-row-label">Nombre de syllabes</div>
+                    <div class="toggle-row-desc">Badge avec le compte syllabique</div>
+                  </div>
+                </div>
+                <div class="switch"><div class="switch-thumb"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <button class="cta-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimer l'imagier
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== ORDRE TAB ========== -->
+      <div class="panel-frame" style="background:white;">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </div>
+            <div class="panel-header-text">
+              <div class="panel-header-title">Imagier</div>
+              <div class="panel-header-subtitle">Mise en page et impression</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs — Ordre active -->
+        <div class="tabs-bar">
+          <button class="tab-btn">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Mise en page
+          </button>
+          <button class="tab-btn">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Contenu
+          </button>
+          <button class="tab-btn active">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            Ordre
+          </button>
+        </div>
+
+        <div class="panel-scroll">
+          <!-- Ordre des mots -->
+          <div class="section">
+            <div class="section-header">
+              <span class="section-label">Ordre des mots</span>
+              <div class="section-line"></div>
+              <span class="section-badge">9 mots</span>
+            </div>
+            <div class="word-list">
+              <!-- Word 1 -->
+              <div class="word-item" style="cursor:grab;">
+                <div style="color:#E5E7EB;font-size:10px;cursor:grab;letter-spacing:-1px;">⁞⁞</div>
+                <div class="word-thumb" style="background:#EDE9FE;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:14px;">🐱</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="word-name">le chat</div>
+                  <div class="word-meta">/ʃa/ · 1 syll.</div>
+                </div>
+                <div class="word-index">01</div>
+              </div>
+              <!-- Word 2 -->
+              <div class="word-item" style="cursor:grab;">
+                <div style="color:#E5E7EB;font-size:10px;cursor:grab;letter-spacing:-1px;">⁞⁞</div>
+                <div class="word-thumb" style="background:#DBEAFE;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:14px;">🐝</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="word-name">l'abeille</div>
+                  <div class="word-meta">/a.bɛj/ · 2 syll.</div>
+                </div>
+                <div class="word-index">02</div>
+              </div>
+              <!-- Word 3 -->
+              <div class="word-item" style="cursor:grab;">
+                <div style="color:#E5E7EB;font-size:10px;cursor:grab;letter-spacing:-1px;">⁞⁞</div>
+                <div class="word-thumb" style="background:#FEF3C7;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:14px;">🌻</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="word-name">le tournesol</div>
+                  <div class="word-meta">/tuʁ.nə.sɔl/ · 3 syll.</div>
+                </div>
+                <div class="word-index">03</div>
+              </div>
+              <!-- Word 4 -->
+              <div class="word-item" style="cursor:grab;">
+                <div style="color:#E5E7EB;font-size:10px;cursor:grab;letter-spacing:-1px;">⁞⁞</div>
+                <div class="word-thumb" style="background:#FCE7F3;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:14px;">🍎</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="word-name">la pomme</div>
+                  <div class="word-meta">/pɔm/ · 1 syll.</div>
+                </div>
+                <div class="word-index">04</div>
+              </div>
+              <!-- Word 5 -->
+              <div class="word-item" style="cursor:grab;">
+                <div style="color:#E5E7EB;font-size:10px;cursor:grab;letter-spacing:-1px;">⁞⁞</div>
+                <div class="word-thumb" style="background:#D1FAE5;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:14px;">🐘</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="word-name">l'éléphant</div>
+                  <div class="word-meta">/e.le.fɑ̃/ · 3 syll.</div>
+                </div>
+                <div class="word-index">05</div>
+              </div>
+              <!-- Word 6 -->
+              <div class="word-item" style="cursor:grab;">
+                <div style="color:#E5E7EB;font-size:10px;cursor:grab;letter-spacing:-1px;">⁞⁞</div>
+                <div class="word-thumb" style="background:#E0E7FF;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:14px;">🏠</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="word-name">la maison</div>
+                  <div class="word-meta">/mɛ.zɔ̃/ · 2 syll.</div>
+                </div>
+                <div class="word-index">06</div>
+              </div>
+              <!-- Word 7 -->
+              <div class="word-item" style="cursor:grab;">
+                <div style="color:#E5E7EB;font-size:10px;cursor:grab;letter-spacing:-1px;">⁞⁞</div>
+                <div class="word-thumb" style="background:#FEF2F2;display:flex;align-items:center;justify-content:center;">
+                  <span style="font-size:14px;">🎈</span>
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div class="word-name">le ballon</div>
+                  <div class="word-meta">/ba.lɔ̃/ · 2 syll.</div>
+                </div>
+                <div class="word-index">07</div>
+              </div>
+            </div>
+            <!-- Drag hint -->
+            <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-muted);font-style:italic;">
+              Glissez pour réorganiser l'ordre d'impression
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <button class="cta-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimer l'imagier
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== COMPARISON NOTES ===== -->
+  <div class="annotations">
+    <div class="annotation-title">Changements clés</div>
+    <div class="annotation-desc">
+      <strong>Topbar unifiée</strong> — Même pattern X + titre centré + badge pour les deux overlays (Imagier et Diapo).<br><br>
+      <strong>Panel header</strong> — Composant PanelHeader partagé avec icône + titre + sous-titre. Le bouton X fermer est dans la topbar, pas dans le panneau.<br><br>
+      <strong>Tabs pill-style</strong> — Plus modern que les underline tabs. Fond gris clair, onglet actif blanc avec shadow.<br><br>
+      <strong>Section headers violet + trait dégradé</strong> — Le pattern le plus distinctif du diapo, appliqué partout.<br><br>
+      <strong>Toggles unifiés</strong> — Même composant ToggleRow (icône + label + description + switch) dans les deux panneaux.<br><br>
+      <strong>Card selectors</strong> — Grille, orientation, mode d'affichage : même composant avec border active violet.<br><br>
+      <strong>Slider boxes</strong> — Même boîte bg-muted avec label + valeur + track pour tous les sliders.<br><br>
+      <strong>Footer CTA</strong> — Sora 14px bold, rounded-14px, primary violet (imagier) ou destructive rouge (session fin).<br><br>
+      <strong>Largeur unifiée</strong> — 400px partout (compromis entre 360px diapo et 440px imagier).<br><br>
+      <strong>Hiérarchie de spacing</strong> — Grand gap (24px) entre groupes distincts, petit gap (10px) entre éléments liés dans un même groupe. Pas de border-bottom : les section-headers et le whitespace suffisent.
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

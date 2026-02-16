@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imagier Phonetique — Builder v5 (clean)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --violet: #6C5CE7;
+    --violet-dark: #5A4BD1;
+    --violet-light: #A29BFE;
+    --violet-bg: #F5F3FF;
+    --violet-ring: rgba(108, 92, 231, 0.12);
+    --dark: #1A1A2E;
+    --text: #374151;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --border: #E5E7EB;
+    --border-light: #F1F5F9;
+    --surface: #FAFBFC;
+    --bg: #ECEDF2;
+    --white: #FFFFFF;
+    --amber-bg: #FFFBEB;
+    --amber-border: #FDE68A;
+    --amber-text: #92400E;
+    --green: #10B981;
+    --green-bg: #ECFDF5;
+    --shadow-paper: 0 1px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05), 0 16px 48px rgba(0,0,0,0.04);
+    --radius: 10px;
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--dark);
+    color: var(--dark);
+    overflow: hidden;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .overlay {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; flex-direction: column;
+  }
+
+  /* ===== TOP BAR ===== */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; background: var(--white);
+    border-bottom: 1px solid var(--border); height: 56px; flex-shrink: 0;
+  }
+
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+
+  .close-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    background: var(--white); font-size: 13px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif; color: var(--text-secondary);
+    cursor: pointer; transition: all var(--transition);
+  }
+  .close-btn:hover { border-color: var(--violet); color: var(--violet); }
+
+  .topbar-center { display: flex; align-items: center; gap: 10px; }
+
+  .topbar-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--violet), var(--violet-light));
+    display: flex; align-items: center; justify-content: center; color: white;
+  }
+
+  .topbar-title {
+    font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700;
+    color: var(--dark);
+  }
+
+  .topbar-badge {
+    font-size: 11px; font-weight: 600; color: var(--violet);
+    background: var(--violet-bg); padding: 3px 10px; border-radius: 20px;
+  }
+
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all var(--transition);
+    border: none;
+  }
+
+  .btn-ghost {
+    background: transparent; color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--violet); color: var(--violet); }
+
+  .btn-primary {
+    background: var(--violet); color: var(--white);
+    box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
+  }
+  .btn-primary:hover { background: var(--violet-dark); transform: translateY(-1px); }
+
+  /* ===== MAIN ===== */
+  .main { flex: 1; display: flex; overflow: hidden; }
+
+  /* ===== PREVIEW ===== */
+  .preview-area {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px; background: var(--bg);
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(108,92,231,0.03) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(162,155,254,0.03) 0%, transparent 50%);
+    overflow-y: auto; position: relative;
+  }
+
+  .format-badge {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; font-weight: 600; color: var(--text-muted);
+    background: rgba(255,255,255,0.85); backdrop-filter: blur(8px);
+    padding: 3px 12px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  .page-container {
+    background: var(--white); border-radius: 2px;
+    box-shadow: var(--shadow-paper); display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .page-container::before {
+    content: ''; position: absolute; inset: 0;
+    border: 1px solid rgba(0,0,0,0.06); border-radius: 2px; pointer-events: none; z-index: 1;
+  }
+
+  .page-container.portrait { width: 480px; height: 679px; }
+  .page-container.landscape { width: 679px; height: 480px; }
+
+  .page-inner { flex: 1; display: flex; flex-direction: column; padding: 24px; }
+
+  .page-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding-bottom: 10px; border-bottom: 2.5px solid var(--violet); margin-bottom: 12px;
+  }
+
+  .page-title-group { display: flex; flex-direction: column; gap: 2px; }
+
+  .page-title {
+    font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800;
+    color: var(--dark); letter-spacing: -0.02em;
+  }
+
+  .page-subtitle {
+    font-size: 11px; color: var(--text-muted); font-weight: 500; font-style: italic;
+  }
+
+  .page-meta { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+  .page-grid {
+    flex: 1; display: grid; gap: 10px; align-content: start;
+  }
+
+  /* Cutting guides mode */
+  .page-grid.cutting-guides { gap: 0; }
+  .page-grid.cutting-guides .image-card {
+    border-radius: 0; border-style: dashed; border-color: #CBD5E1;
+  }
+
+  .page-grid.g2x3 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .page-grid.g3x3 { grid-template-columns: repeat(3, 1fr); }
+  .page-grid.g3x4 { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .page-grid.g4x4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+
+  .page-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 8px; border-top: 1px solid var(--border-light); margin-top: auto;
+  }
+
+  .page-footer span { font-size: 9px; color: #CBD5E1; }
+  .footer-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--violet-light); display: inline-block; margin-right: 4px; }
+
+  /* ===== IMAGE CARDS ===== */
+  .image-card {
+    border: 1.5px solid var(--border); border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 6px 6px; background: var(--white);
+    transition: all 0.2s ease; position: relative; cursor: grab;
+    user-select: none; overflow: hidden;
+  }
+
+  .image-card:hover {
+    border-color: var(--violet-light);
+    box-shadow: 0 2px 12px rgba(108, 92, 231, 0.1);
+  }
+
+  .image-card.dragging { opacity: 0.4; transform: scale(0.95); }
+
+  .image-card.drag-over {
+    border-color: var(--violet); border-style: dashed;
+    background: var(--violet-bg);
+    box-shadow: 0 0 0 3px var(--violet-ring);
+  }
+
+  .drag-handle {
+    position: absolute; top: 4px; right: 4px;
+    width: 16px; height: 16px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity var(--transition);
+    color: var(--text-muted); font-size: 8px;
+  }
+  .image-card:hover .drag-handle { opacity: 0.6; }
+
+  .card-img-wrap {
+    width: 88%; aspect-ratio: 1; border-radius: 6px;
+    margin-bottom: 5px; overflow: hidden;
+  }
+
+  .card-illus {
+    width: 100%; height: 100%; display: flex;
+    align-items: center; justify-content: center; border-radius: 6px;
+  }
+  .card-illus svg { width: 58%; height: 58%; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.06)); }
+
+  .page-grid.g4x4 .card-img-wrap { width: 82%; margin-bottom: 3px; }
+  .page-grid.g4x4 .card-illus svg { width: 55%; height: 55%; }
+  .page-grid.g2x3 .card-img-wrap { width: 85%; margin-bottom: 8px; }
+
+  .card-determiner {
+    font-size: 10px; color: var(--text-muted); font-weight: 500; margin-bottom: -1px;
+  }
+  .page-grid.g4x4 .card-determiner { font-size: 8px; }
+
+  .card-word {
+    font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--dark); text-align: center; letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .page-grid.g4x4 .card-word { font-size: 9px; }
+  .page-grid.g2x3 .card-word { font-size: 14px; }
+
+  /* Font size modes */
+  .card-word.font-small { font-size: 10px; }
+  .card-word.font-large { font-size: 15px; }
+  .page-grid.g4x4 .card-word.font-small { font-size: 7px; }
+  .page-grid.g4x4 .card-word.font-large { font-size: 11px; }
+  .page-grid.g2x3 .card-word.font-small { font-size: 12px; }
+  .page-grid.g2x3 .card-word.font-large { font-size: 17px; }
+
+  .card-syllable-text {
+    font-size: 10px; color: var(--text-secondary); margin-top: 1px;
+    font-weight: 500; letter-spacing: 0.5px;
+  }
+  .page-grid.g4x4 .card-syllable-text { font-size: 7px; }
+
+  .card-phoneme {
+    font-size: 9px; font-style: italic; color: var(--violet);
+    margin-top: 1px; opacity: 0.8;
+  }
+  .page-grid.g4x4 .card-phoneme { font-size: 7px; }
+
+  .card-badges { display: flex; gap: 3px; margin-top: 2px; }
+
+  .card-badge {
+    font-size: 7px; font-weight: 700; color: var(--text-muted);
+    background: var(--surface); padding: 1px 4px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .page-grid.g4x4 .card-badges { display: none; }
+
+  /* Page nav */
+  .page-nav {
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; margin-top: 16px;
+  }
+
+  .nav-btn {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: var(--white);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary); transition: all var(--transition);
+  }
+  .nav-btn:hover { border-color: var(--violet); color: var(--violet); }
+
+  .page-indicator { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+
+  .drag-hint {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(8px); padding: 5px 14px; border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 6px;
+    transition: opacity 0.3s; pointer-events: none;
+  }
+  .drag-hint svg { opacity: 0.5; }
+
+  /* ===== SIDE PANEL ===== */
+  .side-panel {
+    width: 440px; background: var(--white); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
+  }
+
+  .side-panel::-webkit-scrollbar { width: 3px; }
+  .side-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .panel-tabs {
+    display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  .panel-tab {
+    flex: 1; padding: 14px 16px; font-size: 13px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; color: var(--text-muted);
+    cursor: pointer; text-align: center; transition: all var(--transition);
+    border-bottom: 2px solid transparent; background: transparent;
+    border-top: none; border-left: none; border-right: none;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .panel-tab:hover { color: var(--text); }
+  .panel-tab.active {
+    color: var(--violet); border-bottom-color: var(--violet);
+    background: var(--white);
+  }
+  .panel-tab svg { width: 15px; height: 15px; }
+
+  .panel-body { flex: 1; overflow-y: auto; }
+
+  .panel-section { padding: 18px 24px; border-bottom: 1px solid var(--border-light); }
+
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .section-label {
+    font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .section-label svg { opacity: 0.4; width: 13px; height: 13px; }
+
+  .section-badge {
+    font-size: 10px; font-weight: 600; color: var(--violet);
+    background: var(--violet-bg); padding: 2px 8px; border-radius: 10px;
+  }
+
+  .section-desc {
+    font-size: 11px; color: var(--text-muted); margin-top: -6px; margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  /* Grid selector */
+  .grid-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+  .grid-option {
+    padding: 10px 4px 8px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    background: var(--white); cursor: pointer; text-align: center;
+    transition: all var(--transition);
+  }
+  .grid-option:hover { border-color: var(--violet-light); }
+  .grid-option.active {
+    border-color: var(--violet); background: var(--violet-bg);
+    box-shadow: 0 0 0 3px var(--violet-ring);
+  }
+
+  .grid-visual { display: grid; gap: 2px; margin: 0 auto 6px; width: fit-content; }
+  .grid-visual.v2x3 { grid-template-columns: repeat(2, 9px); }
+  .grid-visual.v3x3 { grid-template-columns: repeat(3, 7px); }
+  .grid-visual.v3x4 { grid-template-columns: repeat(3, 7px); }
+  .grid-visual.v4x4 { grid-template-columns: repeat(4, 6px); }
+
+  .grid-cell {
+    aspect-ratio: 1; border-radius: 1.5px; background: var(--border);
+    transition: background var(--transition);
+  }
+  .grid-option.active .grid-cell { background: var(--violet); }
+  .grid-option:hover .grid-cell { background: var(--violet-light); }
+
+  .grid-label { font-family: 'Sora'; font-size: 12px; font-weight: 700; color: var(--text); }
+  .grid-option.active .grid-label { color: var(--violet); }
+  .grid-count { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  /* Input */
+  .title-input {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+    color: var(--dark); background: var(--white); transition: all var(--transition);
+  }
+  .title-input::placeholder { color: var(--text-muted); font-weight: 400; }
+  .title-input:focus {
+    outline: none; border-color: var(--violet);
+    box-shadow: 0 0 0 3px var(--violet-ring);
+  }
+
+  .input-hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+
+  /* Toggle card rows */
+  .toggle-cards { display: flex; flex-direction: column; gap: 3px; }
+
+  .toggle-card {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 14px; border-radius: var(--radius);
+    border: 1.5px solid transparent; cursor: pointer;
+    transition: all var(--transition);
+  }
+  .toggle-card:hover { background: var(--surface); }
+  .toggle-card.active { background: var(--violet-bg); border-color: rgba(108,92,231,0.15); }
+
+  .toggle-left { display: flex; align-items: center; gap: 12px; }
+
+  .toggle-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--surface); display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--text-muted); transition: all var(--transition);
+    font-family: 'Sora', sans-serif; flex-shrink: 0;
+  }
+  .toggle-card.active .toggle-icon {
+    background: var(--white); color: var(--violet);
+    box-shadow: 0 1px 4px rgba(108,92,231,0.12);
+  }
+  .toggle-icon svg { width: 16px; height: 16px; }
+
+  .toggle-text { font-size: 13px; font-weight: 600; color: var(--text); }
+  .toggle-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  .toggle-switch {
+    width: 40px; height: 22px; border-radius: 11px; background: #D1D5DB;
+    cursor: pointer; position: relative; transition: background 0.25s ease; flex-shrink: 0;
+  }
+  .toggle-switch.on { background: var(--violet); }
+  .toggle-switch .knob {
+    width: 18px; height: 18px; border-radius: 50%; background: var(--white);
+    position: absolute; top: 2px; left: 2px;
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .toggle-switch.on .knob { left: 20px; }
+
+  /* Divider */
+  .panel-divider {
+    height: 1px; background: var(--border-light); margin: 0 24px;
+  }
+
+  /* Inline radio group (for font size, casse) */
+  .inline-radio-group {
+    display: flex; gap: 6px;
+  }
+  .inline-radio {
+    flex: 1; padding: 8px; border: 1.5px solid var(--border); border-radius: 8px;
+    background: var(--white); cursor: pointer; text-align: center;
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    transition: all var(--transition); font-family: 'DM Sans', sans-serif;
+  }
+  .inline-radio:hover { border-color: var(--violet-light); }
+  .inline-radio.active {
+    border-color: var(--violet); background: var(--violet-bg); color: var(--violet);
+    box-shadow: 0 0 0 3px var(--violet-ring);
+  }
+  .inline-radio-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Orientation */
+  .orient-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .orient-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 14px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    background: var(--white); cursor: pointer; transition: all var(--transition);
+  }
+  .orient-btn:hover { border-color: var(--violet-light); }
+  .orient-btn.active {
+    border-color: var(--violet); background: var(--violet-bg);
+    box-shadow: 0 0 0 3px var(--violet-ring);
+  }
+
+  .orient-shape {
+    border: 2px solid var(--border); border-radius: 3px; position: relative;
+    transition: border-color var(--transition);
+  }
+  .orient-shape::after {
+    content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 2px;
+    background: var(--border); border-radius: 1px; transition: background var(--transition);
+  }
+  .orient-btn.active .orient-shape { border-color: var(--violet); }
+  .orient-btn.active .orient-shape::after { background: var(--violet); }
+  .orient-portrait { width: 22px; height: 30px; }
+  .orient-landscape { width: 30px; height: 22px; }
+  .orient-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .orient-btn.active .orient-label { color: var(--violet); }
+
+  /* Word list */
+  .word-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .word-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px; cursor: grab;
+    transition: background var(--transition); user-select: none;
+  }
+  .word-item:hover { background: var(--surface); }
+  .word-item.dragging-item { opacity: 0.4; }
+
+  .word-item-grip { color: var(--border); display: flex; align-items: center; font-size: 10px; cursor: grab; }
+
+  .word-item-thumb { width: 28px; height: 28px; border-radius: 6px; overflow: hidden; flex-shrink: 0; }
+  .word-item-thumb .card-illus { border-radius: 6px; }
+  .word-item-thumb .card-illus svg { width: 60%; height: 60%; }
+
+  .word-item-info { flex: 1; min-width: 0; }
+  .word-item-name { font-size: 13px; font-weight: 600; color: var(--dark); }
+  .word-item-phon { font-size: 10px; color: var(--text-muted); font-style: italic; }
+
+  .word-item-pos {
+    font-size: 10px; font-weight: 600; color: var(--text-muted);
+    background: var(--surface); padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* Warning */
+  .warning-card {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; background: var(--amber-bg);
+    border: 1px solid var(--amber-border); border-radius: var(--radius);
+    font-size: 12px; line-height: 1.4; color: var(--amber-text);
+  }
+  .warning-icon {
+    width: 18px; height: 18px; border-radius: 50%; background: #F59E0B;
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* Tab content */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Illustration backgrounds */
+  .illus-bg-coral { background: linear-gradient(135deg, #FEE2E2, #FECACA); }
+  .illus-bg-sky { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); }
+  .illus-bg-mint { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); }
+  .illus-bg-amber { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+  .illus-bg-violet { background: linear-gradient(135deg, #EDE9FE, #DDD6FE); }
+  .illus-bg-pink { background: linear-gradient(135deg, #FCE7F3, #FBCFE8); }
+  .illus-bg-teal { background: linear-gradient(135deg, #CCFBF1, #99F6E4); }
+  .illus-bg-orange { background: linear-gradient(135deg, #FFEDD5, #FED7AA); }
+  .illus-bg-lime { background: linear-gradient(135deg, #ECFCCB, #D9F99D); }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(6px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--dark); color: var(--white); padding: 10px 20px;
+    border-radius: var(--radius); font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast-icon { color: var(--green); }
+
+
+</style>
+</head>
+<body>
+
+<div class="overlay">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="close-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Retour
+      </button>
+    </div>
+    <div class="topbar-center">
+      <div class="topbar-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <div class="topbar-title">Imagier phonetique</div>
+      <div class="topbar-badge" id="topbarBadge">9 images</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+        Imprimer
+      </button>
+      <button class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Telecharger PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- PREVIEW -->
+    <div class="preview-area">
+      <div class="format-badge" id="formatBadge">Apercu A4 portrait</div>
+
+      <div class="page-container portrait" id="pageContainer">
+        <div class="page-inner">
+          <div class="page-header">
+            <div class="page-title-group">
+              <div class="page-title" id="pageTitle">Le son [s]</div>
+              <div class="page-subtitle" id="pageSubtitle"></div>
+            </div>
+            <div class="page-meta" id="pageMeta">9 mots</div>
+          </div>
+          <div class="page-grid g3x3" id="pageGrid"></div>
+          <div class="page-footer">
+            <span>Imagier phonetique</span>
+            <span><span class="footer-dot"></span>Ressources Orthophonie</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <button class="nav-btn" id="prevPage">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="page-indicator" id="pageIndicator">Page 1 / 1</span>
+        <button class="nav-btn" id="nextPage">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <div class="drag-hint" id="dragHint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l2-2m0 0l2 2M7 7v10M19 15l-2 2m0 0l-2-2m2 2V7"/></svg>
+        Glissez les cartes pour reorganiser
+      </div>
+    </div>
+
+    <!-- SIDE PANEL -->
+    <div class="side-panel">
+
+      <div class="panel-tabs">
+        <button class="panel-tab active" onclick="switchTab('mise-en-page', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Mise en page
+        </button>
+        <button class="panel-tab" onclick="switchTab('contenu', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Contenu
+        </button>
+        <button class="panel-tab" onclick="switchTab('ordre', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+          Ordre
+        </button>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- =================== TAB: MISE EN PAGE =================== -->
+        <div class="tab-content active" id="tab-mise-en-page">
+
+          <!-- Grille -->
+          <div class="panel-section">
+            <div class="section-header">
+              <div class="section-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Disposition
+              </div>
+            </div>
+            <div class="grid-options">
+              <div class="grid-option" onclick="selectGrid('2x3',this)">
+                <div class="grid-visual v2x3"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div>
+                <div class="grid-label">2x3</div><div class="grid-count">6 / page</div>
+              </div>
+              <div class="grid-option active" onclick="selectGrid('3x3',this)">
+                <div class="grid-visual v3x3"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div>
+                <div class="grid-label">3x3</div><div class="grid-count">9 / page</div>
+              </div>
+              <div class="grid-option" onclick="selectGrid('3x4',this)">
+                <div class="grid-visual v3x4"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div>
+                <div class="grid-label">3x4</div><div class="grid-count">12 / page</div>
+              </div>
+              <div class="grid-option" onclick="selectGrid('4x4',this)">
+                <div class="grid-visual v4x4"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div>
+                <div class="grid-label">4x4</div><div class="grid-count">16 / page</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Orientation -->
+          <div class="panel-section">
+            <div class="section-header">
+              <div class="section-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg>
+                Orientation
+              </div>
+            </div>
+            <div class="orient-group">
+              <div class="orient-btn active" onclick="setOrientation('portrait',this)">
+                <div class="orient-shape orient-portrait"></div>
+                <div class="orient-label">Portrait</div>
+              </div>
+              <div class="orient-btn" onclick="setOrientation('landscape',this)">
+                <div class="orient-shape orient-landscape"></div>
+                <div class="orient-label">Paysage</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Titre -->
+          <div class="panel-section">
+            <div class="section-header">
+              <div class="section-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+                Titre
+              </div>
+            </div>
+            <input type="text" class="title-input" value="Le son [s]" placeholder="ex : Les animaux, Le son [s]..." oninput="updateTitle(this.value)">
+            <div style="height:8px"></div>
+            <input type="text" class="title-input" id="subtitleInput" value="" placeholder="Sous-titre (nom patient, date...)" oninput="updateSubtitle(this.value)" style="font-size:12px; padding:8px 14px; color: var(--text-secondary);">
+            <div class="input-hint">Le titre et sous-titre apparaissent en haut de chaque page</div>
+          </div>
+
+          <!-- Traits de decoupe -->
+          <div class="panel-section">
+            <div class="toggle-card active" onclick="toggleOption(this, 'cutting')" style="padding:0; border:none;">
+              <div class="toggle-left">
+                <div class="toggle-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 3"><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                </div>
+                <div>
+                  <div class="toggle-text">Traits de decoupe</div>
+                  <div class="toggle-desc">Pointilles entre les cartes pour decouper</div>
+                </div>
+              </div>
+              <div class="toggle-switch on" id="sw-cutting"><div class="knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Warning -->
+          <div class="panel-section">
+            <div class="warning-card">
+              <div class="warning-icon">!</div>
+              <div><strong>2 mots sans image</strong> ont ete retires automatiquement de l'imagier.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =================== TAB: CONTENU =================== -->
+        <div class="tab-content" id="tab-contenu">
+
+          <!-- Texte du mot -->
+          <div class="panel-section">
+            <div class="section-header">
+              <div class="section-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+                Texte du mot
+              </div>
+            </div>
+            <div class="toggle-cards">
+              <div class="toggle-card active" onclick="toggleOption(this, 'word')">
+                <div class="toggle-left">
+                  <div class="toggle-icon">Aa</div>
+                  <div>
+                    <div class="toggle-text">Mot</div>
+                    <div class="toggle-desc">Le mot ecrit sous l'image</div>
+                  </div>
+                </div>
+                <div class="toggle-switch on" id="sw-word"><div class="knob"></div></div>
+              </div>
+
+              <div class="toggle-card active" onclick="toggleOption(this, 'determiner')">
+                <div class="toggle-left">
+                  <div class="toggle-icon">le</div>
+                  <div>
+                    <div class="toggle-text">Determinant</div>
+                    <div class="toggle-desc">Affiche le/la/un/une devant le mot</div>
+                  </div>
+                </div>
+                <div class="toggle-switch on" id="sw-determiner"><div class="knob"></div></div>
+              </div>
+            </div>
+
+            <!-- Casse -->
+            <div style="margin-top: 14px;">
+              <div class="section-label" style="margin-bottom: 8px;">
+                Casse du mot
+              </div>
+              <div class="inline-radio-group">
+                <div class="inline-radio active" onclick="setCasse('lower', this)">
+                  <div>chat</div>
+                  <div class="inline-radio-label">minuscule</div>
+                </div>
+                <div class="inline-radio" onclick="setCasse('upper', this)">
+                  <div>CHAT</div>
+                  <div class="inline-radio-label">MAJUSCULE</div>
+                </div>
+                <div class="inline-radio" onclick="setCasse('capitalize', this)">
+                  <div>Chat</div>
+                  <div class="inline-radio-label">Capitale</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Taille police -->
+            <div style="margin-top: 14px;">
+              <div class="section-label" style="margin-bottom: 8px;">
+                Taille de police
+              </div>
+              <div class="inline-radio-group">
+                <div class="inline-radio" onclick="setFontSize('small', this)">
+                  <div style="font-size:11px">A</div>
+                  <div class="inline-radio-label">Petit</div>
+                </div>
+                <div class="inline-radio active" onclick="setFontSize('medium', this)">
+                  <div style="font-size:14px">A</div>
+                  <div class="inline-radio-label">Moyen</div>
+                </div>
+                <div class="inline-radio" onclick="setFontSize('large', this)">
+                  <div style="font-size:18px">A</div>
+                  <div class="inline-radio-label">Grand</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Informations supplementaires -->
+          <div class="panel-section">
+            <div class="section-header">
+              <div class="section-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Informations supplementaires
+              </div>
+            </div>
+            <div class="toggle-cards">
+              <div class="toggle-card active" onclick="toggleOption(this, 'syllBreak')">
+                <div class="toggle-left">
+                  <div class="toggle-icon">a-b</div>
+                  <div>
+                    <div class="toggle-text">Segmentation syllabique</div>
+                    <div class="toggle-desc">Affiche la decomposition (cha-peau)</div>
+                  </div>
+                </div>
+                <div class="toggle-switch on" id="sw-syllBreak"><div class="knob"></div></div>
+              </div>
+
+              <div class="toggle-card active" onclick="toggleOption(this, 'phoneme')">
+                <div class="toggle-left">
+                  <div class="toggle-icon">/a/</div>
+                  <div>
+                    <div class="toggle-text">Transcription phonetique</div>
+                    <div class="toggle-desc">API sous le mot</div>
+                  </div>
+                </div>
+                <div class="toggle-switch on" id="sw-phoneme"><div class="knob"></div></div>
+              </div>
+
+              <div class="toggle-card" onclick="toggleOption(this, 'category')">
+                <div class="toggle-left">
+                  <div class="toggle-icon">NC</div>
+                  <div>
+                    <div class="toggle-text">Categorie syntaxique</div>
+                    <div class="toggle-desc">Nom, verbe, adjectif...</div>
+                  </div>
+                </div>
+                <div class="toggle-switch" id="sw-category"><div class="knob"></div></div>
+              </div>
+
+              <div class="toggle-card" onclick="toggleOption(this, 'syllables')">
+                <div class="toggle-left">
+                  <div class="toggle-icon">2s</div>
+                  <div>
+                    <div class="toggle-text">Nombre de syllabes</div>
+                    <div class="toggle-desc">Badge avec le compte syllabique</div>
+                  </div>
+                </div>
+                <div class="toggle-switch" id="sw-syllables"><div class="knob"></div></div>
+              </div>
+            </div>
+
+        </div>
+
+        <!-- =================== TAB: ORDRE =================== -->
+        <div class="tab-content" id="tab-ordre">
+
+          <div class="panel-section">
+            <div class="section-header">
+              <div class="section-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                Ordre des mots
+              </div>
+              <div class="section-badge" id="orderCount">9 mots</div>
+            </div>
+            <div class="word-list" id="wordList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon">&#10003;</span>
+  <span id="toastMsg">Ordre mis a jour</span>
+</div>
+
+<script>
+const words = [
+  { word:'singe',   det:'le', phoneme:'/sE~Z/',  syllables:'singe',     silentEnd:'',  phonTarget:'s', bg:'illus-bg-amber',  svg:'<svg viewBox="0 0 64 64"><circle cx="32" cy="28" r="14" fill="#D97706"/><circle cx="32" cy="28" r="10" fill="#FBBF24"/><circle cx="27" cy="26" r="2" fill="#1A1A2E"/><circle cx="37" cy="26" r="2" fill="#1A1A2E"/><ellipse cx="32" cy="32" rx="5" ry="3" fill="#F59E0B"/><ellipse cx="17" cy="26" rx="5" ry="6" fill="#D97706"/><ellipse cx="47" cy="26" rx="5" ry="6" fill="#D97706"/><ellipse cx="17" cy="26" rx="3" ry="4" fill="#FBBF24"/><ellipse cx="47" cy="26" rx="3" ry="4" fill="#FBBF24"/></svg>', cat:'NC', syll:1 },
+  { word:'chaise',  det:'la', phoneme:'/SEz/',    syllables:'chaise',    silentEnd:'e', phonTarget:'',  bg:'illus-bg-sky',    svg:'<svg viewBox="0 0 64 64"><rect x="18" y="16" width="28" height="22" rx="3" fill="#3B82F6"/><rect x="18" y="14" width="28" height="6" rx="2" fill="#60A5FA"/><rect x="20" y="38" width="4" height="14" rx="1" fill="#2563EB"/><rect x="40" y="38" width="4" height="14" rx="1" fill="#2563EB"/></svg>', cat:'NC', syll:1 },
+  { word:'sac',     det:'le', phoneme:'/sak/',    syllables:'sac',       silentEnd:'',  phonTarget:'s', bg:'illus-bg-coral',  svg:'<svg viewBox="0 0 64 64"><path d="M16 26h32v22a4 4 0 01-4 4H20a4 4 0 01-4-4V26z" fill="#EF4444"/><path d="M16 26h32v4H16z" fill="#DC2626"/><path d="M24 26V18a8 8 0 0116 0v8" stroke="#B91C1C" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="32" cy="36" r="3" fill="#FCA5A5"/></svg>', cat:'NC', syll:1 },
+  { word:'soleil',  det:'le', phoneme:'/sOlEj/',  syllables:'so-leil',   silentEnd:'',  phonTarget:'s', bg:'illus-bg-amber',  svg:'<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="12" fill="#FBBF24"/><g stroke="#F59E0B" stroke-width="3" stroke-linecap="round"><line x1="32" y1="8" x2="32" y2="15"/><line x1="32" y1="49" x2="32" y2="56"/><line x1="8" y1="32" x2="15" y2="32"/><line x1="49" y1="32" x2="56" y2="32"/><line x1="15" y1="15" x2="20" y2="20"/><line x1="44" y1="44" x2="49" y2="49"/><line x1="15" y1="49" x2="20" y2="44"/><line x1="44" y1="20" x2="49" y2="15"/></g></svg>', cat:'NC', syll:2 },
+  { word:'sapin',   det:'le', phoneme:'/sapE~/',  syllables:'sa-pin',    silentEnd:'',  phonTarget:'s', bg:'illus-bg-mint',   svg:'<svg viewBox="0 0 64 64"><polygon points="32,8 48,28 42,28 52,44 14,44 24,28 18,28" fill="#22C55E"/><polygon points="32,8 48,28 42,28 52,44 32,44" fill="#16A34A"/><rect x="28" y="44" width="8" height="10" rx="1" fill="#92400E"/></svg>', cat:'NC', syll:2 },
+  { word:'souris',  det:'la', phoneme:'/suRi/',   syllables:'sou-ris',   silentEnd:'s', phonTarget:'s', bg:'illus-bg-violet', svg:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="36" rx="16" ry="12" fill="#A78BFA"/><ellipse cx="22" cy="22" rx="8" ry="10" fill="#C4B5FD"/><ellipse cx="42" cy="22" rx="8" ry="10" fill="#C4B5FD"/><circle cx="27" cy="34" r="2" fill="#1A1A2E"/><circle cx="37" cy="34" r="2" fill="#1A1A2E"/><circle cx="32" cy="38" r="2" fill="#7C3AED"/></svg>', cat:'NC', syll:2 },
+  { word:'cerise',  det:'la', phoneme:'/s@Riz/',  syllables:'ce-rise',   silentEnd:'e', phonTarget:'c', bg:'illus-bg-coral',  svg:'<svg viewBox="0 0 64 64"><circle cx="24" cy="40" r="12" fill="#EF4444"/><circle cx="40" cy="38" r="12" fill="#DC2626"/><path d="M24 28Q28 10 36 14Q34 8 42 6" stroke="#16A34A" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M40 26Q38 14 42 6" stroke="#16A34A" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>', cat:'NC', syll:2 },
+  { word:'serpent', det:'le', phoneme:'/sERpA~/', syllables:'ser-pent',  silentEnd:'t', phonTarget:'s', bg:'illus-bg-mint',   svg:'<svg viewBox="0 0 64 64"><path d="M12 40Q20 20 32 32Q44 44 52 24" stroke="#22C55E" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="52" cy="24" r="6" fill="#16A34A"/><circle cx="50" cy="22" r="1.5" fill="#1A1A2E"/><circle cx="54" cy="22" r="1.5" fill="#1A1A2E"/><path d="M56 26L60 24L60 28Z" fill="#EF4444"/></svg>', cat:'NC', syll:2 },
+];
+
+// State
+let currentGrid = '3x3';
+let currentPage = 0;
+let dragSrcIndex = null;
+let currentCasse = 'lower';
+let currentFontSize = 'medium';
+let currentOrientation = 'portrait';
+
+// Toggles
+let show = {
+  word: true, phoneme: true, category: false, syllables: false,
+  determiner: true, syllBreak: true, cutting: true
+};
+
+function getMax(g) { const [c,r] = g.split('x').map(Number); return c * r; }
+function totalPages() { return Math.max(1, Math.ceil(words.length / getMax(currentGrid))); }
+
+function applyCasse(text) {
+  if (currentCasse === 'upper') return text.toUpperCase();
+  if (currentCasse === 'capitalize') return text.charAt(0).toUpperCase() + text.slice(1);
+  return text;
+}
+
+function renderWord(w) {
+  return applyCasse(w.word);
+}
+
+function renderGrid() {
+  const el = document.getElementById('pageGrid');
+  const max = getMax(currentGrid);
+  const start = currentPage * max;
+  const vis = words.slice(start, start + max);
+
+  el.className = 'page-grid g' + currentGrid + (show.cutting ? ' cutting-guides' : '');
+
+  el.innerHTML = vis.map((w, i) => {
+    const gi = start + i;
+    const fontClass = currentFontSize !== 'medium' ? ` font-${currentFontSize}` : '';
+
+    let cardContent = `
+      <div class="drag-handle">&#8942;&#8942;</div>
+      <div class="card-img-wrap">
+        <div class="card-illus ${w.bg}">${w.svg}</div>
+      </div>`;
+
+    if (show.determiner && w.det) {
+      cardContent += `<div class="card-determiner">${w.det}</div>`;
+    }
+    if (show.word) {
+      cardContent += `<div class="card-word${fontClass}">${renderWord(w)}</div>`;
+    }
+
+    if (show.syllBreak) {
+      cardContent += `<div class="card-syllable-text">${applyCasse(w.syllables)}</div>`;
+    }
+
+    if (show.phoneme) cardContent += `<div class="card-phoneme">${w.phoneme}</div>`;
+
+    cardContent += `<div class="card-badges">
+      ${show.category ? `<span class="card-badge">${w.cat}</span>` : ''}
+      ${show.syllables ? `<span class="card-badge">${w.syll} syll.</span>` : ''}
+    </div>`;
+
+    return `<div class="image-card" draggable="true" data-index="${gi}"
+         style="animation:cardIn .25s ease ${i*0.03}s both">
+      ${cardContent}
+    </div>`;
+  }).join('');
+
+  document.getElementById('pageMeta').textContent = vis.length + ' mots';
+  document.getElementById('pageIndicator').textContent = `Page ${currentPage+1} / ${totalPages()}`;
+  document.getElementById('topbarBadge').textContent = words.length + ' images';
+  document.getElementById('formatBadge').textContent = `Apercu A4 ${currentOrientation}`;
+  setupDragDrop();
+}
+
+function setupDragDrop() {
+  document.querySelectorAll('.image-card[draggable]').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragSrcIndex = parseInt(card.dataset.index);
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      document.getElementById('dragHint').style.opacity = '0';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.image-card').forEach(c => c.classList.remove('drag-over'));
+      document.getElementById('dragHint').style.opacity = '1';
+    });
+    card.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; card.classList.add('drag-over'); });
+    card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      const targetIndex = parseInt(card.dataset.index);
+      if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) {
+        const item = words.splice(dragSrcIndex, 1)[0];
+        words.splice(targetIndex, 0, item);
+        renderGrid(); renderWordList();
+        showToast('Ordre mis a jour');
+      }
+      card.classList.remove('drag-over');
+    });
+  });
+}
+
+function renderWordList() {
+  const el = document.getElementById('wordList');
+  el.innerHTML = words.map((w, i) => `
+    <div class="word-item" draggable="true" data-list-index="${i}">
+      <div class="word-item-grip">&#8942;&#8942;</div>
+      <div class="word-item-thumb"><div class="card-illus ${w.bg}">${w.svg}</div></div>
+      <div class="word-item-info">
+        <div class="word-item-name">${w.det ? w.det + ' ' : ''}${w.word}</div>
+        <div class="word-item-phon">${w.phoneme} &middot; ${w.syll} syll.</div>
+      </div>
+      <div class="word-item-pos">${i + 1}</div>
+    </div>
+  `).join('');
+  document.getElementById('orderCount').textContent = words.length + ' mots';
+  setupListDrag();
+}
+
+function setupListDrag() {
+  let listDragSrc = null;
+  document.querySelectorAll('.word-item[draggable]').forEach(item => {
+    item.addEventListener('dragstart', e => {
+      listDragSrc = parseInt(item.dataset.listIndex);
+      item.classList.add('dragging-item');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging-item');
+      document.querySelectorAll('.word-item').forEach(i => i.style.borderTop = '');
+    });
+    item.addEventListener('dragover', e => { e.preventDefault(); item.style.borderTop = '2px solid var(--violet)'; });
+    item.addEventListener('dragleave', () => item.style.borderTop = '');
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      const targetIdx = parseInt(item.dataset.listIndex);
+      if (listDragSrc !== null && listDragSrc !== targetIdx) {
+        const moved = words.splice(listDragSrc, 1)[0];
+        words.splice(targetIdx, 0, moved);
+        renderGrid(); renderWordList();
+        showToast('Ordre mis a jour');
+      }
+      item.style.borderTop = '';
+    });
+  });
+}
+
+function selectGrid(g, el) {
+  document.querySelectorAll('.grid-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  currentGrid = g; currentPage = 0;
+  renderGrid();
+}
+
+function updateTitle(v) { document.getElementById('pageTitle').textContent = v || 'Mon imagier'; }
+function updateSubtitle(v) { document.getElementById('pageSubtitle').textContent = v; }
+
+function toggleOption(card, type) {
+  const sw = document.getElementById('sw-' + type);
+  const isOn = !sw.classList.contains('on');
+  sw.classList.toggle('on', isOn);
+  card.classList.toggle('active', isOn);
+  show[type] = isOn;
+  renderGrid();
+}
+
+function setOrientation(o, el) {
+  document.querySelectorAll('.orient-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const c = document.getElementById('pageContainer');
+  c.classList.remove('portrait','landscape');
+  c.classList.add(o);
+  currentOrientation = o;
+  renderGrid();
+}
+
+function setCasse(mode, el) {
+  document.querySelectorAll('.inline-radio-group')[0].querySelectorAll('.inline-radio').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  currentCasse = mode;
+  renderGrid();
+}
+
+function setFontSize(size, el) {
+  document.querySelectorAll('.inline-radio-group')[1].querySelectorAll('.inline-radio').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  currentFontSize = size;
+  renderGrid();
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+  if (id === 'ordre') renderWordList();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+document.getElementById('prevPage').addEventListener('click', () => {
+  if (currentPage > 0) { currentPage--; renderGrid(); }
+});
+document.getElementById('nextPage').addEventListener('click', () => {
+  if (currentPage < totalPages() - 1) { currentPage++; renderGrid(); }
+});
+
+renderGrid();
+</script>
+</body>
+</html>

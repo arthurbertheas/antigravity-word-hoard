@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Display Mode Redesign (Approche A)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #1a1a2e;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 60px;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .column-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+  .column-label.bad {
+    color: #9CA3AF;
+    background: rgba(156,163,175,0.15);
+  }
+  .column-label.good {
+    color: #6C5CE7;
+    background: rgba(108,92,231,0.1);
+  }
+
+  .card-wrapper {
+    width: 304px;
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+  }
+
+  /* Section divider */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .section-divider span {
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    color: #6C5CE7;
+  }
+  .section-divider .line {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(to right, rgba(108,92,231,0.4), transparent);
+  }
+
+  /* =========================================
+     OLD: Plain radio list
+     ========================================= */
+  .old-card {
+    background: #f8f8fb;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .old-radio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .old-radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+  }
+  .old-radio-item .dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #D1D5DB;
+    flex-shrink: 0;
+  }
+  .old-radio-item.active .dot {
+    border-color: #6C5CE7;
+    background: #6C5CE7;
+    box-shadow: inset 0 0 0 3px white;
+  }
+  .old-radio-item.active {
+    color: #6C5CE7;
+    font-weight: 600;
+  }
+
+  /* =========================================
+     NEW: Visual cards + flashcard toggle
+     ========================================= */
+
+  /* Content mode cards (horizontal row) */
+  .content-cards {
+    display: flex;
+    gap: 6px;
+  }
+
+  .content-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 6px 10px;
+    border-radius: 10px;
+    border: 1.5px solid #E5E7EB;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+  }
+  .content-card:hover {
+    border-color: rgba(108,92,231,0.35);
+    background: #FAFAFF;
+  }
+  .content-card.active {
+    border-color: #6C5CE7;
+    background: rgba(108,92,231,0.03);
+    box-shadow: 0 0 0 1px rgba(108,92,231,0.15);
+  }
+
+  /* Icon area */
+  .content-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(108,92,231,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #6C5CE7;
+    transition: all 0.2s;
+  }
+  .content-card.active .content-icon {
+    background: rgba(108,92,231,0.12);
+  }
+
+  /* SVG icons */
+  .content-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: #6C5CE7;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .content-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #1A1A2E;
+    transition: color 0.15s;
+    line-height: 1.2;
+  }
+  .content-card.active .content-label {
+    color: #6C5CE7;
+  }
+
+  /* Radio indicator (small dot at top-right) */
+  .content-radio {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid #D1D5DB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .content-card.active .content-radio {
+    border-color: #6C5CE7;
+    background: #6C5CE7;
+  }
+  .content-card.active .content-radio::after {
+    content: '';
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  /* Flashcard toggle section */
+  .flashcard-section {
+    margin-top: 10px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .flashcard-section.hidden {
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
+  }
+  .flashcard-section.visible {
+    max-height: 80px;
+    opacity: 1;
+  }
+
+  .flashcard-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: #f8f8fb;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .flashcard-toggle-row:hover {
+    background: #f0f0f5;
+  }
+
+  .flashcard-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flashcard-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(108,92,231,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .flashcard-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .flashcard-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A1A2E;
+  }
+  .flashcard-desc {
+    font-size: 10px;
+    color: #9CA3AF;
+    line-height: 1.3;
+  }
+
+  /* Toggle switch */
+  .toggle {
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: #D1D5DB;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.on {
+    background: #6C5CE7;
+  }
+  .toggle .knob {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on .knob {
+    left: 18px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ====== AVANT (old) ====== -->
+<div class="column">
+  <div class="column-label bad">Avant</div>
+  <div class="card-wrapper">
+    <div class="section-divider">
+      <span>Mode</span>
+      <div class="line"></div>
+    </div>
+    <div class="old-card">
+      <div class="old-radio-list">
+        <div class="old-radio-item"><div class="dot"></div> Mot seul</div>
+        <div class="old-radio-item"><div class="dot"></div> Image seule</div>
+        <div class="old-radio-item"><div class="dot"></div> Image + Mot</div>
+        <div class="old-radio-item active"><div class="dot"></div> Alternance Mot → Image</div>
+        <div class="old-radio-item"><div class="dot"></div> Alternance Image → Mot</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== APRÈS (new) ====== -->
+<div class="column">
+  <div class="column-label good">Proposition</div>
+  <div class="card-wrapper">
+    <div class="section-divider">
+      <span>Mode d'affichage</span>
+      <div class="line"></div>
+    </div>
+
+    <!-- Row 1: Content type cards -->
+    <div class="content-cards" id="contentCards">
+      <div class="content-card active" onclick="selectContent(this, 'word')">
+        <div class="content-radio"></div>
+        <div class="content-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+        </div>
+        <div class="content-label">Mot</div>
+      </div>
+
+      <div class="content-card" onclick="selectContent(this, 'image')">
+        <div class="content-radio"></div>
+        <div class="content-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        </div>
+        <div class="content-label">Image</div>
+      </div>
+
+      <div class="content-card" onclick="selectContent(this, 'both')">
+        <div class="content-radio"></div>
+        <div class="content-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 7V4h10v3"/><path d="M7 20h4"/><path d="M9 4v16"/><rect x="15" y="10" width="7" height="8" rx="1"/><circle cx="18" cy="12.5" r="0.5" fill="#6C5CE7"/><path d="m22 18-2-2-2 2"/></svg>
+        </div>
+        <div class="content-label">Mot + Image</div>
+      </div>
+    </div>
+
+    <!-- Row 2: Flashcard toggle (hidden when "both" selected) -->
+    <div class="flashcard-section visible" id="flashcardSection">
+      <div class="flashcard-toggle-row" onclick="toggleFlashcard()">
+        <div class="flashcard-left">
+          <div class="flashcard-icon">🃏</div>
+          <div class="flashcard-text">
+            <div class="flashcard-title">Double face</div>
+            <div class="flashcard-desc" id="flashcardDesc">L'image se dévoile au toucher</div>
+          </div>
+        </div>
+        <div class="toggle on" id="flashcardToggle">
+          <div class="knob"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let currentContent = 'word';
+let flashcardOn = true;
+
+const descMap = {
+  word:  'L\'image se dévoile au toucher',
+  image: 'Le mot se dévoile au toucher',
+};
+
+function updateDesc() {
+  document.getElementById('flashcardDesc').textContent = descMap[currentContent] || '';
+}
+
+function selectContent(card, type) {
+  document.querySelectorAll('#contentCards .content-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  currentContent = type;
+
+  const section = document.getElementById('flashcardSection');
+  if (type === 'both') {
+    section.className = 'flashcard-section hidden';
+  } else {
+    section.className = 'flashcard-section visible';
+    updateDesc();
+  }
+}
+
+function toggleFlashcard() {
+  flashcardOn = !flashcardOn;
+  const toggle = document.getElementById('flashcardToggle');
+  toggle.classList.toggle('on', flashcardOn);
+}
+</script>
+
+</body>
+</html>

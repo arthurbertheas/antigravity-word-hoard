@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockup — Nouvelle liste (style Session terminée)</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Backdrop */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 20, 35, 0.45);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Modal */
+    .modal {
+      position: relative;
+      z-index: 10;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      width: 380px;
+      max-width: 92vw;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Icon */
+    .icon-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #FFF8E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .icon-circle svg {
+      width: 24px;
+      height: 24px;
+      color: #F59E0B;
+    }
+
+    /* Title */
+    .title {
+      font-family: 'Sora', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #1A1A2E;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    /* Description */
+    .description {
+      font-size: 15px;
+      font-weight: 500;
+      color: #6B7280;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* Buttons row */
+    .buttons {
+      display: flex;
+      width: 100%;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+    }
+
+    .btn-ghost {
+      background: white;
+      border: 1.5px solid #E5E7EB;
+      color: #9CA3AF;
+    }
+    .btn-ghost:hover {
+      background: #F9FAFB;
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1.5px solid #6C5CE7;
+      color: #6C5CE7;
+    }
+    .btn-outline:hover {
+      background: rgba(108, 92, 231, 0.05);
+    }
+
+    .btn-primary {
+      background: #6C5CE7;
+      color: white;
+      box-shadow: 0 3px 10px rgba(108, 92, 231, 0.3);
+    }
+    .btn-primary:hover {
+      background: #5a4ad1;
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    }
+    .btn-primary svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Comparison label */
+    .label {
+      position: absolute;
+      top: -32px;
+      left: 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+    .card {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div class="backdrop"></div>
+
+  <div class="container">
+    <!-- NOUVELLE LISTE (nouveau design) -->
+    <div class="card">
+      <div class="label">Nouvelle liste — Nouveau design</div>
+      <div class="modal">
+        <!-- Icon -->
+        <div class="icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <path d="M12 9v4"/>
+            <path d="M12 17h.01"/>
+          </svg>
+        </div>
+
+        <!-- Title -->
+        <h2 class="title">Nouvelle liste</h2>
+
+        <!-- Description -->
+        <p class="description">La session en cours sera perdue.<br>Voulez-vous télécharger le rapport ?</p>
+
+        <!-- Buttons -->
+        <div class="buttons">
+          <button class="btn btn-ghost">Annuler</button>
+          <button class="btn btn-outline">Continuer</button>
+          <button class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exporter
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

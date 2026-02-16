@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockup — Vider Ghost Pill (Option A)</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&family=IBM+Plex+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #F3F4F6;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    .panel {
+      width: 320px;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #E5E7EB;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    /* Header */
+    .header {
+      padding: 16px 16px;
+      border-bottom: 1px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: #F0EDFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-icon svg { width: 16px; height: 16px; color: #6C5CE7; }
+    .header-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1A1A2E;
+    }
+    .header-subtitle {
+      font-size: 11px;
+      color: #9CA3AF;
+      font-weight: 500;
+    }
+    .chevron-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1.5px solid #E5E7EB;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6B7280;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chevron-btn:hover {
+      border-color: #C4B8FF;
+      background: #F8F6FF;
+      color: #6C5CE7;
+    }
+
+    /* List selector */
+    .list-selector {
+      margin: 16px 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #E5E7EB;
+      background: #FAFBFC;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .list-selector-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #F3F4F6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9CA3AF;
+    }
+    .list-selector-text {
+      flex: 1;
+    }
+    .list-selector-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .list-selector-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A1A2E;
+    }
+
+    /* Stats zone */
+    .stats-zone {
+      padding: 16px;
+      border-bottom: 1px solid #F8F9FC;
+    }
+
+    /* Word count row */
+    .word-count-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .word-count {
+      font-size: 24px;
+      font-weight: 900;
+      color: #1A1A2E;
+    }
+    .word-count span {
+      font-size: 14px;
+      font-weight: 500;
+      color: #9CA3AF;
+    }
+
+    /* Ghost Pill button */
+    .vider-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #E5E7EB;
+      background: transparent;
+      color: #9CA3AF;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .vider-pill svg {
+      width: 12px;
+      height: 12px;
+      transition: transform 0.2s;
+    }
+    .vider-pill:hover {
+      border-color: #FCA5A5;
+      color: #EF4444;
+      background: #FEF2F2;
+    }
+    .vider-pill:hover svg {
+      transform: scale(1.15);
+    }
+
+    /* Confirm state */
+    .confirm-row {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      animation: fadeSlideIn 0.3s ease;
+    }
+    .confirm-row.active {
+      display: flex;
+    }
+    .confirm-btn {
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 20px;
+      transition: all 0.15s;
+    }
+    .confirm-btn.cancel {
+      color: #9CA3AF;
+      border: 1px solid #E5E7EB;
+    }
+    .confirm-btn.cancel:hover {
+      color: #1A1A2E;
+      background: #F9FAFB;
+    }
+    .confirm-btn.danger {
+      color: white;
+      background: #EF4444;
+    }
+    .confirm-btn.danger:hover {
+      background: #DC2626;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateX(8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Sub-stats */
+    .sub-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: -0.3px;
+      color: rgba(156,163,175,0.7);
+    }
+    .sub-stats .accent { color: #6C5CE7; }
+    .dot { width: 3px; height: 3px; border-radius: 50%; background: #E5E7EB; }
+
+    /* Category tags */
+    .cat-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .cat-tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #F3F4F6;
+      font-size: 9px;
+      font-weight: 700;
+      color: #9CA3AF;
+    }
+
+    /* Word list */
+    .word-list {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .word-card {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #F3F4F6;
+      background: white;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      font-size: 14px;
+      font-weight: 500;
+      color: #1A1A2E;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+    .word-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .word-card .remove {
+      opacity: 0;
+      color: #9CA3AF;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 4px;
+      border-radius: 6px;
+    }
+    .word-card:hover .remove {
+      opacity: 1;
+    }
+    .word-card .remove:hover {
+      background: rgba(239,68,68,0.1);
+      color: #EF4444;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9CA3AF;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div style="display: flex; gap: 40px; align-items: flex-start;">
+
+    <!-- STATE 1: Default -->
+    <div>
+      <div class="label">Default</div>
+      <div class="panel">
+        <div class="header">
+          <div class="header-left">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-5"/><path d="m14 4-4 4 4 4"/></svg>
+            </div>
+            <div>
+              <div class="header-title">Ma Liste</div>
+              <div class="header-subtitle">Liste et actions</div>
+            </div>
+          </div>
+          <div class="chevron-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="list-selector">
+          <div class="list-selector-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+          </div>
+          <div class="list-selector-text">
+            <div class="list-selector-label">Liste de travail</div>
+            <div class="list-selector-name">Aucune liste</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+
+        <div class="stats-zone">
+          <div class="word-count-row">
+            <div class="word-count">6 <span>mots</span></div>
+            <button class="vider-pill" onclick="this.style.display='none'; this.nextElementSibling.classList.add('active')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              Vider
+            </button>
+            <div class="confirm-row">
+              <button class="confirm-btn cancel">Annuler</button>
+              <button class="confirm-btn danger">Confirmer</button>
+            </div>
+          </div>
+          <div class="sub-stats">
+            <div><span class="accent">17</span> Syllabes</div>
+            <div class="dot"></div>
+            <div>Moy. <span class="accent">2.8</span></div>
+          </div>
+          <div class="cat-tags">
+            <span class="cat-tag">1 ADV</span>
+            <span class="cat-tag">3 ADJ</span>
+            <span class="cat-tag">2 NC</span>
+          </div>
+        </div>
+
+        <div class="word-list">
+          <div class="word-card">ailleurs <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+          <div class="word-card">agr&eacute;able <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+          <div class="word-card">adjectif <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 2: Hover -->
+    <div>
+      <div class="label">Hover</div>
+      <div class="panel">
+        <div class="header">
+          <div class="header-left">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-5"/><path d="m14 4-4 4 4 4"/></svg>
+            </div>
+            <div>
+              <div class="header-title">Ma Liste</div>
+              <div class="header-subtitle">Liste et actions</div>
+            </div>
+          </div>
+          <div class="chevron-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="list-selector">
+          <div class="list-selector-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+          </div>
+          <div class="list-selector-text">
+            <div class="list-selector-label">Liste de travail</div>
+            <div class="list-selector-name">Aucune liste</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+
+        <div class="stats-zone">
+          <div class="word-count-row">
+            <div class="word-count">6 <span>mots</span></div>
+            <button class="vider-pill" style="border-color: #FCA5A5; color: #EF4444; background: #FEF2F2;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: scale(1.15)"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              Vider
+            </button>
+          </div>
+          <div class="sub-stats">
+            <div><span class="accent">17</span> Syllabes</div>
+            <div class="dot"></div>
+            <div>Moy. <span class="accent">2.8</span></div>
+          </div>
+          <div class="cat-tags">
+            <span class="cat-tag">1 ADV</span>
+            <span class="cat-tag">3 ADJ</span>
+            <span class="cat-tag">2 NC</span>
+          </div>
+        </div>
+
+        <div class="word-list">
+          <div class="word-card">ailleurs <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+          <div class="word-card">agr&eacute;able <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+          <div class="word-card">adjectif <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 3: Confirm -->
+    <div>
+      <div class="label">Confirmation</div>
+      <div class="panel">
+        <div class="header">
+          <div class="header-left">
+            <div class="header-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-5"/><path d="m14 4-4 4 4 4"/></svg>
+            </div>
+            <div>
+              <div class="header-title">Ma Liste</div>
+              <div class="header-subtitle">Liste et actions</div>
+            </div>
+          </div>
+          <div class="chevron-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="list-selector">
+          <div class="list-selector-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+          </div>
+          <div class="list-selector-text">
+            <div class="list-selector-label">Liste de travail</div>
+            <div class="list-selector-name">Aucune liste</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+
+        <div class="stats-zone">
+          <div class="word-count-row">
+            <div class="word-count">6 <span>mots</span></div>
+            <div class="confirm-row active">
+              <button class="confirm-btn cancel">Annuler</button>
+              <button class="confirm-btn danger">Confirmer</button>
+            </div>
+          </div>
+          <div class="sub-stats">
+            <div><span class="accent">17</span> Syllabes</div>
+            <div class="dot"></div>
+            <div>Moy. <span class="accent">2.8</span></div>
+          </div>
+          <div class="cat-tags">
+            <span class="cat-tag">1 ADV</span>
+            <span class="cat-tag">3 ADJ</span>
+            <span class="cat-tag">2 NC</span>
+          </div>
+        </div>
+
+        <div class="word-list">
+          <div class="word-card">ailleurs <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+          <div class="word-card">agr&eacute;able <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+          <div class="word-card">adjectif <span class="remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

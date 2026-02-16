@@ -25,3 +25,10 @@ dist-ssr
 
 # Data backups
 src/data/words_backup_*.json
+
+# Vercel
+.vercel
+
+# Temp files
+NUL
+temp_original_css.txt

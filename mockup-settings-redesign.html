@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Settings Panel Redesign</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #1a1a2e;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 40px;
+  }
+
+  .panel {
+    width: 360px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+  }
+
+  /* Header */
+  .panel-header {
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid #f0f0f5;
+  }
+  .panel-header h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A2E;
+  }
+  .panel-header p {
+    font-size: 12px;
+    color: #9CA3AF;
+    margin-top: 2px;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    padding: 0 28px;
+    padding-top: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f5;
+  }
+  .tab-bar-inner {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: #f4f4f8;
+    border-radius: 10px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 0;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #9CA3AF;
+    background: transparent;
+  }
+  .tab-btn.active {
+    background: white;
+    color: #1A1A2E;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .tab-btn:not(.active):hover {
+    color: #1A1A2E;
+  }
+
+  /* Content area */
+  .tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 28px 28px;
+  }
+
+  /* Section divider (FilterGroup style) */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    margin-top: 4px;
+  }
+  .section-divider:not(:first-child) {
+    margin-top: 24px;
+  }
+  .section-divider span {
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    color: #6C5CE7;
+  }
+  .section-divider .line {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(to right, rgba(108,92,231,0.4), transparent);
+  }
+
+  /* Card / control group */
+  .control-card {
+    background: #f8f8fb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  /* Select */
+  .select-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .select-control {
+    width: 100%;
+    height: 48px;
+    padding: 0 40px 0 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A2E;
+    background: white;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 10px;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .select-control:hover { border-color: rgba(108,92,231,0.3); }
+  .select-control:focus { outline: none; border-color: #6C5CE7; }
+  .select-wrapper::after {
+    content: '▾';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9CA3AF;
+    pointer-events: none;
+    font-size: 14px;
+  }
+
+  /* Slider row */
+  .slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .slider-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6B7280;
+  }
+  .slider-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #6C5CE7;
+    min-width: 55px;
+    text-align: right;
+  }
+
+  /* Custom slider */
+  .slider-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(108,92,231,0.12);
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+  }
+  .slider-fill {
+    height: 100%;
+    background: #6C5CE7;
+    border-radius: 3px;
+    position: relative;
+  }
+  .slider-thumb {
+    width: 18px;
+    height: 18px;
+    background: #6C5CE7;
+    border-radius: 50%;
+    position: absolute;
+    right: -9px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 6px rgba(108,92,231,0.4);
+  }
+
+  /* Radio group */
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .radio-group.horizontal {
+    flex-direction: row;
+    gap: 0;
+  }
+  .radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .radio-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #D1D5DB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .radio-dot.active {
+    border-color: #6C5CE7;
+    background: #6C5CE7;
+  }
+  .radio-dot.active::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+  .radio-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6B7280;
+    transition: color 0.15s;
+  }
+  .radio-item:hover .radio-label { color: #1A1A2E; }
+  .radio-dot.active + .radio-label { color: #6C5CE7; font-weight: 600; }
+
+  /* Checkbox chip group */
+  .chip-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid #E5E7EB;
+    background: white;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip:hover {
+    border-color: rgba(108,92,231,0.3);
+    color: #1A1A2E;
+  }
+  .chip.active {
+    background: #6C5CE7;
+    border-color: #6C5CE7;
+    color: white;
+    box-shadow: 0 2px 8px rgba(108,92,231,0.3);
+  }
+
+  /* Toggle row */
+  .toggle-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #f8f8fb;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .toggle-row:hover {
+    background: #e8eaf0;
+  }
+  .toggle-info {
+    flex: 1;
+    padding-right: 16px;
+  }
+  .toggle-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A1A2E;
+    margin-bottom: 2px;
+  }
+  .toggle-desc {
+    font-size: 11px;
+    color: #9CA3AF;
+  }
+
+  /* Toggle switch */
+  .toggle-switch {
+    width: 42px;
+    height: 24px;
+    background: #D1D5DB;
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .toggle-switch.on {
+    background: #6C5CE7;
+  }
+  .toggle-switch::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .toggle-switch.on::after {
+    transform: translateX(18px);
+  }
+
+  /* Label badge */
+  .label-tag {
+    display: inline-block;
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6C5CE7;
+    background: rgba(108,92,231,0.08);
+    padding: 3px 8px;
+    border-radius: 5px;
+    margin-left: 6px;
+  }
+
+  /* Comparison labels */
+  .comparison-label {
+    text-align: center;
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9CA3AF;
+    margin-bottom: 12px;
+  }
+
+  /* Hidden panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ==================== NEW DESIGN ==================== -->
+<div>
+  <div class="comparison-label" style="color: #6C5CE7; margin-bottom: 16px; font-size: 13px;">Proposition — 2 onglets + sous-sections</div>
+  <div class="panel" id="new-panel">
+    <div class="panel-header">
+      <h2>Configuration</h2>
+      <p>Réglages du diaporama</p>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab-bar-inner">
+        <button class="tab-btn active" onclick="switchTab('affichage')">Affichage</button>
+        <button class="tab-btn" onclick="switchTab('aides')">Aides à la lecture</button>
+      </div>
+    </div>
+
+    <div class="tab-content">
+
+      <!-- ========== TAB: AFFICHAGE ========== -->
+      <div class="tab-panel active" id="tab-affichage">
+
+        <!-- TYPOGRAPHIE -->
+        <div class="section-divider">
+          <span>Typographie</span>
+          <div class="line"></div>
+        </div>
+
+        <div class="select-wrapper">
+          <select class="select-control">
+            <option>Arial</option>
+            <option>Verdana</option>
+            <option>MDI École</option>
+            <option selected>OpenDyslexic</option>
+          </select>
+        </div>
+
+        <div class="control-card">
+          <div class="slider-row">
+            <span class="slider-label">Taille</span>
+            <span class="slider-value">10x</span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width: 33%;">
+              <div class="slider-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE D'AFFICHAGE -->
+        <div class="section-divider">
+          <span>Mode</span>
+          <div class="line"></div>
+        </div>
+
+        <div class="control-card">
+          <div class="radio-group">
+            <div class="radio-item">
+              <div class="radio-dot active"></div>
+              <span class="radio-label">Mot seul</span>
+            </div>
+            <div class="radio-item">
+              <div class="radio-dot"></div>
+              <span class="radio-label">Image seule</span>
+            </div>
+            <div class="radio-item">
+              <div class="radio-dot"></div>
+              <span class="radio-label">Image + Mot</span>
+            </div>
+            <div class="radio-item">
+              <div class="radio-dot"></div>
+              <span class="radio-label">Alternance Mot → Image</span>
+            </div>
+            <div class="radio-item">
+              <div class="radio-dot"></div>
+              <span class="radio-label">Alternance Image → Mot</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RYTHME -->
+        <div class="section-divider">
+          <span>Rythme d'affichage</span>
+          <div class="line"></div>
+        </div>
+
+        <div class="control-card">
+          <div class="slider-row">
+            <span class="slider-label">Durée d'affichage</span>
+            <span class="slider-value">3.0s</span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width: 58%;">
+              <div class="slider-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="slider-row">
+            <span class="slider-label">Pause entre les mots</span>
+            <span class="slider-value">2.0s</span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width: 40%;">
+              <div class="slider-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ========== TAB: AIDES À LA LECTURE ========== -->
+      <div class="tab-panel" id="tab-aides">
+
+        <!-- ESPACEMENTS -->
+        <div class="section-divider">
+          <span>Espacements</span>
+          <div class="line"></div>
+        </div>
+
+        <div class="control-card" style="margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 500; color: #6B7280; margin-bottom: 10px;">Mode</div>
+          <div class="chip-group">
+            <div class="chip active">Lettres</div>
+            <div class="chip">Graphèmes</div>
+            <div class="chip">Syllabes</div>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="slider-row">
+            <span class="slider-label">Écart</span>
+            <span class="slider-value">0.2x</span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width: 7%;">
+              <div class="slider-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPÈRES VISUELS -->
+        <div class="section-divider">
+          <span>Repères visuels</span>
+          <div class="line"></div>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-title">Voyelles en couleur <span class="label-tag" style="background: rgba(220,38,38,0.08); color: #DC2626;">Rouge</span></div>
+            <div class="toggle-desc">Coloration des voyelles pour faciliter le décodage</div>
+          </div>
+          <div class="toggle-switch on"></div>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-title">Lettres muettes <span class="label-tag" style="background: rgba(156,163,175,0.12); color: #9CA3AF;">Gris</span></div>
+            <div class="toggle-desc">Atténuation visuelle des lettres non prononcées</div>
+          </div>
+          <div class="toggle-switch"></div>
+        </div>
+
+        <!-- GUIDAGE ATTENTIONNEL -->
+        <div class="section-divider">
+          <span>Guidage attentionnel</span>
+          <div class="line"></div>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-title">Point de fixation</div>
+            <div class="toggle-desc">Croix centrée affichée pendant la pause</div>
+          </div>
+          <div class="toggle-switch on"></div>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-title">Signal sonore</div>
+            <div class="toggle-desc">Bip avant l'affichage de chaque mot</div>
+          </div>
+          <div class="toggle-switch on"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(tab) {
+  // Toggle panels
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  // Toggle buttons
+  const btns = document.querySelectorAll('#new-panel .tab-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  if (tab === 'affichage') btns[0].classList.add('active');
+  else btns[1].classList.add('active');
+}
+
+// Interactive toggles
+document.querySelectorAll('.toggle-switch').forEach(sw => {
+  sw.addEventListener('click', () => sw.classList.toggle('on'));
+});
+
+// Interactive chips
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+
+// Interactive radios
+document.querySelectorAll('.radio-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const group = item.closest('.radio-group');
+    group.querySelectorAll('.radio-dot').forEach(d => d.classList.remove('active'));
+    item.querySelector('.radio-dot').classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
