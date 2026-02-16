@@ -173,9 +173,12 @@ export function ImagierPreview({
         </div>
       </div>
 
-      {/* Page navigation */}
+      {/* Page navigation — compensate for scale transform gap */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3.5 mt-1.5 print:hidden">
+        <div
+          className="flex items-center justify-center gap-3.5 print:hidden"
+          style={{ marginTop: `${-pageH * (1 - scale) / 2 + 6}px` }}
+        >
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 0}
