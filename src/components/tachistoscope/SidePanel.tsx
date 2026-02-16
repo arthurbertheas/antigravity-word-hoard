@@ -10,7 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Download, BarChart3, RotateCcw, FilePlus, Square, X, ArrowRight, ArrowLeft, List, Type, ImageIcon, Layers, Info } from "lucide-react";
+import { Download, BarChart3, RotateCcw, FilePlus, Square, ArrowRight, ArrowLeft, List, Type, ImageIcon, Layers, Info, Settings, Clock } from "lucide-react";
 
 import { cn } from '@/lib/utils';
 import { ExportPanel } from '@/components/export/ExportPanel';
@@ -22,14 +22,16 @@ import { CreateFailedListModal } from './CreateFailedListModal';
 import { SaveListModal } from '@/components/saved-lists/SaveListModal';
 import { SessionFinishModal } from './SessionFinishModal';
 import { useEffect } from 'react';
-import { PanelHeader } from '@/components/ui/PanelHeader';
+import { PanelTopbar } from '@/components/ui/PanelTopbar';
+import { PanelTabs, PanelTabsList, PanelTabsTrigger, PanelTabsContent } from '@/components/ui/PanelTabs';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 
 type TabType = 'affichage' | 'aides';
 
 export function SidePanel() {
     // Click-outside logic implemented
     const { isPanelOpen, setIsPanelOpen, panelMode, togglePanelMode, settings, updateSettings, queue, setQueue, currentIndex, setCurrentIndex, wordStatuses, cycleWordStatus, startTime, resetSession, setIsPlaying, setPhase, setHasStarted } = usePlayer();
-    const [activeTab, setActiveTab] = useState<TabType>('affichage');
+    const [activeConfigTab, setActiveConfigTab] = useState<TabType>('affichage');
     const [isNewListModalOpen, setIsNewListModalOpen] = useState(false);
     const [isSaveListModalOpen, setIsSaveListModalOpen] = useState(false);
     const [showExportPanel, setShowExportPanel] = useState(false);
@@ -182,11 +184,6 @@ export function SidePanel() {
         });
     };
 
-    const tabs: { id: TabType; label: string }[] = [
-        { id: 'affichage', label: 'Affichage' },
-        { id: 'aides', label: 'Aides à la lecture' },
-    ];
-
     return (
         <>
             {/* BACKDROP - Always in DOM, animated with classes */}
@@ -206,67 +203,39 @@ export function SidePanel() {
                 isPanelOpen
                     ? "translate-x-0 opacity-100 duration-300 ease-in-out pointer-events-auto"
                     : "translate-x-full opacity-0 duration-0 pointer-events-none",
-                panelMode === 'stats' ? "w-[520px]" : "w-[360px]"
+                panelMode === 'stats' ? "w-[520px]" : "w-[400px]"
             )}>
                 {/* Harmonized Header */}
-                <PanelHeader
+                <PanelTopbar
                     title={panelMode === 'config' ? 'Configuration' :
                         panelMode === 'stats' ? 'Statistiques' : 'Session en cours'}
-                    subtitle={panelMode === 'config' ? 'Réglages d\'affichage' :
-                        panelMode === 'stats' ? 'Résumé de la session' : 'Liste et actions'}
-                    onBack={panelMode === 'stats' ? () => togglePanelMode('session') : undefined}
-                    action={
-                        panelMode !== 'stats' ? (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted -mr-2"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setIsPanelOpen(false);
-                                }}
-                            >
-                                <X className="w-4 h-4" />
-                            </Button>
-                        ) : undefined
+                    icon={
+                        panelMode === 'config'
+                            ? <Settings className="w-3.5 h-3.5 text-[#6C5CE7]" />
+                            : panelMode === 'session'
+                                ? <span className="w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center"><Clock className="w-3 h-3 text-red-500" /></span>
+                                : undefined
                     }
+                    onClose={() => setIsPanelOpen(false)}
+                    onBack={panelMode === 'stats' ? () => togglePanelMode('session') : undefined}
                 />
 
                 {/* MODE CONFIG */}
                 {
                     panelMode === 'config' && (
                         <>
-                            {/* Tabs */}
-                            <div className="px-8 py-5 pb-4 border-b border-border">
-                                <div className="flex gap-1.5 p-1 bg-muted rounded-[10px]">
-                                    {tabs.map((tab) => (
-                                        <button
-                                            key={tab.id}
-                                            onClick={() => setActiveTab(tab.id)}
-                                            className={cn(
-                                                "flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all duration-200",
-                                                activeTab === tab.id
-                                                    ? "bg-card text-foreground shadow-sm"
-                                                    : "text-muted-foreground hover:text-foreground"
-                                            )}
-                                        >
-                                            {tab.label}
-                                        </button >
-                                    ))
-                                    }
-                                </div >
-                            </div >
+                            {/* Tabs + Content */}
+                            <PanelTabs value={activeConfigTab} onValueChange={(v) => setActiveConfigTab(v as 'affichage' | 'aides')}>
+                                <PanelTabsList>
+                                    <PanelTabsTrigger value="affichage">Affichage</PanelTabsTrigger>
+                                    <PanelTabsTrigger value="aides">Aides à la lecture</PanelTabsTrigger>
+                                </PanelTabsList>
 
-                            {/* Content */}
-                            < div className="flex-1 overflow-y-auto px-8 py-6">
                                 {/* ========== TAB: AFFICHAGE ========== */}
-                                {activeTab === 'affichage' && (
+                                <PanelTabsContent value="affichage" className="px-5 py-6">
                                     <div className="space-y-2">
                                         {/* --- TYPOGRAPHIE --- */}
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Typographie</span>
-                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
-                                        </div>
+                                        <SectionHeader label="Typographie" />
 
                                         <Select
                                             value={settings.fontFamily}
@@ -299,10 +268,7 @@ export function SidePanel() {
                                         </div>
 
                                         {/* --- MODE D'AFFICHAGE --- */}
-                                        <div className="flex items-center gap-2 mt-6 mb-3">
-                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Mode d'affichage</span>
-                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
-                                        </div>
+                                        <SectionHeader label="Mode d'affichage" className="mt-6" />
 
                                         {/* Content type cards */}
                                         {(() => {
@@ -426,10 +392,7 @@ export function SidePanel() {
                                         })()}
 
                                         {/* --- RYTHME D'AFFICHAGE --- */}
-                                        <div className="flex items-center gap-2 mt-6 mb-3">
-                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Rythme d'affichage</span>
-                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
-                                        </div>
+                                        <SectionHeader label="Rythme d'affichage" className="mt-6" />
 
                                         <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border">
                                             <div className="flex justify-between items-center mb-1">
@@ -461,16 +424,13 @@ export function SidePanel() {
                                             />
                                         </div>
                                     </div>
-                                )}
+                                </PanelTabsContent>
 
                                 {/* ========== TAB: AIDES À LA LECTURE ========== */}
-                                {activeTab === 'aides' && (
+                                <PanelTabsContent value="aides" className="px-5 py-6">
                                     <div className="space-y-2">
                                         {/* --- ESPACEMENTS --- */}
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Espacements</span>
-                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
-                                        </div>
+                                        <SectionHeader label="Espacements" />
 
                                         {/* Spacing mode visual cards */}
                                         <div className="flex flex-col gap-2">
@@ -535,10 +495,7 @@ export function SidePanel() {
                                         </div>
 
                                         {/* --- REPÈRES VISUELS --- */}
-                                        <div className="flex items-center gap-2 mt-6 mb-3">
-                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Repères visuels</span>
-                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
-                                        </div>
+                                        <SectionHeader label="Repères visuels" className="mt-6" />
 
                                         <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
@@ -571,10 +528,7 @@ export function SidePanel() {
                                         </div>
 
                                         {/* --- GUIDAGE ATTENTIONNEL --- */}
-                                        <div className="flex items-center gap-2 mt-6 mb-3">
-                                            <span className="font-sora text-[9px] font-bold uppercase tracking-[0.1em] whitespace-nowrap text-[#6C5CE7]">Guidage attentionnel</span>
-                                            <div className="flex-1 h-[1.5px] bg-gradient-to-r from-[#6C5CE7]/40 to-transparent" />
-                                        </div>
+                                        <SectionHeader label="Guidage attentionnel" className="mt-6" />
 
                                         <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
@@ -600,8 +554,8 @@ export function SidePanel() {
                                             />
                                         </div>
                                     </div>
-                                )}
-                            </div >
+                                </PanelTabsContent>
+                            </PanelTabs>
                         </>
                     )}
 
@@ -620,7 +574,7 @@ export function SidePanel() {
                                 const successRate = answeredCount > 0 ? Math.round((validatedCount / answeredCount) * 100) : 0;
 
                                 return (
-                                    <div className="px-8 py-5 border-b border-border">
+                                    <div className="px-5 py-5 border-b border-border">
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="bg-muted p-3.5 rounded-[10px] text-center">
                                                 <div className="text-2xl font-bold font-sora text-primary mb-1">{validatedCount}<span className="text-lg text-muted-foreground font-medium">/{totalWords}</span></div>
@@ -636,7 +590,7 @@ export function SidePanel() {
                             })()}
 
                             {/* Actions */}
-                            < div className="px-8 py-5 border-b border-border flex flex-col gap-2.5">
+                            < div className="px-5 py-5 border-b border-border flex flex-col gap-2.5">
                                 <Button
                                     className="w-full justify-start gap-2.5 px-4 py-3 border-[1.5px] border-border bg-card text-foreground text-[13px] font-semibold rounded-[10px] hover:bg-muted hover:border-primary hover:text-primary transition-all h-auto"
                                     onClick={() => setShowExportPanel(true)}
@@ -671,7 +625,7 @@ export function SidePanel() {
                             </div >
 
                             {/* Word List */}
-                            < div className="flex-1 overflow-y-auto px-8 py-5">
+                            < div className="flex-1 overflow-y-auto px-5 py-5">
                                 < div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-3.5">
                                     Liste des mots({queue.length})
                                 </div >
@@ -714,7 +668,7 @@ export function SidePanel() {
                             </div >
 
                             {/* Footer */}
-                            < div className="px-8 py-5 border-t border-border space-y-3">
+                            < div className="px-5 py-5 border-t border-border space-y-3">
                                 {failedWords.length > 0 && (
                                     <button
                                         onClick={handleCreateFailedList}
@@ -741,7 +695,7 @@ export function SidePanel() {
                 {/* MODE STATS */}
                 {
                     panelMode === 'stats' && (
-                        <div className="flex-1 overflow-y-auto px-8 py-6">
+                        <div className="flex-1 overflow-y-auto px-5 py-6">
                             {(() => {
                                 const visualQueue = queue.filter(w => w.MOTS !== 'Bravo !');
                                 // Calculate stats
