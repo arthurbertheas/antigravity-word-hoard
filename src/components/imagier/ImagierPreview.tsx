@@ -218,33 +218,38 @@ export function ImagierPreview({
             </div>
           </div>
 
-          {/* Page navigation */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3.5 mt-2 print:hidden">
-              <button
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 0}
-                className="w-8 h-8 rounded-lg border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] hover:border-[#6C5CE7] hover:text-[#6C5CE7] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-xs font-semibold text-[#9CA3AF]">
-                Page {currentPage + 1} / {totalPages}
-              </span>
-              <button
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage >= totalPages - 1}
-                className="w-8 h-8 rounded-lg border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] hover:border-[#6C5CE7] hover:text-[#6C5CE7] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
+          {/* Spacer so sticky bottom doesn't overlap page */}
+          {totalPages > 1 && <div className="h-6" />}
         </div>
       </div>
 
+      {/* Page navigation — sticky bottom pill, same style as zoom bar */}
+      {totalPages > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 print:hidden">
+          <div className="inline-flex items-center gap-0.5 bg-white/90 backdrop-blur-sm rounded-full border border-black/5 px-1.5 py-0.5 shadow-sm">
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 0}
+              className="w-6 h-6 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F1F5F9] hover:text-[#1A1A2E] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-3 h-3" />
+            </button>
+            <span className="text-[11px] font-bold text-[#6B7280] min-w-[56px] text-center tabular-nums">
+              {currentPage + 1} / {totalPages}
+            </span>
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages - 1}
+              className="w-6 h-6 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F1F5F9] hover:text-[#1A1A2E] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Drag hint — floating overlay, auto-dismisses after 10s */}
-      <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none print:hidden transition-opacity duration-700 ${showDragHint ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`absolute ${totalPages > 1 ? 'bottom-14' : 'bottom-4'} left-1/2 -translate-x-1/2 z-10 pointer-events-none print:hidden transition-opacity duration-700 ${showDragHint ? 'opacity-100' : 'opacity-0'}`}>
         <div className="text-[11px] text-[#9CA3AF] bg-white/90 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-black/5 flex items-center gap-1.5">
           <Move className="w-3.5 h-3.5 opacity-50" />
           Glissez les cartes pour réorganiser
