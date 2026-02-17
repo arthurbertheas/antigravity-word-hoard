@@ -206,6 +206,32 @@ L'app est embarquée en iframe. Messages échangés :
 | `src/data/words.json` | Base de ~2 400 mots (v7) |
 | `src/data/cgp-tokens.json` | Tokens graphème-phonème |
 
+## Travail en cours (session 16/02/2026)
+
+### Export modal — redesign complet
+
+**Statut** : Preview réécrit, PDF/Word/Print mis à jour. À tester visuellement.
+
+**Changements effectués** :
+- `src/types/export.ts` — Ajout `title`, `subtitle`, `includeWordCount`, `includeSyllableCount`, `includeSyllableSegmentation`
+- `src/components/export/ExportPanel.tsx` — Réécriture complète : tabs (Document/Contenu) + footer format bar (PDF/Word/Imprimer) + CTA adaptatif
+- `src/components/export/ExportPreview.tsx` — Réécriture pour refléter fidèlement le PDF (5 layouts : list, grid-2col, grid-3col, flashcards, table)
+- `src/lib/export-utils.ts` — Titre/sous-titre dynamiques, `includeWordCount` conditionnel, syllabes (count + segmentation) dans les 3 formats (PDF, Word, Print) et tous les layouts. Footer → "La Boîte à mots"
+- `src/components/export/ExportOptions.tsx` — Plus utilisé (remplacé par les tabs inline dans ExportPanel). Peut être supprimé.
+
+**Design retenu** :
+- Option A (Panel modal) avec tabs Document/Contenu
+- Format selector en footer (tab-bar gris + blanc actif) couplé au CTA
+- Header propre (icône + titre + close) — cohérent avec PanelHeader
+- Chips toggle pour options header (Date, Nb mots) et contenu (Phonèmes, Catégorie, Nb syllabes, Segmentation, Numéroter)
+- Layout picker visuel avec mini-previews (5 layouts)
+- Mockups de référence : `mockup-export-modal-v4.html`
+
+**À vérifier** :
+- L'aperçu dans le modal reflète-t-il correctement le PDF généré ?
+- Le PDF, Word, et Print s'exportent-ils correctement avec les nouveaux settings ?
+- Les layouts flashcards et table fonctionnent-ils dans les 3 formats ?
+
 ## Pièges connus
 
 - **SVG dans les PDF** : `@react-pdf/renderer` ne supporte pas le SVG → convertir en PNG base64 via canvas
