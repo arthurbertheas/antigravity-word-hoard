@@ -1,5 +1,5 @@
 import { ExportSettings, ExportDisplay, ExportLayout, ExportFormat } from '@/types/export';
-import { FileText, FileImage, Printer, List, LayoutGrid } from 'lucide-react';
+import { FileText, FileImage, List, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ExportOptionsProps {
@@ -101,11 +101,10 @@ export function ExportOptions({ settings, onChange }: ExportOptionsProps) {
       {/* Card 3: Format */}
       <div className="bg-white rounded-xl border border-[#E5E7EB] p-4">
         <div className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3">Format</div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {[
             { value: 'pdf' as const, icon: FileText, color: '#EF4444', bgColor: '#FEF2F2', label: 'PDF' },
             { value: 'word' as const, icon: FileImage, color: '#3B82F6', bgColor: '#EFF6FF', label: 'Word' },
-            { value: 'print' as const, icon: Printer, color: '#10B981', bgColor: '#ECFDF5', label: 'Imprimer' },
           ].map(({ value, icon: Icon, color, bgColor, label }) => (
             <label
               key={value}

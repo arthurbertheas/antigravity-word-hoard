@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Download, X, FileText, Printer } from 'lucide-react';
+import { Download, X, FileText } from 'lucide-react';
 import { ExportSettings, DEFAULT_EXPORT_SETTINGS, ExportPanelProps, ExportFormat, ExportDisplay, ExportLayout } from '@/types/export';
 import { ExportPreview } from './ExportPreview';
-import { exportToWord, exportToPrint } from '@/lib/export-utils';
+import { exportToWord } from '@/lib/export-utils';
 import { ExportPdfDocument } from './ExportPdfDocument';
 import { pdf } from '@react-pdf/renderer';
 import { loadImageAsBase64ForImagier } from '@/utils/imagier-image-utils';
@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils';
 const FORMAT_OPTIONS: { value: ExportFormat; label: string; ctaLabel: string; icon: typeof FileText }[] = [
   { value: 'pdf', label: 'PDF', ctaLabel: 'Télécharger le PDF', icon: FileText },
   { value: 'word', label: 'Word', ctaLabel: 'Télécharger le Word', icon: FileText },
-  { value: 'print', label: 'Imprimer', ctaLabel: 'Imprimer', icon: Printer },
 ];
 
 const LAYOUT_OPTIONS: { value: ExportLayout; label: string }[] = [
@@ -188,10 +187,6 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
         case 'word':
           await exportToWord(selectedWords, settings, wordStatuses, currentIndex);
           toast.success('Document Word téléchargé avec succès !');
-          break;
-        case 'print':
-          exportToPrint(selectedWords, settings, wordStatuses, currentIndex);
-          toast.success('Fenêtre d\'impression ouverte');
           break;
       }
     } catch (error) {

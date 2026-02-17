@@ -1,7 +1,7 @@
 import { Word } from "./word";
 import { WordStatus } from "@/contexts/PlayerContext";
 
-export type ExportFormat = 'pdf' | 'word' | 'print';
+export type ExportFormat = 'pdf' | 'word';
 export type ExportDisplay = 'wordOnly' | 'imageOnly' | 'wordAndImage';
 export type ExportLayout = 'list-1col' | 'grid-2col' | 'grid-3col' | 'flashcards' | 'table';
 export type ExportWordStatus = 'validated' | 'failed' | 'neutral' | 'not-seen';
