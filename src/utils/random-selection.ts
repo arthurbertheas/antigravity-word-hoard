@@ -13,6 +13,7 @@ interface Combination {
 export interface DistributionPreview {
     label: string;
     perValue: number;
+    isSingleValue?: boolean;
 }
 
 /**
@@ -86,13 +87,24 @@ export function calculateDistribution(
     count: number,
     filters: WordFilters
 ): DistributionPreview[] {
-    const criteria = getDistributionCriteria(filters);
+    const multiCriteria = getDistributionCriteria(filters);
+    const singleCriteria = getSingleValueCriteria(filters);
 
-    return criteria.map(criterion => {
+    const result: DistributionPreview[] = multiCriteria.map(criterion => {
         const perValue = Math.round(count / criterion.values.length);
         const label = formatCriterionLabel(criterion);
         return { label, perValue };
     });
+
+    singleCriteria.forEach(criterion => {
+        result.push({
+            label: formatCriterionLabel(criterion),
+            perValue: count,
+            isSingleValue: true
+        });
+    });
+
+    return result;
 }
 
 // --- Fonctions Auxiliaires ---
@@ -166,6 +178,32 @@ function getDistributionCriteria(filters: WordFilters): DistributionCriterion[] 
             type: 'graphemeDisplay',
             values: filters.graphemeDisplay
         });
+    }
+
+    return criteria;
+}
+
+// Identifier les filtres avec exactement une valeur (pour affichage, pas de distribution)
+function getSingleValueCriteria(filters: WordFilters): DistributionCriterion[] {
+    const criteria: DistributionCriterion[] = [];
+
+    if (filters.phonemes && filters.phonemes.length === 1) {
+        criteria.push({ type: 'phonemes', values: filters.phonemes.map(t => t.value) });
+    }
+    if (filters.categories && filters.categories.length === 1) {
+        criteria.push({ type: 'categories', values: filters.categories });
+    }
+    if (filters.graphemes && filters.graphemes.length === 1) {
+        criteria.push({ type: 'graphemes', values: filters.graphemes.map(t => t.value) });
+    }
+    if (filters.structures && filters.structures.length === 1) {
+        criteria.push({ type: 'structures', values: filters.structures });
+    }
+    if (filters.frequencies && filters.frequencies.length === 1) {
+        criteria.push({ type: 'frequencies', values: filters.frequencies });
+    }
+    if (filters.graphemeDisplay && filters.graphemeDisplay.length === 1) {
+        criteria.push({ type: 'graphemeDisplay', values: filters.graphemeDisplay });
     }
 
     return criteria;

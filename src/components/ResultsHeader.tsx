@@ -8,6 +8,7 @@ interface ResultsHeaderProps {
   filters: WordFilters;
   isAllSelected: boolean;
   randomSelectedCount: number;
+  randomStaleCount: number;
   onToggleSelectAll: () => void;
   onRandomSelect: (count: number) => void;
   onRandomDeselect: () => void;
@@ -18,6 +19,7 @@ export function ResultsHeader({
   filters,
   isAllSelected,
   randomSelectedCount,
+  randomStaleCount,
   onToggleSelectAll,
   onRandomSelect,
   onRandomDeselect
@@ -73,6 +75,7 @@ export function ResultsHeader({
           availableWords={words}
           activeFilters={filters}
           randomSelectedCount={randomSelectedCount}
+          randomStaleCount={randomStaleCount}
           onRandomSelect={onRandomSelect}
           onRandomDeselect={onRandomDeselect}
           disabled={words.length === 0}

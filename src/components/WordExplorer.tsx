@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
@@ -43,32 +43,18 @@ export function WordExplorer() {
 
 function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
-    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, selectRandom, deselectRandom, clearSelection } = useSelection();
+    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, selectRandom, deselectRandom } = useSelection();
     const [isImagierOpen, setIsImagierOpen] = useState(false);
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen || isImagierOpen);
 
-    // Reset ONLY random selection when filters change
-    // Manual selection (individual words, select all) should persist
-    // Random selection is based on filters, so it becomes invalid when filters change
-    const isFirstRender = useRef(true);
-    const previousRandomCount = useRef(randomSelectedCount);
-
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
-
-        // Only clear if there's an active random selection
-        if (previousRandomCount.current > 0) {
-            clearSelection();
-        }
-
-        // Update the ref for next render
-        previousRandomCount.current = randomSelectedCount;
-    }, [filters, clearSelection, randomSelectedCount]);
+    // Compute how many randomly-selected words are no longer in the filtered results
+    const randomStaleCount = useMemo(() => {
+        if (randomSelectedCount === 0) return 0;
+        const wordSet = new Set(words.map(w => `${w.MOTS}_${w.SYNT}_${w.PHONEMES}_${w.NBSYLL}`));
+        return selectedWords.filter(sw => !wordSet.has(`${sw.MOTS}_${sw.SYNT}_${sw.PHONEMES}_${sw.NBSYLL}`)).length;
+    }, [randomSelectedCount, words, selectedWords]);
 
     // Reset page when filters change
     const handleFilterChange = <K extends keyof typeof filters>(key: K, value: typeof filters[K]) => {
@@ -130,6 +116,7 @@ function WordExplorerContent() {
                         selectedWords.some(sw => sw.MOTS === word.MOTS)
                     )}
                     randomSelectedCount={randomSelectedCount}
+                    randomStaleCount={randomStaleCount}
                     onToggleSelectAll={() => {
                         const isAllSelected = words.length > 0 && words.every(word =>
                             selectedWords.some(sw => sw.MOTS === word.MOTS)
