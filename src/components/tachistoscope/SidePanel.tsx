@@ -189,7 +189,7 @@ export function SidePanel() {
             {/* BACKDROP - Always in DOM, animated with classes */}
             <div
                 className={cn(
-                    "fixed inset-0 z-[70] transition-opacity bg-background/0 cursor-default",
+                    "fixed inset-0 top-11 z-[70] transition-opacity bg-background/0 cursor-default",
                     isPanelOpen
                         ? "opacity-100 duration-300 pointer-events-auto"
                         : "opacity-0 duration-0 pointer-events-none"
@@ -199,7 +199,7 @@ export function SidePanel() {
 
             {/* PANEL - Always in DOM, animated with classes */}
             <aside className={cn(
-                "fixed right-0 top-0 h-screen bg-card border-l border-border flex flex-col overflow-hidden z-[80] shadow-2xl transition-all",
+                "fixed right-0 top-11 h-[calc(100vh-2.75rem)] bg-card border-l border-border flex flex-col overflow-hidden z-[80] shadow-2xl transition-all",
                 isPanelOpen
                     ? "translate-x-0 opacity-100 duration-300 ease-in-out pointer-events-auto"
                     : "translate-x-full opacity-0 duration-0 pointer-events-none",

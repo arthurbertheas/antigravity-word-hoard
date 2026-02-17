@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelection, getWordId } from "@/contexts/SelectionContext";
 import { Button } from "@/components/ui/button";
-import { ListChecks, ChevronRight, X, Trash2, ChevronLeft, Save, Folder, Play, FileDown, ImageIcon } from "lucide-react";
+import { ListChecks, ChevronsRight, X, Trash2, ChevronsLeft, Save, Folder, Play, FileDown, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSavedListsContext } from "@/contexts/SavedListsContext";
 import { SaveListModal } from "@/components/saved-lists/SaveListModal";
@@ -175,7 +175,7 @@ export function SelectionTray({ onOpenImagier }: { onOpenImagier: () => void }) 
           className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0"
           title="Ouvrir Ma Liste">
 
-            <ChevronLeft className="w-4 h-4" strokeWidth={1.8} />
+            <ChevronsLeft className="w-4 h-4" strokeWidth={1.8} />
           </button>
 
           <div className="flex flex-col items-center gap-2">
@@ -220,7 +220,7 @@ export function SelectionTray({ onOpenImagier }: { onOpenImagier: () => void }) 
                 className="flex-none w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
                 title="Réduire (C)">
 
-                    <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
+                    <ChevronsRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
                   </button>
                 </div>
             } />
