@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Word } from '@/types/word';
 import { ImagierSettings, LAYOUT_OPTIONS } from '@/types/imagier';
-import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer, GripVertical, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { getDeterminer, formatPhonemes } from '@/utils/imagier-utils';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { PanelHeader } from '@/components/ui/PanelHeader';
@@ -41,7 +41,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
             className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] flex-shrink-0"
             title="Ouvrir le panneau"
           >
-            <ChevronLeft className="w-4 h-4" strokeWidth={1.8} />
+            <ChevronsLeft className="w-4 h-4" strokeWidth={1.8} />
           </button>
 
           <div className="flex flex-col items-center gap-2">
@@ -89,7 +89,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                 className="w-9 h-9 rounded-[10px] border-[1.5px] border-[#E5E7EB] bg-white flex items-center justify-center text-[#6B7280] transition-all hover:border-[#C4B8FF] hover:bg-[#F8F6FF] hover:text-[#6C5CE7] group"
                 title="Réduire le panneau"
               >
-                <ChevronRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
+                <ChevronsRight className="w-4 h-4 group-hover:scale-110 transition-transform" strokeWidth={1.8} />
               </button>
             }
           />
