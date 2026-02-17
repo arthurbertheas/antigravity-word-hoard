@@ -1,5 +1,6 @@
 import {
   Document, Page, View, Text, Image, Font, StyleSheet,
+  Svg, Rect, Line, Path,
 } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
 import { ExportSettings, STATUS_COLORS, getWordExportStatus, ExportWordStatus } from '@/types/export';
@@ -322,21 +323,52 @@ function WordImage({ word, imageMap, size = 32 }: { word: Word; imageMap: Map<st
 
 /* ─── Header ─── */
 
+/* ─── SVG Icons for header ─── */
+
+function CalendarIcon() {
+  return (
+    <Svg width={10} height={10} viewBox="0 0 24 24">
+      <Rect x="3" y="4" width="18" height="18" rx="2" stroke="#48BB78" strokeWidth="2" fill="none" />
+      <Line x1="3" y1="10" x2="21" y2="10" stroke="#48BB78" strokeWidth="2" />
+      <Line x1="8" y1="2" x2="8" y2="6" stroke="#48BB78" strokeWidth="2" />
+      <Line x1="16" y1="2" x2="16" y2="6" stroke="#48BB78" strokeWidth="2" />
+    </Svg>
+  );
+}
+
+function TagIcon() {
+  return (
+    <Svg width={10} height={10} viewBox="0 0 24 24">
+      <Path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" stroke="#48BB78" strokeWidth="2" fill="none" />
+      <Path d="M7 7h.01" stroke="#48BB78" strokeWidth="3" />
+    </Svg>
+  );
+}
+
 function PdfHeader({ words, settings, isSessionMode }: { words: Word[]; settings: ExportSettings; isSessionMode: boolean }) {
   const defaultTitle = isSessionMode ? 'Résultats de session' : 'Ma sélection de mots';
   const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-  // Build meta parts as a single string to avoid character rendering issues
-  const metaParts: string[] = [];
-  if (settings.includeDate) metaParts.push(today);
-  if (settings.includeWordCount) metaParts.push(`${words.length} mots`);
-  const metaLine = metaParts.join('  -  ');
 
   return (
     <View style={s.header}>
       <Text style={s.title}>{settings.title || defaultTitle}</Text>
       {settings.subtitle ? <Text style={s.subtitle}>{settings.subtitle}</Text> : null}
-      {metaLine && <Text style={s.metaText}>{metaLine}</Text>}
+      {(settings.includeDate || settings.includeWordCount) && (
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          {settings.includeDate && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <CalendarIcon />
+              <Text style={s.metaText}>{today}</Text>
+            </View>
+          )}
+          {settings.includeWordCount && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <TagIcon />
+              <Text style={s.metaText}>{words.length} mots</Text>
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 }
