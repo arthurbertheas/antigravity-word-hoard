@@ -7,6 +7,12 @@ export type ExportLayout = 'list-1col' | 'grid-2col' | 'grid-3col' | 'flashcards
 export type ExportWordStatus = 'validated' | 'failed' | 'neutral' | 'not-seen';
 
 export interface ExportSettings {
+  // En-tête du document
+  title: string;
+  subtitle: string;
+  includeDate: boolean;
+  includeWordCount: boolean;
+
   // Affichage
   display: ExportDisplay;
 
@@ -16,21 +22,27 @@ export interface ExportSettings {
   // Mise en page
   layout: ExportLayout;
 
-  // Options
-  includeDate: boolean;
+  // Contenu par mot
   includePhonemes: boolean;
-  numberWords: boolean;
   includeCategories: boolean;
+  includeSyllableCount: boolean;
+  includeSyllableSegmentation: boolean;
+  numberWords: boolean;
 }
 
 export const DEFAULT_EXPORT_SETTINGS: ExportSettings = {
+  title: '',
+  subtitle: '',
+  includeDate: true,
+  includeWordCount: true,
   display: 'wordOnly',
   format: 'pdf',
   layout: 'list-1col',
-  includeDate: true,
   includePhonemes: false,
-  numberWords: false,
   includeCategories: false,
+  includeSyllableCount: false,
+  includeSyllableSegmentation: false,
+  numberWords: false,
 };
 
 export interface ExportPanelProps {

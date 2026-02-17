@@ -124,14 +124,18 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
       {/* Document Preview */}
       <div className="bg-[#F8F9FC] border border-[#F3F4F6] rounded-xl p-7 min-h-[400px]">
         {/* Document Header */}
-        {settings.includeDate && (
-          <div className="pb-3 mb-4 border-b border-[#F3F4F6]">
-            <h3 className="text-base font-bold font-sora text-[#1A1A2E]">
-              {isSessionMode ? 'Résultats de session' : 'Mots à retravailler'} — {formatDate()}
-            </h3>
+        <div className="pb-3 mb-4 border-b border-[#F3F4F6]">
+          <h3 className="text-base font-bold font-sora text-[#1A1A2E]">
+            {settings.title || (isSessionMode ? 'Résultats de session' : 'Ma sélection de mots')}
+            {settings.includeDate && ` — ${formatDate()}`}
+          </h3>
+          {settings.subtitle && (
+            <p className="text-[12px] text-[#6C5CE7] font-medium mt-0.5">{settings.subtitle}</p>
+          )}
+          {settings.includeWordCount && (
             <p className="text-[12px] text-[#6B7280] mt-0.5">{words.length} mots</p>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Session Stats (only in session mode) */}
         {isSessionMode && wordStatuses && currentIndex !== undefined && (
@@ -207,6 +211,12 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
                     {settings.includeCategories && word.SYNT && (
                       <span className="text-[11px] text-[#9CA3AF] ml-2">({word.SYNT})</span>
                     )}
+                    {settings.includeSyllableCount && word.NBSYLL && (
+                      <span className="text-[11px] text-[#9CA3AF] ml-2">{word.NBSYLL} syll.</span>
+                    )}
+                    {settings.includeSyllableSegmentation && word["segmentation syllabique"] && (
+                      <span className="text-[11px] text-[#10B981] ml-2 font-mono">{word["segmentation syllabique"]}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -221,7 +231,7 @@ export function ExportPreview({ words, settings, wordStatuses, currentIndex }: E
 
         {/* Footer */}
         <div className="mt-5 pt-3 border-t border-[#F3F4F6] text-[11px] text-[#9CA3AF] italic text-center">
-          Généré depuis Ressources Orthophonie
+          Généré depuis La Boîte à mots
         </div>
       </div>
     </div>

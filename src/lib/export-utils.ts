@@ -157,29 +157,36 @@ export async function exportToPDF(words: Word[], settings: ExportSettings, wordS
 
   // === HEADER ===
   // Title
+  const title = settings.title || (isSessionMode ? 'Résultats de session' : 'Ma sélection de mots');
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(26, 32, 44); // Dark text
-  doc.text(isSessionMode ? 'Résultats de session' : 'Mots à retravailler', margin, yPosition);
+  doc.text(title, margin, yPosition);
   yPosition += 8;
 
   // Subtitle
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(...primaryColor);
-  doc.text('Liste d\'exercices personnalisée', margin, yPosition);
-  yPosition += 8;
+  if (settings.subtitle) {
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...primaryColor);
+    doc.text(settings.subtitle, margin, yPosition);
+    yPosition += 8;
+  }
 
   // Meta info (date + word count)
-  doc.setFontSize(10);
-  doc.setTextColor(...textGray);
-  let metaText = '';
+  const metaParts: string[] = [];
   if (settings.includeDate) {
-    metaText = `📅 ${new Date().toLocaleDateString('fr-FR')}    `;
+    metaParts.push(`📅 ${new Date().toLocaleDateString('fr-FR')}`);
   }
-  metaText += `🏷️  ${words.length} mots sélectionnés`;
-  doc.text(metaText, margin, yPosition);
-  yPosition += 5;
+  if (settings.includeWordCount) {
+    metaParts.push(`🏷️  ${words.length} mots sélectionnés`);
+  }
+  if (metaParts.length > 0) {
+    doc.setFontSize(10);
+    doc.setTextColor(...textGray);
+    doc.text(metaParts.join('    '), margin, yPosition);
+    yPosition += 5;
+  }
 
   // Gradient border (simulated with violet line)
   doc.setDrawColor(...primaryColor);
@@ -373,6 +380,24 @@ export async function exportToPDF(words: Word[], settings: ExportSettings, wordS
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(...textGray);
           doc.text(word.SYNT.toUpperCase(), contentX, contentY + 3);
+          contentY += 5;
+        }
+
+        // Syllable count
+        if (settings.includeSyllableCount && word.NBSYLL) {
+          doc.setFontSize(settings.layout === 'grid-3col' ? 7 : 8);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...textGray);
+          doc.text(`${word.NBSYLL} syll.`, contentX, contentY + 3);
+          contentY += 5;
+        }
+
+        // Syllable segmentation
+        if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+          doc.setFontSize(settings.layout === 'grid-3col' ? 7 : 8);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(16, 185, 129); // #10B981
+          doc.text(word["segmentation syllabique"], contentX, contentY + 3);
         }
       }
 
@@ -483,6 +508,20 @@ export async function exportToPDF(words: Word[], settings: ExportSettings, wordS
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(...textGray);
           doc.text(`(${word.SYNT})`, extraX, contentY);
+          extraX += doc.getTextWidth(`(${word.SYNT})`) + 5;
+        }
+        if (settings.includeSyllableCount && word.NBSYLL) {
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...textGray);
+          doc.text(`${word.NBSYLL} syll.`, extraX, contentY);
+          extraX += doc.getTextWidth(`${word.NBSYLL} syll.`) + 5;
+        }
+        if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(16, 185, 129); // #10B981
+          doc.text(word["segmentation syllabique"], extraX, contentY);
         }
       }
 
@@ -494,7 +533,7 @@ export async function exportToPDF(words: Word[], settings: ExportSettings, wordS
   doc.setFontSize(9);
   doc.setFont('helvetica', 'italic');
   doc.setTextColor(160, 174, 192);
-  doc.text('Généré depuis Ressources Orthophonie', pageWidth / 2, pageHeight - 10, { align: 'center' });
+  doc.text('Généré depuis La Boîte à mots', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
   const filename = `mots-${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(filename);
@@ -509,12 +548,14 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
   const textGray = '718096';
 
   // === HEADER ===
+  const wordTitle = settings.title || (isSessionMode ? 'Résultats de session' : 'Ma sélection de mots');
+
   // Title
   children.push(
     new Paragraph({
       children: [
         new TextRun({
-          text: isSessionMode ? 'Résultats de session' : 'Mots à retravailler',
+          text: wordTitle,
           bold: true,
           size: 32, // 16pt
           color: '1A202C', // Dark
@@ -525,18 +566,20 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
   );
 
   // Subtitle
-  children.push(
-    new Paragraph({
-      children: [
-        new TextRun({
-          text: 'Liste d\'exercices personnalisée',
-          size: 22, // 11pt
-          color: primaryColor,
-        }),
-      ],
-      spacing: { after: 150 },
-    })
-  );
+  if (settings.subtitle) {
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: settings.subtitle,
+            size: 22, // 11pt
+            color: primaryColor,
+          }),
+        ],
+        spacing: { after: 150 },
+      })
+    );
+  }
 
   // Meta info
   const metaRuns: TextRun[] = [];
@@ -549,19 +592,23 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
       })
     );
   }
-  metaRuns.push(
-    new TextRun({
-      text: `🏷️  ${words.length} mots sélectionnés`,
-      size: 20,
-      color: textGray,
-    })
-  );
-  children.push(
-    new Paragraph({
-      children: metaRuns,
-      spacing: { after: 100 },
-    })
-  );
+  if (settings.includeWordCount) {
+    metaRuns.push(
+      new TextRun({
+        text: `🏷️  ${words.length} mots sélectionnés`,
+        size: 20,
+        color: textGray,
+      })
+    );
+  }
+  if (metaRuns.length > 0) {
+    children.push(
+      new Paragraph({
+        children: metaRuns,
+        spacing: { after: 100 },
+      })
+    );
+  }
 
   // Separator line (using border)
   children.push(
@@ -774,6 +821,28 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
             );
           }
 
+          // Syllable count
+          if (settings.includeSyllableCount && word.NBSYLL) {
+            textRuns.push(
+              new TextRun({
+                text: ` ${word.NBSYLL} syll.`,
+                color: textGray,
+                size: settings.layout === 'grid-3col' ? 16 : 18,
+              })
+            );
+          }
+
+          // Syllable segmentation
+          if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+            textRuns.push(
+              new TextRun({
+                text: ` ${word["segmentation syllabique"]}`,
+                color: '10B981',
+                size: settings.layout === 'grid-3col' ? 16 : 18,
+              })
+            );
+          }
+
           if (textRuns.length > 0) {
             cellChildren.push(
               new Paragraph({
@@ -919,6 +988,28 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         );
       }
 
+      // Syllable count
+      if (settings.includeSyllableCount && word.NBSYLL) {
+        paragraphChildren.push(
+          new TextRun({
+            text: ` ${word.NBSYLL} syll.`,
+            color: textGray,
+            size: 18,
+          })
+        );
+      }
+
+      // Syllable segmentation
+      if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+        paragraphChildren.push(
+          new TextRun({
+            text: ` ${word["segmentation syllabique"]}`,
+            color: '10B981',
+            size: 18,
+          })
+        );
+      }
+
       // Left border color - use status color in session mode, violet otherwise
       const leftBorderColor = (isSessionMode && statusColors) ? statusColors.border.slice(1) : primaryColor;
 
@@ -969,7 +1060,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
     new Paragraph({
       children: [
         new TextRun({
-          text: 'Généré depuis Ressources Orthophonie',
+          text: 'Généré depuis La Boîte à mots',
           italics: true,
           color: 'A0AEC0', // Light gray
           size: 18,
@@ -1004,7 +1095,7 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${isSessionMode ? 'Résultats de session' : 'Mots à retravailler'}</title>
+      <title>${settings.title || (isSessionMode ? 'Résultats de session' : 'Ma sélection de mots')}</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1237,6 +1328,17 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
           font-weight: 500;
           text-transform: uppercase;
           letter-spacing: 0.3px;
+        }
+
+        .word-syllable-count {
+          font-size: 12px;
+          color: var(--color-text-secondary);
+        }
+
+        .word-segmentation {
+          font-size: 12px;
+          color: #10B981;
+          font-family: monospace;
         }
 
         @media print {
@@ -1632,8 +1734,8 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
 
   html += `
     <header class="document-header">
-      <h1 class="header-title">${isSessionMode ? 'Résultats de session' : 'Mots à retravailler'}</h1>
-      <p class="header-subtitle">Liste d'exercices personnalisée</p>
+      <h1 class="header-title">${settings.title || (isSessionMode ? 'Résultats de session' : 'Ma sélection de mots')}</h1>
+      ${settings.subtitle ? `<p class="header-subtitle">${settings.subtitle}</p>` : ''}
       <div class="header-meta">
   `;
 
@@ -1646,11 +1748,16 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
     `;
   }
 
-  html += `
+  if (settings.includeWordCount) {
+    html += `
         <div class="meta-item">
           <span class="meta-emoji">&#x1F3F7;&#xFE0F;</span>
           <span>${words.length} mots sélectionnés</span>
         </div>
+    `;
+  }
+
+  html += `
       </div>
     </header>
   `;
@@ -1720,13 +1827,19 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
         html += `<div class="word-details">`;
         html += `<div class="word-text">${word.MOTS}</div>`;
 
-        if (settings.includePhonemes || settings.includeCategories) {
+        if (settings.includePhonemes || settings.includeCategories || settings.includeSyllableCount || settings.includeSyllableSegmentation) {
           html += `<div class="word-meta">`;
           if (settings.includePhonemes && word.PHONEMES) {
             html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
           }
           if (settings.includeCategories && word.SYNT) {
             html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          if (settings.includeSyllableCount && word.NBSYLL) {
+            html += `<span class="word-syllable-count">${word.NBSYLL} syll.</span>`;
+          }
+          if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+            html += `<span class="word-segmentation">${word["segmentation syllabique"]}</span>`;
           }
           html += `</div>`;
         }
@@ -1769,13 +1882,19 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
         html += `<div class="word-details">`;
         html += `<div class="word-text">${word.MOTS}</div>`;
 
-        if (settings.includePhonemes || settings.includeCategories) {
+        if (settings.includePhonemes || settings.includeCategories || settings.includeSyllableCount || settings.includeSyllableSegmentation) {
           html += `<div class="word-meta">`;
           if (settings.includePhonemes && word.PHONEMES) {
             html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
           }
           if (settings.includeCategories && word.SYNT) {
             html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          if (settings.includeSyllableCount && word.NBSYLL) {
+            html += `<span class="word-syllable-count">${word.NBSYLL} syll.</span>`;
+          }
+          if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+            html += `<span class="word-segmentation">${word["segmentation syllabique"]}</span>`;
           }
           html += `</div>`;
         }
@@ -1816,13 +1935,19 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
         html += `<div class="word-details">`;
         html += `<div class="word-text">${word.MOTS}</div>`;
 
-        if (settings.includePhonemes || settings.includeCategories) {
+        if (settings.includePhonemes || settings.includeCategories || settings.includeSyllableCount || settings.includeSyllableSegmentation) {
           html += `<div class="word-meta">`;
           if (settings.includePhonemes && word.PHONEMES) {
             html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
           }
           if (settings.includeCategories && word.SYNT) {
             html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          if (settings.includeSyllableCount && word.NBSYLL) {
+            html += `<span class="word-syllable-count">${word.NBSYLL} syll.</span>`;
+          }
+          if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+            html += `<span class="word-segmentation">${word["segmentation syllabique"]}</span>`;
           }
           html += `</div>`;
         }
@@ -1862,13 +1987,19 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
       if (settings.display !== 'imageOnly') {
         html += `<div class="flashcard-text">${word.MOTS}</div>`;
 
-        if (settings.includePhonemes || settings.includeCategories) {
+        if (settings.includePhonemes || settings.includeCategories || settings.includeSyllableCount || settings.includeSyllableSegmentation) {
           html += `<div class="flashcard-meta">`;
           if (settings.includePhonemes && word.PHONEMES) {
             html += `<span class="flashcard-phoneme">/${word.PHONEMES}/</span>`;
           }
           if (settings.includeCategories && word.SYNT) {
             html += `<span class="flashcard-category">${word.SYNT}</span>`;
+          }
+          if (settings.includeSyllableCount && word.NBSYLL) {
+            html += `<span class="word-syllable-count">${word.NBSYLL} syll.</span>`;
+          }
+          if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+            html += `<span class="word-segmentation">${word["segmentation syllabique"]}</span>`;
           }
           html += `</div>`;
         }
@@ -1907,6 +2038,14 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
       html += `<th>Catégorie</th>`;
     }
 
+    if (settings.includeSyllableCount) {
+      html += `<th>Syllabes</th>`;
+    }
+
+    if (settings.includeSyllableSegmentation) {
+      html += `<th>Segmentation</th>`;
+    }
+
     html += `</tr></thead>`;
     html += `<tbody>`;
 
@@ -1943,6 +2082,14 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
         html += `<td><span class="table-category">${word.SYNT || ''}</span></td>`;
       }
 
+      if (settings.includeSyllableCount) {
+        html += `<td class="word-syllable-count">${word.NBSYLL || ''}</td>`;
+      }
+
+      if (settings.includeSyllableSegmentation) {
+        html += `<td class="word-segmentation">${word["segmentation syllabique"] || ''}</td>`;
+      }
+
       html += `</tr>`;
     });
 
@@ -1976,13 +2123,19 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
         html += `<div class="word-details">`;
         html += `<div class="word-text">${word.MOTS}</div>`;
 
-        if (settings.includePhonemes || settings.includeCategories) {
+        if (settings.includePhonemes || settings.includeCategories || settings.includeSyllableCount || settings.includeSyllableSegmentation) {
           html += `<div class="word-meta">`;
           if (settings.includePhonemes && word.PHONEMES) {
             html += `<span class="word-phoneme">/${word.PHONEMES}/</span>`;
           }
           if (settings.includeCategories && word.SYNT) {
             html += `<span class="word-category">${word.SYNT}</span>`;
+          }
+          if (settings.includeSyllableCount && word.NBSYLL) {
+            html += `<span class="word-syllable-count">${word.NBSYLL} syll.</span>`;
+          }
+          if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+            html += `<span class="word-segmentation">${word["segmentation syllabique"]}</span>`;
           }
           html += `</div>`;
         }
@@ -2000,7 +2153,7 @@ export function exportToPrint(words: Word[], settings: ExportSettings, wordStatu
   }
   html += `
     <footer class="document-footer">
-      <div class="footer-brand">Généré depuis Ressources Orthophonie</div>
+      <div class="footer-brand">Généré depuis La Boîte à mots</div>
       <div class="footer-tagline">Document créé avec soin pour la rééducation</div>
     </footer>
   `;
