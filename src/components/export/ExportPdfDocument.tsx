@@ -18,6 +18,15 @@ Font.register({
 
 Font.registerHyphenationCallback(word => [word]);
 
+/* ─── Helpers ─── */
+
+const br = (r: number) => ({
+  borderTopLeftRadius: r,
+  borderTopRightRadius: r,
+  borderBottomLeftRadius: r,
+  borderBottomRightRadius: r,
+});
+
 /* ─── Colors ─── */
 
 const C = {
@@ -50,6 +59,7 @@ const s = StyleSheet.create({
     paddingBottom: 12,
     borderBottomWidth: 2,
     borderBottomColor: C.primary,
+    borderBottomStyle: 'solid',
     marginBottom: 16,
   },
   title: {
@@ -79,6 +89,7 @@ const s = StyleSheet.create({
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: C.border,
+    borderTopStyle: 'solid',
     alignItems: 'center',
   },
   footerText: {
@@ -94,12 +105,13 @@ const s = StyleSheet.create({
     backgroundColor: '#FAFBFC',
     borderWidth: 1,
     borderColor: C.border,
-    borderRadius: 6,
+    borderStyle: 'solid',
+    ...br(6),
   },
   progressBar: {
     flexDirection: 'row',
     height: 5,
-    borderRadius: 3,
+    ...br(3),
     overflow: 'hidden',
     marginBottom: 8,
     backgroundColor: '#F1F5F9',
@@ -122,7 +134,7 @@ const s = StyleSheet.create({
     color: C.greenText,
   },
 
-  /* List layout */
+  /* List layout — card uses borderLeft for accent */
   listContainer: {
     flexDirection: 'column',
     gap: 6,
@@ -134,39 +146,37 @@ const s = StyleSheet.create({
     backgroundColor: C.bgCard,
     borderWidth: 1,
     borderColor: C.border,
-    borderRadius: 6,
+    borderStyle: 'solid',
+    ...br(6),
     padding: 8,
     paddingLeft: 12,
+    borderLeftWidth: 3,
   },
 
   /* Grid layout */
-  gridRow: {
-    flexDirection: 'row',
-    gap: 6,
-  },
   gridCard: {
     flex: 1,
     backgroundColor: C.bgCard,
     borderWidth: 1,
     borderColor: C.border,
-    borderRadius: 6,
+    borderStyle: 'solid',
+    ...br(6),
     padding: 8,
     paddingLeft: 12,
+    borderLeftWidth: 3,
   },
 
   /* Flashcard layout */
-  flashcardRow: {
-    flexDirection: 'row',
-    gap: 6,
-  },
   flashcard: {
     flex: 1,
     backgroundColor: C.bgCard,
     borderWidth: 1,
     borderColor: C.border,
-    borderRadius: 6,
+    borderStyle: 'solid',
+    ...br(6),
     padding: 6,
     alignItems: 'center',
+    borderTopWidth: 3,
   },
 
   /* Table layout */
@@ -175,6 +185,7 @@ const s = StyleSheet.create({
     backgroundColor: C.bgCard,
     borderBottomWidth: 2,
     borderBottomColor: C.primary,
+    borderBottomStyle: 'solid',
     paddingVertical: 6,
     paddingHorizontal: 4,
   },
@@ -189,6 +200,7 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 0.5,
     borderBottomColor: C.border,
+    borderBottomStyle: 'solid',
     paddingVertical: 5,
     paddingHorizontal: 4,
     alignItems: 'center',
@@ -202,40 +214,23 @@ const s = StyleSheet.create({
   },
 
   /* Shared */
-  leftAccent: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 3,
-    borderTopLeftRadius: 6,
-    borderBottomLeftRadius: 6,
-  },
-  topAccent: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 3,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-  },
   statusBadge: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    width: 16,
+    height: 16,
+    ...br(8),
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderStyle: 'solid',
   },
   statusBadgeText: {
-    fontSize: 7,
+    fontSize: 8,
     fontWeight: 700,
-    color: '#FFFFFF',
   },
   numberBadge: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    width: 16,
+    height: 16,
+    ...br(8),
     backgroundColor: C.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -254,9 +249,10 @@ const s = StyleSheet.create({
   wordImage: {
     width: 32,
     height: 32,
-    borderRadius: 4,
+    ...br(4),
     borderWidth: 0.5,
     borderColor: C.border,
+    borderStyle: 'solid',
     objectFit: 'contain' as const,
   },
   wordText: {
@@ -273,19 +269,13 @@ const s = StyleSheet.create({
     backgroundColor: '#EDF2F7',
     paddingHorizontal: 4,
     paddingVertical: 1,
-    borderRadius: 4,
+    ...br(4),
   },
   syllableText: {
     color: C.textGray,
   },
   segmentationText: {
     color: C.green,
-  },
-  moreText: {
-    fontSize: 8,
-    fontStyle: 'italic',
-    color: C.textMuted,
-    marginTop: 6,
   },
 });
 
@@ -304,7 +294,7 @@ interface ExportPdfDocumentProps {
 function StatusBadge({ status }: { status: ExportWordStatus }) {
   const colors = STATUS_COLORS[status];
   return (
-    <View style={[s.statusBadge, { backgroundColor: colors.bg, borderWidth: 1, borderColor: colors.border }]}>
+    <View style={[s.statusBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}>
       <Text style={[s.statusBadgeText, { color: colors.text }]}>{colors.symbol}</Text>
     </View>
   );
@@ -417,8 +407,7 @@ function ListLayout({ words, settings, imageMap, isSessionMode, wordStatuses, cu
         const accentColor = status ? STATUS_COLORS[status].border : C.primary;
 
         return (
-          <View key={`${word.MOTS}-${index}`} style={s.listCard} wrap={false}>
-            <View style={[s.leftAccent, { backgroundColor: accentColor }]} />
+          <View key={`${word.MOTS}-${index}`} style={[s.listCard, { borderLeftColor: accentColor }]} wrap={false}>
             {status && <StatusBadge status={status} />}
             {!isSessionMode && settings.numberWords && <NumberBadge n={index + 1} />}
             {!isSessionMode && !settings.numberWords && <Text style={s.bullet}>•</Text>}
@@ -452,7 +441,7 @@ function GridLayout({ words, settings, imageMap, cols, isSessionMode, wordStatus
   return (
     <View style={{ flexDirection: 'column', gap: 6 }}>
       {rows.map((row, ri) => (
-        <View key={ri} style={s.gridRow} wrap={false}>
+        <View key={ri} style={{ flexDirection: 'row', gap: 6 }} wrap={false}>
           {row.map((word, ci) => {
             const index = ri * cols + ci;
             const status = isSessionMode && wordStatuses && currentIndex !== undefined
@@ -460,8 +449,7 @@ function GridLayout({ words, settings, imageMap, cols, isSessionMode, wordStatus
             const accentColor = status ? STATUS_COLORS[status].border : C.primary;
 
             return (
-              <View key={`${word.MOTS}-${index}`} style={s.gridCard}>
-                <View style={[s.leftAccent, { backgroundColor: accentColor }]} />
+              <View key={`${word.MOTS}-${index}`} style={[s.gridCard, { borderLeftColor: accentColor }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 3 }}>
                   {status && <StatusBadge status={status} />}
                   {!isSessionMode && settings.numberWords && <NumberBadge n={index + 1} />}
@@ -503,7 +491,7 @@ function FlashcardsLayout({ words, settings, imageMap, isSessionMode, wordStatus
   return (
     <View style={{ flexDirection: 'column', gap: 6 }}>
       {rows.map((row, ri) => (
-        <View key={ri} style={s.flashcardRow} wrap={false}>
+        <View key={ri} style={{ flexDirection: 'row', gap: 6 }} wrap={false}>
           {row.map((word, ci) => {
             const index = ri * cols + ci;
             const status = isSessionMode && wordStatuses && currentIndex !== undefined
@@ -511,14 +499,8 @@ function FlashcardsLayout({ words, settings, imageMap, isSessionMode, wordStatus
             const topColor = status ? STATUS_COLORS[status].border : C.primary;
 
             return (
-              <View key={`${word.MOTS}-${index}`} style={s.flashcard}>
-                <View style={[s.topAccent, { backgroundColor: topColor }]} />
+              <View key={`${word.MOTS}-${index}`} style={[s.flashcard, { borderTopColor: topColor }]}>
                 {status && <StatusBadge status={status} />}
-                {settings.numberWords && (
-                  <View style={{ position: 'absolute', top: 6, left: 6 }}>
-                    <NumberBadge n={index + 1} />
-                  </View>
-                )}
                 {hasImages && (
                   <View style={{ marginTop: 4, marginBottom: 4 }}>
                     <WordImage word={word} imageMap={imageMap} size={40} />
