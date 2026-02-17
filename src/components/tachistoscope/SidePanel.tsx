@@ -234,11 +234,12 @@ export function SidePanel() {
                                 </PanelTabsList>
 
                                 {/* ========== TAB: AFFICHAGE ========== */}
-                                <PanelTabsContent value="affichage" className="px-5 py-6">
-                                    <div className="space-y-2">
+                                <PanelTabsContent value="affichage">
+                                    <div className="flex flex-col gap-6 py-5">
                                         {/* --- TYPOGRAPHIE --- */}
+                                        <div className="px-5">
                                         <SectionHeader label="Typographie" />
-
+                                        <div className="flex flex-col gap-2.5">
                                         <Select
                                             value={settings.fontFamily}
                                             onValueChange={(v: any) => updateSettings({ fontFamily: v })}
@@ -268,9 +269,12 @@ export function SidePanel() {
                                                 className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
                                             />
                                         </div>
+                                        </div>
+                                        </div>
 
                                         {/* --- MODE D'AFFICHAGE --- */}
-                                        <SectionHeader label="Mode d'affichage" className="mt-6" />
+                                        <div className="px-5">
+                                        <SectionHeader label="Mode d'affichage" />
 
                                         {/* Content type cards */}
                                         {(() => {
@@ -392,10 +396,12 @@ export function SidePanel() {
                                                 </>
                                             );
                                         })()}
+                                        </div>
 
                                         {/* --- RYTHME D'AFFICHAGE --- */}
-                                        <SectionHeader label="Rythme d'affichage" className="mt-6" />
-
+                                        <div className="px-5">
+                                        <SectionHeader label="Rythme d'affichage" />
+                                        <div className="flex flex-col gap-2.5">
                                         <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border">
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="text-[13px] font-medium text-foreground/70">Durée d'affichage</span>
@@ -425,15 +431,18 @@ export function SidePanel() {
                                                 className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
                                             />
                                         </div>
+                                        </div>
+                                        </div>
                                     </div>
                                 </PanelTabsContent>
 
                                 {/* ========== TAB: AIDES À LA LECTURE ========== */}
-                                <PanelTabsContent value="aides" className="px-5 py-6">
-                                    <div className="space-y-2">
+                                <PanelTabsContent value="aides">
+                                    <div className="flex flex-col gap-6 py-5">
                                         {/* --- ESPACEMENTS --- */}
+                                        <div className="px-5">
                                         <SectionHeader label="Espacements" />
-
+                                        <div className="flex flex-col gap-2.5">
                                         {/* Spacing mode visual cards */}
                                         <div className="flex flex-col gap-2">
                                             {([
@@ -481,7 +490,7 @@ export function SidePanel() {
                                         </div>
 
                                         {/* Écart slider */}
-                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40 mt-2">
+                                        <div className="bg-muted p-4 rounded-[10px] space-y-3 border border-border/40">
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="text-[13px] font-medium text-foreground/70">Écart</span>
                                                 <span className="text-[15px] font-bold font-sora text-primary min-w-[60px] text-right">{(settings.spacingValue / 10).toFixed(1)}x</span>
@@ -495,10 +504,13 @@ export function SidePanel() {
                                                 className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-0 [&_[role=slider]]:h-[18px] [&_[role=slider]]:w-[18px] [&_[role=slider]]:shadow-md [&_.bg-primary]:bg-primary/15 h-1.5"
                                             />
                                         </div>
+                                        </div>
+                                        </div>
 
                                         {/* --- REPÈRES VISUELS --- */}
-                                        <SectionHeader label="Repères visuels" className="mt-6" />
-
+                                        <div className="px-5">
+                                        <SectionHeader label="Repères visuels" />
+                                        <div className="flex flex-col gap-2.5">
                                         <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
                                                 <div className="text-sm font-semibold text-foreground mb-0.5">
@@ -528,10 +540,13 @@ export function SidePanel() {
                                                 className="data-[state=checked]:bg-primary"
                                             />
                                         </div>
+                                        </div>
+                                        </div>
 
                                         {/* --- GUIDAGE ATTENTIONNEL --- */}
-                                        <SectionHeader label="Guidage attentionnel" className="mt-6" />
-
+                                        <div className="px-5">
+                                        <SectionHeader label="Guidage attentionnel" />
+                                        <div className="flex flex-col gap-2.5">
                                         <div className="flex items-start justify-between p-3.5 bg-muted rounded-[10px] border border-border transition-colors hover:bg-[#e8eaf0]">
                                             <div className="flex-1 pr-4">
                                                 <div className="text-sm font-semibold text-foreground mb-0.5">Point de fixation</div>
@@ -554,6 +569,8 @@ export function SidePanel() {
                                                 onCheckedChange={(v) => updateSettings({ enableSound: v })}
                                                 className="data-[state=checked]:bg-primary"
                                             />
+                                        </div>
+                                        </div>
                                         </div>
                                     </div>
                                 </PanelTabsContent>
