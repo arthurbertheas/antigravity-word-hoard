@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { Word } from '@/types/word';
+import { Word, WordFilters } from '@/types/word';
 import { normalizeWord, normalizeWords } from '@/utils/word-normalization';
 import { selectRandomWords } from '@/utils/random-selection';
 
@@ -16,7 +16,8 @@ interface SelectionContextType {
     isFocusModeOpen: boolean;
     setIsFocusModeOpen: (open: boolean) => void;
     randomSelectedCount: number;
-    selectRandom: (count: number, words: Word[], filters: any) => void;
+    randomFiltersSnapshot: string | null;
+    selectRandom: (count: number, words: Word[], filters: WordFilters) => void;
     deselectRandom: () => void;
 }
 
@@ -36,16 +37,19 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     });
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
     const [randomSelectedCount, setRandomSelectedCount] = useState(0);
+    const [randomFiltersSnapshot, setRandomFiltersSnapshot] = useState<string | null>(null);
 
-    const selectRandom = useCallback((count: number, words: Word[], filters: any) => {
+    const selectRandom = useCallback((count: number, words: Word[], filters: WordFilters) => {
         const selected = selectRandomWords(count, words, filters);
         setSelection(selected);
         setRandomSelectedCount(count);
+        setRandomFiltersSnapshot(JSON.stringify(filters));
     }, []);
 
     const deselectRandom = useCallback(() => {
         clearSelection();
         setRandomSelectedCount(0);
+        setRandomFiltersSnapshot(null);
     }, []);
 
     const addItem = useCallback((word: Word) => {
@@ -157,6 +161,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
             isFocusModeOpen,
             setIsFocusModeOpen,
             randomSelectedCount,
+            randomFiltersSnapshot,
             selectRandom,
             deselectRandom
         }}>

@@ -8,6 +8,7 @@ interface RandomSelectButtonProps {
     availableWords: Word[];
     activeFilters: WordFilters;
     randomSelectedCount: number;
+    isRandomStale: boolean;
     randomStaleCount: number;
     onRandomSelect: (count: number) => void;
     onRandomDeselect: () => void;
@@ -18,6 +19,7 @@ export function RandomSelectButton({
     availableWords,
     activeFilters,
     randomSelectedCount,
+    isRandomStale,
     randomStaleCount,
     onRandomSelect,
     onRandomDeselect,
@@ -25,7 +27,7 @@ export function RandomSelectButton({
 }: RandomSelectButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
     const isActive = randomSelectedCount > 0;
-    const isStale = isActive && randomStaleCount > 0;
+    const isStale = isActive && (isRandomStale || randomStaleCount > 0);
 
     const handleSelect = (count: number) => {
         onRandomSelect(count);
@@ -54,8 +56,8 @@ export function RandomSelectButton({
                     !isStale && !isActive && "hover:bg-[#fafaff]"
                 )}
             >
-                {/* Stale badge */}
-                {isStale && (
+                {/* Stale badge (only show count when words actually left the pool) */}
+                {isStale && randomStaleCount > 0 && (
                     <span className="absolute -top-[7px] -right-[7px] min-w-[18px] h-[18px] px-[5px] bg-[#f59e0b] text-white rounded-full font-sora text-[10px] font-bold flex items-center justify-center border-[2.5px] border-white shadow-[0_2px_6px_rgba(245,158,11,0.3)]">
                         {randomStaleCount}
                     </span>
@@ -104,6 +106,7 @@ export function RandomSelectButton({
                 activeFilters={activeFilters}
                 currentCount={randomSelectedCount}
                 isActive={isActive}
+                isStale={isStale}
                 staleCount={randomStaleCount}
                 onSelect={handleSelect}
                 onDeselect={handleDeselect}

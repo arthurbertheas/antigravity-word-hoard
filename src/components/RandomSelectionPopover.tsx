@@ -11,6 +11,7 @@ interface RandomSelectionPopoverProps {
     activeFilters: WordFilters;
     currentCount: number;
     isActive: boolean;
+    isStale: boolean;
     staleCount: number;
     onSelect: (count: number) => void;
     onDeselect: () => void;
@@ -23,6 +24,7 @@ export function RandomSelectionPopover({
     activeFilters,
     currentCount,
     isActive,
+    isStale,
     staleCount,
     onSelect,
     onDeselect
@@ -102,13 +104,16 @@ export function RandomSelectionPopover({
                 </div>
 
                 {/* Stale notice */}
-                {staleCount > 0 && (
+                {isStale && (
                     <div className="flex items-start gap-2.5 p-3 px-4 bg-gradient-to-br from-[#fef9ee] to-[#fff7ed] border-b border-[#fde68a]">
                         <div className="w-8 h-8 rounded-lg bg-white border border-[#fde68a] flex items-center justify-center flex-shrink-0 shadow-sm">
                             <AlertTriangle className="w-4 h-4 text-[#f59e0b]" />
                         </div>
                         <p className="text-[12.5px] text-[#b45309] leading-[1.45] pt-[1px]">
-                            <strong className="font-bold">{staleCount} mot{staleCount > 1 ? 's' : ''}</strong> de votre tirage ne correspond{staleCount > 1 ? 'ent' : ''} plus aux filtres actuels.
+                            {staleCount > 0
+                                ? <><strong className="font-bold">{staleCount} mot{staleCount > 1 ? 's' : ''}</strong> de votre tirage ne correspond{staleCount > 1 ? 'ent' : ''} plus aux filtres actuels.</>
+                                : <>Les filtres ont changé depuis le tirage. La répartition n'est plus optimale.</>
+                            }
                         </p>
                     </div>
                 )}
@@ -137,7 +142,7 @@ export function RandomSelectionPopover({
                     {distribution.length > 0 && (
                         <div className="mb-4">
                             <div className="text-[11px] font-bold text-[#8b8fa8] uppercase tracking-[0.5px] mb-2">
-                                {staleCount > 0 ? 'Nouvelle répartition' : 'Répartition estimée'}
+                                {isStale ? 'Nouvelle répartition' : 'Répartition estimée'}
                             </div>
                             <div className="bg-[#f8f9fc] rounded-[10px] p-3 text-[12px]">
                                 {distribution.map((item, index) => (
@@ -163,7 +168,7 @@ export function RandomSelectionPopover({
                         onClick={handleSelect}
                         className="w-full py-3 bg-gradient-to-br from-[#6366f1] to-[#818cf8] text-white rounded-[10px] text-[14px] font-bold shadow-[0_4px_14px_-2px_rgba(99,102,241,0.35)] hover:shadow-[0_6px_20px_-2px_rgba(99,102,241,0.45)] hover:-translate-y-px active:translate-y-0 transition-all"
                     >
-                        {staleCount > 0
+                        {isStale
                             ? 'Relancer le tirage'
                             : isActive
                                 ? `Modifier (${inputValue} mots)`

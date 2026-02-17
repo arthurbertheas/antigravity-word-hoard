@@ -43,13 +43,19 @@ export function WordExplorer() {
 
 function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
-    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, selectRandom, deselectRandom } = useSelection();
+    const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, randomFiltersSnapshot, selectRandom, deselectRandom } = useSelection();
     const [isImagierOpen, setIsImagierOpen] = useState(false);
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen || isImagierOpen);
 
-    // Compute how many randomly-selected words are no longer in the filtered results
+    // Detect stale random selection: filters changed since the draw
+    const isRandomStale = useMemo(() => {
+        if (randomSelectedCount === 0 || !randomFiltersSnapshot) return false;
+        return JSON.stringify(filters) !== randomFiltersSnapshot;
+    }, [randomSelectedCount, randomFiltersSnapshot, filters]);
+
+    // Count how many selected words left the filtered pool
     const randomStaleCount = useMemo(() => {
         if (randomSelectedCount === 0) return 0;
         const wordSet = new Set(words.map(w => `${w.MOTS}_${w.SYNT}_${w.PHONEMES}_${w.NBSYLL}`));
@@ -116,6 +122,7 @@ function WordExplorerContent() {
                         selectedWords.some(sw => sw.MOTS === word.MOTS)
                     )}
                     randomSelectedCount={randomSelectedCount}
+                    isRandomStale={isRandomStale}
                     randomStaleCount={randomStaleCount}
                     onToggleSelectAll={() => {
                         const isAllSelected = words.length > 0 && words.every(word =>
