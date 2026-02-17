@@ -24,7 +24,9 @@ const SavedListsContext = createContext<SavedListsContextType | undefined>(undef
 export function SavedListsProvider({ children }: { children: React.ReactNode }) {
     const [savedLists, setSavedLists] = useState<SavedList[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [currentListId, setCurrentListId] = useState<string | null>(null);
+    const [currentListId, setCurrentListId] = useState<string | null>(() => {
+        return localStorage.getItem('wordHoard_currentListId') || null;
+    });
     const [isModified, setIsModified] = useState(false);
     const [userId, setUserId] = useState<string | null>(null);
     const { toast } = useToast();
@@ -78,6 +80,15 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
             loadLists();
         }
     }, [userId, loadLists]);
+
+    // Persist currentListId to localStorage
+    useEffect(() => {
+        if (currentListId) {
+            localStorage.setItem('wordHoard_currentListId', currentListId);
+        } else {
+            localStorage.removeItem('wordHoard_currentListId');
+        }
+    }, [currentListId]);
 
     const saveList = async (name: string, description: string | undefined, words: Word[], tags: string[] | undefined) => {
         if (!userId) return null;

@@ -28,7 +28,12 @@ export function getWordId(word: Word): string {
 }
 
 export function SelectionProvider({ children }: { children: ReactNode }) {
-    const [selectedWords, setSelectedWords] = useState<Word[]>([]);
+    const [selectedWords, setSelectedWords] = useState<Word[]>(() => {
+        try {
+            const saved = localStorage.getItem('wordHoard_selectedWords');
+            return saved ? JSON.parse(saved) : [];
+        } catch { return []; }
+    });
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
     const [randomSelectedCount, setRandomSelectedCount] = useState(0);
 
@@ -102,6 +107,13 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     const isSelected = useCallback((word: Word) => {
         const targetId = getWordId(word);
         return selectedWords.some(w => getWordId(w) === targetId);
+    }, [selectedWords]);
+
+    // Persist selectedWords to localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem('wordHoard_selectedWords', JSON.stringify(selectedWords));
+        } catch { /* quota exceeded — ignore */ }
     }, [selectedWords]);
 
     // Webflow Bridge: Sync state with parent (send updates)
