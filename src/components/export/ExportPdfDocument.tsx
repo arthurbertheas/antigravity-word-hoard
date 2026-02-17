@@ -95,7 +95,6 @@ const s = StyleSheet.create({
   footerText: {
     fontSize: 8,
     color: C.textMuted,
-    fontStyle: 'italic',
   },
 
   /* Session stats */
@@ -220,11 +219,11 @@ const s = StyleSheet.create({
     fontWeight: 700,
     color: '#FFFFFF',
   },
-  bullet: {
-    fontSize: 12,
-    fontWeight: 700,
-    color: C.primary,
-    lineHeight: 1,
+  bulletDot: {
+    width: 6,
+    height: 6,
+    ...br(3),
+    backgroundColor: C.primary,
   },
   wordImage: {
     width: 32,
@@ -271,11 +270,19 @@ interface ExportPdfDocumentProps {
 
 /* ─── Helper Components ─── */
 
+// ASCII-safe symbols for PDF (Sora latin subset doesn't include ✓✗—)
+const PDF_SYMBOLS: Record<ExportWordStatus, string> = {
+  validated: 'V',
+  failed: 'X',
+  neutral: '-',
+  'not-seen': '?',
+};
+
 function StatusBadge({ status }: { status: ExportWordStatus }) {
   const colors = STATUS_COLORS[status];
   return (
     <View style={[s.statusBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}>
-      <Text style={[s.statusBadgeText, { color: colors.text }]}>{colors.symbol}</Text>
+      <Text style={[s.statusBadgeText, { color: colors.text }]}>{PDF_SYMBOLS[status]}</Text>
     </View>
   );
 }
@@ -357,12 +364,12 @@ function SessionStats({ words, wordStatuses, currentIndex }: { words: Word[]; wo
 
   return (
     <View style={s.statsBox}>
-      {/* Progress bar using flex (not percentage widths) */}
+      {/* Progress bar — each segment needs explicit height */}
       <View style={{ flexDirection: 'row', height: 6, ...br(3), backgroundColor: '#F1F5F9', marginBottom: 8 }}>
-        {validated > 0 && <View style={{ flex: validated, backgroundColor: STATUS_COLORS.validated.border }} />}
-        {failed > 0 && <View style={{ flex: failed, backgroundColor: STATUS_COLORS.failed.border }} />}
-        {neutral > 0 && <View style={{ flex: neutral, backgroundColor: STATUS_COLORS.neutral.border }} />}
-        {notSeen > 0 && <View style={{ flex: notSeen, backgroundColor: STATUS_COLORS['not-seen'].border }} />}
+        {validated > 0 && <View style={{ flex: validated, height: 6, backgroundColor: STATUS_COLORS.validated.border }} />}
+        {failed > 0 && <View style={{ flex: failed, height: 6, backgroundColor: STATUS_COLORS.failed.border }} />}
+        {neutral > 0 && <View style={{ flex: neutral, height: 6, backgroundColor: STATUS_COLORS.neutral.border }} />}
+        {notSeen > 0 && <View style={{ flex: notSeen, height: 6, backgroundColor: STATUS_COLORS['not-seen'].border }} />}
       </View>
       {/* Stat chips row */}
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: 6 }}>
@@ -405,7 +412,7 @@ function ListLayout({ words, settings, imageMap, isSessionMode, wordStatuses, cu
           <View key={`${word.MOTS}-${index}`} style={[s.listCard, { borderLeftColor: accentColor }]} wrap={false}>
             {status && <StatusBadge status={status} />}
             {!isSessionMode && settings.numberWords && <NumberBadge n={index + 1} />}
-            {!isSessionMode && !settings.numberWords && <Text style={s.bullet}>•</Text>}
+            {!isSessionMode && !settings.numberWords && <View style={s.bulletDot} />}
             {hasImages && <WordImage word={word} imageMap={imageMap} size={32} />}
             {settings.display !== 'imageOnly' && (
               <View style={{ flex: 1 }}>
@@ -448,7 +455,7 @@ function GridLayout({ words, settings, imageMap, cols, isSessionMode, wordStatus
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 3 }}>
                   {status && <StatusBadge status={status} />}
                   {!isSessionMode && settings.numberWords && <NumberBadge n={index + 1} />}
-                  {!isSessionMode && !settings.numberWords && <Text style={s.bullet}>•</Text>}
+                  {!isSessionMode && !settings.numberWords && <View style={s.bulletDot} />}
                 </View>
                 {hasImages && <WordImage word={word} imageMap={imageMap} size={is3 ? 24 : 32} />}
                 {settings.display !== 'imageOnly' && (
