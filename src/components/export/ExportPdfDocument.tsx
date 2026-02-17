@@ -319,17 +319,17 @@ function PdfHeader({ words, settings, isSessionMode }: { words: Word[]; settings
   const defaultTitle = isSessionMode ? 'Résultats de session' : 'Ma sélection de mots';
   const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
+  // Build meta parts as a single string to avoid character rendering issues
+  const metaParts: string[] = [];
+  if (settings.includeDate) metaParts.push(today);
+  if (settings.includeWordCount) metaParts.push(`${words.length} mots`);
+  const metaLine = metaParts.join('  -  ');
+
   return (
     <View style={s.header}>
       <Text style={s.title}>{settings.title || defaultTitle}</Text>
       {settings.subtitle ? <Text style={s.subtitle}>{settings.subtitle}</Text> : null}
-      {(settings.includeDate || settings.includeWordCount) && (
-        <View style={s.metaRow}>
-          {settings.includeDate && <Text style={s.metaText}>{today}</Text>}
-          {settings.includeDate && settings.includeWordCount && <Text style={s.metaText}>·</Text>}
-          {settings.includeWordCount && <Text style={s.metaText}>{words.length} mots sélectionnés</Text>}
-        </View>
-      )}
+      {metaLine && <Text style={s.metaText}>{metaLine}</Text>}
     </View>
   );
 }
@@ -357,6 +357,13 @@ function SessionStats({ words, wordStatuses, currentIndex }: { words: Word[]; wo
 
   return (
     <View style={s.statsBox}>
+      {/* Progress bar using flex (not percentage widths) */}
+      <View style={{ flexDirection: 'row', height: 6, ...br(3), backgroundColor: '#F1F5F9', marginBottom: 8 }}>
+        {validated > 0 && <View style={{ flex: validated, backgroundColor: STATUS_COLORS.validated.border }} />}
+        {failed > 0 && <View style={{ flex: failed, backgroundColor: STATUS_COLORS.failed.border }} />}
+        {neutral > 0 && <View style={{ flex: neutral, backgroundColor: STATUS_COLORS.neutral.border }} />}
+        {notSeen > 0 && <View style={{ flex: notSeen, backgroundColor: STATUS_COLORS['not-seen'].border }} />}
+      </View>
       {/* Stat chips row */}
       <View style={{ flexDirection: 'row', gap: 8, marginBottom: 6 }}>
         {items.map((item) => (
