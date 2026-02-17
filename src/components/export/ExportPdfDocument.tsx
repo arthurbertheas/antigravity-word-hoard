@@ -108,26 +108,6 @@ const s = StyleSheet.create({
     borderStyle: 'solid',
     ...br(6),
   },
-  progressBar: {
-    flexDirection: 'row',
-    height: 5,
-    ...br(3),
-    overflow: 'hidden',
-    marginBottom: 8,
-    backgroundColor: '#F1F5F9',
-  },
-  statsCounters: {
-    flexDirection: 'row',
-    gap: 6,
-    marginBottom: 4,
-  },
-  statsLabel: {
-    fontSize: 8,
-  },
-  statsSeparator: {
-    fontSize: 8,
-    color: '#94A3B8',
-  },
   successRate: {
     fontSize: 9,
     fontWeight: 700,
@@ -365,27 +345,35 @@ function SessionStats({ words, wordStatuses, currentIndex }: { words: Word[]; wo
     else if (st === 'neutral') neutral++;
     else notSeen++;
   });
-  const total = words.length;
   const answered = validated + failed;
   const rate = answered > 0 ? Math.round((validated / answered) * 100) : 0;
 
+  const items: { count: number; label: string; color: string; borderColor: string }[] = [
+    { count: validated, label: 'validés', color: C.greenText, borderColor: STATUS_COLORS.validated.border },
+    { count: failed, label: 'ratés', color: C.redText, borderColor: STATUS_COLORS.failed.border },
+    { count: neutral, label: 'non notés', color: C.neutralText, borderColor: STATUS_COLORS.neutral.border },
+    { count: notSeen, label: 'pas vus', color: C.notSeenText, borderColor: STATUS_COLORS['not-seen'].border },
+  ];
+
   return (
     <View style={s.statsBox}>
-      <View style={s.progressBar}>
-        {validated > 0 && <View style={{ width: `${(validated / total) * 100}%`, backgroundColor: STATUS_COLORS.validated.border }} />}
-        {failed > 0 && <View style={{ width: `${(failed / total) * 100}%`, backgroundColor: STATUS_COLORS.failed.border }} />}
-        {neutral > 0 && <View style={{ width: `${(neutral / total) * 100}%`, backgroundColor: STATUS_COLORS.neutral.border }} />}
-        {notSeen > 0 && <View style={{ width: `${(notSeen / total) * 100}%`, backgroundColor: STATUS_COLORS['not-seen'].border }} />}
+      {/* Stat chips row */}
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: 6 }}>
+        {items.map((item) => (
+          <View key={item.label} style={{
+            flexDirection: 'row', alignItems: 'center', gap: 4,
+          }}>
+            <View style={{
+              width: 8, height: 8,
+              ...br(4),
+              backgroundColor: item.borderColor,
+            }} />
+            <Text style={{ fontSize: 8, fontWeight: 700, color: item.color }}>{item.count}</Text>
+            <Text style={{ fontSize: 8, color: item.color }}>{item.label}</Text>
+          </View>
+        ))}
       </View>
-      <View style={s.statsCounters}>
-        <Text style={[s.statsLabel, { color: C.greenText }]}>{validated} validés</Text>
-        <Text style={s.statsSeparator}>·</Text>
-        <Text style={[s.statsLabel, { color: C.redText }]}>{failed} ratés</Text>
-        <Text style={s.statsSeparator}>·</Text>
-        <Text style={[s.statsLabel, { color: C.neutralText }]}>{neutral} non notés</Text>
-        <Text style={s.statsSeparator}>·</Text>
-        <Text style={[s.statsLabel, { color: C.notSeenText }]}>{notSeen} pas vus</Text>
-      </View>
+      {/* Success rate */}
       <Text style={s.successRate}>{rate}% de réussite</Text>
     </View>
   );
