@@ -407,8 +407,270 @@ export async function exportToPDF(words: Word[], settings: ExportSettings, wordS
         currentRow++;
       }
     }
+  } else if (settings.layout === 'flashcards') {
+    // Flashcards: 4-column grid with top accent
+    const cols = 4;
+    const gap = 5;
+    const colWidth = (pageWidth - margin * 2 - gap * (cols - 1)) / cols;
+    const cardHeight = hasImages ? 45 : 30;
+    const imageSize = colWidth - 8;
+
+    let currentCol = 0;
+    let currentRow = 0;
+
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+      let x = margin + currentCol * (colWidth + gap);
+      let y = yPosition + currentRow * (cardHeight + gap);
+
+      // Check page break
+      if (y + cardHeight > pageHeight - margin - 20) {
+        doc.addPage();
+        yPosition = margin;
+        currentRow = 0;
+        currentCol = 0;
+        x = margin;
+        y = yPosition;
+      }
+
+      // Get word status for session mode
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+
+      // Card background
+      doc.setFillColor(...lightGray);
+      doc.setDrawColor(...borderGray);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(x, y, colWidth, cardHeight, 2, 2, 'FD');
+
+      // Top accent bar
+      if (statusColors) {
+        const r = parseInt(statusColors.border.slice(1, 3), 16);
+        const g = parseInt(statusColors.border.slice(3, 5), 16);
+        const b = parseInt(statusColors.border.slice(5, 7), 16);
+        doc.setFillColor(r, g, b);
+      } else {
+        doc.setFillColor(...primaryColor);
+      }
+      doc.rect(x, y, colWidth, 1.5, 'F');
+
+      let contentY = y + 5;
+      const centerX = x + colWidth / 2;
+
+      // Status badge (session mode)
+      if (isSessionMode && statusColors) {
+        const r = parseInt(statusColors.border.slice(1, 3), 16);
+        const g = parseInt(statusColors.border.slice(3, 5), 16);
+        const b = parseInt(statusColors.border.slice(5, 7), 16);
+        doc.setFillColor(r, g, b);
+        doc.circle(centerX, contentY + 2, 3, 'F');
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(statusColors.symbol, centerX, contentY + 3, { align: 'center' });
+        contentY += 8;
+      }
+
+      // Number (top-left)
+      if (settings.numberWords) {
+        doc.setFillColor(...primaryColor);
+        doc.circle(x + 5, y + 5, 2.5, 'F');
+        doc.setFontSize(6);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`${index + 1}`, x + 5, y + 6, { align: 'center' });
+      }
+
+      // Image (centered)
+      if (hasImages && imageDataMap.has(word.MOTS)) {
+        const imageData = imageDataMap.get(word.MOTS);
+        if (imageData) {
+          const imgW = Math.min(imageSize, colWidth - 8);
+          const imgH = Math.min(imgW, 20);
+          doc.addImage(imageData, 'PNG', centerX - imgW / 2, contentY, imgW, imgH);
+          contentY += imgH + 3;
+        }
+      }
+
+      // Word text (centered)
+      if (settings.display !== 'imageOnly') {
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(26, 32, 44);
+        doc.text(word.MOTS, centerX, contentY + 3, { align: 'center' });
+        contentY += 5;
+
+        // Meta info (centered, stacked)
+        if (settings.includePhonemes && word.PHONEMES) {
+          doc.setFontSize(7);
+          doc.setFont('helvetica', 'italic');
+          doc.setTextColor(...primaryColor);
+          doc.text(`/${word.PHONEMES}/`, centerX, contentY + 3, { align: 'center' });
+          contentY += 4;
+        }
+        if (settings.includeCategories && word.SYNT) {
+          doc.setFontSize(6);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...textGray);
+          doc.text(word.SYNT, centerX, contentY + 3, { align: 'center' });
+          contentY += 4;
+        }
+        if (settings.includeSyllableCount && word.NBSYLL) {
+          doc.setFontSize(6);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...textGray);
+          doc.text(`${word.NBSYLL} syll.`, centerX, contentY + 3, { align: 'center' });
+          contentY += 4;
+        }
+        if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+          doc.setFontSize(6);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(16, 185, 129);
+          doc.text(word["segmentation syllabique"], centerX, contentY + 3, { align: 'center' });
+        }
+      }
+
+      currentCol++;
+      if (currentCol >= cols) {
+        currentCol = 0;
+        currentRow++;
+      }
+    }
+  } else if (settings.layout === 'table') {
+    // Table layout with headers and rows
+    const tableLeft = margin;
+    const tableWidth = pageWidth - margin * 2;
+
+    // Determine columns
+    const columns: { key: string; label: string; width: number }[] = [];
+    if (isSessionMode) columns.push({ key: 'status', label: 'Statut', width: 15 });
+    if (settings.numberWords) columns.push({ key: 'number', label: '#', width: 12 });
+    if (settings.display === 'imageOnly' || settings.display === 'wordAndImage') columns.push({ key: 'image', label: 'Image', width: 20 });
+    if (settings.display !== 'imageOnly') columns.push({ key: 'word', label: 'Mot', width: 0 }); // flex
+    if (settings.includePhonemes) columns.push({ key: 'phoneme', label: 'Phonème', width: 30 });
+    if (settings.includeCategories) columns.push({ key: 'category', label: 'Cat.', width: 15 });
+    if (settings.includeSyllableCount) columns.push({ key: 'syllCount', label: 'Syll.', width: 15 });
+    if (settings.includeSyllableSegmentation) columns.push({ key: 'syllSeg', label: 'Seg.', width: 25 });
+
+    // Calculate flex column width
+    const fixedWidth = columns.filter(c => c.width > 0).reduce((sum, c) => sum + c.width, 0);
+    const flexCol = columns.find(c => c.width === 0);
+    if (flexCol) flexCol.width = tableWidth - fixedWidth;
+
+    const rowHeight = hasImages ? 18 : 10;
+    const headerHeight = 10;
+
+    // Draw header
+    doc.setFillColor(...lightGray);
+    doc.rect(tableLeft, yPosition, tableWidth, headerHeight, 'F');
+    doc.setDrawColor(...primaryColor);
+    doc.setLineWidth(0.5);
+    doc.line(tableLeft, yPosition + headerHeight, tableLeft + tableWidth, yPosition + headerHeight);
+
+    let colX = tableLeft;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(26, 32, 44);
+    for (const col of columns) {
+      doc.text(col.label.toUpperCase(), colX + 3, yPosition + 7);
+      colX += col.width;
+    }
+    yPosition += headerHeight + 2;
+
+    // Draw rows
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+
+      if (yPosition + rowHeight > pageHeight - margin - 20) {
+        doc.addPage();
+        yPosition = margin;
+      }
+
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+
+      // Row border
+      doc.setDrawColor(...borderGray);
+      doc.setLineWidth(0.2);
+      doc.line(tableLeft, yPosition + rowHeight, tableLeft + tableWidth, yPosition + rowHeight);
+
+      // Alternating background
+      if (index % 2 === 0) {
+        doc.setFillColor(252, 252, 253);
+        doc.rect(tableLeft, yPosition, tableWidth, rowHeight, 'F');
+      }
+
+      colX = tableLeft;
+      const textY = yPosition + rowHeight / 2 + 1;
+
+      for (const col of columns) {
+        switch (col.key) {
+          case 'status':
+            if (statusColors) {
+              const r = parseInt(statusColors.border.slice(1, 3), 16);
+              const g = parseInt(statusColors.border.slice(3, 5), 16);
+              const b = parseInt(statusColors.border.slice(5, 7), 16);
+              doc.setFillColor(r, g, b);
+              doc.circle(colX + col.width / 2, textY - 1, 3, 'F');
+              doc.setFontSize(7);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(255, 255, 255);
+              doc.text(statusColors.symbol, colX + col.width / 2, textY, { align: 'center' });
+            }
+            break;
+          case 'number':
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...primaryColor);
+            doc.text(`${index + 1}`, colX + col.width / 2, textY, { align: 'center' });
+            break;
+          case 'image':
+            if (imageDataMap.has(word.MOTS)) {
+              const imageData = imageDataMap.get(word.MOTS);
+              if (imageData) {
+                const imgSize = Math.min(rowHeight - 2, 14);
+                doc.addImage(imageData, 'PNG', colX + 3, yPosition + 1, imgSize, imgSize);
+              }
+            }
+            break;
+          case 'word':
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(26, 32, 44);
+            doc.text(word.MOTS, colX + 3, textY);
+            break;
+          case 'phoneme':
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'italic');
+            doc.setTextColor(...primaryColor);
+            doc.text(word.PHONEMES ? `/${word.PHONEMES}/` : '', colX + 3, textY);
+            break;
+          case 'category':
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(...textGray);
+            doc.text(word.SYNT || '', colX + 3, textY);
+            break;
+          case 'syllCount':
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(...textGray);
+            doc.text(word.NBSYLL ? `${word.NBSYLL}` : '', colX + 3, textY);
+            break;
+          case 'syllSeg':
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(16, 185, 129);
+            doc.text(word["segmentation syllabique"] || '', colX + 3, textY);
+            break;
+        }
+        colX += col.width;
+      }
+
+      yPosition += rowHeight;
+    }
   } else {
-    // List layout (1 column)
+    // List layout (1 column) — default
     const cardHeight = hasImages ? 30 : 18;
     const imageSize = 16;
 
@@ -895,8 +1157,316 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         width: { size: 100, type: WidthType.PERCENTAGE },
       })
     );
+  } else if (settings.layout === 'flashcards') {
+    // Flashcards: 4-column table with centered content
+    const cols = 4;
+    const rows: TableRow[] = [];
+    const imageSize = 50;
+
+    for (let i = 0; i < words.length; i += cols) {
+      const cells: TableCell[] = [];
+
+      for (let j = 0; j < cols; j++) {
+        const word = words[i + j];
+        const index = i + j;
+
+        if (word) {
+          const cellChildren: Paragraph[] = [];
+
+          const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+          const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+          const topBorderColor = (isSessionMode && statusColors) ? statusColors.border.slice(1) : primaryColor;
+
+          // Status badge
+          if (isSessionMode && statusColors) {
+            cellChildren.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: statusColors.symbol,
+                    bold: true,
+                    color: statusColors.text.slice(1),
+                    size: 20,
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+                spacing: { after: 50 },
+              })
+            );
+          }
+
+          // Number
+          if (settings.numberWords) {
+            cellChildren.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `${index + 1}`,
+                    bold: true,
+                    color: primaryColor,
+                    size: 16,
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+                spacing: { after: 50 },
+              })
+            );
+          }
+
+          // Image
+          if (hasImages && imageDataMap.has(word.MOTS)) {
+            const imageData = imageDataMap.get(word.MOTS);
+            if (imageData) {
+              cellChildren.push(
+                new Paragraph({
+                  children: [
+                    new ImageRun({
+                      data: imageData,
+                      transformation: { width: imageSize, height: imageSize },
+                    }),
+                  ],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { after: 80 },
+                })
+              );
+            }
+          }
+
+          // Word text
+          if (settings.display !== 'imageOnly') {
+            cellChildren.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: word.MOTS,
+                    bold: true,
+                    size: 20,
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+                spacing: { after: 50 },
+              })
+            );
+          }
+
+          // Meta info
+          const metaRuns: TextRun[] = [];
+          if (settings.includePhonemes && word.PHONEMES) {
+            metaRuns.push(new TextRun({ text: `/${word.PHONEMES}/`, italics: true, color: primaryColor, size: 16 }));
+          }
+          if (settings.includeCategories && word.SYNT) {
+            if (metaRuns.length > 0) metaRuns.push(new TextRun({ text: ' ', size: 16 }));
+            metaRuns.push(new TextRun({ text: word.SYNT, color: textGray, size: 16 }));
+          }
+          if (settings.includeSyllableCount && word.NBSYLL) {
+            if (metaRuns.length > 0) metaRuns.push(new TextRun({ text: ' ', size: 16 }));
+            metaRuns.push(new TextRun({ text: `${word.NBSYLL} syll.`, color: textGray, size: 16 }));
+          }
+          if (settings.includeSyllableSegmentation && word["segmentation syllabique"]) {
+            if (metaRuns.length > 0) metaRuns.push(new TextRun({ text: ' ', size: 16 }));
+            metaRuns.push(new TextRun({ text: word["segmentation syllabique"], color: '10B981', size: 16 }));
+          }
+          if (metaRuns.length > 0) {
+            cellChildren.push(new Paragraph({ children: metaRuns, alignment: AlignmentType.CENTER }));
+          }
+
+          cells.push(
+            new TableCell({
+              children: cellChildren,
+              width: { size: 25, type: WidthType.PERCENTAGE },
+              margins: { top: 120, bottom: 120, left: 80, right: 80 },
+              shading: { fill: 'FAFBFC' },
+              borders: {
+                top: { style: 'single', size: 6, color: topBorderColor },
+                bottom: { style: 'single', size: 1, color: 'E2E8F0' },
+                left: { style: 'single', size: 1, color: 'E2E8F0' },
+                right: { style: 'single', size: 1, color: 'E2E8F0' },
+              },
+            })
+          );
+        } else {
+          cells.push(
+            new TableCell({
+              children: [new Paragraph('')],
+              width: { size: 25, type: WidthType.PERCENTAGE },
+            })
+          );
+        }
+      }
+
+      rows.push(new TableRow({ children: cells }));
+    }
+
+    children.push(
+      new Table({
+        rows,
+        width: { size: 100, type: WidthType.PERCENTAGE },
+      })
+    );
+  } else if (settings.layout === 'table') {
+    // Table layout with proper headers and data rows
+    const headerCells: TableCell[] = [];
+    const colKeys: string[] = [];
+
+    // Build header
+    if (isSessionMode) {
+      colKeys.push('status');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'STATUT', bold: true, size: 16, color: '1A202C' })] })],
+        shading: { fill: 'FAFBFC' },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+    if (settings.numberWords) {
+      colKeys.push('number');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: '#', bold: true, size: 16, color: '1A202C' })], alignment: AlignmentType.CENTER })],
+        shading: { fill: 'FAFBFC' },
+        width: { size: 8, type: WidthType.PERCENTAGE },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+    if (settings.display === 'imageOnly' || settings.display === 'wordAndImage') {
+      colKeys.push('image');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'IMAGE', bold: true, size: 16, color: '1A202C' })] })],
+        shading: { fill: 'FAFBFC' },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+    if (settings.display !== 'imageOnly') {
+      colKeys.push('word');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'MOT', bold: true, size: 16, color: '1A202C' })] })],
+        shading: { fill: 'FAFBFC' },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+    if (settings.includePhonemes) {
+      colKeys.push('phoneme');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'PHONÈME', bold: true, size: 16, color: '1A202C' })] })],
+        shading: { fill: 'FAFBFC' },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+    if (settings.includeCategories) {
+      colKeys.push('category');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'CAT.', bold: true, size: 16, color: '1A202C' })] })],
+        shading: { fill: 'FAFBFC' },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+    if (settings.includeSyllableCount) {
+      colKeys.push('syllCount');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'SYLL.', bold: true, size: 16, color: '1A202C' })] })],
+        shading: { fill: 'FAFBFC' },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+    if (settings.includeSyllableSegmentation) {
+      colKeys.push('syllSeg');
+      headerCells.push(new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'SEG.', bold: true, size: 16, color: '1A202C' })] })],
+        shading: { fill: 'FAFBFC' },
+        margins: { top: 80, bottom: 80, left: 100, right: 100 },
+      }));
+    }
+
+    const tableRows: TableRow[] = [
+      new TableRow({
+        children: headerCells,
+        tableHeader: true,
+      }),
+    ];
+
+    // Data rows
+    for (let index = 0; index < words.length; index++) {
+      const word = words[index];
+      const wordStatus = isSessionMode ? getWordExportStatus(word, index, wordStatuses!, currentIndex!) : null;
+      const statusColors = wordStatus ? STATUS_COLORS[wordStatus] : null;
+      const rowCells: TableCell[] = [];
+      const rowShading = index % 2 === 0 ? 'FCFCFD' : 'FFFFFF';
+
+      for (const key of colKeys) {
+        let cellContent: Paragraph;
+        switch (key) {
+          case 'status':
+            cellContent = new Paragraph({
+              children: statusColors ? [new TextRun({ text: statusColors.symbol, bold: true, color: statusColors.text.slice(1), size: 20 })] : [],
+              alignment: AlignmentType.CENTER,
+            });
+            break;
+          case 'number':
+            cellContent = new Paragraph({
+              children: [new TextRun({ text: `${index + 1}`, bold: true, color: primaryColor, size: 18 })],
+              alignment: AlignmentType.CENTER,
+            });
+            break;
+          case 'image':
+            if (imageDataMap.has(word.MOTS)) {
+              const imageData = imageDataMap.get(word.MOTS);
+              cellContent = new Paragraph({
+                children: imageData ? [new ImageRun({ data: imageData, transformation: { width: 40, height: 40 } })] : [],
+              });
+            } else {
+              cellContent = new Paragraph('');
+            }
+            break;
+          case 'word':
+            cellContent = new Paragraph({
+              children: [new TextRun({ text: word.MOTS, bold: true, size: 20 })],
+            });
+            break;
+          case 'phoneme':
+            cellContent = new Paragraph({
+              children: [new TextRun({ text: word.PHONEMES ? `/${word.PHONEMES}/` : '', italics: true, color: primaryColor, size: 18 })],
+            });
+            break;
+          case 'category':
+            cellContent = new Paragraph({
+              children: [new TextRun({ text: word.SYNT || '', color: textGray, size: 18 })],
+            });
+            break;
+          case 'syllCount':
+            cellContent = new Paragraph({
+              children: [new TextRun({ text: word.NBSYLL ? `${word.NBSYLL}` : '', color: textGray, size: 18 })],
+            });
+            break;
+          case 'syllSeg':
+            cellContent = new Paragraph({
+              children: [new TextRun({ text: word["segmentation syllabique"] || '', color: '10B981', size: 18 })],
+            });
+            break;
+          default:
+            cellContent = new Paragraph('');
+        }
+
+        rowCells.push(
+          new TableCell({
+            children: [cellContent],
+            shading: { fill: rowShading },
+            margins: { top: 60, bottom: 60, left: 100, right: 100 },
+            borders: {
+              bottom: { style: 'single', size: 1, color: 'E2E8F0' },
+            },
+          })
+        );
+      }
+
+      tableRows.push(new TableRow({ children: rowCells }));
+    }
+
+    children.push(
+      new Table({
+        rows: tableRows,
+        width: { size: 100, type: WidthType.PERCENTAGE },
+      })
+    );
   } else {
-    // List layout (1 column)
+    // List layout (1 column) — default
     for (let index = 0; index < words.length; index++) {
       const word = words[index];
       const paragraphChildren: (TextRun | ImageRun)[] = [];
