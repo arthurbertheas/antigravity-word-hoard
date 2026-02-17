@@ -1,11 +1,8 @@
-import { pdf } from '@react-pdf/renderer';
 import { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 import { Word } from '@/types/word';
 import { ExportSettings, STATUS_COLORS, getWordExportStatus } from '@/types/export';
 import { WordStatus } from '@/contexts/PlayerContext';
-import { ExportPdfDocument } from '@/components/export/ExportPdfDocument';
-import React from 'react';
 
 // Helper function to convert SVG to PNG
 async function convertSvgToPng(svgDataUrl: string, width: number = 200, height: number = 200): Promise<string | null> {
@@ -47,49 +44,6 @@ async function convertSvgToPng(svgDataUrl: string, width: number = 200, height: 
     });
   } catch (error) {
     console.error('[SVG→PNG] Conversion error:', error);
-    return null;
-  }
-}
-
-// Helper function to load image as base64 (with SVG support for PDF)
-async function loadImageAsBase64(url: string): Promise<string | null> {
-  try {
-    console.log('[PDF] Loading image:', url);
-    const response = await fetch(url, { mode: 'cors' });
-    if (!response.ok) {
-      console.error('[PDF] Failed to fetch image:', response.status, response.statusText);
-      return null;
-    }
-    const blob = await response.blob();
-    console.log('[PDF] Image blob loaded:', blob.type, blob.size, 'bytes');
-
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const result = reader.result as string;
-        console.log('[PDF] Image converted to base64, length:', result.length);
-
-        // If SVG, convert to PNG
-        if (blob.type === 'image/svg+xml') {
-          console.log('[PDF] Detected SVG, converting to PNG...');
-          const pngData = await convertSvgToPng(result, 200, 200);
-          if (pngData) {
-            resolve(pngData);
-          } else {
-            reject(new Error('Failed to convert SVG to PNG'));
-          }
-        } else {
-          resolve(result);
-        }
-      };
-      reader.onerror = (error) => {
-        console.error('[PDF] FileReader error:', error);
-        reject(error);
-      };
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    console.error('[PDF] Error loading image:', url, error);
     return null;
   }
 }
@@ -140,43 +94,6 @@ async function loadImageAsArrayBuffer(url: string): Promise<Uint8Array | null> {
     return null;
   }
 }
-
-export async function exportToPDF(words: Word[], settings: ExportSettings, wordStatuses?: Map<string, WordStatus>, currentIndex?: number): Promise<void> {
-  // Pre-load images (SVG → PNG conversion for @react-pdf)
-  const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
-  const imageMap = new Map<string, string>();
-
-  if (hasImages) {
-    console.log('[PDF] Loading images for', words.length, 'words');
-    let loadedCount = 0;
-    for (const word of words) {
-      const url = word['image associée']?.trim();
-      if (url) {
-        const imageData = await loadImageAsBase64(url);
-        if (imageData) {
-          imageMap.set(url, imageData);
-          loadedCount++;
-        }
-      }
-    }
-    console.log('[PDF] Successfully loaded', loadedCount, 'images');
-  }
-
-  // Generate PDF using @react-pdf/renderer
-  const element = React.createElement(ExportPdfDocument, {
-    words,
-    settings,
-    imageMap,
-    wordStatuses,
-    currentIndex,
-  });
-
-  const blob = await pdf(element).toBlob();
-  const filename = `mots-${new Date().toISOString().split('T')[0]}.pdf`;
-  saveAs(blob, filename);
-}
-
-// NOTE: Old jsPDF code removed — PDF now uses @react-pdf/renderer via ExportPdfDocument.tsx
 
 export async function exportToWord(words: Word[], settings: ExportSettings, wordStatuses?: Map<string, WordStatus>, currentIndex?: number): Promise<void> {
   const children: (Paragraph | Table)[] = [];

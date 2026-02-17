@@ -2,7 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Download, X, FileText, Printer } from 'lucide-react';
 import { ExportSettings, DEFAULT_EXPORT_SETTINGS, ExportPanelProps, ExportFormat, ExportDisplay, ExportLayout } from '@/types/export';
 import { ExportPreview } from './ExportPreview';
-import { exportToPDF, exportToWord, exportToPrint } from '@/lib/export-utils';
+import { exportToWord, exportToPrint } from '@/lib/export-utils';
+import { ExportPdfDocument } from './ExportPdfDocument';
+import { pdf } from '@react-pdf/renderer';
+import { loadImageAsBase64ForImagier } from '@/utils/imagier-image-utils';
 import { toast } from 'sonner';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { PanelTabs, PanelTabsList, PanelTabsTrigger, PanelTabsContent } from '@/components/ui/PanelTabs';
@@ -142,10 +145,46 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
   const handleExport = useCallback(async () => {
     try {
       switch (settings.format) {
-        case 'pdf':
-          await exportToPDF(selectedWords, settings, wordStatuses, currentIndex);
+        case 'pdf': {
+          // Pre-fetch all images as PNG base64 (same pattern as imagier)
+          const imageMap = new Map<string, string>();
+          const hasImages = settings.display === 'imageOnly' || settings.display === 'wordAndImage';
+          if (hasImages) {
+            const urls = [...new Set(
+              selectedWords
+                .map(w => w['image associée']?.trim())
+                .filter(Boolean) as string[]
+            )];
+            await Promise.all(urls.map(async (url) => {
+              const dataUri = await loadImageAsBase64ForImagier(url);
+              if (dataUri) imageMap.set(url, dataUri);
+            }));
+          }
+
+          // Generate PDF blob using @react-pdf/renderer (same as imagier)
+          const blob = await pdf(
+            <ExportPdfDocument
+              words={selectedWords}
+              settings={settings}
+              imageMap={imageMap}
+              wordStatuses={wordStatuses}
+              currentIndex={currentIndex}
+            />
+          ).toBlob();
+
+          // Trigger download (same as imagier)
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `mots-${new Date().toISOString().split('T')[0]}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+
           toast.success('PDF téléchargé avec succès !');
           break;
+        }
         case 'word':
           await exportToWord(selectedWords, settings, wordStatuses, currentIndex);
           toast.success('Document Word téléchargé avec succès !');
