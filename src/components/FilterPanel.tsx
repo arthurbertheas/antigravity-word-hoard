@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronDown, ALargeSmall, Pencil, MessageSquare, MessageSquareText, Layers, Image } from "lucide-react";
+import { Search, ChevronDown, ALargeSmall, Pencil, BarChart3, ClipboardList, Layers, Image } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
@@ -286,7 +286,7 @@ export function FilterPanel({
                 {/* Code appui lexical (formerly Fréquence) */}
                 <FilterSection
                     title="APPUI LEXICAL"
-                    icon={<MessageSquareText className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
+                    icon={<ClipboardList className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={filters.frequencies.length}
                     isOpen={openSections.frequencies || false}
                     onToggle={() => toggleSection('frequencies')}
@@ -318,8 +318,8 @@ export function FilterPanel({
 
                 {/* Syllabes */}
                 <FilterSection
-                    title="Syllabes"
-                    icon={<MessageSquare className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
+                    title="Nombre de syllabes"
+                    icon={<BarChart3 className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
                     badge={(filters.minSyllables !== 1 || filters.maxSyllables !== 5) ? 1 : 0}
                     isOpen={openSections.syllables || false}
                     onToggle={() => toggleSection('syllables')}
@@ -343,6 +343,33 @@ export function FilterPanel({
                                 onValueChange={([min, max]) => {
                                     updateFilter('minSyllables', min);
                                     updateFilter('maxSyllables', max);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </FilterSection>
+
+                {/* IMAGES ASSOCIÉES */}
+                <FilterSection
+                    title="Images"
+                    icon={<Image className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
+                    badge={filters.hasImage !== null ? 1 : 0}
+                    isOpen={openSections.images || false}
+                    onToggle={() => toggleSection('images')}
+                >
+                    <div className="px-3 py-2">
+                        <div className="flex items-center justify-between">
+                            <label
+                                htmlFor="image-filter"
+                                className="text-[13px] font-medium text-[rgb(var(--filter-text-primary))] cursor-pointer"
+                            >
+                                Avec image associée
+                            </label>
+                            <Switch
+                                id="image-filter"
+                                checked={filters.hasImage === true}
+                                onCheckedChange={(checked) => {
+                                    updateFilter('hasImage', checked ? true : null);
                                 }}
                             />
                         </div>
@@ -390,33 +417,6 @@ export function FilterPanel({
                         updateFilter('realtimePhonemes', { values, position });
                     }}
                 />
-
-                {/* IMAGES ASSOCIÉES */}
-                <FilterSection
-                    title="Images"
-                    icon={<Image className="w-3.5 h-3.5 text-[rgb(var(--filter-accent))]" />}
-                    badge={filters.hasImage !== null ? 1 : 0}
-                    isOpen={openSections.images || false}
-                    onToggle={() => toggleSection('images')}
-                >
-                    <div className="px-3 py-2">
-                        <div className="flex items-center justify-between">
-                            <label
-                                htmlFor="image-filter"
-                                className="text-[13px] font-medium text-[rgb(var(--filter-text-primary))] cursor-pointer"
-                            >
-                                Avec image associée
-                            </label>
-                            <Switch
-                                id="image-filter"
-                                checked={filters.hasImage === true}
-                                onCheckedChange={(checked) => {
-                                    updateFilter('hasImage', checked ? true : null);
-                                }}
-                            />
-                        </div>
-                    </div>
-                </FilterSection>
             </div>
         </aside>
     );
