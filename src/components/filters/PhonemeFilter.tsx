@@ -87,14 +87,17 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
         ? selectedPhonemes.join(', ')
         : 'Sélectionner...';
 
+    const dropdownId = 'phoneme-grid-dropdown';
+
     const renderPhonemeGrid = (list: string[]) => (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1" role="group">
             {list.map(ph => {
                 const isSelected = selectedPhonemes.includes(ph);
                 return (
                     <button
                         key={ph}
                         onClick={() => togglePhonemeSelection(ph)}
+                        aria-pressed={isSelected}
                         className={cn(
                             "w-[33px] h-[30px] rounded-[6px] border-[1.5px] text-[12px] font-mono font-semibold transition-all select-none",
                             isSelected
@@ -131,13 +134,16 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                                 ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
                                 : "border-[rgb(var(--filter-accent))] shadow-[0_0_0_3px_rgba(99,102,241,0.12)]"
                             : isExclude
-                                ? "border-red-200"
-                                : "border-border"
+                                ? "border-red-200 focus-within:border-red-400 focus-within:shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
+                                : "border-border focus-within:border-[rgb(var(--filter-accent))] focus-within:shadow-[0_0_0_3px_rgba(99,102,241,0.12)]"
                     )}>
                         <ModeToggle mode={mode} onToggle={() => setMode(m => m === 'include' ? 'exclude' : 'include')} />
                         <button
                             type="button"
                             onClick={() => setIsDropdownOpen(o => !o)}
+                            aria-expanded={isDropdownOpen}
+                            aria-haspopup="dialog"
+                            aria-controls={isDropdownOpen ? dropdownId : undefined}
                             className="flex-1 min-w-0 flex items-center gap-1 h-[32px] px-2.5 py-[7px] cursor-pointer select-none"
                         >
                             <span className={cn(
@@ -185,7 +191,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
 
                 {/* Dropdown — IPA grid */}
                 {isDropdownOpen && (
-                    <div className={cn(
+                    <div id={dropdownId} role="dialog" className={cn(
                         "rounded-[10px] border-[1.5px] p-2.5 pt-2 animate-in fade-in slide-in-from-top-1 duration-150",
                         isExclude
                             ? "border-red-200 bg-gradient-to-b from-red-50/30 to-[#f8f9fc]"
@@ -221,7 +227,9 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                 )}
 
                 {/* 40px bottom spacing — scroll target to ensure tags are visible */}
-                <div ref={bottomRef} className="h-10" />
+                {(isDropdownOpen || phonemes.length > 0) && (
+                    <div ref={bottomRef} className="h-10" />
+                )}
             </div>
         </FilterSection>
     );
