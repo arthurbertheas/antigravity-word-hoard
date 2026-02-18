@@ -292,21 +292,34 @@ export function FilterPanel({
                     onToggle={() => toggleSection('frequencies')}
                 >
                     <div className="flex flex-wrap gap-2 px-1">
-                        {['1', '2', '3', '4'].map((code) => {
+                        {([
+                            { code: '1', roman: 'I', short: 'Très fam.' },
+                            { code: '2', roman: 'II', short: 'Familier' },
+                            { code: '3', roman: 'III', short: 'Peu fam.' },
+                            { code: '4', roman: 'IV', short: 'Non fam.' },
+                        ] as const).map(({ code, roman, short }) => {
                             const isActive = filters.frequencies.includes(code);
-                            const label = FREQUENCY_LABELS[code];
                             return (
                                 <button
                                     key={code}
                                     onClick={() => toggleArrayFilter('frequencies', code)}
+                                    title={FREQUENCY_LABELS[code]}
                                     className={cn(
-                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-2 whitespace-nowrap font-display",
+                                        "flex items-center gap-[5px] pl-[5px] pr-2.5 py-[5px] rounded-[10px] border-2 text-[11.5px] font-semibold transition-all select-none",
                                         isActive
-                                            ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-md shadow-[rgba(79,70,229,0.3)]"
-                                            : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[rgb(var(--filter-text-secondary))] hover:bg-[rgb(var(--filter-surface-hover))]"
+                                            ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)]"
+                                            : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[#a5b4fc] hover:bg-[#f5f3ff]"
                                     )}
                                 >
-                                    {label}
+                                    <span className={cn(
+                                        "w-[22px] h-[22px] rounded-[6px] flex items-center justify-center font-['Sora'] text-[10px] font-extrabold shrink-0 transition-all",
+                                        isActive
+                                            ? "bg-white/20 text-white"
+                                            : "bg-[#f0f1f5] text-[rgb(var(--filter-accent))]"
+                                    )}>
+                                        {roman}
+                                    </span>
+                                    <span>{short}</span>
                                 </button>
                             );
                         })}
