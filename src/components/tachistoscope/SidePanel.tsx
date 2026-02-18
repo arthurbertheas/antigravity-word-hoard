@@ -393,7 +393,7 @@ export function SidePanel() {
                                                                     onClick={(e) => e.stopPropagation()}
                                                                 />
                                                             </div>
-                                                            {isDoubleFace && !allHaveImages && (
+                                                            {isDoubleFace && !allHaveImages && contentMode === 'word' && (
                                                                 <p className="flex items-center gap-1.5 text-[11px] text-amber-600 mt-1.5">
                                                                     <Info className="w-3 h-3 flex-shrink-0" />
                                                                     {missingCount} mot{missingCount > 1 ? 's' : ''} sans image — le verso restera vide
