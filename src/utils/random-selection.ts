@@ -130,12 +130,12 @@ function getDistributionCriteria(filters: WordFilters): DistributionCriterion[] 
         }
     }
 
-    // Phonèmes (array)
-    if (filters.phonemes && filters.phonemes.length > 1) {
-        // On extrait les valeurs des FilterTag
+    // Phonèmes (array) — only include tags participate in distribution
+    const includePhonemes = (filters.phonemes || []).filter(t => (t.mode || 'include') === 'include');
+    if (includePhonemes.length > 1) {
         criteria.push({
             type: 'phonemes',
-            values: filters.phonemes.map(t => t.value)
+            values: includePhonemes.map(t => t.value)
         });
     }
 
@@ -148,11 +148,12 @@ function getDistributionCriteria(filters: WordFilters): DistributionCriterion[] 
         });
     }
 
-    // Graphèmes (array)
-    if (filters.graphemes && filters.graphemes.length > 1) {
+    // Graphèmes (array) — only include tags participate in distribution
+    const includeGraphemes = (filters.graphemes || []).filter(t => (t.mode || 'include') === 'include');
+    if (includeGraphemes.length > 1) {
         criteria.push({
             type: 'graphemes',
-            values: filters.graphemes.map(t => t.value)
+            values: includeGraphemes.map(t => t.value)
         });
     }
 
@@ -187,14 +188,17 @@ function getDistributionCriteria(filters: WordFilters): DistributionCriterion[] 
 function getSingleValueCriteria(filters: WordFilters): DistributionCriterion[] {
     const criteria: DistributionCriterion[] = [];
 
-    if (filters.phonemes && filters.phonemes.length === 1) {
-        criteria.push({ type: 'phonemes', values: filters.phonemes.map(t => t.value) });
+    // Only include tags show in distribution preview (exclude tags are already applied to results)
+    const incPhonemes = (filters.phonemes || []).filter(t => (t.mode || 'include') === 'include');
+    if (incPhonemes.length === 1) {
+        criteria.push({ type: 'phonemes', values: incPhonemes.map(t => t.value) });
     }
     if (filters.categories && filters.categories.length === 1) {
         criteria.push({ type: 'categories', values: filters.categories });
     }
-    if (filters.graphemes && filters.graphemes.length === 1) {
-        criteria.push({ type: 'graphemes', values: filters.graphemes.map(t => t.value) });
+    const incGraphemes = (filters.graphemes || []).filter(t => (t.mode || 'include') === 'include');
+    if (incGraphemes.length === 1) {
+        criteria.push({ type: 'graphemes', values: incGraphemes.map(t => t.value) });
     }
     if (filters.structures && filters.structures.length === 1) {
         criteria.push({ type: 'structures', values: filters.structures });
