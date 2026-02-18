@@ -49,8 +49,7 @@ export function ImagierCard({
             src={imageUrl}
             alt={word.MOTS}
             className="max-w-full max-h-full object-contain"
-            onError={(e) => console.error('[ImagierCard] Image failed to load:', imageUrl, e)}
-            onLoad={() => console.log('[ImagierCard] Image loaded:', imageUrl)}
+            onError={(e) => console.warn('[ImagierCard] Image failed to load:', imageUrl)}
           />
         </div>
       )}
