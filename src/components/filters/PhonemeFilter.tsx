@@ -221,6 +221,9 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                     </div>
                 )}
 
+                {/* Extra space when dropdown is open */}
+                {isDropdownOpen && <div className="h-20" />}
+
                 {/* Bottom breathing room */}
                 <div className="h-10" />
             </div>
