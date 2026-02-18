@@ -291,13 +291,13 @@ export function FilterPanel({
                     isOpen={openSections.frequencies || false}
                     onToggle={() => toggleSection('frequencies')}
                 >
-                    <div className="grid grid-cols-2 gap-1.5 px-1">
+                    <div className="flex flex-wrap gap-1.5 px-1">
                         {([
-                            { code: '1', roman: 'I', short: 'Très fam.', color: { badge: 'bg-emerald-100 text-emerald-700', active: 'bg-emerald-500 border-emerald-500 shadow-[0_4px_12px_rgba(16,185,129,0.3)]', hover: 'hover:border-emerald-300 hover:bg-emerald-50' } },
-                            { code: '2', roman: 'II', short: 'Familier', color: { badge: 'bg-sky-100 text-sky-700', active: 'bg-sky-500 border-sky-500 shadow-[0_4px_12px_rgba(14,165,233,0.3)]', hover: 'hover:border-sky-300 hover:bg-sky-50' } },
-                            { code: '3', roman: 'III', short: 'Peu fam.', color: { badge: 'bg-amber-100 text-amber-700', active: 'bg-amber-500 border-amber-500 shadow-[0_4px_12px_rgba(245,158,11,0.3)]', hover: 'hover:border-amber-300 hover:bg-amber-50' } },
-                            { code: '4', roman: 'IV', short: 'Non fam.', color: { badge: 'bg-red-100 text-red-600', active: 'bg-red-500 border-red-500 shadow-[0_4px_12px_rgba(239,68,68,0.3)]', hover: 'hover:border-red-300 hover:bg-red-50' } },
-                        ] as const).map(({ code, roman, short, color }) => {
+                            { code: '1', roman: 'I', label: 'Très familier' },
+                            { code: '2', roman: 'II', label: 'Familier' },
+                            { code: '3', roman: 'III', label: 'Peu familier' },
+                            { code: '4', roman: 'IV', label: 'Non familier' },
+                        ] as const).map(({ code, roman, label }) => {
                             const isActive = filters.frequencies.includes(code);
                             return (
                                 <button
@@ -307,19 +307,19 @@ export function FilterPanel({
                                     className={cn(
                                         "flex items-center gap-[6px] pl-[5px] pr-2.5 py-[5px] rounded-[10px] border-[1.5px] text-[11.5px] font-semibold transition-all select-none",
                                         isActive
-                                            ? cn("text-white", color.active)
-                                            : cn("bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))]", color.hover)
+                                            ? "bg-[rgb(var(--filter-accent))] border-[rgb(var(--filter-accent))] text-white shadow-[0_2px_8px_rgba(99,102,241,0.25)]"
+                                            : "bg-white border-[rgb(var(--filter-border))] text-[rgb(var(--filter-text-secondary))] hover:border-[#a5b4fc] hover:bg-[#f5f3ff]"
                                     )}
                                 >
                                     <span className={cn(
                                         "w-[22px] h-[22px] rounded-[6px] flex items-center justify-center font-['Sora'] text-[10px] font-extrabold shrink-0 transition-all",
                                         isActive
-                                            ? "bg-white/25 text-white"
-                                            : color.badge
+                                            ? "bg-white/20 text-white"
+                                            : "bg-[rgba(var(--filter-accent),0.07)] text-[rgb(var(--filter-accent))]"
                                     )}>
                                         {roman}
                                     </span>
-                                    <span>{short}</span>
+                                    <span>{label}</span>
                                 </button>
                             );
                         })}
