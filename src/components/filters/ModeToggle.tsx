@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Check, X, ChevronDown } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { FilterMode } from "@/types/word";
 
 interface ModeToggleProps {
@@ -25,7 +25,6 @@ export function ModeToggle({ mode, onToggle }: ModeToggleProps) {
                 : <X className="w-[13px] h-[13px]" />
             }
             {isInclude ? 'Contient' : 'Sans'}
-            <ChevronDown className="w-2 h-2 opacity-40 -ml-0.5" />
         </button>
     );
 }
