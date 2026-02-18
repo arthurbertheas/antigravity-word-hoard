@@ -115,7 +115,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                 {/* Input row — combobox trigger */}
                 <div className="flex items-center gap-1.5">
                     <div className={cn(
-                        "flex-1 min-w-0 flex items-center border-[1.5px] rounded-[9px] overflow-hidden transition-all bg-white",
+                        "flex-1 min-w-0 flex border-[1.5px] rounded-[9px] overflow-hidden transition-all bg-white",
                         isDropdownOpen
                             ? isExclude
                                 ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"

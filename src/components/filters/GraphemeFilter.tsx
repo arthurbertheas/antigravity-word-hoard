@@ -61,7 +61,7 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
             <div className="px-1 py-1 space-y-2.5">
                 <div className="flex items-center gap-1.5">
                     <div className={cn(
-                        "flex-1 min-w-0 flex items-center border-[1.5px] rounded-[9px] overflow-hidden transition-all bg-white",
+                        "flex-1 min-w-0 flex border-[1.5px] rounded-[9px] overflow-hidden transition-all bg-white",
                         mode === 'exclude'
                             ? "border-red-200 focus-within:border-red-400 focus-within:shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
                             : "border-border focus-within:border-[rgb(var(--filter-accent))] focus-within:shadow-[0_0_0_3px_rgba(99,102,241,0.12)]"
