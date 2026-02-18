@@ -86,8 +86,8 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
                         >
                             <option value="anywhere">Partout</option>
                             <option value="start">Début</option>
-                            <option value="end">Fin</option>
                             <option value="middle">Milieu</option>
+                            <option value="end">Fin</option>
                         </select>
                         <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
                     </div>

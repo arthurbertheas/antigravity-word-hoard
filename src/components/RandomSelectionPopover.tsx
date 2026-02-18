@@ -128,7 +128,15 @@ export function RandomSelectionPopover({
                                 ref={inputRef}
                                 type="text"
                                 value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value.replace(/\D/g, ''))}
+                                onChange={(e) => {
+                                    const digits = e.target.value.replace(/\D/g, '');
+                                    const num = parseInt(digits, 10);
+                                    if (!isNaN(num) && num > maxWords) {
+                                        setInputValue(maxWords.toString());
+                                    } else {
+                                        setInputValue(digits);
+                                    }
+                                }}
                                 onBlur={handleBlur}
                                 onKeyDown={handleKeyDown}
                                 className="w-[72px] p-[10px] bg-[#f8fafc] border-[1.5px] border-[#e2e8f0] rounded-[10px] font-sora text-[16px] font-bold text-[#1a1a2e] text-center focus:outline-none focus:border-[#6366f1] focus:bg-white focus:shadow-[0_0_0_3px_rgba(99,102,241,0.08)] transition-all"
