@@ -37,18 +37,18 @@ export function useWords() {
                 }
             }
 
-            // 2. Recherche par Tags (AND logic)
+            // 2. Recherche par Tags (OR logic — union des résultats)
             if (filters.search.length > 0) {
                 if (!word.MOTS) return false;
                 const ortho = word.MOTS.toLowerCase();
-                const allMatch = filters.search.every(tag => {
+                const anyMatch = filters.search.some(tag => {
                     const val = tag.value.toLowerCase();
                     if (tag.position === 'start') return ortho.startsWith(val);
                     if (tag.position === 'end') return ortho.endsWith(val);
                     if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho);
                     return ortho.includes(val);
                 });
-                if (!allMatch) return false;
+                if (!anyMatch) return false;
             }
 
             // Filtre par catégorie syntaxique
@@ -93,30 +93,29 @@ export function useWords() {
                 }
             }
 
-            // Filtre phonèmes temps réel (prioritaire sur les tags)
+            // Filtre phonèmes temps réel (OR logic — union des résultats)
             if (filters.realtimePhonemes && filters.realtimePhonemes.values.length > 0) {
                 if (!word.PHONEMES) return false;
                 const phon = word.PHONEMES.toLowerCase();
                 const pos = filters.realtimePhonemes.position;
 
-                const allMatch = filters.realtimePhonemes.values.every(ph => {
+                const anyMatch = filters.realtimePhonemes.values.some(ph => {
                     const val = ph.toLowerCase();
                     if (pos === 'start') return phon.startsWith(val);
                     if (pos === 'end') return phon.endsWith(val);
                     if (pos === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(phon);
                     return phon.includes(val);
                 });
-                if (!allMatch) return false;
+                if (!anyMatch) return false;
             }
 
-            // Filtre par graphèmes spécifiques (AND logic)
+            // Filtre par graphèmes spécifiques (OR logic — union des résultats)
             if (filters.graphemes.length > 0) {
                 if (!word["segmentation graphèmes"]) return false;
                 const gseg = word["segmentation graphèmes"].toLowerCase();
-                // segmentation graphèmes est de la forme g-r-a-ph-e
                 const segments = gseg.split('-').filter(Boolean);
 
-                const allMatch = filters.graphemes.every(tag => {
+                const anyMatch = filters.graphemes.some(tag => {
                     const val = tag.value.toLowerCase();
                     if (tag.position === 'start') return segments[0] === val;
                     if (tag.position === 'end') return segments[segments.length - 1] === val;
@@ -127,21 +126,21 @@ export function useWords() {
                     }
                     return segments.includes(val);
                 });
-                if (!allMatch) return false;
+                if (!anyMatch) return false;
             }
 
-            // Filtre par phonèmes spécifiques (AND logic)
+            // Filtre par phonèmes spécifiques (OR logic — union des résultats)
             if (filters.phonemes.length > 0) {
                 if (!word.PHONEMES) return false;
                 const phon = word.PHONEMES.toLowerCase();
-                const allMatch = filters.phonemes.every(tag => {
+                const anyMatch = filters.phonemes.some(tag => {
                     const val = tag.value.toLowerCase();
                     if (tag.position === 'start') return phon.startsWith(val);
                     if (tag.position === 'end') return phon.endsWith(val);
                     if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(phon);
                     return phon.includes(val);
                 });
-                if (!allMatch) return false;
+                if (!anyMatch) return false;
             }
 
             // Filtre par code fréquence (APPUI LEXICAL)

@@ -48,10 +48,14 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
         onPhonemesUpdate([], 'anywhere');
     };
 
+    // Phonemes already added as tags
+    const taggedPhonemes = new Set(phonemes.map(t => t.value));
+
     const renderPhonemeGrid = (list: string[]) => (
         <div className="flex flex-wrap gap-[5px]">
             {list.map(ph => {
                 const isSelected = selectedPhonemes.includes(ph);
+                const isTagged = taggedPhonemes.has(ph);
                 return (
                     <button
                         key={ph}
@@ -60,7 +64,9 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                             "min-w-[32px] h-[28px] px-2.5 rounded-[7px] text-[12px] font-mono font-medium border transition-all",
                             isSelected
                                 ? "bg-[rgba(79,70,229,0.1)] border-[rgb(var(--filter-accent))] text-[rgb(var(--filter-accent))] font-semibold"
-                                : "bg-white border-border text-foreground hover:bg-[rgba(79,70,229,0.04)] hover:border-[rgba(79,70,229,0.35)]"
+                                : isTagged
+                                    ? "bg-[rgba(79,70,229,0.06)] border-[rgba(79,70,229,0.3)] text-[rgb(var(--filter-accent))] font-semibold"
+                                    : "bg-white border-border text-foreground hover:bg-[rgba(79,70,229,0.04)] hover:border-[rgba(79,70,229,0.35)]"
                         )}
                     >
                         {ph}
