@@ -93,6 +93,9 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
         <div className="flex flex-wrap gap-1" role="group">
             {list.map(ph => {
                 const isSelected = selectedPhonemes.includes(ph);
+                const existingTag = phonemes.find(t => t.value === ph);
+                const isTaggedInclude = existingTag && (existingTag.mode || 'include') === 'include';
+                const isTaggedExclude = existingTag?.mode === 'exclude';
                 return (
                     <button
                         key={ph}
@@ -104,9 +107,13 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                                 ? isExclude
                                     ? "border-red-400 bg-red-50 text-red-500 shadow-[0_0_0_2px_rgba(239,68,68,0.08)] font-bold"
                                     : "border-[rgb(var(--filter-accent))] bg-[#eef2ff] text-[rgb(var(--filter-accent))] shadow-[0_0_0_2px_rgba(99,102,241,0.12)] font-bold"
-                                : isExclude
-                                    ? "border-border bg-white text-muted-foreground hover:border-red-200 hover:bg-red-50 hover:text-red-500 hover:scale-[1.08] active:scale-95"
-                                    : "border-border bg-white text-muted-foreground hover:border-[#b4bffc] hover:bg-[#eef2ff] hover:text-[rgb(var(--filter-accent))] hover:scale-[1.08] active:scale-95"
+                                : isTaggedExclude
+                                    ? "border-red-200 bg-red-50/50 text-red-400 font-bold hover:scale-[1.08] active:scale-95"
+                                    : isTaggedInclude
+                                        ? "border-[#b4bffc] bg-[#eef2ff]/50 text-[rgb(var(--filter-accent))]/70 font-bold hover:scale-[1.08] active:scale-95"
+                                        : isExclude
+                                            ? "border-border bg-white text-muted-foreground hover:border-red-200 hover:bg-red-50 hover:text-red-500 hover:scale-[1.08] active:scale-95"
+                                            : "border-border bg-white text-muted-foreground hover:border-[#b4bffc] hover:bg-[#eef2ff] hover:text-[rgb(var(--filter-accent))] hover:scale-[1.08] active:scale-95"
                         )}
                     >
                         {ph}
