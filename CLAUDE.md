@@ -65,7 +65,7 @@ Niveaux de difficulté croissante des graphèmes, de "très simples" (1) à "e c
 
 Toutes les images de mots sont des **SVG** hébergés sur Supabase Storage :
 ```
-https://wxttgpfipcksseykzeyy.supabase.co/storage/v1/object/public/word-images/svg/{nom}.svg
+https://wxttgpfipcksseykzeyy.supabase.co/storage/v1/object/public/images/{nom}.svg
 ```
 
 **Contrainte PDF** : `@react-pdf/renderer` ne supporte pas le SVG. Les images doivent être converties en PNG base64 via canvas avant injection dans le PDF (voir `imagier-image-utils.ts`).
