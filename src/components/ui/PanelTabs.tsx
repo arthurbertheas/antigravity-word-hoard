@@ -41,7 +41,7 @@ const PanelTabsContent = React.forwardRef<
     <TabsPrimitive.Content
         ref={ref}
         className={cn(
-            "flex-1 overflow-y-auto focus-visible:outline-none",
+            "flex-1 min-h-0 overflow-y-auto focus-visible:outline-none",
             className,
         )}
         {...props}

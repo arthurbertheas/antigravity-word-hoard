@@ -227,7 +227,7 @@ export function SidePanel() {
                     panelMode === 'config' && (
                         <>
                             {/* Tabs + Content */}
-                            <PanelTabs value={activeConfigTab} onValueChange={(v) => setActiveConfigTab(v as 'affichage' | 'aides')}>
+                            <PanelTabs value={activeConfigTab} onValueChange={(v) => setActiveConfigTab(v as 'affichage' | 'aides')} className="flex-1 flex flex-col min-h-0">
                                 <PanelTabsList>
                                     <PanelTabsTrigger value="affichage">Affichage</PanelTabsTrigger>
                                     <PanelTabsTrigger value="aides">Aides à la lecture</PanelTabsTrigger>
@@ -372,26 +372,34 @@ export function SidePanel() {
 
                                                     {/* Double face toggle */}
                                                     {contentMode !== 'both' && hasImages && (
-                                                        <div
-                                                            onClick={toggleDoubleFace}
-                                                            className="flex items-center justify-between p-3 bg-muted rounded-[10px] border border-border mt-2 cursor-pointer transition-colors hover:bg-[#e8eaf0]"
-                                                        >
-                                                            <div className="flex items-center gap-2.5">
-                                                                <span className="text-[16px]">🃏</span>
-                                                                <div>
-                                                                    <div className="text-[13px] font-semibold text-foreground">Double face</div>
-                                                                    <div className="text-[10.5px] text-muted-foreground">
-                                                                        {contentMode === 'image' ? 'Le mot se dévoile au toucher' : "L'image se dévoile au toucher"}
+                                                        <>
+                                                            <div
+                                                                onClick={toggleDoubleFace}
+                                                                className="flex items-center justify-between p-3 bg-muted rounded-[10px] border border-border mt-2 cursor-pointer transition-colors hover:bg-[#e8eaf0]"
+                                                            >
+                                                                <div className="flex items-center gap-2.5">
+                                                                    <span className="text-[16px]">🃏</span>
+                                                                    <div>
+                                                                        <div className="text-[13px] font-semibold text-foreground">Double face</div>
+                                                                        <div className="text-[10.5px] text-muted-foreground">
+                                                                            {contentMode === 'image' ? 'Le mot se dévoile au toucher' : "L'image se dévoile au toucher"}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
+                                                                <Switch
+                                                                    checked={isDoubleFace}
+                                                                    onCheckedChange={toggleDoubleFace}
+                                                                    className="data-[state=checked]:bg-primary"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                />
                                                             </div>
-                                                            <Switch
-                                                                checked={isDoubleFace}
-                                                                onCheckedChange={toggleDoubleFace}
-                                                                className="data-[state=checked]:bg-primary"
-                                                                onClick={(e) => e.stopPropagation()}
-                                                            />
-                                                        </div>
+                                                            {isDoubleFace && !allHaveImages && (
+                                                                <p className="flex items-center gap-1.5 text-[11px] text-amber-600 mt-1.5">
+                                                                    <Info className="w-3 h-3 flex-shrink-0" />
+                                                                    {missingCount} mot{missingCount > 1 ? 's' : ''} sans image — le verso restera vide
+                                                                </p>
+                                                            )}
+                                                        </>
                                                     )}
                                                 </>
                                             );

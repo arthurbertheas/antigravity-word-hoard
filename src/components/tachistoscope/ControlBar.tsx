@@ -78,7 +78,7 @@ export function ControlBar() {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
             timeoutRef.current = setTimeout(() => {
                 if (isPlaying) setIsVisible(false);
-            }, 3000);
+            }, 30000);
         };
 
         window.addEventListener('mousemove', handleMouseMove);

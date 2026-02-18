@@ -2,6 +2,7 @@
 
 - TOUJOURS push après chaque commit. Pas de commit sans push.
 - Langue de communication : français. Code et commentaires : anglais.
+- **Mise à jour CLAUDE.md obligatoire** : Après chaque fonctionnalité livrée ou changement significatif, mettre à jour la section "Travail en cours" de ce fichier. Inclure : ce qui a été fait, les fichiers modifiés, les décisions prises, et ce qui reste à faire. Cela sert de mémoire persistante entre sessions.
 
 ---
 
@@ -206,31 +207,54 @@ L'app est embarquée en iframe. Messages échangés :
 | `src/data/words.json` | Base de ~2 400 mots (v7) |
 | `src/data/cgp-tokens.json` | Tokens graphème-phonème |
 
-## Travail en cours (session 16/02/2026)
+## Travail en cours (session 18/02/2026)
 
-### Export modal — redesign complet
+### Filtres Include/Exclude — LIVRÉ
+
+**Statut** : Complet et déployé.
+
+Les 3 filtres "Recherche ciblée" (Séquence de lettres, Graphème, Phonème) supportent maintenant l'inclusion ET l'exclusion via un toggle `Contient/Sans`.
+
+**Fichiers modifiés** :
+- `src/types/word.ts` — `FilterTag.mode?: 'include' | 'exclude'`, type `FilterMode`
+- `src/components/filters/ModeToggle.tsx` — Composant réutilisable Contient/Sans (Check/X icons, indigo/rouge)
+- `src/components/filters/FilterTag.tsx` — Style conditionnel indigo (include) / rouge (exclude)
+- `src/hooks/useWords.ts` — Helper `applyTagFilter()` pour filtrage include/exclude
+- `src/components/filters/SearchFilter.tsx` — ModeToggle intégré, position select rouge en mode Sans
+- `src/components/filters/GraphemeFilter.tsx` — Idem
+- `src/components/filters/PhonemeFilter.tsx` — Idem + grille IPA colorée (tags existants highlight indigo/rouge)
+- `src/components/ActiveFiltersBar.tsx` — Chips rouges pour tags exclude, préfixe "Sans"
+
+**Décisions de design** :
+- ModeToggle sans chevron (confusion avec dropdown)
+- Position select passe en rouge quand mode = Sans
+- Grille IPA : phonèmes déjà ajoutés sont highlight (indigo = include, rouge = exclude)
+- Ordre position : Partout → Début → Milieu → Fin
+- Auto-scroll `bottomRef` avec spacer 40px conditionnel
+
+### Appui Lexical — Redesign chips — LIVRÉ
+
+**Design retenu** : Option A — Monochrome indigo (pas de semantic colors vert→rouge, car les niveaux sont neutres).
+- Chips flex-wrap avec labels complets (Très familier, Familier, Peu familier, Non familier)
+- Badge romain (I, II, III, IV) en indigo tint
+- Actif : bg indigo + texte blanc + shadow
+
+### Labels ortho — Mis à jour
+
+GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
+- Niveau 2 : ajout b, d ; gn déplacé au niveau 3
+- Niveau 3 : ajout gn, ph
+- Niveau 6 : ajout ui
+- Niveau 7 : ieu → oeu
+- Structure a : texte complet "Syllabes simples (CV)" sans subtitle split
+
+### Export modal — redesign (session précédente)
 
 **Statut** : Preview réécrit, PDF/Word/Print mis à jour. À tester visuellement.
 
-**Changements effectués** :
-- `src/types/export.ts` — Ajout `title`, `subtitle`, `includeWordCount`, `includeSyllableCount`, `includeSyllableSegmentation`
-- `src/components/export/ExportPanel.tsx` — Réécriture complète : tabs (Document/Contenu) + footer format bar (PDF/Word/Imprimer) + CTA adaptatif
-- `src/components/export/ExportPreview.tsx` — Réécriture pour refléter fidèlement le PDF (5 layouts : list, grid-2col, grid-3col, flashcards, table)
-- `src/lib/export-utils.ts` — Titre/sous-titre dynamiques, `includeWordCount` conditionnel, syllabes (count + segmentation) dans les 3 formats (PDF, Word, Print) et tous les layouts. Footer → "La Boîte à mots"
-- `src/components/export/ExportOptions.tsx` — Plus utilisé (remplacé par les tabs inline dans ExportPanel). Peut être supprimé.
-
-**Design retenu** :
-- Option A (Panel modal) avec tabs Document/Contenu
-- Format selector en footer (tab-bar gris + blanc actif) couplé au CTA
-- Header propre (icône + titre + close) — cohérent avec PanelHeader
-- Chips toggle pour options header (Date, Nb mots) et contenu (Phonèmes, Catégorie, Nb syllabes, Segmentation, Numéroter)
-- Layout picker visuel avec mini-previews (5 layouts)
-- Mockups de référence : `mockup-export-modal-v4.html`
-
-**À vérifier** :
-- L'aperçu dans le modal reflète-t-il correctement le PDF généré ?
-- Le PDF, Word, et Print s'exportent-ils correctement avec les nouveaux settings ?
-- Les layouts flashcards et table fonctionnent-ils dans les 3 formats ?
+**Fichiers** : `ExportPanel.tsx`, `ExportPreview.tsx`, `export-utils.ts`, `export.ts`
+**Design** : Panel modal avec tabs Document/Contenu, format selector en footer, 5 layouts visuels.
+**Mockup** : `mockup-export-modal-v4.html`
 
 ## Pièges connus
 
