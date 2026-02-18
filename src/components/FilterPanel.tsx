@@ -223,7 +223,7 @@ export function FilterPanel({
             </div>
 
             {/* Scrollable Sections */}
-            <div className="flex-1 overflow-y-auto py-2 pb-6 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
+            <div className="flex-1 overflow-y-auto py-2 pb-28 scrollbar-thin scrollbar-thumb-[rgb(var(--filter-border))]">
 
                 {/* GROUP: FILTRES PRINCIPAUX */}
                 <FilterGroup label="FILTRES PROGRESSIFS" variant="primary" />
