@@ -259,24 +259,27 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 
 ### Consolidation Supabase — RECOVERY (session 18/02/2026)
 
-**Situation** : Le projet `jzefsnvmlvxvwzpbpvaq` a été supprimé accidentellement. Tout repointe vers le projet survivant `wxttgpfipcksseykzeyy`.
+**Situation** : Le projet `jzefsnvmlvxvwzpbpvaq` a été supprimé. Tout repointe vers le projet survivant `wxttgpfipcksseykzeyy`.
 
 **Projet unique** : `wxttgpfipcksseykzeyy` ("Matériel Orthophonie", eu-west-1)
-- Tables : `user_word_lists`, `user_tachistoscope_settings`
-- Auth : Supabase Auth (comptes à recréer)
-- Storage : bucket `word-images` à créer + images à re-uploader
+- Tables : `user_word_lists`, `user_tachistoscope_settings` (existaient déjà sur ce projet)
+- Storage : bucket `word-images/svg/` (images SVG des mots)
+- Auth : Supabase Auth — à configurer (voir actions manuelles)
 
-**Migration Memberstack → Supabase Auth** : FAIT
-- `SavedListsContext.tsx` utilise `supabase.auth.getUser()` + `onAuthStateChange`
+**Code migré** :
+- `.env` → pointe vers `wxttgpfipcksseykzeyy` (commit `01039e0`)
+- `src/lib/supabase.ts` → fallback URL corrigé + auth relay postMessage conservé
+- `index.html` auth gate → pointe vers `wxttgpfipcksseykzeyy`
+- Shell `login.html`, `signup.html`, `index.html` → corrigés (commit `1f2116c`)
+- `words.json` images → pointent vers `wxttgpfipcksseykzeyy` (commit `db35750`)
+- `SavedListsContext.tsx` → utilise `supabase.auth.getUser()` + `onAuthStateChange`
 - PostMessage auth relay pour iframe cross-origin (shell → word-hoard)
 
 **Actions manuelles restantes** :
-- [ ] Configurer Auth sur `wxttgpfipcksseykzeyy` (activer email provider)
-- [ ] Créer les comptes utilisateurs
-- [ ] Créer bucket Storage `word-images` et re-uploader les SVG
-- [ ] Mettre à jour les 11 URLs d'images dans `words.json`
-- [ ] Mettre à jour les env vars Vercel
-- [ ] Configurer Site URL dans Supabase Auth (redirect URLs)
+- [ ] Configurer Auth sur `wxttgpfipcksseykzeyy` (activer email provider dans Authentication > Providers)
+- [ ] Configurer Site URL (`https://app.materielorthophonie.fr`) et Redirect URLs dans Authentication > URL Configuration
+- [ ] Créer les comptes utilisateurs dans Authentication > Users
+- [ ] Mettre à jour les env vars Vercel (VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY pour wxttgpfipcksseykzeyy)
 
 ### Export modal — redesign (session précédente)
 
