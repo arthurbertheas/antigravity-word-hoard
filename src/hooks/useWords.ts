@@ -32,17 +32,15 @@ export function useWords() {
                 const ortho = word.MOTS.toLowerCase();
                 const val = filters.realtimeSearch.value.toLowerCase().trim();
                 const pos = filters.realtimeSearch.position;
+                const isExclude = filters.realtimeSearch.mode === 'exclude';
 
-                if (pos === 'start') {
-                    if (!ortho.startsWith(val)) return false;
-                } else if (pos === 'end') {
-                    if (!ortho.endsWith(val)) return false;
-                } else if (pos === 'middle') {
-                    if (!new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho)) return false;
-                } else {
-                    // anywhere
-                    if (!ortho.includes(val)) return false;
-                }
+                let matches = false;
+                if (pos === 'start') matches = ortho.startsWith(val);
+                else if (pos === 'end') matches = ortho.endsWith(val);
+                else if (pos === 'middle') matches = new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho);
+                else matches = ortho.includes(val);
+
+                if (isExclude ? matches : !matches) return false;
             }
 
             // 2. Recherche par Tags (include = OR union, exclude = AND NOT)
@@ -84,37 +82,43 @@ export function useWords() {
 
             // Filtre graphème temps réel (prioritaire sur les tags)
             if (filters.realtimeGrapheme && filters.realtimeGrapheme.value.trim().length > 0) {
-                if (!word["segmentation graphèmes"]) return false;
-                const gseg = word["segmentation graphèmes"].toLowerCase();
-                const segments = gseg.split('-').filter(Boolean);
-                const val = filters.realtimeGrapheme.value.toLowerCase().trim();
-                const pos = filters.realtimeGrapheme.position;
-
-                if (pos === 'start') {
-                    if (segments[0] !== val) return false;
-                } else if (pos === 'end') {
-                    if (segments[segments.length - 1] !== val) return false;
-                } else if (pos === 'middle') {
-                    if (!segments.some((seg, index) => seg === val && index > 0 && index < segments.length - 1)) return false;
+                const isExclude = filters.realtimeGrapheme.mode === 'exclude';
+                if (!word["segmentation graphèmes"]) {
+                    if (!isExclude) return false;
                 } else {
-                    if (!segments.includes(val)) return false;
+                    const gseg = word["segmentation graphèmes"].toLowerCase();
+                    const segments = gseg.split('-').filter(Boolean);
+                    const val = filters.realtimeGrapheme.value.toLowerCase().trim();
+                    const pos = filters.realtimeGrapheme.position;
+
+                    let matches = false;
+                    if (pos === 'start') matches = segments[0] === val;
+                    else if (pos === 'end') matches = segments[segments.length - 1] === val;
+                    else if (pos === 'middle') matches = segments.some((seg, index) => seg === val && index > 0 && index < segments.length - 1);
+                    else matches = segments.includes(val);
+
+                    if (isExclude ? matches : !matches) return false;
                 }
             }
 
-            // Filtre phonèmes temps réel (OR logic — union des résultats)
+            // Filtre phonèmes temps réel (OR logic — union des résultats, inverted in exclude mode)
             if (filters.realtimePhonemes && filters.realtimePhonemes.values.length > 0) {
-                if (!word.PHONEMES) return false;
-                const phon = word.PHONEMES.toLowerCase();
-                const pos = filters.realtimePhonemes.position;
+                const isExclude = filters.realtimePhonemes.mode === 'exclude';
+                if (!word.PHONEMES) {
+                    if (!isExclude) return false;
+                } else {
+                    const segments = word.PHONEMES.toLowerCase().split('.').filter(Boolean);
+                    const pos = filters.realtimePhonemes.position;
 
-                const anyMatch = filters.realtimePhonemes.values.some(ph => {
-                    const val = ph.toLowerCase();
-                    if (pos === 'start') return phon.startsWith(val);
-                    if (pos === 'end') return phon.endsWith(val);
-                    if (pos === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(phon);
-                    return phon.includes(val);
-                });
-                if (!anyMatch) return false;
+                    const anyMatch = filters.realtimePhonemes.values.some(ph => {
+                        const val = ph.toLowerCase();
+                        if (pos === 'start') return segments[0] === val;
+                        if (pos === 'end') return segments[segments.length - 1] === val;
+                        if (pos === 'middle') return segments.some((seg, i) => seg === val && i > 0 && i < segments.length - 1);
+                        return segments.includes(val);
+                    });
+                    if (isExclude ? anyMatch : !anyMatch) return false;
+                }
             }
 
             // Filtre par graphèmes spécifiques (include = OR union, exclude = AND NOT)
@@ -140,13 +144,13 @@ export function useWords() {
             // Filtre par phonèmes spécifiques (include = OR union, exclude = AND NOT)
             if (filters.phonemes.length > 0) {
                 if (!word.PHONEMES) return false;
-                const phon = word.PHONEMES.toLowerCase();
+                const segments = word.PHONEMES.toLowerCase().split('.').filter(Boolean);
                 const pass = applyTagFilter(filters.phonemes, (tag) => {
                     const val = tag.value.toLowerCase();
-                    if (tag.position === 'start') return phon.startsWith(val);
-                    if (tag.position === 'end') return phon.endsWith(val);
-                    if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(phon);
-                    return phon.includes(val);
+                    if (tag.position === 'start') return segments[0] === val;
+                    if (tag.position === 'end') return segments[segments.length - 1] === val;
+                    if (tag.position === 'middle') return segments.some((seg, i) => seg === val && i > 0 && i < segments.length - 1);
+                    return segments.includes(val);
                 });
                 if (!pass) return false;
             }

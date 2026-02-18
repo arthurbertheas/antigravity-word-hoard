@@ -17,8 +17,8 @@ interface PhonemeFilterProps {
     phonemes: IFilterTag[];
     onAddFilter: (tags: IFilterTag[]) => void;
     onRemoveFilter: (id: string) => void;
-    currentPhonemes: { values: string[]; position: 'start' | 'end' | 'middle' | 'anywhere' };
-    onPhonemesUpdate: (values: string[], position: 'start' | 'end' | 'middle' | 'anywhere') => void;
+    currentPhonemes: { values: string[]; position: 'start' | 'end' | 'middle' | 'anywhere'; mode?: FilterMode };
+    onPhonemesUpdate: (values: string[], position: 'start' | 'end' | 'middle' | 'anywhere', mode?: FilterMode) => void;
 }
 
 export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemoveFilter, currentPhonemes, onPhonemesUpdate }: PhonemeFilterProps) {
@@ -50,11 +50,18 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
         }
     }, [isDropdownOpen]);
 
+    // Re-trigger realtime filter when mode changes with active selection
+    useEffect(() => {
+        if (selectedPhonemes.length > 0) {
+            onPhonemesUpdate(selectedPhonemes, position, mode);
+        }
+    }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const togglePhonemeSelection = (ph: string) => {
         const next = selectedPhonemes.includes(ph)
             ? selectedPhonemes.filter(p => p !== ph)
             : [...selectedPhonemes, ph];
-        onPhonemesUpdate(next, position);
+        onPhonemesUpdate(next, position, mode);
     };
 
     const handleAdd = () => {
@@ -171,7 +178,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                     <div className="relative shrink-0">
                         <select
                             value={position}
-                            onChange={(e) => onPhonemesUpdate(selectedPhonemes, e.target.value as any)}
+                            onChange={(e) => onPhonemesUpdate(selectedPhonemes, e.target.value as any, mode)}
                             className={cn(
                                 "appearance-none h-[32px] pl-2 pr-5 bg-white border-[1.5px] rounded-[7px] text-[11px] font-semibold font-['DM_Sans'] text-muted-foreground focus:outline-none cursor-pointer transition-all",
                                 isExclude

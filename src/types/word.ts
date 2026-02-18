@@ -122,14 +122,17 @@ export interface WordFilters {
     realtimeSearch: {            // Recherche temps réel
         value: string;
         position: 'start' | 'end' | 'middle' | 'anywhere';
+        mode?: FilterMode;
     };
     realtimeGrapheme: {          // Graphème temps réel
         value: string;
         position: 'start' | 'end' | 'middle' | 'anywhere';
+        mode?: FilterMode;
     };
     realtimePhonemes: {          // Phonèmes temps réel
         values: string[];
         position: 'start' | 'end' | 'middle' | 'anywhere';
+        mode?: FilterMode;
     };
 }
 

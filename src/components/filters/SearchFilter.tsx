@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FilterSection } from "./FilterSection";
 import { FilterTag } from "./FilterTag";
 import { ModeToggle } from "./ModeToggle";
@@ -16,13 +16,20 @@ interface SearchFilterProps {
     searchTags: IFilterTag[];
     onAddFilter: (tag: IFilterTag) => void;
     onRemoveFilter: (id: string) => void;
-    currentSearch: { value: string; position: 'start' | 'end' | 'middle' | 'anywhere' };
-    onSearchUpdate: (value: string, position: 'start' | 'end' | 'middle' | 'anywhere') => void;
+    currentSearch: { value: string; position: 'start' | 'end' | 'middle' | 'anywhere'; mode?: FilterMode };
+    onSearchUpdate: (value: string, position: 'start' | 'end' | 'middle' | 'anywhere', mode?: FilterMode) => void;
 }
 
 export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemoveFilter, currentSearch, onSearchUpdate }: SearchFilterProps) {
     const { value: inputValue, position } = currentSearch;
     const [mode, setMode] = useState<FilterMode>('include');
+
+    // Re-trigger realtime filter when mode changes with active input
+    useEffect(() => {
+        if (inputValue.trim()) {
+            onSearchUpdate(inputValue, position, mode);
+        }
+    }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleAdd = () => {
         if (!inputValue.trim()) return;
@@ -30,7 +37,7 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
         // Prevent duplicates (same value + position + mode)
         const exists = searchTags.some(s => s.value === inputValue.trim() && s.position === position && (s.mode || 'include') === mode);
         if (exists) {
-            onSearchUpdate("", 'anywhere');
+            onSearchUpdate("", 'anywhere', 'include');
             return;
         }
 
@@ -41,7 +48,7 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
             mode
         });
         // Clear realtime search after adding tag
-        onSearchUpdate("", 'anywhere');
+        onSearchUpdate("", 'anywhere', 'include');
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -72,7 +79,7 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
                             type="text"
                             placeholder="ex: bou, tion..."
                             value={inputValue}
-                            onChange={(e) => onSearchUpdate(e.target.value, position)}
+                            onChange={(e) => onSearchUpdate(e.target.value, position, mode)}
                             onKeyDown={handleKeyDown}
                             className="flex-1 min-w-0 h-[32px] px-2.5 py-[7px] bg-transparent border-0 outline-none font-mono text-[12.5px] font-medium text-foreground placeholder:text-muted-foreground placeholder:font-normal"
                         />
@@ -81,7 +88,7 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
                     <div className="relative shrink-0">
                         <select
                             value={position}
-                            onChange={(e) => onSearchUpdate(inputValue, e.target.value as any)}
+                            onChange={(e) => onSearchUpdate(inputValue, e.target.value as any, mode)}
                             className={cn(
                                 "appearance-none h-[32px] pl-2 pr-5 bg-white border-[1.5px] rounded-[7px] text-[11px] font-semibold font-['DM_Sans'] text-muted-foreground focus:outline-none cursor-pointer transition-all",
                                 mode === 'exclude'

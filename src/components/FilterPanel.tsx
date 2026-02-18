@@ -390,8 +390,8 @@ export function FilterPanel({
                     onAddFilter={handleAddSearch}
                     onRemoveFilter={handleRemoveSearch}
                     currentSearch={filters.realtimeSearch || { value: '', position: 'anywhere' }}
-                    onSearchUpdate={(value, position) => {
-                        updateFilter('realtimeSearch', { value, position });
+                    onSearchUpdate={(value, position, mode) => {
+                        updateFilter('realtimeSearch', { value, position, mode });
                     }}
                 />
 
@@ -403,8 +403,8 @@ export function FilterPanel({
                     onAddFilter={handleAddGrapheme}
                     onRemoveFilter={handleRemoveGrapheme}
                     currentGrapheme={filters.realtimeGrapheme || { value: '', position: 'anywhere' }}
-                    onGraphemeUpdate={(value, position) => {
-                        updateFilter('realtimeGrapheme', { value, position });
+                    onGraphemeUpdate={(value, position, mode) => {
+                        updateFilter('realtimeGrapheme', { value, position, mode });
                     }}
                 />
 
@@ -416,8 +416,8 @@ export function FilterPanel({
                     onAddFilter={handleAddPhonemes}
                     onRemoveFilter={handleRemovePhoneme}
                     currentPhonemes={filters.realtimePhonemes || { values: [], position: 'anywhere' }}
-                    onPhonemesUpdate={(values, position) => {
-                        updateFilter('realtimePhonemes', { values, position });
+                    onPhonemesUpdate={(values, position, mode) => {
+                        updateFilter('realtimePhonemes', { values, position, mode });
                     }}
                 />
             </div>
