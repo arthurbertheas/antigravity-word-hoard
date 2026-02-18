@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { FilterSection } from "./FilterSection";
 import { FilterTag } from "./FilterTag";
-import { FilterTag as IFilterTag } from "@/types/word";
+import { ModeToggle } from "./ModeToggle";
+import { FilterTag as IFilterTag, FilterMode } from "@/types/word";
 import { CONSONNES, VOYELLES } from "@/data/phonemes";
 import { Ear, Plus, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,6 +23,8 @@ interface PhonemeFilterProps {
 
 export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemoveFilter, currentPhonemes, onPhonemesUpdate }: PhonemeFilterProps) {
     const { values: selectedPhonemes, position } = currentPhonemes;
+    const [mode, setMode] = useState<FilterMode>('include');
+    const isExclude = mode === 'exclude';
 
     const togglePhonemeSelection = (ph: string) => {
         const next = selectedPhonemes.includes(ph)
@@ -35,9 +39,14 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
         const newTags: IFilterTag[] = selectedPhonemes.map(ph => ({
             id: generateId(),
             value: ph,
-            position
+            position,
+            mode
         })).filter(newTag =>
-            !phonemes.some(existing => existing.value === newTag.value && existing.position === newTag.position)
+            !phonemes.some(existing =>
+                existing.value === newTag.value &&
+                existing.position === newTag.position &&
+                (existing.mode || 'include') === mode
+            )
         );
 
         if (newTags.length > 0) {
@@ -63,10 +72,14 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                         className={cn(
                             "min-w-[32px] h-[28px] px-2.5 rounded-[7px] text-[12px] font-mono font-medium border transition-all",
                             isSelected
-                                ? "bg-[rgba(79,70,229,0.1)] border-[rgb(var(--filter-accent))] text-[rgb(var(--filter-accent))] font-semibold"
+                                ? isExclude
+                                    ? "bg-red-50 border-red-400 text-red-500 font-semibold"
+                                    : "bg-[rgba(79,70,229,0.1)] border-[rgb(var(--filter-accent))] text-[rgb(var(--filter-accent))] font-semibold"
                                 : isTagged
                                     ? "bg-[rgba(79,70,229,0.06)] border-[rgba(79,70,229,0.3)] text-[rgb(var(--filter-accent))] font-semibold"
-                                    : "bg-white border-border text-foreground hover:bg-[rgba(79,70,229,0.04)] hover:border-[rgba(79,70,229,0.35)]"
+                                    : isExclude
+                                        ? "bg-white border-border text-foreground hover:bg-red-50/50 hover:border-red-300"
+                                        : "bg-white border-border text-foreground hover:bg-[rgba(79,70,229,0.04)] hover:border-[rgba(79,70,229,0.35)]"
                         )}
                     >
                         {ph}
@@ -103,6 +116,15 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
 
                 {/* Controls */}
                 <div className="flex gap-2">
+                    <div className={cn(
+                        "flex items-center border rounded-[7px] overflow-hidden transition-colors",
+                        isExclude
+                            ? "border-red-200"
+                            : "border-border"
+                    )}>
+                        <ModeToggle mode={mode} onToggle={() => setMode(m => m === 'include' ? 'exclude' : 'include')} />
+                    </div>
+
                     <div className="relative flex-1">
                         <select
                             value={position}
@@ -120,7 +142,12 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                     <button
                         onClick={handleAdd}
                         disabled={selectedPhonemes.length === 0}
-                        className="h-[32px] px-3 bg-[rgb(var(--filter-accent))] hover:bg-[#4338ca] text-white rounded-[7px] flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className={cn(
+                            "h-[32px] px-3 text-white rounded-[7px] flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+                            isExclude
+                                ? "bg-red-500 hover:bg-red-600"
+                                : "bg-[rgb(var(--filter-accent))] hover:bg-[#4338ca]"
+                        )}
                     >
                         <Plus className="w-4 h-4" />
                         <span className="sr-only">Ajouter</span>

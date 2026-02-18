@@ -96,10 +96,13 @@ export const FREQUENCY_LABELS: Record<string, string> = {
 };
 
 // Filter Tag for Graphemes and Phonemes
+export type FilterMode = 'include' | 'exclude';
+
 export interface FilterTag {
     id: string;
     value: string;
     position: 'start' | 'end' | 'middle' | 'anywhere';
+    mode?: FilterMode;
 }
 
 // Filtres disponibles

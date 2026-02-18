@@ -15,12 +15,29 @@ export function FilterTag({ tag, onRemove, formatLabel }: FilterTagProps) {
             tag.position === 'middle' ? 'milieu' :
                 'partout';
 
+    const isExclude = tag.mode === 'exclude';
+
     return (
-        <div className="flex items-center gap-1.5 pl-2 pr-1.5 py-[3px] bg-[rgba(79,70,229,0.06)] border border-[rgba(79,70,229,0.15)] rounded-[6px]">
-            <span className="font-mono text-[12px] font-medium text-[rgb(var(--filter-text-primary))]">
+        <div className={cn(
+            "flex items-center gap-1.5 pl-2 pr-1.5 py-[3px] border rounded-[6px]",
+            isExclude
+                ? "bg-red-50 border-red-200"
+                : "bg-[rgba(79,70,229,0.06)] border-[rgba(79,70,229,0.15)]"
+        )}>
+            <span className={cn(
+                "font-mono text-[12px] font-medium",
+                isExclude
+                    ? "text-red-600"
+                    : "text-[rgb(var(--filter-text-primary))]"
+            )}>
                 {label}
             </span>
-            <span className="font-['DM_Sans'] text-[10px] font-medium text-[rgb(var(--filter-text-muted))]">
+            <span className={cn(
+                "font-['DM_Sans'] text-[10px] font-medium",
+                isExclude
+                    ? "text-red-400"
+                    : "text-[rgb(var(--filter-text-muted))]"
+            )}>
                 {positionLabel}
             </span>
             <button
@@ -28,7 +45,12 @@ export function FilterTag({ tag, onRemove, formatLabel }: FilterTagProps) {
                     e.stopPropagation();
                     onRemove(tag.id);
                 }}
-                className="w-3.5 h-3.5 flex items-center justify-center rounded-full hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors ml-0.5"
+                className={cn(
+                    "w-3.5 h-3.5 flex items-center justify-center rounded-full transition-colors ml-0.5",
+                    isExclude
+                        ? "text-red-400 hover:bg-red-200 hover:text-red-600"
+                        : "text-red-500 hover:bg-red-100 hover:text-red-600"
+                )}
             >
                 <X className="w-2.5 h-2.5" />
             </button>

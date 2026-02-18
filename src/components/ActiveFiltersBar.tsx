@@ -1,5 +1,6 @@
 import { WordFilters, STRUCTURE_LABELS, GRAPHEME_LABELS, FREQUENCY_LABELS } from "@/types/word";
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ActiveFiltersBarProps {
     filters: WordFilters;
@@ -9,15 +10,17 @@ interface ActiveFiltersBarProps {
 
 export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: ActiveFiltersBarProps) {
     // Build list of active filters
-    const activeFilters: Array<{ type: keyof WordFilters; value: any; label: string }> = [];
+    const activeFilters: Array<{ type: keyof WordFilters; value: any; label: string; isExclude?: boolean }> = [];
 
     // Search (Advanced)
     filters.search.forEach(s => {
         const pos = s.position === 'start' ? 'début' : s.position === 'end' ? 'fin' : s.position === 'middle' ? 'milieu' : 'partout';
+        const isExc = s.mode === 'exclude';
         activeFilters.push({
             type: 'search',
             value: s.id,
-            label: `${s.value} (${pos})`
+            label: `${isExc ? 'Sans ' : ''}${s.value} (${pos})`,
+            isExclude: isExc
         });
     });
 
@@ -44,20 +47,24 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
     // Graphèmes (Text)
     filters.graphemes.forEach(g => {
         const pos = g.position === 'start' ? 'début' : g.position === 'end' ? 'fin' : g.position === 'middle' ? 'milieu' : 'partout';
+        const isExc = g.mode === 'exclude';
         activeFilters.push({
             type: 'graphemes',
             value: g.id,
-            label: `${g.value} (${pos})`
+            label: `${isExc ? 'Sans ' : ''}${g.value} (${pos})`,
+            isExclude: isExc
         });
     });
 
     // Phonèmes
     filters.phonemes.forEach(p => {
         const pos = p.position === 'start' ? 'début' : p.position === 'end' ? 'fin' : p.position === 'middle' ? 'milieu' : 'partout';
+        const isExc = p.mode === 'exclude';
         activeFilters.push({
             type: 'phonemes',
             value: p.id,
-            label: `[${p.value}] (${pos})`
+            label: `${isExc ? 'Sans ' : ''}[${p.value}] (${pos})`,
+            isExclude: isExc
         });
     });
 
@@ -100,12 +107,22 @@ export function ActiveFiltersBar({ filters, onRemoveFilter, onClearAll }: Active
                 <button
                     key={`${filter.type}-${filter.value}-${i}`}
                     onClick={() => onRemoveFilter(filter.type, filter.value)}
-                    className="group inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#eef2ff] border border-[#c7d2fe] hover:border-[#4f46e5]/40 hover:bg-[#e0e7ff] rounded-full text-xs font-semibold text-[#4f46e5] transition-all cursor-pointer shadow-sm hover:translate-y-[-1px] active:translate-y-0"
+                    className={cn(
+                        "group inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-xs font-semibold transition-all cursor-pointer shadow-sm hover:translate-y-[-1px] active:translate-y-0",
+                        filter.isExclude
+                            ? "bg-red-50 border-red-200 text-red-500 hover:border-red-400 hover:bg-red-100"
+                            : "bg-[#eef2ff] border-[#c7d2fe] text-[#4f46e5] hover:border-[#4f46e5]/40 hover:bg-[#e0e7ff]"
+                    )}
                 >
                     <span className="max-w-[200px] truncate">
                         {filter.label}
                     </span>
-                    <X className="w-3 h-3 text-[#4f46e5]/50 group-hover:text-[#4f46e5] transition-colors" />
+                    <X className={cn(
+                        "w-3 h-3 transition-colors",
+                        filter.isExclude
+                            ? "text-red-400 group-hover:text-red-600"
+                            : "text-[#4f46e5]/50 group-hover:text-[#4f46e5]"
+                    )} />
                 </button>
             ))}
             <button

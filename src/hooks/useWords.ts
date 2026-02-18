@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import wordsData from '../data/words.json';
-import { Word, WordFilters, DEFAULT_FILTERS } from '../types/word';
+import { Word, WordFilters, DEFAULT_FILTERS, FilterTag } from '../types/word';
 
 const words = (wordsData as any[]).map(w => ({
     ...w,
@@ -9,6 +9,14 @@ const words = (wordsData as any[]).map(w => ({
 
 function escapeRegExp(string: string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function applyTagFilter(tags: FilterTag[], matchFn: (tag: FilterTag) => boolean): boolean {
+    const inc = tags.filter(t => (t.mode || 'include') === 'include');
+    const exc = tags.filter(t => t.mode === 'exclude');
+    if (inc.length > 0 && !inc.some(matchFn)) return false;
+    if (exc.length > 0 && exc.some(matchFn)) return false;
+    return true;
 }
 
 export function useWords() {
@@ -37,18 +45,18 @@ export function useWords() {
                 }
             }
 
-            // 2. Recherche par Tags (OR logic — union des résultats)
+            // 2. Recherche par Tags (include = OR union, exclude = AND NOT)
             if (filters.search.length > 0) {
                 if (!word.MOTS) return false;
                 const ortho = word.MOTS.toLowerCase();
-                const anyMatch = filters.search.some(tag => {
+                const pass = applyTagFilter(filters.search, (tag) => {
                     const val = tag.value.toLowerCase();
                     if (tag.position === 'start') return ortho.startsWith(val);
                     if (tag.position === 'end') return ortho.endsWith(val);
                     if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(ortho);
                     return ortho.includes(val);
                 });
-                if (!anyMatch) return false;
+                if (!pass) return false;
             }
 
             // Filtre par catégorie syntaxique
@@ -109,13 +117,13 @@ export function useWords() {
                 if (!anyMatch) return false;
             }
 
-            // Filtre par graphèmes spécifiques (OR logic — union des résultats)
+            // Filtre par graphèmes spécifiques (include = OR union, exclude = AND NOT)
             if (filters.graphemes.length > 0) {
                 if (!word["segmentation graphèmes"]) return false;
                 const gseg = word["segmentation graphèmes"].toLowerCase();
                 const segments = gseg.split('-').filter(Boolean);
 
-                const anyMatch = filters.graphemes.some(tag => {
+                const pass = applyTagFilter(filters.graphemes, (tag) => {
                     const val = tag.value.toLowerCase();
                     if (tag.position === 'start') return segments[0] === val;
                     if (tag.position === 'end') return segments[segments.length - 1] === val;
@@ -126,21 +134,21 @@ export function useWords() {
                     }
                     return segments.includes(val);
                 });
-                if (!anyMatch) return false;
+                if (!pass) return false;
             }
 
-            // Filtre par phonèmes spécifiques (OR logic — union des résultats)
+            // Filtre par phonèmes spécifiques (include = OR union, exclude = AND NOT)
             if (filters.phonemes.length > 0) {
                 if (!word.PHONEMES) return false;
                 const phon = word.PHONEMES.toLowerCase();
-                const anyMatch = filters.phonemes.some(tag => {
+                const pass = applyTagFilter(filters.phonemes, (tag) => {
                     const val = tag.value.toLowerCase();
                     if (tag.position === 'start') return phon.startsWith(val);
                     if (tag.position === 'end') return phon.endsWith(val);
                     if (tag.position === 'middle') return new RegExp(`.+${escapeRegExp(val)}.+`).test(phon);
                     return phon.includes(val);
                 });
-                if (!anyMatch) return false;
+                if (!pass) return false;
             }
 
             // Filtre par code fréquence (APPUI LEXICAL)

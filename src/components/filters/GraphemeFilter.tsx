@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { FilterSection } from "./FilterSection";
 import { FilterTag } from "./FilterTag";
-import { FilterTag as IFilterTag } from "@/types/word";
+import { ModeToggle } from "./ModeToggle";
+import { FilterTag as IFilterTag, FilterMode } from "@/types/word";
 import { Pencil, Plus, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -21,12 +23,13 @@ interface GraphemeFilterProps {
 
 export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRemoveFilter, currentGrapheme, onGraphemeUpdate }: GraphemeFilterProps) {
     const { value: inputValue, position } = currentGrapheme;
+    const [mode, setMode] = useState<FilterMode>('include');
 
     const handleAdd = () => {
         if (!inputValue.trim()) return;
 
-        // Prevent duplicates
-        const exists = graphemes.some(g => g.value === inputValue.trim() && g.position === position);
+        // Prevent duplicates (same value + position + mode)
+        const exists = graphemes.some(g => g.value === inputValue.trim() && g.position === position && (g.mode || 'include') === mode);
         if (exists) {
             onGraphemeUpdate("", 'anywhere');
             return;
@@ -35,7 +38,8 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
         onAddFilter({
             id: generateId(),
             value: inputValue.trim(),
-            position
+            position,
+            mode
         });
         // Clear realtime after adding tag
         onGraphemeUpdate("", 'anywhere');
@@ -58,16 +62,22 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
             <div className="px-1 py-1">
                 {/* Input Row */}
                 <div className="flex gap-2 mb-2">
-                    <Input
-                        value={inputValue}
-                        onChange={(e) => onGraphemeUpdate(e.target.value, position)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="ex: ein..."
-                        className="flex-1 h-[32px] text-[13px] font-mono px-3 py-[7px] border-border rounded-lg placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-[rgba(79,70,229,0.1)] focus-visible:border-[rgb(var(--filter-accent))]"
-                    />
+                    <div className={cn(
+                        "flex-1 flex items-center border rounded-[7px] overflow-hidden transition-colors",
+                        mode === 'exclude'
+                            ? "border-red-200 focus-within:border-red-400 focus-within:ring-1 focus-within:ring-red-100"
+                            : "border-border focus-within:border-[rgb(var(--filter-accent))] focus-within:ring-1 focus-within:ring-[rgba(79,70,229,0.1)]"
+                    )}>
+                        <ModeToggle mode={mode} onToggle={() => setMode(m => m === 'include' ? 'exclude' : 'include')} />
+                        <Input
+                            value={inputValue}
+                            onChange={(e) => onGraphemeUpdate(e.target.value, position)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="ex: ein..."
+                            className="flex-1 h-[32px] text-[13px] font-mono px-3 py-[7px] border-0 shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
+                        />
+                    </div>
 
-                    {/* Position Select Custom (Simplified as native select with styling for MVP, or custom UI) */}
-                    {/* Using a styled native select for reliability/speed matching the mockup logic */}
                     <div className="relative">
                         <select
                             value={position}
@@ -85,7 +95,12 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
                     <button
                         onClick={handleAdd}
                         disabled={!inputValue.trim()}
-                        className="h-[32px] px-3 bg-[rgb(var(--filter-accent))] hover:bg-[#4338ca] text-white rounded-[7px] flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className={cn(
+                            "h-[32px] px-3 text-white rounded-[7px] flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+                            mode === 'exclude'
+                                ? "bg-red-500 hover:bg-red-600"
+                                : "bg-[rgb(var(--filter-accent))] hover:bg-[#4338ca]"
+                        )}
                     >
                         <Plus className="w-4 h-4" />
                         <span className="sr-only">Ajouter</span>
