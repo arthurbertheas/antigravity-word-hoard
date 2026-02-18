@@ -6,6 +6,18 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Cross-origin iframe auth relay: receive session from parent shell via postMessage
+if (window.self !== window.top) {
+    window.addEventListener('message', async (event) => {
+        if (event.data?.type === 'auth_session') {
+            const { access_token, refresh_token } = event.data;
+            if (access_token && refresh_token) {
+                await supabase.auth.setSession({ access_token, refresh_token });
+            }
+        }
+    });
+}
+
 // Type pour les listes sauvegardées
 export interface SavedList {
     id: string;
