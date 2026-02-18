@@ -65,7 +65,7 @@ Niveaux de difficulté croissante des graphèmes, de "très simples" (1) à "e c
 
 Toutes les images de mots sont des **SVG** hébergés sur Supabase Storage :
 ```
-https://jzefsnvmlvxvwzpbpvaq.supabase.co/storage/v1/object/public/word-images/svg/{nom}.svg
+https://wxttgpfipcksseykzeyy.supabase.co/storage/v1/object/public/word-images/svg/{nom}.svg
 ```
 
 **Contrainte PDF** : `@react-pdf/renderer` ne supporte pas le SVG. Les images doivent être converties en PNG base64 via canvas avant injection dans le PDF (voir `imagier-image-utils.ts`).
@@ -179,7 +179,7 @@ L'app est embarquée en iframe. Messages échangés :
 
 ### Supabase
 
-- **URL** : `https://jzefsnvmlvxvwzpbpvaq.supabase.co` (projet consolidé "Boîte à mots")
+- **URL** : `https://wxttgpfipcksseykzeyy.supabase.co` (projet "Matériel Orthophonie")
 - **Tables** :
   - `user_word_lists` : listes sauvegardées par utilisateur
   - `user_tachistoscope_settings` : réglages du tachistoscope
@@ -257,28 +257,26 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 - Niveau 7 : ieu → oeu
 - Structure a : texte complet "Syllabes simples (CV)" sans subtitle split
 
-### Consolidation Supabase — EN COURS (session 18/02/2026)
+### Consolidation Supabase — RECOVERY (session 18/02/2026)
 
-**Objectif** : Consolider les 2 projets Supabase en un seul + migrer Memberstack → Supabase Auth.
+**Situation** : Le projet `jzefsnvmlvxvwzpbpvaq` a été supprimé accidentellement. Tout repointe vers le projet survivant `wxttgpfipcksseykzeyy`.
 
-**Avant** : 2 projets Supabase
-- Projet 1 (jzefsnvmlvxvwzpbpvaq) : Storage images, Auth gate, `user_word_lists`
-- Projet 2 (wxttgpfipcksseykzeyy) : `user_tachistoscope_settings`, client React
+**Projet unique** : `wxttgpfipcksseykzeyy` ("Matériel Orthophonie", eu-west-1)
+- Tables : `user_word_lists`, `user_tachistoscope_settings`
+- Auth : Supabase Auth (comptes à recréer)
+- Storage : bucket `word-images` à créer + images à re-uploader
 
-**Après** : 1 seul projet (jzefsnvmlvxvwzpbpvaq, renommé "Boîte à mots")
-- Tout consolidé : Auth, Storage, `user_word_lists`, `user_tachistoscope_settings`
-- Memberstack supprimé → Supabase Auth partout
-
-**Fichiers modifiés** :
-- `.env` — URL et clé pointent vers projet 1
-- `src/lib/supabase.ts` — Fallback URL mis à jour
-- `src/contexts/SavedListsContext.tsx` — Memberstack → `supabase.auth.getUser()` + `onAuthStateChange`
+**Migration Memberstack → Supabase Auth** : FAIT
+- `SavedListsContext.tsx` utilise `supabase.auth.getUser()` + `onAuthStateChange`
+- PostMessage auth relay pour iframe cross-origin (shell → word-hoard)
 
 **Actions manuelles restantes** :
-- [ ] Exécuter le SQL dans le dashboard Supabase (table tachistoscope + RLS + migration user_id)
+- [ ] Configurer Auth sur `wxttgpfipcksseykzeyy` (activer email provider)
+- [ ] Créer les comptes utilisateurs
+- [ ] Créer bucket Storage `word-images` et re-uploader les SVG
+- [ ] Mettre à jour les 11 URLs d'images dans `words.json`
 - [ ] Mettre à jour les env vars Vercel
-- [ ] Renommer le projet dans Supabase dashboard
-- [ ] Tester en production
+- [ ] Configurer Site URL dans Supabase Auth (redirect URLs)
 
 ### Export modal — redesign (session précédente)
 
