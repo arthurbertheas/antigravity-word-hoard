@@ -74,12 +74,12 @@ export const STRUCTURE_LABELS: Record<string, string> = {
 
 export const GRAPHEME_LABELS: Record<string, string> = {
     '1': 'Graphèmes très simples',
-    '2': 'ou, eu, ch, gn, c (/k/), g (/g/)',
-    '3': 'on, an, in, un, oi, qu, x, h',
-    '4': 'c, g, s contextuels',
+    '2': 'ou, eu, ch, c, g, b, d (c = /k/, g = /g/)',
+    '3': 'on, an, in, un, oi, qu, gn, x, ph, h',
+    '4': 'c, g, s contextuels (c = /s/, g = /ʒ/, s = /z/)',
     '5': 'n contextuel',
-    '6': 'en, ai, au, eau, ei',
-    '7': 'oin, ien, ill, ieu',
+    '6': 'au, eau, en, ai, ei, ui',
+    '7': 'oin, ien, ill, oeu',
     '8': '-et, -er, -ez, ain, om, am, em, im, um',
     '9': 'aim, ein, yn, ym',
     '10': 'gea, geo, gue, gui',

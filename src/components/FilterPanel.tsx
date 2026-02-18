@@ -159,19 +159,9 @@ export function FilterPanel({
         setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
-    // Extract descriptions from labels
-    const getStructureDescription = (code: string): string | undefined => {
-        const label = STRUCTURE_LABELS[code];
-        if (label.includes('(')) {
-            return label.split('(')[1].replace(')', '');
-        }
-        return undefined;
-    };
-
-    const getStructureLabel = (code: string): string => {
-        const label = STRUCTURE_LABELS[code];
-        return label.split('(')[0].trim();
-    };
+    // Structure labels — show full text inline (no subtitle split)
+    const getStructureDescription = (_code: string): string | undefined => undefined;
+    const getStructureLabel = (code: string): string => STRUCTURE_LABELS[code];
 
     const getGraphemeDescription = (code: string): string | undefined => {
         const label = GRAPHEME_LABELS[code];
