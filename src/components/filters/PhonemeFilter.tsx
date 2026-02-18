@@ -27,6 +27,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const isExclude = mode === 'exclude';
     const containerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -38,6 +39,16 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
         };
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
+    }, [isDropdownOpen]);
+
+    // Auto-scroll dropdown into view when it opens
+    useEffect(() => {
+        if (isDropdownOpen && dropdownRef.current) {
+            // Small delay to let the DOM render
+            requestAnimationFrame(() => {
+                dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        }
     }, [isDropdownOpen]);
 
     const togglePhonemeSelection = (ph: string) => {
@@ -175,7 +186,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
 
                 {/* Dropdown — IPA grid */}
                 {isDropdownOpen && (
-                    <div className={cn(
+                    <div ref={dropdownRef} className={cn(
                         "rounded-[10px] border-[1.5px] p-2.5 pt-2 animate-in fade-in slide-in-from-top-1 duration-150",
                         isExclude
                             ? "border-red-200 bg-gradient-to-b from-red-50/30 to-[#f8f9fc]"
