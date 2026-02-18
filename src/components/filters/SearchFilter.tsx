@@ -44,6 +44,13 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
     const handleAdd = () => {
         if (!inputValue.trim()) return;
 
+        // Prevent duplicates (same value + position + mode)
+        const exists = searchTags.some(s => s.value === inputValue.trim() && s.position === position && (s.mode || 'include') === mode);
+        if (exists) {
+            onSearchUpdate("", 'anywhere');
+            return;
+        }
+
         onAddFilter({
             id: generateId(),
             value: inputValue.trim(),
