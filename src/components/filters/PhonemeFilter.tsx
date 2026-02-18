@@ -220,6 +220,9 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                         ))}
                     </div>
                 )}
+
+                {/* Bottom breathing room */}
+                <div className="h-10" />
             </div>
         </FilterSection>
     );
