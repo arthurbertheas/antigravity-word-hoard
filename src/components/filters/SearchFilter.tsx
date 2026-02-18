@@ -82,7 +82,12 @@ export function SearchFilter({ isOpen, onToggle, searchTags, onAddFilter, onRemo
                         <select
                             value={position}
                             onChange={(e) => onSearchUpdate(inputValue, e.target.value as any)}
-                            className="appearance-none h-[32px] pl-2 pr-5 bg-white border-[1.5px] border-border rounded-[7px] text-[11px] font-semibold font-['DM_Sans'] text-muted-foreground focus:outline-none focus:border-[rgb(var(--filter-accent))] cursor-pointer"
+                            className={cn(
+                                "appearance-none h-[32px] pl-2 pr-5 bg-white border-[1.5px] rounded-[7px] text-[11px] font-semibold font-['DM_Sans'] text-muted-foreground focus:outline-none cursor-pointer transition-all",
+                                mode === 'exclude'
+                                    ? "border-red-200 focus:border-red-400"
+                                    : "border-border focus:border-[rgb(var(--filter-accent))]"
+                            )}
                         >
                             <option value="anywhere">Partout</option>
                             <option value="start">Début</option>
