@@ -12,17 +12,17 @@ export function ModeToggle({ mode, onToggle }: ModeToggleProps) {
     return (
         <button
             type="button"
-            onClick={onToggle}
+            onClick={(e) => { e.stopPropagation(); onToggle(); }}
             className={cn(
-                "flex items-center gap-1 px-2 border-r text-[10px] font-['Sora'] font-bold tracking-[0.2px] whitespace-nowrap select-none transition-colors shrink-0",
+                "flex items-center gap-1 px-2.5 border-r-[1.5px] text-[10px] font-['Sora'] font-bold tracking-[0.2px] whitespace-nowrap select-none transition-all shrink-0",
                 isInclude
-                    ? "bg-[rgba(79,70,229,0.04)] text-[rgb(var(--filter-accent))] border-r-border hover:bg-[rgba(79,70,229,0.08)]"
-                    : "bg-red-50/80 text-red-500 border-r-red-200 hover:bg-red-100"
+                    ? "bg-[#f8f9fc] text-[rgb(var(--filter-accent))] border-r-border hover:bg-[#eef0f7]"
+                    : "bg-[#fef7f7] text-red-500 border-r-red-200 hover:bg-red-100"
             )}
         >
             {isInclude
-                ? <Check className="w-3 h-3" />
-                : <X className="w-3 h-3" />
+                ? <Check className="w-[13px] h-[13px]" />
+                : <X className="w-[13px] h-[13px]" />
             }
             {isInclude ? 'Contient' : 'Sans'}
             <ChevronDown className="w-2 h-2 opacity-40 -ml-0.5" />

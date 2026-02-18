@@ -4,7 +4,6 @@ import { FilterTag } from "./FilterTag";
 import { ModeToggle } from "./ModeToggle";
 import { FilterTag as IFilterTag, FilterMode } from "@/types/word";
 import { Pencil, Plus, ChevronDown } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 function generateId() {
@@ -59,64 +58,64 @@ export function GraphemeFilter({ isOpen, onToggle, graphemes, onAddFilter, onRem
             isOpen={isOpen}
             onToggle={onToggle}
         >
-            <div className="px-1 py-1">
-                {/* Input Row */}
-                <div className="flex gap-2 mb-2">
+            <div className="px-1 py-1 space-y-2.5">
+                <div className="flex items-center gap-1.5">
                     <div className={cn(
-                        "flex-1 flex items-center border rounded-[7px] overflow-hidden transition-colors",
+                        "flex-1 min-w-0 flex items-center border-[1.5px] rounded-[9px] overflow-hidden transition-all bg-white",
                         mode === 'exclude'
-                            ? "border-red-200 focus-within:border-red-400 focus-within:ring-1 focus-within:ring-red-100"
-                            : "border-border focus-within:border-[rgb(var(--filter-accent))] focus-within:ring-1 focus-within:ring-[rgba(79,70,229,0.1)]"
+                            ? "border-red-200 focus-within:border-red-400 focus-within:shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
+                            : "border-border focus-within:border-[rgb(var(--filter-accent))] focus-within:shadow-[0_0_0_3px_rgba(99,102,241,0.12)]"
                     )}>
                         <ModeToggle mode={mode} onToggle={() => setMode(m => m === 'include' ? 'exclude' : 'include')} />
-                        <Input
+                        <input
+                            type="text"
+                            placeholder="ex: ein, an..."
                             value={inputValue}
                             onChange={(e) => onGraphemeUpdate(e.target.value, position)}
                             onKeyDown={handleKeyDown}
-                            placeholder="ex: ein..."
-                            className="flex-1 h-[32px] text-[13px] font-mono px-3 py-[7px] border-0 shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
+                            className="flex-1 min-w-0 h-[32px] px-2.5 py-[7px] bg-transparent border-0 outline-none font-mono text-[12.5px] font-medium text-foreground placeholder:text-muted-foreground placeholder:font-normal"
                         />
                     </div>
 
-                    <div className="relative">
+                    <div className="relative shrink-0">
                         <select
                             value={position}
                             onChange={(e) => onGraphemeUpdate(inputValue, e.target.value as any)}
-                            className="appearance-none h-[32px] pl-3 pr-7 bg-white border border-border rounded-[7px] text-[12px] font-medium font-['DM_Sans'] text-foreground focus:outline-none focus:border-[rgb(var(--filter-accent))] cursor-pointer"
+                            className="appearance-none h-[32px] pl-2 pr-5 bg-white border-[1.5px] border-border rounded-[7px] text-[11px] font-semibold font-['DM_Sans'] text-muted-foreground focus:outline-none focus:border-[rgb(var(--filter-accent))] cursor-pointer"
                         >
                             <option value="anywhere">Partout</option>
                             <option value="start">Début</option>
                             <option value="end">Fin</option>
                             <option value="middle">Milieu</option>
                         </select>
-                        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
+                        <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
                     </div>
 
                     <button
                         onClick={handleAdd}
                         disabled={!inputValue.trim()}
                         className={cn(
-                            "h-[32px] px-3 text-white rounded-[7px] flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+                            "w-[32px] h-[32px] shrink-0 text-white rounded-[8px] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-all",
                             mode === 'exclude'
-                                ? "bg-red-500 hover:bg-red-600"
-                                : "bg-[rgb(var(--filter-accent))] hover:bg-[#4338ca]"
+                                ? "bg-red-500 hover:bg-red-600 shadow-[0_2px_8px_rgba(239,68,68,0.2)]"
+                                : "bg-[rgb(var(--filter-accent))] hover:bg-[#4338ca] shadow-[0_2px_8px_rgba(99,102,241,0.25)]"
                         )}
                     >
                         <Plus className="w-4 h-4" />
-                        <span className="sr-only">Ajouter</span>
                     </button>
                 </div>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-[5px] min-h-[5px]">
-                    {graphemes.map(tag => (
-                        <FilterTag
-                            key={tag.id}
-                            tag={tag}
-                            onRemove={onRemoveFilter}
-                        />
-                    ))}
-                </div>
+                {graphemes.length > 0 && (
+                    <div className="flex flex-wrap gap-[5px]">
+                        {graphemes.map(tag => (
+                            <FilterTag
+                                key={tag.id}
+                                tag={tag}
+                                onRemove={onRemoveFilter}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </FilterSection>
     );
