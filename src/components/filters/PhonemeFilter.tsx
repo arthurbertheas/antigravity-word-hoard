@@ -207,6 +207,9 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                     </div>
                 )}
 
+                {/* Breathing room when dropdown is open */}
+                {isDropdownOpen && <div className="h-10" />}
+
                 {/* Tags */}
                 {phonemes.length > 0 && (
                     <div className="flex flex-wrap gap-[5px]">
