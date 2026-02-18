@@ -27,7 +27,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const isExclude = mode === 'exclude';
     const containerRef = useRef<HTMLDivElement>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -41,12 +41,11 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
         return () => document.removeEventListener('mousedown', handler);
     }, [isDropdownOpen]);
 
-    // Auto-scroll dropdown into view when it opens
+    // Scroll to bottom of section when dropdown opens — ensures tags + spacing are visible
     useEffect(() => {
-        if (isDropdownOpen && dropdownRef.current) {
-            // Small delay to let the DOM render
+        if (isDropdownOpen && bottomRef.current) {
             requestAnimationFrame(() => {
-                dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
             });
         }
     }, [isDropdownOpen]);
@@ -186,7 +185,7 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
 
                 {/* Dropdown — IPA grid */}
                 {isDropdownOpen && (
-                    <div ref={dropdownRef} className={cn(
+                    <div className={cn(
                         "rounded-[10px] border-[1.5px] p-2.5 pt-2 animate-in fade-in slide-in-from-top-1 duration-150",
                         isExclude
                             ? "border-red-200 bg-gradient-to-b from-red-50/30 to-[#f8f9fc]"
@@ -221,11 +220,8 @@ export function PhonemeFilter({ isOpen, onToggle, phonemes, onAddFilter, onRemov
                     </div>
                 )}
 
-                {/* Extra space when dropdown is open */}
-                {isDropdownOpen && <div className="h-20" />}
-
-                {/* Bottom breathing room */}
-                <div className="h-10" />
+                {/* 40px bottom spacing — scroll target to ensure tags are visible */}
+                <div ref={bottomRef} className="h-10" />
             </div>
         </FilterSection>
     );
