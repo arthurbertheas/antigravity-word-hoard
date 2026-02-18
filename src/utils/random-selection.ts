@@ -14,6 +14,7 @@ export interface DistributionPreview {
     label: string;
     perValue: number;
     isSingleValue?: boolean;
+    isExclude?: boolean;
 }
 
 /**
@@ -89,6 +90,7 @@ export function calculateDistribution(
 ): DistributionPreview[] {
     const multiCriteria = getDistributionCriteria(filters);
     const singleCriteria = getSingleValueCriteria(filters);
+    const excludeCriteria = getExcludeCriteria(filters);
 
     const result: DistributionPreview[] = multiCriteria.map(criterion => {
         const perValue = Math.round(count / criterion.values.length);
@@ -101,6 +103,15 @@ export function calculateDistribution(
             label: formatCriterionLabel(criterion),
             perValue: count,
             isSingleValue: true
+        });
+    });
+
+    // Exclude criteria shown as informational items
+    excludeCriteria.forEach(criterion => {
+        result.push({
+            label: formatExcludeLabel(criterion),
+            perValue: 0,
+            isExclude: true
         });
     });
 
@@ -213,6 +224,26 @@ function getSingleValueCriteria(filters: WordFilters): DistributionCriterion[] {
     return criteria;
 }
 
+// Identifier les filtres d'exclusion (pour affichage informatif dans la distribution)
+function getExcludeCriteria(filters: WordFilters): DistributionCriterion[] {
+    const criteria: DistributionCriterion[] = [];
+
+    const excPhonemes = (filters.phonemes || []).filter(t => t.mode === 'exclude');
+    if (excPhonemes.length > 0) {
+        criteria.push({ type: 'phonemes', values: excPhonemes.map(t => t.value) });
+    }
+    const excGraphemes = (filters.graphemes || []).filter(t => t.mode === 'exclude');
+    if (excGraphemes.length > 0) {
+        criteria.push({ type: 'graphemes', values: excGraphemes.map(t => t.value) });
+    }
+    const excSearch = (filters.search || []).filter(t => t.mode === 'exclude');
+    if (excSearch.length > 0) {
+        criteria.push({ type: 'graphemes', values: excSearch.map(t => t.value) });
+    }
+
+    return criteria;
+}
+
 // Créer toutes les combinaisons possibles (récursif)
 function createCombinations(criteria: DistributionCriterion[]): Combination[] {
     if (criteria.length === 0) return [];
@@ -302,5 +333,18 @@ function formatCriterionLabel(criterion: DistributionCriterion): string {
             return `Complexité (${criterion.values.map(v => GRAPHEME_LABELS[String(v)] || v).join(', ')})`;
         default:
             return '';
+    }
+}
+
+// Formattage des labels d'exclusion
+function formatExcludeLabel(criterion: DistributionCriterion): string {
+    const valuesStr = criterion.values.join(', ');
+    switch (criterion.type) {
+        case 'phonemes':
+            return `Sans phonème (${valuesStr})`;
+        case 'graphemes':
+            return `Sans graphème (${valuesStr})`;
+        default:
+            return `Sans (${valuesStr})`;
     }
 }

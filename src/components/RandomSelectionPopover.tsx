@@ -153,7 +153,7 @@ export function RandomSelectionPopover({
                                 {isStale ? 'Nouvelle répartition' : 'Répartition estimée'}
                             </div>
                             <div className="bg-[#f8f9fc] rounded-[10px] p-3 text-[12px]">
-                                {distribution.map((item, index) => (
+                                {distribution.filter(item => !item.isExclude).map((item, index) => (
                                     <div key={index} className="flex items-center justify-between py-1.5 border-b border-[#eef0f5] last:border-0 last:pb-0 first:pt-0">
                                         <span className="text-[#6b6f8a] truncate max-w-[150px]" title={item.label}>
                                             {item.label}
@@ -168,6 +168,21 @@ export function RandomSelectionPopover({
                                         </span>
                                     </div>
                                 ))}
+                                {distribution.some(item => item.isExclude) && (
+                                    <>
+                                        <div className="border-t border-[#eef0f5] my-1" />
+                                        {distribution.filter(item => item.isExclude).map((item, index) => (
+                                            <div key={`exc-${index}`} className="flex items-center justify-between py-1.5 last:pb-0">
+                                                <span className="text-red-400 truncate max-w-[170px] text-[11.5px]" title={item.label}>
+                                                    {item.label}
+                                                </span>
+                                                <span className="whitespace-nowrap ml-2 text-red-300 font-medium text-[11px]">
+                                                    exclu
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                             </div>
                         </div>
                     )}
