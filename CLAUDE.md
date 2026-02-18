@@ -275,10 +275,10 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 - `SavedListsContext.tsx` → utilise `supabase.auth.getUser()` + `onAuthStateChange`
 - PostMessage auth relay pour iframe cross-origin (shell → word-hoard)
 
+**Bug images résolu** : Les mots sélectionnés dans localStorage gardaient les anciennes URLs d'images (projet supprimé). Fix : migration automatique dans `SelectionContext.tsx` (commit `0f365aa`). Aussi nécessité de redeploy Vercel sans cache car le build cache servait un ancien bundle.
+
 **Actions manuelles restantes** :
-- [ ] Configurer Auth sur `wxttgpfipcksseykzeyy` (activer email provider dans Authentication > Providers)
-- [ ] Configurer Site URL (`https://app.materielorthophonie.fr`) et Redirect URLs dans Authentication > URL Configuration
-- [ ] Créer les comptes utilisateurs dans Authentication > Users
+- [ ] Créer les comptes utilisateurs dans Authentication > Users (si pas déjà fait)
 - [ ] Mettre à jour les env vars Vercel (VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY pour wxttgpfipcksseykzeyy)
 
 ### Export modal — redesign (session précédente)
@@ -298,3 +298,5 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 - **Hyphenation PDF** : désactivée (`Font.registerHyphenationCallback(word => [word])`) pour ne pas couper les mots français
 - **Normalisation** : les listes sauvegardées peuvent contenir des mots en schéma v3/v4 → toujours normaliser au chargement
 - **Format PHONEMES** : stocké avec point initial (`.p.a.p.a`). Toujours utiliser `split('.').filter(Boolean)` pour obtenir les segments, ne jamais utiliser `startsWith`/`endsWith` sur la chaîne brute
+- **localStorage sélection** : `wordHoard_selectedWords` stocke les objets Word complets (avec URLs d'images). Si les URLs changent (migration Supabase, etc.), le localStorage garde les anciennes. Migration ajoutée dans `SelectionContext.tsx` pour remplacer l'ancien projet ID.
+- **Vercel build cache** : Vercel cache les assets entre déploiements. Si `words.json` change, forcer un redeploy sans cache (Deployments → ... → Redeploy → décocher "Use existing Build Cache")
