@@ -32,7 +32,10 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     const [selectedWords, setSelectedWords] = useState<Word[]>(() => {
         try {
             const saved = localStorage.getItem('wordHoard_selectedWords');
-            return saved ? JSON.parse(saved) : [];
+            if (!saved) return [];
+            // Migrate old Supabase project URLs from deleted project
+            const migrated = saved.replace(/jzefsnvmlvxvwzpbpvaq/g, 'wxttgpfipcksseykzeyy');
+            return JSON.parse(migrated);
         } catch { return []; }
     });
     const [isFocusModeOpen, setIsFocusModeOpen] = useState(false);
