@@ -179,12 +179,12 @@ L'app est embarquée en iframe. Messages échangés :
 
 ### Supabase
 
-- **URL** : `https://wxttgpfipcksseykzeyy.supabase.co`
+- **URL** : `https://jzefsnvmlvxvwzpbpvaq.supabase.co` (projet consolidé "Boîte à mots")
 - **Tables** :
   - `user_word_lists` : listes sauvegardées par utilisateur
   - `user_tachistoscope_settings` : réglages du tachistoscope
 - **Storage** : images SVG des mots (bucket `word-images`)
-- **Auth** : via Memberstack (`window.$memberstackDOM`), fallback test user
+- **Auth** : Supabase Auth (`supabase.auth.getUser()`), gate standalone dans `index.html`
 
 ## Fichiers clés
 
@@ -216,14 +216,16 @@ L'app est embarquée en iframe. Messages échangés :
 Les 3 filtres "Recherche ciblée" (Séquence de lettres, Graphème, Phonème) supportent maintenant l'inclusion ET l'exclusion via un toggle `Contient/Sans`.
 
 **Fichiers modifiés** :
-- `src/types/word.ts` — `FilterTag.mode?: 'include' | 'exclude'`, type `FilterMode`
+- `src/types/word.ts` — `FilterTag.mode?: 'include' | 'exclude'`, type `FilterMode`, `mode` ajouté aux 3 types realtime
 - `src/components/filters/ModeToggle.tsx` — Composant réutilisable Contient/Sans (Check/X icons, indigo/rouge)
 - `src/components/filters/FilterTag.tsx` — Style conditionnel indigo (include) / rouge (exclude)
-- `src/hooks/useWords.ts` — Helper `applyTagFilter()` pour filtrage include/exclude
-- `src/components/filters/SearchFilter.tsx` — ModeToggle intégré, position select rouge en mode Sans
+- `src/hooks/useWords.ts` — Helper `applyTagFilter()` pour filtrage include/exclude, filtres realtime respectent le mode exclude, matching phonème par segments (split `.`)
+- `src/components/filters/SearchFilter.tsx` — ModeToggle intégré, position select rouge en mode Sans, propagation mode realtime
 - `src/components/filters/GraphemeFilter.tsx` — Idem
 - `src/components/filters/PhonemeFilter.tsx` — Idem + grille IPA colorée (tags existants highlight indigo/rouge)
+- `src/components/filters/FilterPanel.tsx` — Callbacks mis à jour pour propager le mode aux filtres realtime
 - `src/components/ActiveFiltersBar.tsx` — Chips rouges pour tags exclude, préfixe "Sans"
+- `src/utils/random-selection.ts` — Distribution exclut les tags exclude (seuls les include participent à la répartition)
 
 **Décisions de design** :
 - ModeToggle sans chevron (confusion avec dropdown)
@@ -231,6 +233,13 @@ Les 3 filtres "Recherche ciblée" (Séquence de lettres, Graphème, Phonème) su
 - Grille IPA : phonèmes déjà ajoutés sont highlight (indigo = include, rouge = exclude)
 - Ordre position : Partout → Début → Milieu → Fin
 - Auto-scroll `bottomRef` avec spacer 40px conditionnel
+
+### Bugfixes filtres exclude — LIVRÉ (session 18/02/2026)
+
+**3 bugs corrigés** :
+1. **Filtres realtime ignoraient le mode exclude** — Les types `realtimeSearch`, `realtimeGrapheme`, `realtimePhonemes` n'avaient pas de champ `mode`. Ajouté `mode?: FilterMode` aux 3 types, propagé depuis les composants via `FilterPanel.tsx`, et inversé la logique dans `useWords.ts` (`isExclude ? matches : !matches`). Commit `1f5a4a2`.
+2. **Position phonème "Début" toujours 0 résultats** — PHONEMES stockés au format `.p.a.p.a` (point initial). `startsWith("p")` échouait à cause du point initial. Corrigé en matching par segments : `split('.').filter(Boolean)` puis comparaison par index. Appliqué aux filtres realtime ET tag-based. Commit `1f5a4a2`.
+3. **Sélection aléatoire montrait les tags exclude dans la distribution** — `getDistributionCriteria` et `getSingleValueCriteria` comptaient tous les tags sans filtrer par mode. Corrigé pour ne considérer que les tags include. Commit `01bb0e6`.
 
 ### Appui Lexical — Redesign chips — LIVRÉ
 
@@ -248,6 +257,29 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 - Niveau 7 : ieu → oeu
 - Structure a : texte complet "Syllabes simples (CV)" sans subtitle split
 
+### Consolidation Supabase — EN COURS (session 18/02/2026)
+
+**Objectif** : Consolider les 2 projets Supabase en un seul + migrer Memberstack → Supabase Auth.
+
+**Avant** : 2 projets Supabase
+- Projet 1 (jzefsnvmlvxvwzpbpvaq) : Storage images, Auth gate, `user_word_lists`
+- Projet 2 (wxttgpfipcksseykzeyy) : `user_tachistoscope_settings`, client React
+
+**Après** : 1 seul projet (jzefsnvmlvxvwzpbpvaq, renommé "Boîte à mots")
+- Tout consolidé : Auth, Storage, `user_word_lists`, `user_tachistoscope_settings`
+- Memberstack supprimé → Supabase Auth partout
+
+**Fichiers modifiés** :
+- `.env` — URL et clé pointent vers projet 1
+- `src/lib/supabase.ts` — Fallback URL mis à jour
+- `src/contexts/SavedListsContext.tsx` — Memberstack → `supabase.auth.getUser()` + `onAuthStateChange`
+
+**Actions manuelles restantes** :
+- [ ] Exécuter le SQL dans le dashboard Supabase (table tachistoscope + RLS + migration user_id)
+- [ ] Mettre à jour les env vars Vercel
+- [ ] Renommer le projet dans Supabase dashboard
+- [ ] Tester en production
+
 ### Export modal — redesign (session précédente)
 
 **Statut** : Preview réécrit, PDF/Word/Print mis à jour. À tester visuellement.
@@ -264,3 +296,4 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 - **CORS images** : les fetch d'images Supabase nécessitent `mode: 'cors'`
 - **Hyphenation PDF** : désactivée (`Font.registerHyphenationCallback(word => [word])`) pour ne pas couper les mots français
 - **Normalisation** : les listes sauvegardées peuvent contenir des mots en schéma v3/v4 → toujours normaliser au chargement
+- **Format PHONEMES** : stocké avec point initial (`.p.a.p.a`). Toujours utiliser `split('.').filter(Boolean)` pour obtenir les segments, ne jamais utiliser `startsWith`/`endsWith` sur la chaîne brute

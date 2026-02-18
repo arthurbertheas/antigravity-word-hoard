@@ -31,22 +31,29 @@ export function SavedListsProvider({ children }: { children: React.ReactNode }) 
     const [userId, setUserId] = useState<string | null>(null);
     const { toast } = useToast();
 
-    // Memberstack User Detection
+    // Supabase Auth User Detection
     useEffect(() => {
-        const getMemberstackUser = async () => {
+        const getSupabaseUser = async () => {
             try {
-                // @ts-ignore
-                const member = await window.$memberstackDOM?.getCurrentMember();
-                if (member?.data?.auth?.email) {
-                    setUserId(member.data.auth.email);
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    setUserId(user.id);
                 } else {
-                    setUserId('test-user@example.com');
+                    setUserId(null);
                 }
             } catch (error) {
-                setUserId('test-user@example.com');
+                console.error('Error getting Supabase user:', error);
+                setUserId(null);
             }
         };
-        getMemberstackUser();
+        getSupabaseUser();
+
+        // Listen for auth state changes (login/logout)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUserId(session?.user?.id ?? null);
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     const loadLists = useCallback(async () => {
