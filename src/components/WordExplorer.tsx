@@ -115,8 +115,8 @@ function WordExplorerContent() {
                 setIsImagierOpen(false);
                 historyPushedRef.current = false;
             } else {
-                // On main view — re-push to prevent leaving the app
-                history.pushState({ view: 'main' }, '');
+                // On main view — tell parent shell to go back to catalogue
+                window.parent.postMessage({ type: 'close_tool' }, '*');
             }
         };
 
