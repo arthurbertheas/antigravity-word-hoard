@@ -207,7 +207,7 @@ L'app est embarquée en iframe. Messages échangés :
 | `src/data/words.json` | Base de ~2 400 mots (v7) |
 | `src/data/cgp-tokens.json` | Tokens graphème-phonème |
 
-## Travail en cours (session 18/02/2026)
+## Travail en cours (session 19/02/2026)
 
 ### Filtres Include/Exclude — LIVRÉ
 
@@ -281,11 +281,34 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 - [ ] Créer les comptes utilisateurs dans Authentication > Users (si pas déjà fait)
 - [ ] Mettre à jour les env vars Vercel (VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY pour wxttgpfipcksseykzeyy)
 
+### Export depuis listes sauvegardées — LIVRÉ (session 19/02/2026)
+
+**Objectif** : Remplacer les 3 actions séparées (PDF, Word, Imprimer) par un seul bouton "Exporter" qui ouvre le `ExportPanel` modal riche.
+
+**Fichiers modifiés** :
+- `src/types/export.ts` — Ajout `initialTitle?: string` à `ExportPanelProps`
+- `src/components/export/ExportPanel.tsx` — Utilise `initialTitle` pour pré-remplir le titre
+- `src/components/saved-lists/ActionMenu.tsx` — 3 items → 1 "Exporter" + callback `onExport`
+- `src/components/saved-lists/CompactSavedListRow.tsx` — Propagation `onExport` callback
+- `src/components/saved-lists/SavedListsPanel.tsx` — State `exportingList`, rendu `<ExportPanel>` conditionnel
+
+**Bug PDF corrigé** : `ExportPdfDocument` chargeait des images Twemoji depuis CDN pour les icônes du header. `@react-pdf/renderer` échouait au fetch de ces images distantes. Remplacé par du texte plain. Aussi retiré `fontStyle: 'italic'` sur `phonemeText` (Sora n'a pas d'italique enregistré). Commit `ff1790a`.
+
+### Navigation back button — Centralisé (session 19/02/2026)
+
+**Problème** : Double appui back pour revenir des outils au catalogue. L'iframe et le parent partageaient le même `history.state` — `replaceState` dans l'iframe écrasait l'état du parent.
+
+**Solution** : Toute la gestion history centralisée dans le shell parent. L'iframe communique via `postMessage` uniquement (`focus_mode_change`, `close_overlay`).
+
+**Fichiers modifiés** :
+- `WordExplorer.tsx` — Supprimé tous les appels `replaceState`/`pushState`/`popstate`, ajouté listener `close_overlay`
+- Shell `index.html` (repo `ressources-orthophonie-app`) — Variables `currentToolId`, `toolOverlayOpen`, `closingOverlayViaBack`. Gestion overlay/tool/page dans popstate. `location.replace()` pour navigation iframe sans entrée history.
+
 ### Export modal — redesign (session précédente)
 
-**Statut** : Preview réécrit, PDF/Word/Print mis à jour. À tester visuellement.
+**Statut** : Fonctionnel. PDF et Word testés.
 
-**Fichiers** : `ExportPanel.tsx`, `ExportPreview.tsx`, `export-utils.ts`, `export.ts`
+**Fichiers** : `ExportPanel.tsx`, `ExportPreview.tsx`, `ExportPdfDocument.tsx`, `export-utils.ts`, `export.ts`
 **Design** : Panel modal avec tabs Document/Contenu, format selector en footer, 5 layouts visuels.
 **Mockup** : `mockup-export-modal-v4.html`
 
@@ -293,6 +316,7 @@ GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
 
 - **SVG dans les PDF** : `@react-pdf/renderer` ne supporte pas le SVG → convertir en PNG base64 via canvas
 - **Font italic Sora** : Sora n'a pas de variante italique → ne jamais utiliser `fontStyle: 'italic'` dans les styles PDF
+- **Images CDN dans PDF** : `@react-pdf/renderer` `<Image src="url">` échoue silencieusement si le fetch CDN rate (CORS, redirect, timeout). Ne jamais utiliser d'images CDN distantes dans les composants PDF — pré-charger en base64 ou utiliser du texte
 - **Déterminants** : pas de genre dans la base → `showDeterminer` désactivé par défaut
 - **CORS images** : les fetch d'images Supabase nécessitent `mode: 'cors'`
 - **Hyphenation PDF** : désactivée (`Font.registerHyphenationCallback(word => [word])`) pour ne pas couper les mots français
