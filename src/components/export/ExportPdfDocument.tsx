@@ -239,7 +239,6 @@ const s = StyleSheet.create({
     color: C.textDark,
   },
   phonemeText: {
-    fontStyle: 'italic',
     color: C.primary,
   },
   categoryBadge: {
@@ -322,35 +321,20 @@ function WordImage({ word, imageMap, size = 32 }: { word: Word; imageMap: Map<st
 
 /* ─── Header ─── */
 
-/* Twemoji PNG URLs (72x72) */
-const EMOJI_CALENDAR = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/1f4c5.png';
-const EMOJI_TAG = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/1f3f7.png';
-
 function PdfHeader({ words, settings, isSessionMode }: { words: Word[]; settings: ExportSettings; isSessionMode: boolean }) {
   const defaultTitle = isSessionMode ? 'Résultats de session' : 'Ma sélection de mots';
   const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-  const emojiStyle = { width: 10, height: 10, marginRight: 4 } as const;
+  const metaParts: string[] = [];
+  if (settings.includeDate) metaParts.push(today);
+  if (settings.includeWordCount) metaParts.push(`${words.length} mots`);
 
   return (
     <View style={s.header}>
       <Text style={s.title}>{settings.title || defaultTitle}</Text>
       {settings.subtitle ? <Text style={s.subtitle}>{settings.subtitle}</Text> : null}
-      {(settings.includeDate || settings.includeWordCount) && (
-        <View style={{ flexDirection: 'row', gap: 16 }}>
-          {settings.includeDate && (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image src={EMOJI_CALENDAR} style={emojiStyle} />
-              <Text style={s.metaText}>{today}</Text>
-            </View>
-          )}
-          {settings.includeWordCount && (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image src={EMOJI_TAG} style={emojiStyle} />
-              <Text style={s.metaText}>{words.length} mots</Text>
-            </View>
-          )}
-        </View>
+      {metaParts.length > 0 && (
+        <Text style={s.metaText}>{metaParts.join('  ·  ')}</Text>
       )}
     </View>
   );
