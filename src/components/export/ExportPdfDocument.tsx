@@ -259,10 +259,16 @@ const s = StyleSheet.create({
 
 /* ─── Props ─── */
 
+export const HEADER_ICON_URLS = {
+  calendar: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/1f4c5.png',
+  tag: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/1f3f7.png',
+} as const;
+
 interface ExportPdfDocumentProps {
   words: Word[];
   settings: ExportSettings;
   imageMap: Map<string, string>;
+  headerIcons?: { calendar?: string; tag?: string };
   wordStatuses?: Map<string, WordStatus>;
   currentIndex?: number;
 }
@@ -321,20 +327,34 @@ function WordImage({ word, imageMap, size = 32 }: { word: Word; imageMap: Map<st
 
 /* ─── Header ─── */
 
-function PdfHeader({ words, settings, isSessionMode }: { words: Word[]; settings: ExportSettings; isSessionMode: boolean }) {
+function PdfHeader({ words, settings, isSessionMode, headerIcons }: {
+  words: Word[]; settings: ExportSettings; isSessionMode: boolean;
+  headerIcons?: { calendar?: string; tag?: string };
+}) {
   const defaultTitle = isSessionMode ? 'Résultats de session' : 'Ma sélection de mots';
   const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-  const metaParts: string[] = [];
-  if (settings.includeDate) metaParts.push(today);
-  if (settings.includeWordCount) metaParts.push(`${words.length} mots`);
+  const emojiStyle = { width: 10, height: 10, marginRight: 4 } as const;
 
   return (
     <View style={s.header}>
       <Text style={s.title}>{settings.title || defaultTitle}</Text>
       {settings.subtitle ? <Text style={s.subtitle}>{settings.subtitle}</Text> : null}
-      {metaParts.length > 0 && (
-        <Text style={s.metaText}>{metaParts.join('  ·  ')}</Text>
+      {(settings.includeDate || settings.includeWordCount) && (
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          {settings.includeDate && (
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              {headerIcons?.calendar && <Image src={headerIcons.calendar} style={emojiStyle} />}
+              <Text style={s.metaText}>{today}</Text>
+            </View>
+          )}
+          {settings.includeWordCount && (
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              {headerIcons?.tag && <Image src={headerIcons.tag} style={emojiStyle} />}
+              <Text style={s.metaText}>{words.length} mots</Text>
+            </View>
+          )}
+        </View>
       )}
     </View>
   );
@@ -583,14 +603,14 @@ function TableLayout({ words, settings, imageMap, isSessionMode, wordStatuses, c
 
 /* ─── Main Document ─── */
 
-export function ExportPdfDocument({ words, settings, imageMap, wordStatuses, currentIndex }: ExportPdfDocumentProps) {
+export function ExportPdfDocument({ words, settings, imageMap, headerIcons, wordStatuses, currentIndex }: ExportPdfDocumentProps) {
   const isSessionMode = !!wordStatuses;
 
   return (
     <Document title={settings.title || 'Export mots'} author="La Boîte à mots">
       <Page size="A4" style={s.page}>
         {/* Header */}
-        <PdfHeader words={words} settings={settings} isSessionMode={isSessionMode} />
+        <PdfHeader words={words} settings={settings} isSessionMode={isSessionMode} headerIcons={headerIcons} />
 
         {/* Session stats */}
         {isSessionMode && wordStatuses && currentIndex !== undefined && (

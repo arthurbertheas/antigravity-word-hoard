@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Download, X, FileText } from 'lucide-react';
 import { ExportSettings, DEFAULT_EXPORT_SETTINGS, ExportPanelProps, ExportFormat, ExportDisplay, ExportLayout } from '@/types/export';
 import { ExportPreview } from './ExportPreview';
 import { exportToWord } from '@/lib/export-utils';
-import { ExportPdfDocument } from './ExportPdfDocument';
+import { ExportPdfDocument, HEADER_ICON_URLS } from './ExportPdfDocument';
 import { pdf } from '@react-pdf/renderer';
 import { loadImageAsBase64ForImagier } from '@/utils/imagier-image-utils';
 import { toast } from 'sonner';
@@ -160,12 +161,22 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
             }));
           }
 
+          // Pre-fetch header icons as base64 (CDN images crash @react-pdf if fetched at render time)
+          const headerIcons: { calendar?: string; tag?: string } = {};
+          const [calendarB64, tagB64] = await Promise.all([
+            loadImageAsBase64ForImagier(HEADER_ICON_URLS.calendar),
+            loadImageAsBase64ForImagier(HEADER_ICON_URLS.tag),
+          ]);
+          if (calendarB64) headerIcons.calendar = calendarB64;
+          if (tagB64) headerIcons.tag = tagB64;
+
           // Generate PDF blob using @react-pdf/renderer (same as imagier)
           const blob = await pdf(
             <ExportPdfDocument
               words={selectedWords}
               settings={settings}
               imageMap={imageMap}
+              headerIcons={headerIcons}
               wordStatuses={wordStatuses}
               currentIndex={currentIndex}
             />
@@ -204,7 +215,7 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, handleExport]);
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
@@ -419,6 +430,7 @@ export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

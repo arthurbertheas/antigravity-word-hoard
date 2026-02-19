@@ -603,12 +603,20 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
     const colKeys: string[] = [];
 
     // Build header
+    const headerBorders = {
+      top: { style: 'single' as const, size: 1, color: 'E2E8F0' },
+      bottom: { style: 'single' as const, size: 6, color: primaryColor },
+      left: { style: 'single' as const, size: 1, color: 'E2E8F0' },
+      right: { style: 'single' as const, size: 1, color: 'E2E8F0' },
+    };
+
     if (isSessionMode) {
       colKeys.push('status');
       headerCells.push(new TableCell({
         children: [new Paragraph({ children: [new TextRun({ text: 'STATUT', bold: true, size: 16, color: '1A202C' })] })],
         shading: { fill: 'FAFBFC' },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
     if (settings.numberWords) {
@@ -618,6 +626,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         shading: { fill: 'FAFBFC' },
         width: { size: 8, type: WidthType.PERCENTAGE },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
     if (settings.display === 'imageOnly' || settings.display === 'wordAndImage') {
@@ -626,6 +635,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         children: [new Paragraph({ children: [new TextRun({ text: 'IMAGE', bold: true, size: 16, color: '1A202C' })] })],
         shading: { fill: 'FAFBFC' },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
     if (settings.display !== 'imageOnly') {
@@ -634,6 +644,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         children: [new Paragraph({ children: [new TextRun({ text: 'MOT', bold: true, size: 16, color: '1A202C' })] })],
         shading: { fill: 'FAFBFC' },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
     if (settings.includePhonemes) {
@@ -642,6 +653,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         children: [new Paragraph({ children: [new TextRun({ text: 'PHONÈME', bold: true, size: 16, color: '1A202C' })] })],
         shading: { fill: 'FAFBFC' },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
     if (settings.includeCategories) {
@@ -650,6 +662,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         children: [new Paragraph({ children: [new TextRun({ text: 'CAT.', bold: true, size: 16, color: '1A202C' })] })],
         shading: { fill: 'FAFBFC' },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
     if (settings.includeSyllableCount) {
@@ -658,6 +671,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         children: [new Paragraph({ children: [new TextRun({ text: 'SYLL.', bold: true, size: 16, color: '1A202C' })] })],
         shading: { fill: 'FAFBFC' },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
     if (settings.includeSyllableSegmentation) {
@@ -666,6 +680,7 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
         children: [new Paragraph({ children: [new TextRun({ text: 'SEG.', bold: true, size: 16, color: '1A202C' })] })],
         shading: { fill: 'FAFBFC' },
         margins: { top: 80, bottom: 80, left: 100, right: 100 },
+        borders: headerBorders,
       }));
     }
 
@@ -744,7 +759,10 @@ export async function exportToWord(words: Word[], settings: ExportSettings, word
             shading: { fill: rowShading },
             margins: { top: 60, bottom: 60, left: 100, right: 100 },
             borders: {
+              top: { style: 'single', size: 1, color: 'E2E8F0' },
               bottom: { style: 'single', size: 1, color: 'E2E8F0' },
+              left: { style: 'single', size: 1, color: 'E2E8F0' },
+              right: { style: 'single', size: 1, color: 'E2E8F0' },
             },
           })
         );
