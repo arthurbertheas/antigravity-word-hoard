@@ -128,11 +128,11 @@ function LayoutMiniPreview({ type, active }: { type: ExportLayout; active: boole
   );
 }
 
-export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex }: ExportPanelProps) {
+export function ExportPanel({ selectedWords, onClose, wordStatuses, currentIndex, initialTitle }: ExportPanelProps) {
   const isSessionMode = !!wordStatuses;
   const [settings, setSettings] = useState<ExportSettings>(() => ({
     ...DEFAULT_EXPORT_SETTINGS,
-    title: isSessionMode ? 'Résultats de session' : 'Ma sélection de mots',
+    title: initialTitle || (isSessionMode ? 'Résultats de session' : 'Ma sélection de mots'),
   }));
 
   const updateSetting = <K extends keyof ExportSettings>(key: K, value: ExportSettings[K]) => {

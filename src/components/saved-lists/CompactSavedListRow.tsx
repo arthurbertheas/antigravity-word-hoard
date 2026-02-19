@@ -10,6 +10,7 @@ interface CompactSavedListRowProps {
     onSelect: (list: SavedList) => void;
     onEdit: (list: SavedList) => void;
     onDelete: (list: SavedList) => void;
+    onExport: (list: SavedList) => void;
 }
 
 export function CompactSavedListRow({
@@ -17,7 +18,8 @@ export function CompactSavedListRow({
     isSelected,
     onSelect,
     onEdit,
-    onDelete
+    onDelete,
+    onExport
 }: CompactSavedListRowProps) {
     return (
         <div
@@ -138,6 +140,7 @@ export function CompactSavedListRow({
                     list={list}
                     onEdit={() => onEdit(list)}
                     onDelete={() => onDelete(list)}
+                    onExport={() => onExport(list)}
                 />
             </div>
         </div>

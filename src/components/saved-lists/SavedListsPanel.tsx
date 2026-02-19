@@ -6,6 +6,7 @@ import { PanelHeader } from '@/components/ui/PanelHeader';
 import { SavedList } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import { ExportPanel } from '@/components/export/ExportPanel';
 
 interface SavedListsPanelProps {
     lists: SavedList[];
@@ -29,6 +30,7 @@ export function SavedListsPanel({
     onDeselect
 }: SavedListsPanelProps) {
     const [searchQuery, setSearchQuery] = useState('');
+    const [exportingList, setExportingList] = useState<SavedList | null>(null);
 
     const filteredLists = lists.filter((list) => {
         const query = searchQuery.toLowerCase();
@@ -92,7 +94,8 @@ export function SavedListsPanel({
                                     isSelected={currentListId === list.id}
                                     onSelect={onSelectList}
                                     onEdit={onEditList}
-                                    onDelete={onDeleteList} />
+                                    onDelete={onDeleteList}
+                                    onExport={setExportingList} />
 
                             )}
                         </div> :
@@ -116,6 +119,13 @@ export function SavedListsPanel({
                     <span className="font-['Sora'] font-[600] text-[15px]">Nouvelle liste</span>
                 </button>
             </div>
+        {exportingList && (
+            <ExportPanel
+                selectedWords={exportingList.words}
+                initialTitle={exportingList.name}
+                onClose={() => setExportingList(null)}
+            />
+        )}
         </div>);
 
 }

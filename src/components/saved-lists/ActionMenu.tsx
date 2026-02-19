@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { MoreHorizontal, Edit2, Trash2, FileText, File, Printer } from 'lucide-react';
+import { MoreHorizontal, Edit2, Trash2, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SavedList } from '@/lib/supabase';
-import { exportToPdf, exportToWord, printList } from '@/utils/exportUtils';
 
 interface ActionMenuProps {
     list: SavedList;
     onEdit: () => void;
     onDelete: () => void;
+    onExport: () => void;
 }
 
-export function ActionMenu({ list, onEdit, onDelete }: ActionMenuProps) {
+export function ActionMenu({ list, onEdit, onDelete, onExport }: ActionMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [coords, setCoords] = useState({ top: 0, left: 0 });
     const menuRef = useRef<HTMLDivElement>(null);
@@ -162,27 +162,9 @@ export function ActionMenu({ list, onEdit, onDelete }: ActionMenuProps) {
                     />
 
                     <MenuItem
-                        icon={FileText}
-                        label="Exporter PDF"
-                        onClick={() => exportToPdf(list)}
-                        iconBg="#FFF7ED"
-                        iconColor="#EA580C"
-                    />
-
-                    <MenuItem
-                        icon={File}
-                        label="Exporter Word"
-                        onClick={() => exportToWord(list)}
-                        iconBg="#EBF5FF"
-                        iconColor="#2563EB"
-                    />
-
-                    <MenuItem
-                        icon={Printer}
-                        label="Imprimer"
-                        onClick={() => printList(list)}
-                        iconBg="#F0FDF4"
-                        iconColor="#16A34A"
+                        icon={Download}
+                        label="Exporter"
+                        onClick={onExport}
                     />
 
                     <MenuItem

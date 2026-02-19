@@ -50,6 +50,7 @@ export interface ExportPanelProps {
   onClose: () => void;
   wordStatuses?: Map<string, WordStatus>;
   currentIndex?: number;
+  initialTitle?: string;
 }
 
 export const STATUS_COLORS: Record<ExportWordStatus, { bg: string; border: string; text: string; symbol: string; label: string }> = {
