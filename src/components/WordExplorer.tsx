@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
@@ -95,47 +95,17 @@ function WordExplorerContent() {
         }, '*');
     }, [isFocusModeOpen, isImagierOpen]);
 
-    // Browser back button: close overlays instead of navigating away
-    const overlayRef = useRef({ isFocusModeOpen, isImagierOpen });
-    overlayRef.current = { isFocusModeOpen, isImagierOpen };
-
-    // Track whether we pushed a history entry for the current overlay
-    const historyPushedRef = useRef(false);
-
+    // Listen for close_overlay command from parent shell (back button)
     useEffect(() => {
-        // Set initial history state
-        history.replaceState({ view: 'main' }, '');
-
-        const handlePopState = () => {
-            const { isFocusModeOpen: focus, isImagierOpen: imagier } = overlayRef.current;
-            if (focus) {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data?.type === 'close_overlay') {
                 setIsFocusModeOpen(false);
-                historyPushedRef.current = false;
-            } else if (imagier) {
                 setIsImagierOpen(false);
-                historyPushedRef.current = false;
-            } else {
-                // On main view — tell parent shell to go back to catalogue
-                window.parent.postMessage({ type: 'close_tool' }, '*');
             }
         };
-
-        window.addEventListener('popstate', handlePopState);
-        return () => window.removeEventListener('popstate', handlePopState);
-    }, []); // Stable — uses refs for current state
-
-    // Push/pop history entry when overlays open/close
-    useEffect(() => {
-        const isOverlayOpen = isFocusModeOpen || isImagierOpen;
-        if (isOverlayOpen && !historyPushedRef.current) {
-            history.pushState({ view: 'overlay' }, '');
-            historyPushedRef.current = true;
-        } else if (!isOverlayOpen && historyPushedRef.current) {
-            // Overlay closed via X button or Escape — pop the history entry
-            history.back();
-            historyPushedRef.current = false;
-        }
-    }, [isFocusModeOpen, isImagierOpen]);
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [setIsFocusModeOpen]);
 
     return (
         <div className="flex bg-white h-full w-full overflow-hidden">
