@@ -278,7 +278,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
           <Page
             key={pageIndex}
             size="A4"
-            orientation={settings.orientation}
+            orientation={settings.pageStyle === 'parcours-s' ? 'landscape' : settings.orientation}
             style={[s.page, { paddingTop: 10, paddingBottom: 8 }]}
           >
             {/* Header */}
@@ -318,27 +318,26 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               );
             })()}
 
-            {/* ── Parcours S layout ── */}
+            {/* ── Parcours S layout ── always landscape */}
             {settings.pageStyle === 'parcours-s' && (() => {
               const cols = getParcoursCols(settings.parcoursPerPage);
               const rows = Math.ceil(settings.parcoursPerPage / cols);
-              // A4 usable area (after padding & header)
-              const pageW = settings.orientation === 'portrait' ? 595 : 842;
-              const pageH = settings.orientation === 'portrait' ? 842 : 595;
+              // Parcours S always uses landscape A4
+              const pageW = 842;
+              const pageH = 595;
               const headerH = settings.showHeader ? 52 : 0;
               const footerH = 28;
               const usableW = pageW - 2 * pagePadding;
               const usableH = pageH - 10 - 8 - headerH - footerH;
 
-              const colGap = Math.max(settings.hGap * MM_TO_PT, 4);
-              const rowGap = Math.max(settings.vGap * MM_TO_PT, 10);
-              const cardW = (usableW - (cols - 1) * colGap) / cols;
+              const rowGap = Math.max(settings.vGap * MM_TO_PT, 16);
+              const cardW = usableW / cols; // cards touch — zero horizontal gap
               const cardH = (usableH - (rows - 1) * rowGap) / rows;
               const ribbonW = cardH + rowGap;
 
               // Build SVG path for ribbon
               const pts = Array.from({ length: settings.parcoursPerPage }, (_, seq) =>
-                snakePos(seq, cols, cardW, cardH, colGap, rowGap)
+                snakePos(seq, cols, cardW, cardH, 0, rowGap)
               );
               const dPath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.cx},${p.cy}`).join(' ');
 
@@ -353,12 +352,12 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
                       strokeLinejoin="round"
                       strokeLinecap="round"
                       fill="none"
-                      opacity={0.22}
+                      opacity={0.35}
                     />
                   </Svg>
                   {/* Cards */}
                   {pageWords.map((word, i) => {
-                    const pos = snakePos(i, cols, cardW, cardH, colGap, rowGap);
+                    const pos = snakePos(i, cols, cardW, cardH, 0, rowGap);
                     return (
                       <View key={word.uid || word.MOTS + i}
                         style={{ position: 'absolute', left: pos.x, top: pos.y, width: cardW, height: cardH }}>

@@ -37,8 +37,11 @@ export function ImagierPreview({
     return () => clearTimeout(timer);
   }, []);
 
-  const pageW = settings.orientation === 'portrait' ? PAGE_W_PORTRAIT : PAGE_H_PORTRAIT;
-  const pageH = settings.orientation === 'portrait' ? PAGE_H_PORTRAIT : PAGE_W_PORTRAIT;
+  // Parcours S always uses landscape for better row proportions
+  const isParcoursS = settings.pageStyle === 'parcours-s';
+  const effectiveLandscape = isParcoursS || settings.orientation === 'landscape';
+  const pageW = effectiveLandscape ? PAGE_H_PORTRAIT : PAGE_W_PORTRAIT;
+  const pageH = effectiveLandscape ? PAGE_W_PORTRAIT : PAGE_H_PORTRAIT;
 
   // Auto-scale: fit page within available space
   useEffect(() => {
@@ -60,8 +63,8 @@ export function ImagierPreview({
     return () => ro.disconnect();
   }, [pageW, pageH]);
 
-  // Reset zoom override when orientation changes
-  useEffect(() => { setZoomOverride(null); }, [settings.orientation]);
+  // Reset zoom override when orientation or page style changes (parcours-s forces landscape)
+  useEffect(() => { setZoomOverride(null); }, [settings.orientation, settings.pageStyle]);
 
   // Zoom controls
   const zoomIn = useCallback(() => {
@@ -162,11 +165,10 @@ export function ImagierPreview({
     const n = visibleWords.length;
     const cols = getParcoursCols(settings.parcoursPerPage);
     const rows = Math.ceil(settings.parcoursPerPage / cols);
-    const colGap = Math.max(hGapPx, 4);
-    const rowGap = Math.max(vGapPx, 10); // enough gap so ribbon turns are visible
-    const cardW = (usableW - (cols - 1) * colGap) / cols;
+    const rowGap = Math.max(vGapPx, 16); // generous gap so ribbon turns are clearly visible
+    const cardW = usableW / cols; // cards touch — zero gap
     const cardH = (usableH - (rows - 1) * rowGap) / rows;
-    const ribbonW = cardH + rowGap;
+    const ribbonW = cardH + rowGap; // ribbon fills full card height + turn space
 
     // Centre positions for the ribbon path (all slots, not just visible words)
     const allCenters = Array.from({ length: settings.parcoursPerPage }, (_, seq) => {
@@ -174,7 +176,7 @@ export function ImagierPreview({
       const posInRow = seq % cols;
       const col = row % 2 === 0 ? posInRow : cols - 1 - posInRow;
       return {
-        cx: col * (cardW + colGap) + cardW / 2,
+        cx: col * cardW + cardW / 2,
         cy: row * (cardH + rowGap) + cardH / 2,
       };
     });
@@ -194,7 +196,7 @@ export function ImagierPreview({
             strokeLinejoin="round"
             strokeLinecap="round"
             fill="none"
-            opacity={0.22}
+            opacity={0.35}
           />
         </svg>
 
@@ -203,7 +205,7 @@ export function ImagierPreview({
           const row = Math.floor(i / cols);
           const posInRow = i % cols;
           const col = row % 2 === 0 ? posInRow : cols - 1 - posInRow;
-          const x = col * (cardW + colGap);
+          const x = col * cardW;
           const y = row * (cardH + rowGap);
 
           return (
