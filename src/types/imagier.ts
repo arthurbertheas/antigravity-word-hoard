@@ -2,10 +2,13 @@ export type GridLayout = '2x3' | '3x3' | '3x4' | '4x4';
 export type Orientation = 'portrait' | 'landscape';
 export type CasseMode = 'lower' | 'upper' | 'capitalize';
 export type FontSizeMode = 'small' | 'medium' | 'large';
+export type PageStyle = 'grid' | 'parcours-s' | 'escalier' | 'circulaire';
 
 export interface ImagierSettings {
   grid: GridLayout;
   orientation: Orientation;
+  pageStyle: PageStyle;
+  parcoursPerPage: number; // 12 | 16 | 20 | 24 | 28
   showHeader: boolean;
   title: string;
   subtitle: string;
@@ -26,6 +29,8 @@ export interface ImagierSettings {
 export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
   grid: '3x3',
   orientation: 'portrait',
+  pageStyle: 'grid',
+  parcoursPerPage: 20,
   showHeader: true,
   title: '',
   subtitle: '',
@@ -74,4 +79,16 @@ export function getGridDimensions(grid: GridLayout, orientation: Orientation): {
     return { cols: opt.rows, rows: opt.cols };
   }
   return { cols: opt.cols, rows: opt.rows };
+}
+
+/** Number of columns for parcours-s based on total cards per page */
+export function getParcoursCols(n: number): number {
+  const map: Record<number, number> = { 12: 4, 16: 4, 20: 5, 24: 6, 28: 7 };
+  return map[n] ?? 5;
+}
+
+/** Total cards visible per page depending on page style */
+export function getCardsPerPage(settings: ImagierSettings): number {
+  if (settings.pageStyle === 'grid') return getGridMax(settings.grid);
+  return settings.parcoursPerPage;
 }

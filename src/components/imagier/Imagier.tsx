@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
-import { ImagierSettings, DEFAULT_IMAGIER_SETTINGS, getGridMax } from '@/types/imagier';
+import { ImagierSettings, DEFAULT_IMAGIER_SETTINGS, getCardsPerPage } from '@/types/imagier';
 import { filterWordsWithImages } from '@/utils/imagier-utils';
 import { loadImageAsBase64ForImagier } from '@/utils/imagier-image-utils';
 import { ImagierTopbar } from './ImagierTopbar';
@@ -35,13 +35,13 @@ function ImagierContent({ words, onClose }: { words: Word[]; onClose: () => void
   const [orderedWords, setOrderedWords] = useState<Word[]>(withImages);
 
   // Pagination
-  const max = getGridMax(settings.grid);
+  const max = getCardsPerPage(settings);
   const totalPages = Math.max(1, Math.ceil(orderedWords.length / max));
 
-  // Reset page when grid changes
+  // Reset page when layout changes
   useEffect(() => {
     setCurrentPage(0);
-  }, [settings.grid]);
+  }, [settings.grid, settings.pageStyle, settings.parcoursPerPage]);
 
   // Clamp current page if words are removed
   useEffect(() => {

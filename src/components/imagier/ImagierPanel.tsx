@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Word } from '@/types/word';
-import { ImagierSettings, LAYOUT_OPTIONS } from '@/types/imagier';
+import { ImagierSettings, LAYOUT_OPTIONS, PageStyle } from '@/types/imagier';
 import { LayoutGrid, FileText, ArrowDownUp, Scissors, Printer, GripVertical, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { getDeterminer, formatPhonemes } from '@/utils/imagier-utils';
 import { SectionHeader } from '@/components/ui/SectionHeader';
@@ -118,51 +118,134 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
           <PanelTabsContent value="layout">
             {/* panel-scroll: gap 24px, padding 20px 0 */}
             <div className="flex flex-col gap-6 py-5">
-              {/* Section: Disposition */}
+
+              {/* Section: Style de la page */}
               <div className="px-5">
-                <SectionHeader label="Disposition" />
-                <div className="flex gap-2 overflow-x-auto py-0.5">
-                  {portraitOptions.map(opt => {
-                    const active = settings.grid === opt.grid && settings.orientation === opt.orientation;
-                    return (
-                      <LayoutThumb
-                        key={`${opt.grid}-${opt.orientation}`}
-                        cols={opt.cols}
-                        rows={opt.rows}
-                        label={opt.label}
-                        pageW={36}
-                        pageH={50}
-                        active={active}
-                        onClick={() => {
-                          updateSetting('grid', opt.grid);
-                          updateSetting('orientation', opt.orientation);
-                        }}
-                      />
-                    );
-                  })}
-                  {/* Separator */}
-                  <div className="w-px flex-shrink-0 bg-[#F1F5F9] my-1" />
-                  {landscapeOptions.map(opt => {
-                    const active = settings.grid === opt.grid && settings.orientation === opt.orientation;
-                    return (
-                      <LayoutThumb
-                        key={`${opt.grid}-${opt.orientation}`}
-                        cols={opt.cols}
-                        rows={opt.rows}
-                        label={opt.label}
-                        pageW={50}
-                        pageH={36}
-                        active={active}
-                        topOffset={7}
-                        onClick={() => {
-                          updateSetting('grid', opt.grid);
-                          updateSetting('orientation', opt.orientation);
-                        }}
-                      />
-                    );
-                  })}
+                <SectionHeader label="Style de la page" />
+                <div className="grid grid-cols-4 gap-1.5">
+                  <PageStyleThumb
+                    value="grid"
+                    label="Grille"
+                    active={settings.pageStyle === 'grid'}
+                    onClick={() => updateSetting('pageStyle', 'grid')}
+                    icon={
+                      <svg viewBox="0 0 40 40" fill="none">
+                        {[0,1,2].map(r => [0,1,2].map(c => (
+                          <rect key={`${r}-${c}`} x={2+c*13} y={2+r*13} width={11} height={11} rx={2} fill={settings.pageStyle==='grid'?'#6C5CE7':'#E5E7EB'}/>
+                        )))}
+                      </svg>
+                    }
+                  />
+                  <PageStyleThumb
+                    value="parcours-s"
+                    label="Parcours"
+                    active={settings.pageStyle === 'parcours-s'}
+                    onClick={() => updateSetting('pageStyle', 'parcours-s')}
+                    icon={
+                      <svg viewBox="0 0 40 40" fill="none">
+                        <polyline points="4,6 14,6 24,6 34,6 34,16 24,16 14,16 4,16 4,26 14,26 24,26 34,26"
+                          stroke={settings.pageStyle==='parcours-s'?'#A29BFE':'#D1D5DB'} strokeWidth="9" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
+                        <polyline points="4,6 14,6 24,6 34,6 34,16 24,16 14,16 4,16 4,26 14,26 24,26 34,26"
+                          stroke={settings.pageStyle==='parcours-s'?'#6C5CE7':'#9CA3AF'} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
+                        <text x="5" y="9.5" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">1</text>
+                        <text x="15" y="9.5" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">2</text>
+                      </svg>
+                    }
+                  />
+                  <PageStyleThumb
+                    value="escalier"
+                    label="Escalier"
+                    active={settings.pageStyle === 'escalier'}
+                    onClick={() => updateSetting('pageStyle', 'escalier')}
+                    icon={
+                      <svg viewBox="0 0 40 40" fill="none">
+                        <rect x="2" y="27" width="11" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#6C5CE7':'#E5E7EB'}/>
+                        <rect x="15" y="27" width="11" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#6C5CE7':'#E5E7EB'}/>
+                        <rect x="15" y="15" width="11" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#A29BFE':'#E5E7EB'}/>
+                        <rect x="28" y="15" width="10" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#A29BFE':'#E5E7EB'}/>
+                        <rect x="28" y="3" width="10" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#C4B8FF':'#E5E7EB'}/>
+                        <path d="M7 27 L7 15 M20 27 L20 15" stroke={settings.pageStyle==='escalier'?'#6C5CE7':'#9CA3AF'} strokeWidth="0.8" strokeDasharray="2 1.5"/>
+                      </svg>
+                    }
+                  />
+                  <PageStyleThumb
+                    value="circulaire"
+                    label="Cercle"
+                    active={settings.pageStyle === 'circulaire'}
+                    onClick={() => updateSetting('pageStyle', 'circulaire')}
+                    icon={
+                      <svg viewBox="0 0 40 40" fill="none">
+                        <circle cx="20" cy="20" r="15" stroke={settings.pageStyle==='circulaire'?'#A29BFE':'#D1D5DB'} strokeWidth="0.8" strokeDasharray="3 2"/>
+                        {Array.from({length:8}, (_,i) => {
+                          const a = (i/8)*Math.PI*2 - Math.PI/2;
+                          const x = 20 + 14*Math.cos(a) - 4;
+                          const y = 20 + 14*Math.sin(a) - 3;
+                          return <rect key={i} x={x} y={y} width="8" height="6" rx="1.5" fill={settings.pageStyle==='circulaire'?'#6C5CE7':'#E5E7EB'}/>;
+                        })}
+                      </svg>
+                    }
+                  />
                 </div>
               </div>
+
+              {/* Section: Cases par page (hors grille) */}
+              {settings.pageStyle !== 'grid' && (
+                <div className="px-5">
+                  <SectionHeader label="Cases par page" />
+                  <ParcoursPerPageField
+                    value={settings.parcoursPerPage}
+                    onChange={v => updateSetting('parcoursPerPage', v)}
+                  />
+                </div>
+              )}
+
+              {/* Section: Disposition (grille uniquement) */}
+              {settings.pageStyle === 'grid' && (
+                <div className="px-5">
+                  <SectionHeader label="Disposition" />
+                  <div className="flex gap-2 overflow-x-auto py-0.5">
+                    {portraitOptions.map(opt => {
+                      const active = settings.grid === opt.grid && settings.orientation === opt.orientation;
+                      return (
+                        <LayoutThumb
+                          key={`${opt.grid}-${opt.orientation}`}
+                          cols={opt.cols}
+                          rows={opt.rows}
+                          label={opt.label}
+                          pageW={36}
+                          pageH={50}
+                          active={active}
+                          onClick={() => {
+                            updateSetting('grid', opt.grid);
+                            updateSetting('orientation', opt.orientation);
+                          }}
+                        />
+                      );
+                    })}
+                    {/* Separator */}
+                    <div className="w-px flex-shrink-0 bg-[#F1F5F9] my-1" />
+                    {landscapeOptions.map(opt => {
+                      const active = settings.grid === opt.grid && settings.orientation === opt.orientation;
+                      return (
+                        <LayoutThumb
+                          key={`${opt.grid}-${opt.orientation}`}
+                          cols={opt.cols}
+                          rows={opt.rows}
+                          label={opt.label}
+                          pageW={50}
+                          pageH={36}
+                          active={active}
+                          topOffset={7}
+                          onClick={() => {
+                            updateSetting('grid', opt.grid);
+                            updateSetting('orientation', opt.orientation);
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Section: Options de page */}
               <div className="px-5">
@@ -194,13 +277,15 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                       className="w-full px-3 py-[7px] border-[1.5px] border-[#E5E7EB] rounded-[10px] text-xs font-['DM_Sans'] font-medium text-[#6B7280] bg-white placeholder:text-[#9CA3AF] placeholder:font-normal focus:outline-none focus:border-[#6C5CE7] focus:shadow-[0_0_0_3px_rgba(108,92,231,0.12)] transition-all"
                     />
                   </ToggleRow>
-                  <ToggleRow
-                    icon={<Scissors className="w-4 h-4" />}
-                    label="Traits de découpe"
-                    desc="Pointillés pour découper"
-                    checked={settings.cuttingGuides}
-                    onCheckedChange={() => updateSetting('cuttingGuides', !settings.cuttingGuides)}
-                  />
+                  {settings.pageStyle === 'grid' && (
+                    <ToggleRow
+                      icon={<Scissors className="w-4 h-4" />}
+                      label="Traits de découpe"
+                      desc="Pointillés pour découper"
+                      checked={settings.cuttingGuides}
+                      onCheckedChange={() => updateSetting('cuttingGuides', !settings.cuttingGuides)}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -407,6 +492,87 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
 }
 
 /* ===== Sub-components ===== */
+
+interface PageStyleThumbProps {
+  value: PageStyle;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+}
+
+function PageStyleThumb({ label, active, onClick, icon }: PageStyleThumbProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-col items-center gap-1.5 py-2 px-1.5 rounded-[10px] border-[1.5px] transition-all cursor-pointer
+        ${active
+          ? 'border-[#6C5CE7] bg-[#F5F3FF] shadow-[0_0_0_3px_rgba(108,92,231,0.12)]'
+          : 'border-[#E5E7EB] bg-white hover:border-[#A29BFE]'
+        }`}
+    >
+      <div className="w-10 h-10 flex items-center justify-center">
+        {icon}
+      </div>
+      <span className={`font-sora text-[9px] font-semibold ${active ? 'text-[#6C5CE7]' : 'text-[#9CA3AF]'}`}>
+        {label}
+      </span>
+    </button>
+  );
+}
+
+const PARCOURS_PRESETS = [12, 16, 20, 24, 28] as const;
+
+function ParcoursPerPageField({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const idx = PARCOURS_PRESETS.indexOf(value as typeof PARCOURS_PRESETS[number]);
+  const safeIdx = idx >= 0 ? idx : 2;
+  const pct = (safeIdx / (PARCOURS_PRESETS.length - 1)) * 100;
+
+  return (
+    <div className="border-[1.5px] border-[#F1F5F9] rounded-[14px] bg-[#FAFBFC] overflow-hidden">
+      <div className="flex flex-col gap-2 px-3.5 py-3">
+        <div className="flex items-center justify-between">
+          <span className="text-[12.5px] font-medium text-[#374151]">Nombre de cases</span>
+          <div className="flex items-center gap-1">
+            <span className="text-[13px] font-bold font-sora text-[#6C5CE7] bg-white
+              border-[1.5px] border-[#E5E7EB] rounded-[7px] px-2.5 py-0.5 min-w-[36px] text-center">
+              {value}
+            </span>
+          </div>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={PARCOURS_PRESETS.length - 1}
+          step={1}
+          value={safeIdx}
+          onChange={e => onChange(PARCOURS_PRESETS[parseInt(e.target.value)])}
+          className="w-full h-[3px] rounded-full cursor-pointer appearance-none
+            [&::-webkit-slider-runnable-track]:h-[3px] [&::-webkit-slider-runnable-track]:rounded-full
+            [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[14px] [&::-webkit-slider-thumb]:h-[14px] [&::-webkit-slider-thumb]:-mt-[5.5px]
+            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white
+            [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#6C5CE7]
+            [&::-webkit-slider-thumb]:shadow-[0_1px_4px_rgba(108,92,231,0.35)] [&::-webkit-slider-thumb]:cursor-grab
+            [&::-moz-range-thumb]:w-[14px] [&::-moz-range-thumb]:h-[14px] [&::-moz-range-thumb]:rounded-full
+            [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#6C5CE7]
+            [&::-moz-range-thumb]:shadow-[0_1px_4px_rgba(108,92,231,0.35)] [&::-moz-range-thumb]:cursor-grab"
+          style={{ background: `linear-gradient(to right, #6C5CE7 ${pct}%, #E5E7EB ${pct}%)` }}
+        />
+        <div className="flex justify-between px-0.5">
+          {PARCOURS_PRESETS.map(v => (
+            <button
+              key={v}
+              onClick={() => onChange(v)}
+              className={`text-[9px] font-sora font-bold transition-colors ${v === value ? 'text-[#6C5CE7]' : 'text-[#9CA3AF] hover:text-[#6B7280]'}`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface LayoutThumbProps {
   cols: number;
