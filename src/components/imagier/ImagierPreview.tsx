@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Word } from '@/types/word';
-import { ImagierSettings, getGridMax, getGridDimensions, getParcoursCols } from '@/types/imagier';
+import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, perimeterPath } from '@/types/imagier';
 import { ImagierCard } from './ImagierCard';
 import { ChevronLeft, ChevronRight, Minus, Plus, Move } from 'lucide-react';
 
@@ -160,54 +160,45 @@ export function ImagierPreview({
     );
   }
 
-  // ── Parcours S — boustrophedon snake with visible ribbon ──────────────────
+  // ── Parcours — rectangular perimeter (game board frame) ──────────────────
   function renderParcoursS() {
     const n = visibleWords.length;
-    const cols = getParcoursCols(settings.parcoursPerPage);
-    const rows = Math.ceil(settings.parcoursPerPage / cols);
-    const rowGap = Math.max(vGapPx, 16); // generous gap so ribbon turns are clearly visible
-    const cardW = usableW / cols; // cards touch — zero gap
-    const cardH = (usableH - (rows - 1) * rowGap) / rows;
-    const ribbonW = cardH + rowGap; // ribbon fills full card height + turn space
+    const { cols, rows } = getParcoursRect(settings.parcoursPerPage);
+    const cardW = usableW / cols;
+    const cardH = usableH / rows;
+    // Ribbon wide enough to cover cards in both orientations
+    const ribbonW = Math.max(cardW, cardH);
 
-    // Centre positions for the ribbon path (all slots, not just visible words)
-    const allCenters = Array.from({ length: settings.parcoursPerPage }, (_, seq) => {
-      const row = Math.floor(seq / cols);
-      const posInRow = seq % cols;
-      const col = row % 2 === 0 ? posInRow : cols - 1 - posInRow;
-      return {
-        cx: col * cardW + cardW / 2,
-        cy: row * (cardH + rowGap) + cardH / 2,
-      };
+    const path = perimeterPath(cols, rows);
+
+    // Centers in path order — used for the ribbon polyline
+    const centers = Array.from({ length: settings.parcoursPerPage }, (_, seq) => {
+      const { col, row } = path[seq % path.length];
+      return { cx: col * cardW + cardW / 2, cy: row * cardH + cardH / 2 };
     });
-    const polyPts = allCenters.map(p => `${p.cx},${p.cy}`).join(' ');
+    const polyPts = centers.map(p => `${p.cx},${p.cy}`).join(' ');
 
     return (
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0 }}>
         {/* Ribbon SVG — under cards */}
         <svg
           style={{ position: 'absolute', inset: 0, width: usableW, height: usableH, overflow: 'visible', pointerEvents: 'none' }}
           viewBox={`0 0 ${usableW} ${usableH}`}
         >
-          {/* Outer border — dark indigo, very transparent */}
+          {/* Outer border */}
           <polyline points={polyPts} stroke="#4C3DC0" strokeWidth={ribbonW + 5} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.18} />
-          {/* Inner fill — soft lavender, nearly opaque → the visible track */}
+          {/* Inner fill — soft lavender, the visible track */}
           <polyline points={polyPts} stroke="#DDD6FE" strokeWidth={ribbonW} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.9} />
-          {/* Subtle depth shade */}
+          {/* Depth shade */}
           <polyline points={polyPts} stroke="#7C3AED" strokeWidth={Math.max(ribbonW - 8, 1)} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.06} />
         </svg>
 
         {/* Cards — absolute over ribbon */}
         {visibleWords.map((word, i) => {
-          const row = Math.floor(i / cols);
-          const posInRow = i % cols;
-          const col = row % 2 === 0 ? posInRow : cols - 1 - posInRow;
-          const x = col * cardW;
-          const y = row * (cardH + rowGap);
-
+          const { col, row } = path[i];
           return (
             <div key={word.uid || word.MOTS + i}
-              style={{ position: 'absolute', left: x, top: y, width: cardW, height: cardH }}>
+              style={{ position: 'absolute', left: col * cardW, top: row * cardH, width: cardW, height: cardH }}>
               <ParcoursOverlay number={start + i + 1} isFirst={i === 0} isLast={i === n - 1}>
                 <ImagierCard
                   word={word} settings={settings} index={i}

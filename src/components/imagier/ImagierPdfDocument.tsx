@@ -2,7 +2,7 @@ import {
   Document, Page, View, Text, Image, Font, StyleSheet, Svg, Path,
 } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
-import { ImagierSettings, getGridMax, getGridDimensions, getParcoursCols } from '@/types/imagier';
+import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, perimeterPath } from '@/types/imagier';
 import { applyCasse, formatPhonemes, getDeterminer } from '@/utils/imagier-utils';
 
 /* ─── Font registration ─── */
@@ -36,19 +36,6 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
     chunks.push(arr.slice(i, i + size));
   }
   return chunks;
-}
-
-/** Boustrophedon position for card at seqIdx */
-function snakePos(seqIdx: number, cols: number, cardW: number, cardH: number, colGap: number, rowGap: number) {
-  const row = Math.floor(seqIdx / cols);
-  const posInRow = seqIdx % cols;
-  const col = row % 2 === 0 ? posInRow : cols - 1 - posInRow;
-  return {
-    x: col * (cardW + colGap),
-    y: row * (cardH + rowGap),
-    cx: col * (cardW + colGap) + cardW / 2,
-    cy: row * (cardH + rowGap) + cardH / 2,
-  };
 }
 
 /* ─── Styles ─── */
@@ -318,11 +305,10 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               );
             })()}
 
-            {/* ── Parcours S layout ── always landscape */}
+            {/* ── Parcours — rectangular perimeter (game board frame) ── always landscape */}
             {settings.pageStyle === 'parcours-s' && (() => {
-              const cols = getParcoursCols(settings.parcoursPerPage);
-              const rows = Math.ceil(settings.parcoursPerPage / cols);
-              // Parcours S always uses landscape A4
+              const { cols, rows } = getParcoursRect(settings.parcoursPerPage);
+              // Always landscape A4
               const pageW = 842;
               const pageH = 595;
               const headerH = settings.showHeader ? 52 : 0;
@@ -330,34 +316,34 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const usableW = pageW - 2 * pagePadding;
               const usableH = pageH - 10 - 8 - headerH - footerH;
 
-              const rowGap = Math.max(settings.vGap * MM_TO_PT, 16);
-              const cardW = usableW / cols; // cards touch — zero horizontal gap
-              const cardH = (usableH - (rows - 1) * rowGap) / rows;
-              const ribbonW = cardH + rowGap;
+              const cardW = usableW / cols;
+              const cardH = usableH / rows;
+              const ribbonW = Math.max(cardW, cardH);
 
-              // Build SVG path for ribbon
-              const pts = Array.from({ length: settings.parcoursPerPage }, (_, seq) =>
-                snakePos(seq, cols, cardW, cardH, 0, rowGap)
-              );
-              const dPath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.cx},${p.cy}`).join(' ');
+              const path = perimeterPath(cols, rows);
+
+              // Ribbon path: connect card centers in perimeter order
+              const dPath = Array.from({ length: settings.parcoursPerPage }, (_, seq) => {
+                const { col, row } = path[seq % path.length];
+                const cx = col * cardW + cardW / 2;
+                const cy = row * cardH + cardH / 2;
+                return `${seq === 0 ? 'M' : 'L'}${cx},${cy}`;
+              }).join(' ');
 
               return (
                 <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>
                   {/* Ribbon — 3-layer game board track */}
                   <Svg style={{ position: 'absolute', left: 0, top: 0, width: usableW, height: usableH }}>
-                    {/* Outer border */}
                     <Path d={dPath} stroke="#4C3DC0" strokeWidth={ribbonW + 5} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.18} />
-                    {/* Inner fill — main visible track */}
                     <Path d={dPath} stroke="#DDD6FE" strokeWidth={ribbonW} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.9} />
-                    {/* Depth shade */}
                     <Path d={dPath} stroke="#7C3AED" strokeWidth={Math.max(ribbonW - 8, 1)} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.06} />
                   </Svg>
                   {/* Cards */}
                   {pageWords.map((word, i) => {
-                    const pos = snakePos(i, cols, cardW, cardH, 0, rowGap);
+                    const { col, row } = path[i];
                     return (
                       <View key={word.uid || word.MOTS + i}
-                        style={{ position: 'absolute', left: pos.x, top: pos.y, width: cardW, height: cardH }}>
+                        style={{ position: 'absolute', left: col * cardW, top: row * cardH, width: cardW, height: cardH }}>
                         <ParcoursCellPdf
                           word={word} settings={settings} imageMap={imageMap}
                           number={start + i + 1} isFirst={start + i === 0} isLast={start + i === words.length - 1}

@@ -143,12 +143,13 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                     onClick={() => updateSetting('pageStyle', 'parcours-s')}
                     icon={
                       <svg viewBox="0 0 40 40" fill="none">
-                        <polyline points="4,6 14,6 24,6 34,6 34,16 24,16 14,16 4,16 4,26 14,26 24,26 34,26"
+                        {/* Rectangular perimeter loop */}
+                        <polyline points="4,8 14,8 26,8 36,8 36,18 36,30 26,30 14,30 4,30 4,18"
                           stroke={settings.pageStyle==='parcours-s'?'#A29BFE':'#D1D5DB'} strokeWidth="9" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
-                        <polyline points="4,6 14,6 24,6 34,6 34,16 24,16 14,16 4,16 4,26 14,26 24,26 34,26"
-                          stroke={settings.pageStyle==='parcours-s'?'#6C5CE7':'#9CA3AF'} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
-                        <text x="5" y="9.5" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">1</text>
-                        <text x="15" y="9.5" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">2</text>
+                        <polyline points="4,8 14,8 26,8 36,8 36,18 36,30 26,30 14,30 4,30 4,18"
+                          stroke={settings.pageStyle==='parcours-s'?'#6C5CE7':'#9CA3AF'} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
+                        <text x="5" y="12" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">1</text>
+                        <text x="15" y="12" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">2</text>
                       </svg>
                     }
                   />
