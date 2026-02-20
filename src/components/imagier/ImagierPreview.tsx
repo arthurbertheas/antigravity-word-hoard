@@ -166,34 +166,10 @@ export function ImagierPreview({
     const { cols, rows } = getParcoursRect(settings.parcoursPerPage);
     const cardW = usableW / cols;
     const cardH = usableH / rows;
-    // Ribbon wide enough to cover cards in both orientations
-    const ribbonW = Math.max(cardW, cardH);
-
     const path = perimeterPath(cols, rows);
-
-    // Centers in path order — used for the ribbon polyline
-    const centers = Array.from({ length: settings.parcoursPerPage }, (_, seq) => {
-      const { col, row } = path[seq % path.length];
-      return { cx: col * cardW + cardW / 2, cy: row * cardH + cardH / 2 };
-    });
-    const polyPts = centers.map(p => `${p.cx},${p.cy}`).join(' ');
 
     return (
       <div style={{ position: 'absolute', inset: 0 }}>
-        {/* Ribbon SVG — under cards */}
-        <svg
-          style={{ position: 'absolute', inset: 0, width: usableW, height: usableH, overflow: 'visible', pointerEvents: 'none' }}
-          viewBox={`0 0 ${usableW} ${usableH}`}
-        >
-          {/* Outer border */}
-          <polyline points={polyPts} stroke="#4C3DC0" strokeWidth={ribbonW + 5} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.18} />
-          {/* Inner fill — soft lavender, the visible track */}
-          <polyline points={polyPts} stroke="#DDD6FE" strokeWidth={ribbonW} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.9} />
-          {/* Depth shade */}
-          <polyline points={polyPts} stroke="#7C3AED" strokeWidth={Math.max(ribbonW - 8, 1)} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.06} />
-        </svg>
-
-        {/* Cards — absolute over ribbon */}
         {visibleWords.map((word, i) => {
           const { col, row } = path[i];
           return (

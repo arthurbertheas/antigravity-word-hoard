@@ -1,5 +1,5 @@
 import {
-  Document, Page, View, Text, Image, Font, StyleSheet, Svg, Path,
+  Document, Page, View, Text, Image, Font, StyleSheet,
 } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
 import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, perimeterPath } from '@/types/imagier';
@@ -318,27 +318,10 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
 
               const cardW = usableW / cols;
               const cardH = usableH / rows;
-              const ribbonW = Math.max(cardW, cardH);
-
               const path = perimeterPath(cols, rows);
-
-              // Ribbon path: connect card centers in perimeter order
-              const dPath = Array.from({ length: settings.parcoursPerPage }, (_, seq) => {
-                const { col, row } = path[seq % path.length];
-                const cx = col * cardW + cardW / 2;
-                const cy = row * cardH + cardH / 2;
-                return `${seq === 0 ? 'M' : 'L'}${cx},${cy}`;
-              }).join(' ');
 
               return (
                 <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>
-                  {/* Ribbon — 3-layer game board track */}
-                  <Svg style={{ position: 'absolute', left: 0, top: 0, width: usableW, height: usableH }}>
-                    <Path d={dPath} stroke="#4C3DC0" strokeWidth={ribbonW + 5} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.18} />
-                    <Path d={dPath} stroke="#DDD6FE" strokeWidth={ribbonW} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.9} />
-                    <Path d={dPath} stroke="#7C3AED" strokeWidth={Math.max(ribbonW - 8, 1)} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.06} />
-                  </Svg>
-                  {/* Cards */}
                   {pageWords.map((word, i) => {
                     const { col, row } = path[i];
                     return (
