@@ -55,6 +55,11 @@ function WordExplorerContent() {
         setIsImagierOpen(false);
     }, []);
 
+    const handleTachistoscopeClose = useCallback(() => {
+        suppressFocusChangeRef.current = true;
+        setIsFocusModeOpen(false);
+    }, [setIsFocusModeOpen]);
+
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen || isImagierOpen);
 
@@ -217,7 +222,7 @@ function WordExplorerContent() {
             <Tachistoscope
                 words={selectedWords}
                 isOpen={isFocusModeOpen}
-                onClose={() => setIsFocusModeOpen(false)}
+                onClose={handleTachistoscopeClose}
             />
 
             {/* Imagier Overlay (Print Builder) */}
