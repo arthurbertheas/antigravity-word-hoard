@@ -66,6 +66,8 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+    paddingLeft: 10,
+    paddingRight: 10,
     paddingBottom: 10,
     borderBottomWidth: 2.5,
     borderBottomColor: '#6C5CE7',
@@ -119,6 +121,7 @@ const s = StyleSheet.create({
   /* Footer */
   footer: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingLeft: 10, paddingRight: 10,
     paddingTop: 8, borderTopWidth: 1, borderTopColor: '#F1F5F9', borderTopStyle: 'solid', flexShrink: 0,
   },
   footerText: { fontSize: 9, color: '#CBD5E1' },
@@ -276,7 +279,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
             key={pageIndex}
             size="A4"
             orientation={settings.orientation}
-            style={[s.page, { paddingLeft: pagePadding, paddingRight: pagePadding, paddingTop: 10, paddingBottom: 8 }]}
+            style={[s.page, { paddingTop: 10, paddingBottom: 8 }]}
           >
             {/* Header */}
             {settings.showHeader && (
@@ -299,7 +302,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               while (rowChunks.length < gridRows) rowChunks.push(Array(gridCols).fill(null));
 
               return (
-                <View style={[s.grid, { gap: vGap, marginTop: pagePadding, marginBottom: pagePadding }]}>
+                <View style={[s.grid, { gap: vGap, marginTop: pagePadding, marginBottom: pagePadding, marginLeft: pagePadding, marginRight: pagePadding }]}>
                   {rowChunks.map((rowWords, rowIndex) => (
                     <View key={rowIndex} style={[s.row, { gap: hGap }]}>
                       {rowWords.map((word, colIndex) => (
@@ -340,7 +343,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const dPath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.cx},${p.cy}`).join(' ');
 
               return (
-                <View style={{ flex: 1, position: 'relative' }}>
+                <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>
                   {/* Ribbon */}
                   <Svg style={{ position: 'absolute', left: 0, top: 0, width: usableW, height: usableH }}>
                     <Path
@@ -386,7 +389,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const cardSize = Math.min(R * 0.52, (2 * Math.PI * R) / Math.max(n, 1) * 0.82);
 
               return (
-                <View style={{ flex: 1, position: 'relative' }}>
+                <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>
                   {pageWords.map((word, i) => {
                     const angle = (i / Math.max(n, 1)) * 2 * Math.PI - Math.PI / 2;
                     const x = cx + R * Math.cos(angle) - cardSize / 2;

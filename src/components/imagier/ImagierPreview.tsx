@@ -136,6 +136,8 @@ export function ImagierPreview({
           rowGap: vGapPx,
           marginTop: marginPx,
           marginBottom: marginPx,
+          marginLeft: marginPx,
+          marginRight: marginPx,
         }}
       >
         {visibleWords.map((word, i) => (
@@ -300,10 +302,10 @@ export function ImagierPreview({
             >
               <div className="absolute inset-0 border border-black/[0.06] rounded-sm pointer-events-none z-[1]" />
 
-              <div className="flex-1 min-h-0 flex flex-col" style={{ paddingLeft: marginPx, paddingRight: marginPx, paddingTop: 10, paddingBottom: 8 }}>
+              <div className="flex-1 min-h-0 flex flex-col" style={{ paddingTop: 10, paddingBottom: 8 }}>
                 {/* Page header */}
                 {settings.showHeader && (
-                  <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
+                  <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3" style={{ paddingLeft: 10, paddingRight: 10 }}>
                     <div className="flex flex-col gap-0.5">
                       {settings.title && (
                         <div className="font-sora text-lg font-extrabold text-[#1A1A2E] tracking-tight">
@@ -324,14 +326,14 @@ export function ImagierPreview({
 
                 {/* Cards area */}
                 {isGrid ? renderGrid() : (
-                  <div className="flex-1 min-h-0 relative">
+                  <div className="flex-1 min-h-0 relative" style={{ marginLeft: marginPx, marginRight: marginPx }}>
                     {settings.pageStyle === 'parcours-s' && renderParcoursS()}
                     {settings.pageStyle === 'circulaire' && renderCirculaire()}
                   </div>
                 )}
 
                 {/* Page footer */}
-                <div className="flex justify-between items-center pt-2 border-t border-[#F1F5F9] flex-shrink-0">
+                <div className="flex justify-between items-center pt-2 border-t border-[#F1F5F9] flex-shrink-0" style={{ paddingLeft: 10, paddingRight: 10 }}>
                   <span className="text-[9px] text-[#CBD5E1]">Imagier phonétique</span>
                   <span className="text-[9px] text-[#CBD5E1]">
                     <span className="inline-block w-1 h-1 rounded-full bg-[#A29BFE] mr-1 align-middle" />
