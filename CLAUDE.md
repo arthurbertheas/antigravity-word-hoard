@@ -142,10 +142,16 @@ Fichier `src/data/cgp-tokens.json` — utilisé pour l'analyse linguistique fine
 ### Communication Webflow (postMessage)
 
 L'app est embarquée en iframe. Messages échangés :
-- `selection_update` : notifie le parent du nombre de mots sélectionnés
-- `focus_mode_change` : overlay ouvert/fermé
-- `launch_diaporama` : commande parentale pour lancer le diaporama
+- `selection_update` : notifie le parent du nombre de mots sélectionnés (App → Parent)
+- `focus_mode_change` : overlay ouvert/fermé (App → Parent)
+- `close_overlay` : demande de fermeture d'overlay (Parent → App)
+- `close_tool` : demande de retour au catalogue (App → Parent, legacy)
+- `launch_diaporama` : commande pour lancer le diaporama (Parent → App)
 - `clear_selection_command` / `export_selection_command` : commandes depuis le parent
+- `supabase_session` : relay de session auth cross-origin (Parent → App)
+- `resize` / `scroll_to_offset` : signaux de layout (App → Parent)
+
+**Navigation back button** : Toute la gestion `history` est centralisée dans le shell parent. L'iframe ne fait aucun appel à `pushState`/`replaceState`/`popstate`.
 
 ## Design system
 
@@ -195,7 +201,10 @@ L'app est embarquée en iframe. Messages échangés :
 | `src/contexts/PlayerContext.tsx` | État du tachistoscope |
 | `src/contexts/SelectionContext.tsx` | État de la sélection |
 | `src/contexts/SavedListsContext.tsx` | Gestion des listes |
-| `src/lib/export-utils.ts` | Export PDF/Word (jsPDF + docx) |
+| `src/lib/export-utils.ts` | Export Word (.docx) |
+| `src/components/export/ExportPanel.tsx` | Modal d'export (PDF + Word) |
+| `src/components/export/ExportPdfDocument.tsx` | Layout PDF vectoriel (@react-pdf) pour export |
+| `src/components/export/ExportPreview.tsx` | Aperçu A4 temps réel |
 | `src/lib/supabase.ts` | Client Supabase + types DB |
 | `src/utils/word-normalization.ts` | Migration v3/v4 → v7 |
 | `src/utils/imagier-utils.ts` | Helpers imagier (déterminants, casse, phonèmes) |
@@ -207,110 +216,28 @@ L'app est embarquée en iframe. Messages échangés :
 | `src/data/words.json` | Base de ~2 400 mots (v7) |
 | `src/data/cgp-tokens.json` | Tokens graphème-phonème |
 
-## Travail en cours (session 19/02/2026)
+## Travail en cours (session 20/02/2026)
 
-### Filtres Include/Exclude — LIVRÉ
+Toutes les features majeures sont livrées et pushées. Pas de tâche en cours.
 
-**Statut** : Complet et déployé.
+### Résumé des features livrées
 
-Les 3 filtres "Recherche ciblée" (Séquence de lettres, Graphème, Phonème) supportent maintenant l'inclusion ET l'exclusion via un toggle `Contient/Sans`.
+| Feature | Version | Statut |
+|---------|---------|--------|
+| Filtres Include/Exclude | 7.4.0 | LIVRÉ |
+| Appui Lexical redesign (chips indigo) | 7.4.0 | LIVRÉ |
+| Labels ortho corrigés | 7.4.0 | LIVRÉ |
+| Consolidation Supabase (projet unique) | 7.4.0 | LIVRÉ |
+| Export modal redesign (PDF + Word) | 7.3.0 | LIVRÉ |
+| Imagier phonétique (@react-pdf) | 7.3.0 | LIVRÉ |
+| Export depuis listes sauvegardées | 7.5.0 | LIVRÉ |
+| Navigation back button centralisée | 7.5.0 | LIVRÉ |
+| Corrections PDF (Twemoji base64, italic, z-index) | 7.5.0 | LIVRÉ |
+| Corrections Word (bordures tableau) | 7.5.0 | LIVRÉ |
 
-**Fichiers modifiés** :
-- `src/types/word.ts` — `FilterTag.mode?: 'include' | 'exclude'`, type `FilterMode`, `mode` ajouté aux 3 types realtime
-- `src/components/filters/ModeToggle.tsx` — Composant réutilisable Contient/Sans (Check/X icons, indigo/rouge)
-- `src/components/filters/FilterTag.tsx` — Style conditionnel indigo (include) / rouge (exclude)
-- `src/hooks/useWords.ts` — Helper `applyTagFilter()` pour filtrage include/exclude, filtres realtime respectent le mode exclude, matching phonème par segments (split `.`)
-- `src/components/filters/SearchFilter.tsx` — ModeToggle intégré, position select rouge en mode Sans, propagation mode realtime
-- `src/components/filters/GraphemeFilter.tsx` — Idem
-- `src/components/filters/PhonemeFilter.tsx` — Idem + grille IPA colorée (tags existants highlight indigo/rouge)
-- `src/components/filters/FilterPanel.tsx` — Callbacks mis à jour pour propager le mode aux filtres realtime
-- `src/components/ActiveFiltersBar.tsx` — Chips rouges pour tags exclude, préfixe "Sans"
-- `src/utils/random-selection.ts` — Distribution exclut les tags exclude (seuls les include participent à la répartition)
-
-**Décisions de design** :
-- ModeToggle sans chevron (confusion avec dropdown)
-- Position select passe en rouge quand mode = Sans
-- Grille IPA : phonèmes déjà ajoutés sont highlight (indigo = include, rouge = exclude)
-- Ordre position : Partout → Début → Milieu → Fin
-- Auto-scroll `bottomRef` avec spacer 40px conditionnel
-
-### Bugfixes filtres exclude — LIVRÉ (session 18/02/2026)
-
-**3 bugs corrigés** :
-1. **Filtres realtime ignoraient le mode exclude** — Les types `realtimeSearch`, `realtimeGrapheme`, `realtimePhonemes` n'avaient pas de champ `mode`. Ajouté `mode?: FilterMode` aux 3 types, propagé depuis les composants via `FilterPanel.tsx`, et inversé la logique dans `useWords.ts` (`isExclude ? matches : !matches`). Commit `1f5a4a2`.
-2. **Position phonème "Début" toujours 0 résultats** — PHONEMES stockés au format `.p.a.p.a` (point initial). `startsWith("p")` échouait à cause du point initial. Corrigé en matching par segments : `split('.').filter(Boolean)` puis comparaison par index. Appliqué aux filtres realtime ET tag-based. Commit `1f5a4a2`.
-3. **Sélection aléatoire montrait les tags exclude dans la distribution** — `getDistributionCriteria` et `getSingleValueCriteria` comptaient tous les tags sans filtrer par mode. Corrigé pour ne considérer que les tags include. Commit `01bb0e6`.
-
-### Appui Lexical — Redesign chips — LIVRÉ
-
-**Design retenu** : Option A — Monochrome indigo (pas de semantic colors vert→rouge, car les niveaux sont neutres).
-- Chips flex-wrap avec labels complets (Très familier, Familier, Peu familier, Non familier)
-- Badge romain (I, II, III, IV) en indigo tint
-- Actif : bg indigo + texte blanc + shadow
-
-### Labels ortho — Mis à jour
-
-GRAPHEME_LABELS et STRUCTURE_LABELS corrigés selon retour orthophoniste :
-- Niveau 2 : ajout b, d ; gn déplacé au niveau 3
-- Niveau 3 : ajout gn, ph
-- Niveau 6 : ajout ui
-- Niveau 7 : ieu → oeu
-- Structure a : texte complet "Syllabes simples (CV)" sans subtitle split
-
-### Consolidation Supabase — RECOVERY (session 18/02/2026)
-
-**Situation** : Le projet `jzefsnvmlvxvwzpbpvaq` a été supprimé. Tout repointe vers le projet survivant `wxttgpfipcksseykzeyy`.
-
-**Projet unique** : `wxttgpfipcksseykzeyy` ("Matériel Orthophonie", eu-west-1)
-- Tables : `user_word_lists`, `user_tachistoscope_settings` (existaient déjà sur ce projet)
-- Storage : bucket `word-images/svg/` (images SVG des mots)
-- Auth : Supabase Auth — à configurer (voir actions manuelles)
-
-**Code migré** :
-- `.env` → pointe vers `wxttgpfipcksseykzeyy` (commit `01039e0`)
-- `src/lib/supabase.ts` → fallback URL corrigé + auth relay postMessage conservé
-- `index.html` auth gate → pointe vers `wxttgpfipcksseykzeyy`
-- Shell `login.html`, `signup.html`, `index.html` → corrigés (commit `1f2116c`)
-- `words.json` images → pointent vers `wxttgpfipcksseykzeyy` (commit `db35750`)
-- `SavedListsContext.tsx` → utilise `supabase.auth.getUser()` + `onAuthStateChange`
-- PostMessage auth relay pour iframe cross-origin (shell → word-hoard)
-
-**Bug images résolu** : Les mots sélectionnés dans localStorage gardaient les anciennes URLs d'images (projet supprimé). Fix : migration automatique dans `SelectionContext.tsx` (commit `0f365aa`). Aussi nécessité de redeploy Vercel sans cache car le build cache servait un ancien bundle.
-
-**Actions manuelles restantes** :
+### Actions manuelles restantes (Supabase/Vercel)
 - [ ] Créer les comptes utilisateurs dans Authentication > Users (si pas déjà fait)
 - [ ] Mettre à jour les env vars Vercel (VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY pour wxttgpfipcksseykzeyy)
-
-### Export depuis listes sauvegardées — LIVRÉ (session 19/02/2026)
-
-**Objectif** : Remplacer les 3 actions séparées (PDF, Word, Imprimer) par un seul bouton "Exporter" qui ouvre le `ExportPanel` modal riche.
-
-**Fichiers modifiés** :
-- `src/types/export.ts` — Ajout `initialTitle?: string` à `ExportPanelProps`
-- `src/components/export/ExportPanel.tsx` — Utilise `initialTitle` pour pré-remplir le titre
-- `src/components/saved-lists/ActionMenu.tsx` — 3 items → 1 "Exporter" + callback `onExport`
-- `src/components/saved-lists/CompactSavedListRow.tsx` — Propagation `onExport` callback
-- `src/components/saved-lists/SavedListsPanel.tsx` — State `exportingList`, rendu `<ExportPanel>` conditionnel
-
-**Bug PDF corrigé** : `ExportPdfDocument` chargeait des images Twemoji depuis CDN pour les icônes du header. `@react-pdf/renderer` échouait au fetch de ces images distantes. Remplacé par du texte plain. Aussi retiré `fontStyle: 'italic'` sur `phonemeText` (Sora n'a pas d'italique enregistré). Commit `ff1790a`.
-
-### Navigation back button — Centralisé (session 19/02/2026)
-
-**Problème** : Double appui back pour revenir des outils au catalogue. L'iframe et le parent partageaient le même `history.state` — `replaceState` dans l'iframe écrasait l'état du parent.
-
-**Solution** : Toute la gestion history centralisée dans le shell parent. L'iframe communique via `postMessage` uniquement (`focus_mode_change`, `close_overlay`).
-
-**Fichiers modifiés** :
-- `WordExplorer.tsx` — Supprimé tous les appels `replaceState`/`pushState`/`popstate`, ajouté listener `close_overlay`
-- Shell `index.html` (repo `ressources-orthophonie-app`) — Variables `currentToolId`, `toolOverlayOpen`, `closingOverlayViaBack`. Gestion overlay/tool/page dans popstate. `location.replace()` pour navigation iframe sans entrée history.
-
-### Export modal — redesign (session précédente)
-
-**Statut** : Fonctionnel. PDF et Word testés.
-
-**Fichiers** : `ExportPanel.tsx`, `ExportPreview.tsx`, `ExportPdfDocument.tsx`, `export-utils.ts`, `export.ts`
-**Design** : Panel modal avec tabs Document/Contenu, format selector en footer, 5 layouts visuels.
-**Mockup** : `mockup-export-modal-v4.html`
 
 ## Pièges connus
 
