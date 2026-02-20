@@ -2,7 +2,7 @@ export type GridLayout = '2x3' | '3x3' | '3x4' | '4x4';
 export type Orientation = 'portrait' | 'landscape';
 export type CasseMode = 'lower' | 'upper' | 'capitalize';
 export type FontSizeMode = 'small' | 'medium' | 'large';
-export type PageStyle = 'grid' | 'parcours-s' | 'escalier' | 'circulaire';
+export type PageStyle = 'grid' | 'parcours-s' | 'circulaire';
 
 export interface ImagierSettings {
   grid: GridLayout;

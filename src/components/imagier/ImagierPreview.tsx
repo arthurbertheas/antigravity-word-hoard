@@ -94,7 +94,7 @@ export function ImagierPreview({
   const FOOTER_H = 28;
 
   const usableW = pageW - 2 * marginPx;
-  const usableH = pageH - 2 * marginPx - HEADER_H - FOOTER_H;
+  const usableH = pageH - 10 - 8 - HEADER_H - FOOTER_H;
 
   // Drag handlers
   const handleDragStart = useCallback((index: number) => {
@@ -134,6 +134,8 @@ export function ImagierPreview({
           gridTemplateRows: `repeat(${rows}, 1fr)`,
           columnGap: hGapPx,
           rowGap: vGapPx,
+          marginTop: marginPx,
+          marginBottom: marginPx,
         }}
       >
         {visibleWords.map((word, i) => (
@@ -177,7 +179,7 @@ export function ImagierPreview({
     const polyPts = allCenters.map(p => `${p.cx},${p.cy}`).join(' ');
 
     return (
-      <div className="flex-1 min-h-0 relative" style={{ overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
         {/* Ribbon SVG — under cards */}
         <svg
           style={{ position: 'absolute', inset: 0, width: usableW, height: usableH, overflow: 'visible', pointerEvents: 'none' }}
@@ -219,42 +221,6 @@ export function ImagierPreview({
     );
   }
 
-  // ── Escalier ──────────────────────────────────────────────────────────────
-  function renderEscalier() {
-    const n = visibleWords.length;
-    const STEPS = 3;
-    const perStep = Math.ceil(settings.parcoursPerPage / STEPS);
-    const colGap = Math.max(hGapPx, 4);
-    const rowGap = Math.max(vGapPx, 4);
-    const totalCols = perStep + STEPS - 1;
-    const cardW = (usableW - (totalCols - 1) * colGap) / totalCols;
-    const cardH = (usableH - (STEPS - 1) * rowGap) / STEPS;
-
-    return (
-      <div className="flex-1 min-h-0 relative">
-        {visibleWords.map((word, i) => {
-          const step = Math.min(Math.floor(i / perStep), STEPS - 1);
-          const col = i % perStep;
-          const x = (col + step) * (cardW + colGap);
-          const y = (STEPS - 1 - step) * (cardH + rowGap);
-
-          return (
-            <div key={word.uid || word.MOTS + i}
-              style={{ position: 'absolute', left: x, top: y, width: cardW, height: cardH }}>
-              <ParcoursOverlay number={start + i + 1} isFirst={i === 0} isLast={i === n - 1}>
-                <ImagierCard
-                  word={word} settings={settings} index={i}
-                  onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop}
-                  isDragging={dragSrcIndex === start + i} isDragOver={dragOverIndex === start + i}
-                />
-              </ParcoursOverlay>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
   // ── Circulaire ────────────────────────────────────────────────────────────
   function renderCirculaire() {
     const n = visibleWords.length;
@@ -264,7 +230,7 @@ export function ImagierPreview({
     const cardSize = Math.min(R * 0.52, (2 * Math.PI * R) / Math.max(n, 1) * 0.82);
 
     return (
-      <div className="flex-1 min-h-0 relative">
+      <div style={{ position: 'absolute', inset: 0 }}>
         {visibleWords.map((word, i) => {
           const angle = (i / Math.max(n, 1)) * 2 * Math.PI - Math.PI / 2;
           const x = cx + R * Math.cos(angle) - cardSize / 2;
@@ -334,7 +300,7 @@ export function ImagierPreview({
             >
               <div className="absolute inset-0 border border-black/[0.06] rounded-sm pointer-events-none z-[1]" />
 
-              <div className="flex-1 min-h-0 flex flex-col" style={{ padding: marginPx }}>
+              <div className="flex-1 min-h-0 flex flex-col" style={{ paddingLeft: marginPx, paddingRight: marginPx, paddingTop: 10, paddingBottom: 8 }}>
                 {/* Page header */}
                 {settings.showHeader && (
                   <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
@@ -360,7 +326,6 @@ export function ImagierPreview({
                 {isGrid ? renderGrid() : (
                   <div className="flex-1 min-h-0 relative">
                     {settings.pageStyle === 'parcours-s' && renderParcoursS()}
-                    {settings.pageStyle === 'escalier' && renderEscalier()}
                     {settings.pageStyle === 'circulaire' && renderCirculaire()}
                   </div>
                 )}

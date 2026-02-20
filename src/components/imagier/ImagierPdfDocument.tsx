@@ -276,7 +276,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
             key={pageIndex}
             size="A4"
             orientation={settings.orientation}
-            style={[s.page, { padding: pagePadding }]}
+            style={[s.page, { paddingLeft: pagePadding, paddingRight: pagePadding, paddingTop: 10, paddingBottom: 8 }]}
           >
             {/* Header */}
             {settings.showHeader && (
@@ -299,7 +299,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               while (rowChunks.length < gridRows) rowChunks.push(Array(gridCols).fill(null));
 
               return (
-                <View style={[s.grid, { gap: vGap }]}>
+                <View style={[s.grid, { gap: vGap, marginTop: pagePadding, marginBottom: pagePadding }]}>
                   {rowChunks.map((rowWords, rowIndex) => (
                     <View key={rowIndex} style={[s.row, { gap: hGap }]}>
                       {rowWords.map((word, colIndex) => (
@@ -325,7 +325,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const headerH = settings.showHeader ? 52 : 0;
               const footerH = 28;
               const usableW = pageW - 2 * pagePadding;
-              const usableH = pageH - 2 * pagePadding - headerH - footerH;
+              const usableH = pageH - 10 - 8 - headerH - footerH;
 
               const colGap = Math.max(settings.hGap * MM_TO_PT, 4);
               const rowGap = Math.max(settings.vGap * MM_TO_PT, 10);
@@ -370,44 +370,6 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               );
             })()}
 
-            {/* ── Escalier layout ── */}
-            {settings.pageStyle === 'escalier' && (() => {
-              const STEPS = 3;
-              const perStep = Math.ceil(settings.parcoursPerPage / STEPS);
-              const pageW = settings.orientation === 'portrait' ? 595 : 842;
-              const pageH = settings.orientation === 'portrait' ? 842 : 595;
-              const headerH = settings.showHeader ? 52 : 0;
-              const footerH = 28;
-              const usableW = pageW - 2 * pagePadding;
-              const usableH = pageH - 2 * pagePadding - headerH - footerH;
-
-              const colGap = Math.max(settings.hGap * MM_TO_PT, 4);
-              const rowGap = Math.max(settings.vGap * MM_TO_PT, 4);
-              const totalCols = perStep + STEPS - 1;
-              const cardW = (usableW - (totalCols - 1) * colGap) / totalCols;
-              const cardH = (usableH - (STEPS - 1) * rowGap) / STEPS;
-
-              return (
-                <View style={{ flex: 1, position: 'relative' }}>
-                  {pageWords.map((word, i) => {
-                    const step = Math.min(Math.floor(i / perStep), STEPS - 1);
-                    const col = i % perStep;
-                    const x = (col + step) * (cardW + colGap);
-                    const y = (STEPS - 1 - step) * (cardH + rowGap);
-                    return (
-                      <View key={word.uid || word.MOTS + i}
-                        style={{ position: 'absolute', left: x, top: y, width: cardW, height: cardH }}>
-                        <ParcoursCellPdf
-                          word={word} settings={settings} imageMap={imageMap}
-                          number={start + i + 1} isFirst={start + i === 0} isLast={start + i === words.length - 1}
-                        />
-                      </View>
-                    );
-                  })}
-                </View>
-              );
-            })()}
-
             {/* ── Circulaire layout ── */}
             {settings.pageStyle === 'circulaire' && (() => {
               const n = pageWords.length;
@@ -416,7 +378,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const headerH = settings.showHeader ? 52 : 0;
               const footerH = 28;
               const usableW = pageW - 2 * pagePadding;
-              const usableH = pageH - 2 * pagePadding - headerH - footerH;
+              const usableH = pageH - 10 - 8 - headerH - footerH;
 
               const cx = usableW / 2;
               const cy = usableH / 2;

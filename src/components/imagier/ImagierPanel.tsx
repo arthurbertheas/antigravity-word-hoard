@@ -122,7 +122,7 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
               {/* Section: Style de la page */}
               <div className="px-5">
                 <SectionHeader label="Style de la page" />
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-3 gap-1.5">
                   <PageStyleThumb
                     value="grid"
                     label="Grille"
@@ -149,22 +149,6 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                           stroke={settings.pageStyle==='parcours-s'?'#6C5CE7':'#9CA3AF'} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
                         <text x="5" y="9.5" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">1</text>
                         <text x="15" y="9.5" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">2</text>
-                      </svg>
-                    }
-                  />
-                  <PageStyleThumb
-                    value="escalier"
-                    label="Escalier"
-                    active={settings.pageStyle === 'escalier'}
-                    onClick={() => updateSetting('pageStyle', 'escalier')}
-                    icon={
-                      <svg viewBox="0 0 40 40" fill="none">
-                        <rect x="2" y="27" width="11" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#6C5CE7':'#E5E7EB'}/>
-                        <rect x="15" y="27" width="11" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#6C5CE7':'#E5E7EB'}/>
-                        <rect x="15" y="15" width="11" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#A29BFE':'#E5E7EB'}/>
-                        <rect x="28" y="15" width="10" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#A29BFE':'#E5E7EB'}/>
-                        <rect x="28" y="3" width="10" height="10" rx="2" fill={settings.pageStyle==='escalier'?'#C4B8FF':'#E5E7EB'}/>
-                        <path d="M7 27 L7 15 M20 27 L20 15" stroke={settings.pageStyle==='escalier'?'#6C5CE7':'#9CA3AF'} strokeWidth="0.8" strokeDasharray="2 1.5"/>
                       </svg>
                     }
                   />
