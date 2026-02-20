@@ -164,8 +164,8 @@ export function ImagierPreview({
   function renderParcoursS() {
     const n = visibleWords.length;
     const { cols, rows } = getParcoursRect(settings.parcoursPerPage);
-    const cardW = usableW / cols;
-    const cardH = usableH / rows;
+    const cardW = (usableW - (cols - 1) * hGapPx) / cols;
+    const cardH = (usableH - (rows - 1) * vGapPx) / rows;
     const path = perimeterPath(cols, rows);
 
     return (
@@ -174,7 +174,7 @@ export function ImagierPreview({
           const { col, row } = path[i];
           return (
             <div key={word.uid || word.MOTS + i}
-              style={{ position: 'absolute', left: col * cardW, top: row * cardH, width: cardW, height: cardH }}>
+              style={{ position: 'absolute', left: col * (cardW + hGapPx), top: row * (cardH + vGapPx), width: cardW, height: cardH }}>
               <ParcoursOverlay number={start + i + 1} isFirst={i === 0} isLast={i === n - 1}>
                 <ImagierCard
                   word={word} settings={settings} index={i}

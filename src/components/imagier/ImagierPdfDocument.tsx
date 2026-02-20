@@ -316,8 +316,8 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const usableW = pageW - 2 * pagePadding;
               const usableH = pageH - 10 - 8 - headerH - footerH;
 
-              const cardW = usableW / cols;
-              const cardH = usableH / rows;
+              const cardW = (usableW - (cols - 1) * hGap) / cols;
+              const cardH = (usableH - (rows - 1) * vGap) / rows;
               const path = perimeterPath(cols, rows);
 
               return (
@@ -326,7 +326,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
                     const { col, row } = path[i];
                     return (
                       <View key={word.uid || word.MOTS + i}
-                        style={{ position: 'absolute', left: col * cardW, top: row * cardH, width: cardW, height: cardH }}>
+                        style={{ position: 'absolute', left: col * (cardW + hGap), top: row * (cardH + vGap), width: cardW, height: cardH }}>
                         <ParcoursCellPdf
                           word={word} settings={settings} imageMap={imageMap}
                           number={start + i + 1} isFirst={start + i === 0} isLast={start + i === words.length - 1}

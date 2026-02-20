@@ -262,15 +262,13 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                       className="w-full px-3 py-[7px] border-[1.5px] border-[#E5E7EB] rounded-[10px] text-xs font-['DM_Sans'] font-medium text-[#6B7280] bg-white placeholder:text-[#9CA3AF] placeholder:font-normal focus:outline-none focus:border-[#6C5CE7] focus:shadow-[0_0_0_3px_rgba(108,92,231,0.12)] transition-all"
                     />
                   </ToggleRow>
-                  {settings.pageStyle === 'grid' && (
-                    <ToggleRow
-                      icon={<Scissors className="w-4 h-4" />}
-                      label="Traits de découpe"
-                      desc="Pointillés pour découper"
-                      checked={settings.cuttingGuides}
-                      onCheckedChange={() => updateSetting('cuttingGuides', !settings.cuttingGuides)}
-                    />
-                  )}
+                  <ToggleRow
+                    icon={<Scissors className="w-4 h-4" />}
+                    label="Traits de découpe"
+                    desc="Pointillés pour découper"
+                    checked={settings.cuttingGuides}
+                    onCheckedChange={() => updateSetting('cuttingGuides', !settings.cuttingGuides)}
+                  />
                 </div>
               </div>
 
