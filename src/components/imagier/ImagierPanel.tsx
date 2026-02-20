@@ -429,37 +429,48 @@ interface SpacingFieldProps {
 
 function SpacingField({ label, value, onChange, disabled = false, withTopBorder = false }: SpacingFieldProps) {
   const clamp = (v: number) => Math.min(50, Math.max(0, v));
+  const pct = (value / 50) * 100;
 
   return (
     <div
-      className={`flex items-center gap-3 px-3.5 py-2.5 transition-opacity ${disabled ? 'opacity-40 pointer-events-none' : ''} ${withTopBorder ? 'border-t border-[#F1F5F9]' : ''}`}
+      className={`flex flex-col gap-2 px-3.5 py-3 transition-opacity ${disabled ? 'opacity-40 pointer-events-none' : ''} ${withTopBorder ? 'border-t border-[#F1F5F9]' : ''}`}
     >
-      <span className="flex-1 text-[13px] font-medium text-[#374151]">{label}</span>
-      <div className="flex items-center border-[1.5px] border-[#E5E7EB] rounded-[10px] bg-white overflow-hidden flex-shrink-0">
-        <button
-          onClick={() => onChange(clamp(value - 1))}
-          className="w-[30px] h-8 flex items-center justify-center text-[#6C5CE7] text-base hover:bg-[#F5F3FF] transition-colors"
-        >
-          −
-        </button>
-        <div className="w-px h-5 bg-[#F1F5F9]" />
-        <input
-          type="number"
-          value={value}
-          min={0}
-          max={50}
-          onChange={e => onChange(clamp(parseInt(e.target.value) || 0))}
-          className="w-9 h-8 text-center text-[13px] font-bold font-sora text-[#1A1A2E] bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-        />
-        <div className="w-px h-5 bg-[#F1F5F9]" />
-        <button
-          onClick={() => onChange(clamp(value + 1))}
-          className="w-[30px] h-8 flex items-center justify-center text-[#6C5CE7] text-base hover:bg-[#F5F3FF] transition-colors"
-        >
-          +
-        </button>
+      {/* Label row + editable value */}
+      <div className="flex items-center justify-between">
+        <span className="text-[12.5px] font-medium text-[#374151]">{label}</span>
+        <div className="flex items-baseline gap-0.5">
+          <input
+            type="number"
+            value={value}
+            min={0}
+            max={50}
+            onChange={e => onChange(clamp(parseInt(e.target.value) || 0))}
+            className="w-8 text-right text-[13px] font-bold font-sora text-[#6C5CE7] bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none hover:text-[#5A4BD1] focus:text-[#1A1A2E] transition-colors"
+          />
+          <span className="text-[10.5px] font-bold font-sora text-[#9CA3AF]">mm</span>
+        </div>
       </div>
-      <span className="text-[10.5px] font-bold font-sora text-[#9CA3AF] w-5">mm</span>
+      {/* Slider */}
+      <input
+        type="range"
+        min={0}
+        max={50}
+        step={1}
+        value={value}
+        onChange={e => onChange(parseInt(e.target.value))}
+        className="w-full h-[3px] rounded-full cursor-pointer appearance-none
+          [&::-webkit-slider-runnable-track]:h-[3px] [&::-webkit-slider-runnable-track]:rounded-full
+          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[14px] [&::-webkit-slider-thumb]:h-[14px] [&::-webkit-slider-thumb]:-mt-[5.5px]
+          [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white
+          [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#6C5CE7]
+          [&::-webkit-slider-thumb]:shadow-[0_1px_4px_rgba(108,92,231,0.35)] [&::-webkit-slider-thumb]:cursor-grab
+          [&::-moz-range-thumb]:w-[14px] [&::-moz-range-thumb]:h-[14px] [&::-moz-range-thumb]:rounded-full
+          [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#6C5CE7]
+          [&::-moz-range-thumb]:shadow-[0_1px_4px_rgba(108,92,231,0.35)] [&::-moz-range-thumb]:cursor-grab"
+        style={{
+          background: `linear-gradient(to right, #6C5CE7 ${pct}%, #E5E7EB ${pct}%)`,
+        }}
+      />
     </div>
   );
 }
