@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { WordCard } from "./WordCard";
 import { WordDetailView } from "./WordDetailView";
@@ -45,6 +45,15 @@ function WordExplorerContent() {
     const { words, totalWords, filters, updateFilter, resetFilters, toggleArrayFilter, stats } = useWords();
     const { selectedWords, isFocusModeOpen, setIsFocusModeOpen, addItems, removeItems, randomSelectedCount, randomFiltersSnapshot, selectRandom, deselectRandom } = useSelection();
     const [isImagierOpen, setIsImagierOpen] = useState(false);
+    // When imagier is closed from within (X button / Escape), suppress focus_mode_change: false
+    // to avoid triggering the shell's history.back() which navigates to "all tools".
+    // The shell's close_overlay flow (back button) still sends the message normally.
+    const suppressFocusChangeRef = useRef(false);
+
+    const handleImagierClose = useCallback(() => {
+        suppressFocusChangeRef.current = true;
+        setIsImagierOpen(false);
+    }, []);
 
     // V9/10: Adaptive Resize Logic
     useIframeResize(isFocusModeOpen || isImagierOpen);
@@ -85,9 +94,15 @@ function WordExplorerContent() {
         return () => window.removeEventListener('message', handleMessage);
     }, [selectedWords, setIsFocusModeOpen]);
 
-    // Send Focus Mode state to parent for fullscreen promotion
+    // Send Focus Mode state to parent for fullscreen promotion.
+    // When imagier closes via X/Escape (suppressFocusChangeRef), skip sending false
+    // so the shell doesn't trigger history.back() and navigate away.
     useEffect(() => {
         const isOverlayOpen = isFocusModeOpen || isImagierOpen;
+        if (suppressFocusChangeRef.current && !isOverlayOpen) {
+            suppressFocusChangeRef.current = false;
+            return;
+        }
         console.log("Focus Mode Change:", isOverlayOpen);
         window.parent.postMessage({
             type: 'focus_mode_change',
@@ -209,7 +224,7 @@ function WordExplorerContent() {
             <Imagier
                 words={selectedWords}
                 isOpen={isImagierOpen}
-                onClose={() => setIsImagierOpen(false)}
+                onClose={handleImagierClose}
             />
         </div>
     );
