@@ -189,15 +189,12 @@ export function ImagierPreview({
           style={{ position: 'absolute', inset: 0, width: usableW, height: usableH, overflow: 'visible', pointerEvents: 'none' }}
           viewBox={`0 0 ${usableW} ${usableH}`}
         >
-          <polyline
-            points={polyPts}
-            stroke="#A29BFE"
-            strokeWidth={ribbonW}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            fill="none"
-            opacity={0.35}
-          />
+          {/* Outer border — dark indigo, very transparent */}
+          <polyline points={polyPts} stroke="#4C3DC0" strokeWidth={ribbonW + 5} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.18} />
+          {/* Inner fill — soft lavender, nearly opaque → the visible track */}
+          <polyline points={polyPts} stroke="#DDD6FE" strokeWidth={ribbonW} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.9} />
+          {/* Subtle depth shade */}
+          <polyline points={polyPts} stroke="#7C3AED" strokeWidth={Math.max(ribbonW - 8, 1)} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.06} />
         </svg>
 
         {/* Cards — absolute over ribbon */}

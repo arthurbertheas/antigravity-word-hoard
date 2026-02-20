@@ -343,17 +343,14 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
 
               return (
                 <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>
-                  {/* Ribbon */}
+                  {/* Ribbon — 3-layer game board track */}
                   <Svg style={{ position: 'absolute', left: 0, top: 0, width: usableW, height: usableH }}>
-                    <Path
-                      d={dPath}
-                      stroke="#A29BFE"
-                      strokeWidth={ribbonW}
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity={0.35}
-                    />
+                    {/* Outer border */}
+                    <Path d={dPath} stroke="#4C3DC0" strokeWidth={ribbonW + 5} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.18} />
+                    {/* Inner fill — main visible track */}
+                    <Path d={dPath} stroke="#DDD6FE" strokeWidth={ribbonW} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.9} />
+                    {/* Depth shade */}
+                    <Path d={dPath} stroke="#7C3AED" strokeWidth={Math.max(ribbonW - 8, 1)} strokeLinejoin="round" strokeLinecap="round" fill="none" opacity={0.06} />
                   </Svg>
                   {/* Cards */}
                   {pageWords.map((word, i) => {
