@@ -438,14 +438,20 @@ function SpacingField({ label, value, onChange, disabled = false, withTopBorder 
       {/* Label row + editable value */}
       <div className="flex items-center justify-between">
         <span className="text-[12.5px] font-medium text-[#374151]">{label}</span>
-        <div className="flex items-baseline gap-0.5">
+        <div className="flex items-center gap-1">
           <input
             type="number"
             value={value}
             min={0}
             max={50}
             onChange={e => onChange(clamp(parseInt(e.target.value) || 0))}
-            className="w-8 text-right text-[13px] font-bold font-sora text-[#6C5CE7] bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none hover:text-[#5A4BD1] focus:text-[#1A1A2E] transition-colors"
+            className="w-10 text-center text-[13px] font-bold font-sora text-[#6C5CE7] bg-white
+              border-[1.5px] border-[#E5E7EB] rounded-[7px] px-1.5 py-0.5
+              outline-none cursor-text
+              hover:border-[#A29BFE] hover:bg-[#FAFBFF]
+              focus:border-[#6C5CE7] focus:shadow-[0_0_0_3px_rgba(108,92,231,0.12)]
+              transition-all
+              [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
           <span className="text-[10.5px] font-bold font-sora text-[#9CA3AF]">mm</span>
         </div>
