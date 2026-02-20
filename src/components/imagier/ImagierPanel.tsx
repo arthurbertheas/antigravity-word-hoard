@@ -204,6 +204,42 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                 </div>
               </div>
 
+              {/* Section: Espacement et marges */}
+              <div className="px-5">
+                <SectionHeader label="Espacement et marges" />
+                <div className="border-[1.5px] border-[#F1F5F9] rounded-[14px] bg-[#FAFBFC] overflow-hidden">
+                  {/* Note when cutting guides are active */}
+                  {settings.cuttingGuides && (
+                    <div className="flex items-center gap-2 px-3.5 py-2.5 bg-[#FFFBEB] border-b border-[#FEF3C7] text-[11.5px] text-[#92400E]">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] flex-shrink-0" />
+                      Espacements ignorés avec les traits de découpe
+                    </div>
+                  )}
+                  {/* Entre les colonnes (hGap) */}
+                  <SpacingField
+                    label="Entre les colonnes"
+                    value={settings.hGap}
+                    onChange={v => updateSetting('hGap', v)}
+                    disabled={settings.cuttingGuides}
+                  />
+                  {/* Entre les lignes (vGap) */}
+                  <SpacingField
+                    label="Entre les lignes"
+                    value={settings.vGap}
+                    onChange={v => updateSetting('vGap', v)}
+                    disabled={settings.cuttingGuides}
+                    withTopBorder
+                  />
+                  {/* Marge de page */}
+                  <SpacingField
+                    label="Marge de page"
+                    value={settings.margin}
+                    onChange={v => updateSetting('margin', v)}
+                    withTopBorder
+                  />
+                </div>
+              </div>
+
               {/* Warning (only if needed) */}
               {removedCount > 0 && (
                 <div className="px-5">
@@ -381,6 +417,51 @@ interface LayoutThumbProps {
   active: boolean;
   topOffset?: number;
   onClick: () => void;
+}
+
+interface SpacingFieldProps {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  disabled?: boolean;
+  withTopBorder?: boolean;
+}
+
+function SpacingField({ label, value, onChange, disabled = false, withTopBorder = false }: SpacingFieldProps) {
+  const clamp = (v: number) => Math.min(50, Math.max(0, v));
+
+  return (
+    <div
+      className={`flex items-center gap-3 px-3.5 py-2.5 transition-opacity ${disabled ? 'opacity-40 pointer-events-none' : ''} ${withTopBorder ? 'border-t border-[#F1F5F9]' : ''}`}
+    >
+      <span className="flex-1 text-[13px] font-medium text-[#374151]">{label}</span>
+      <div className="flex items-center border-[1.5px] border-[#E5E7EB] rounded-[10px] bg-white overflow-hidden flex-shrink-0">
+        <button
+          onClick={() => onChange(clamp(value - 1))}
+          className="w-[30px] h-8 flex items-center justify-center text-[#6C5CE7] text-base hover:bg-[#F5F3FF] transition-colors"
+        >
+          −
+        </button>
+        <div className="w-px h-5 bg-[#F1F5F9]" />
+        <input
+          type="number"
+          value={value}
+          min={0}
+          max={50}
+          onChange={e => onChange(clamp(parseInt(e.target.value) || 0))}
+          className="w-9 h-8 text-center text-[13px] font-bold font-sora text-[#1A1A2E] bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        />
+        <div className="w-px h-5 bg-[#F1F5F9]" />
+        <button
+          onClick={() => onChange(clamp(value + 1))}
+          className="w-[30px] h-8 flex items-center justify-center text-[#6C5CE7] text-base hover:bg-[#F5F3FF] transition-colors"
+        >
+          +
+        </button>
+      </div>
+      <span className="text-[10.5px] font-bold font-sora text-[#9CA3AF] w-5">mm</span>
+    </div>
+  );
 }
 
 function LayoutThumb({ cols, rows, label, pageW, pageH, active, topOffset = 0, onClick }: LayoutThumbProps) {

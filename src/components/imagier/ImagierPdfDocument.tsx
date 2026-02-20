@@ -22,18 +22,13 @@ Font.registerHyphenationCallback(word => [word]);
 
 /* ─── Constants ─── */
 
+const MM_TO_PT = 2.8346;
+
 const FONT_SIZE: Record<string, number> = { small: 10, medium: 12, large: 15 };
 const SYLL_FONT_SIZE = 10;
 const PHON_FONT_SIZE = 9;
 const DET_FONT_SIZE = 10;
 const BADGE_FONT_SIZE = 7;
-
-const GAP: Record<string, number> = {
-  '2x3': 12,  // gap-3
-  '3x3': 10,  // gap-2.5
-  '3x4': 8,   // gap-2
-  '4x4': 6,   // gap-1.5
-};
 
 /* ─── Helpers ─── */
 
@@ -49,7 +44,7 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 
 const s = StyleSheet.create({
   page: {
-    padding: 24, // same as p-6 in preview
+    padding: 0, // overridden per-page with settings.margin * MM_TO_PT
     backgroundColor: '#FFFFFF',
     fontFamily: 'Sora',
     flexDirection: 'column',
@@ -290,7 +285,9 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
   const max = getGridMax(settings.grid);
   const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
   const totalPages = Math.max(1, Math.ceil(words.length / max));
-  const gap = settings.cuttingGuides ? 0 : (GAP[settings.grid] ?? 10);
+  const hGap = settings.cuttingGuides ? 0 : settings.hGap * MM_TO_PT;
+  const vGap = settings.cuttingGuides ? 0 : settings.vGap * MM_TO_PT;
+  const pagePadding = settings.margin * MM_TO_PT;
 
   return (
     <Document title="Imagier phonétique" author="MaterielOrthophonie.fr">
@@ -316,7 +313,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
             key={pageIndex}
             size="A4"
             orientation={settings.orientation}
-            style={s.page}
+            style={[s.page, { padding: pagePadding }]}
           >
             {/* Header */}
             {settings.showHeader && (
@@ -336,9 +333,9 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
             )}
 
             {/* Grid */}
-            <View style={[s.grid, { gap }]}>
+            <View style={[s.grid, { gap: vGap }]}>
               {rowChunks.map((rowWords, rowIndex) => (
-                <View key={rowIndex} style={[s.row, { gap }]}>
+                <View key={rowIndex} style={[s.row, { gap: hGap }]}>
                   {rowWords.map((word, colIndex) => (
                     word ? (
                       <PdfCard

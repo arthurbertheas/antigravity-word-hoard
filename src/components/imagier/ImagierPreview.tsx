@@ -8,6 +8,8 @@ import { ChevronLeft, ChevronRight, Minus, Plus, Move } from 'lucide-react';
 const PAGE_W_PORTRAIT = 595;
 const PAGE_H_PORTRAIT = 842;
 
+const MM_TO_PT = 2.8346;
+
 interface ImagierPreviewProps {
   words: Word[];
   settings: ImagierSettings;
@@ -80,6 +82,10 @@ export function ImagierPreview({
   const start = currentPage * max;
   const visibleWords = words.slice(start, start + max);
   const { cols, rows } = getGridDimensions(settings.grid, settings.orientation);
+
+  const hGapPx = settings.cuttingGuides ? 0 : settings.hGap * MM_TO_PT;
+  const vGapPx = settings.cuttingGuides ? 0 : settings.vGap * MM_TO_PT;
+  const marginPx = settings.margin * MM_TO_PT;
 
   const handleDragStart = useCallback((index: number) => {
     setDragSrcIndex(start + index);
@@ -159,7 +165,7 @@ export function ImagierPreview({
             >
               <div className="absolute inset-0 border border-black/[0.06] rounded-sm pointer-events-none z-[1]" />
 
-              <div className="flex-1 min-h-0 flex flex-col p-6">
+              <div className="flex-1 min-h-0 flex flex-col" style={{ padding: marginPx }}>
                 {/* Page header */}
                 {settings.showHeader && (
                   <div className="flex items-end justify-between pb-2.5 border-b-[2.5px] border-[#6C5CE7] mb-3">
@@ -183,12 +189,12 @@ export function ImagierPreview({
 
                 {/* Cards grid */}
                 <div
-                  className={`flex-1 min-h-0 grid
-                    ${settings.cuttingGuides ? 'gap-0' : settings.grid === '2x3' ? 'gap-3' : settings.grid === '4x4' ? 'gap-1.5' : settings.grid === '3x4' ? 'gap-2' : 'gap-2.5'}
-                  `}
+                  className="flex-1 min-h-0 grid"
                   style={{
                     gridTemplateColumns: `repeat(${cols}, 1fr)`,
                     gridTemplateRows: `repeat(${rows}, 1fr)`,
+                    columnGap: hGapPx,
+                    rowGap: vGapPx,
                   }}
                 >
                   {visibleWords.map((word, i) => (

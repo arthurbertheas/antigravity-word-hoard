@@ -18,6 +18,9 @@ export interface ImagierSettings {
   showPhoneme: boolean;
   showCategory: boolean;
   showSyllCount: boolean;
+  hGap: number;    // mm — gap between card columns
+  vGap: number;    // mm — gap between card rows
+  margin: number;  // mm — page padding on all 4 sides
 }
 
 export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
@@ -35,6 +38,9 @@ export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
   showPhoneme: true,
   showCategory: false,
   showSyllCount: false,
+  hGap: 5,
+  vGap: 5,
+  margin: 5,
 };
 
 export const GRID_OPTIONS: { value: GridLayout; cols: number; rows: number; label: string }[] = [
