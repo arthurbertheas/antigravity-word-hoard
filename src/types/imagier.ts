@@ -8,7 +8,7 @@ export interface ImagierSettings {
   grid: GridLayout;
   orientation: Orientation;
   pageStyle: PageStyle;
-  parcoursPerPage: number; // 12 | 16 | 20 | 24 | 28
+  parcoursPerPage: number; // 6 | 8 | 9 | 12 | 16
   showHeader: boolean;
   title: string;
   subtitle: string;
@@ -30,7 +30,7 @@ export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
   grid: '3x3',
   orientation: 'portrait',
   pageStyle: 'grid',
-  parcoursPerPage: 20,
+  parcoursPerPage: 9,
   showHeader: true,
   title: '',
   subtitle: '',
@@ -81,28 +81,43 @@ export function getGridDimensions(grid: GridLayout, orientation: Orientation): {
   return { cols: opt.cols, rows: opt.rows };
 }
 
-/** Grid dimensions for the rectangular perimeter (frame) layout.
- *  2*(cols + rows - 2) = n  →  chosen so ratio ≈ landscape A4  */
+/** Grid dimensions for the spiral (snail) layout.
+ *  cols * rows = n  →  chosen so ratio ≈ landscape A4  */
 export function getParcoursRect(n: number): { cols: number; rows: number } {
   const map: Record<number, { cols: number; rows: number }> = {
-    12: { cols: 5, rows: 3 },
-    16: { cols: 6, rows: 4 },
-    20: { cols: 7, rows: 5 },
-    24: { cols: 8, rows: 6 },
-    28: { cols: 9, rows: 7 },
+    6:  { cols: 3, rows: 2 },
+    8:  { cols: 4, rows: 2 },
+    9:  { cols: 3, rows: 3 },
+    12: { cols: 4, rows: 3 },
+    16: { cols: 4, rows: 4 },
   };
-  return map[n] ?? { cols: 7, rows: 5 };
+  return map[n] ?? { cols: 3, rows: 3 };
 }
 
-/** Ordered list of {col, row} positions going clockwise around the perimeter.
- *  Top-left → top-right → bottom-right → bottom-left → back to start */
-export function perimeterPath(cols: number, rows: number): Array<{ col: number; row: number }> {
+/** Spiral (snail) path — fills ALL cells from outside inward, clockwise. */
+export function spiralPath(cols: number, rows: number): Array<{ col: number; row: number }> {
   const path: Array<{ col: number; row: number }> = [];
-  for (let c = 0; c < cols; c++) path.push({ col: c, row: 0 });             // top L→R
-  for (let r = 1; r < rows; r++) path.push({ col: cols - 1, row: r });      // right T→B
-  for (let c = cols - 2; c >= 0; c--) path.push({ col: c, row: rows - 1 }); // bottom R→L
-  for (let r = rows - 2; r >= 1; r--) path.push({ col: 0, row: r });        // left B→T
+  let top = 0, bottom = rows - 1, left = 0, right = cols - 1;
+  while (top <= bottom && left <= right) {
+    for (let c = left; c <= right; c++) path.push({ col: c, row: top });
+    top++;
+    for (let r = top; r <= bottom; r++) path.push({ col: right, row: r });
+    right--;
+    if (top <= bottom) {
+      for (let c = right; c >= left; c--) path.push({ col: c, row: bottom });
+      bottom--;
+    }
+    if (left <= right) {
+      for (let r = bottom; r >= top; r--) path.push({ col: left, row: r });
+      left++;
+    }
+  }
   return path;
+}
+
+/** @deprecated Use spiralPath instead */
+export function perimeterPath(cols: number, rows: number): Array<{ col: number; row: number }> {
+  return spiralPath(cols, rows);
 }
 
 /** Total cards visible per page depending on page style */

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Word } from '@/types/word';
-import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, perimeterPath } from '@/types/imagier';
+import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, spiralPath } from '@/types/imagier';
 import { ImagierCard } from './ImagierCard';
 import { ChevronLeft, ChevronRight, Minus, Plus, Move } from 'lucide-react';
 
@@ -166,7 +166,7 @@ export function ImagierPreview({
     const { cols, rows } = getParcoursRect(settings.parcoursPerPage);
     const cardW = (usableW - (cols - 1) * hGapPx) / cols;
     const cardH = (usableH - (rows - 1) * vGapPx) / rows;
-    const path = perimeterPath(cols, rows);
+    const path = spiralPath(cols, rows);
 
     return (
       <div style={{ position: 'absolute', inset: 0 }}>

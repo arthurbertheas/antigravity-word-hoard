@@ -2,7 +2,7 @@ import {
   Document, Page, View, Text, Image, Font, StyleSheet,
 } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
-import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, perimeterPath } from '@/types/imagier';
+import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, spiralPath } from '@/types/imagier';
 import { applyCasse, formatPhonemes, getDeterminer } from '@/utils/imagier-utils';
 
 /* ─── Font registration ─── */
@@ -318,7 +318,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
 
               const cardW = (usableW - (cols - 1) * hGap) / cols;
               const cardH = (usableH - (rows - 1) * vGap) / rows;
-              const path = perimeterPath(cols, rows);
+              const path = spiralPath(cols, rows);
 
               return (
                 <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>

@@ -504,7 +504,7 @@ function PageStyleThumb({ label, active, onClick, icon }: PageStyleThumbProps) {
   );
 }
 
-const PARCOURS_PRESETS = [12, 16, 20, 24, 28] as const;
+const PARCOURS_PRESETS = [6, 8, 9, 12, 16] as const;
 
 function ParcoursPerPageField({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const idx = PARCOURS_PRESETS.indexOf(value as typeof PARCOURS_PRESETS[number]);
