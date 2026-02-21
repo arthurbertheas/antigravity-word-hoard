@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Word } from '@/types/word';
-import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, spiralPath } from '@/types/imagier';
+import { ImagierSettings, getGridMax, getGridDimensions, getAutoGrid, snakePath } from '@/types/imagier';
 import { ImagierCard } from './ImagierCard';
 import { ChevronLeft, ChevronRight, Minus, Plus, Move } from 'lucide-react';
 
@@ -160,21 +160,63 @@ export function ImagierPreview({
     );
   }
 
-  // ── Parcours — rectangular perimeter (game board frame) ──────────────────
+  // ── Parcours — snake board game with visible ribbon path ──────────────────
   function renderParcoursS() {
     const n = visibleWords.length;
-    const { cols, rows } = getParcoursRect(settings.parcoursPerPage);
-    const cardW = (usableW - (cols - 1) * hGapPx) / cols;
-    const cardH = (usableH - (rows - 1) * vGapPx) / rows;
-    const path = spiralPath(cols, rows);
+    if (n === 0) return null;
+
+    // Auto-compute grid from actual word count
+    const { cols, rows } = getAutoGrid(n);
+    const path = snakePath(cols, rows);
+
+    // Square cards: use the smaller dimension so cards are perfect squares
+    const availW = (usableW - (cols - 1) * hGapPx) / cols;
+    const availH = (usableH - (rows - 1) * vGapPx) / rows;
+    const cardSize = Math.min(availW, availH);
+
+    // Center the grid in the available space
+    const gridW = cols * cardSize + (cols - 1) * hGapPx;
+    const gridH = rows * cardSize + (rows - 1) * vGapPx;
+    const offsetX = (usableW - gridW) / 2;
+    const offsetY = (usableH - gridH) / 2;
+
+    // Card centers for the ribbon polyline
+    const centers = [];
+    for (let i = 0; i < n; i++) {
+      const { col, row } = path[i];
+      centers.push({
+        cx: offsetX + col * (cardSize + hGapPx) + cardSize / 2,
+        cy: offsetY + row * (cardSize + vGapPx) + cardSize / 2,
+      });
+    }
+    const ribbonWidth = cardSize * 1.08;
 
     return (
       <div style={{ position: 'absolute', inset: 0 }}>
+        {/* Ribbon path — colored band connecting card centers */}
+        {n > 1 && (
+          <svg
+            style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}
+          >
+            <polyline
+              points={centers.map(p => `${p.cx},${p.cy}`).join(' ')}
+              stroke="#A29BFE"
+              strokeWidth={ribbonWidth}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              fill="none"
+              opacity={0.18}
+            />
+          </svg>
+        )}
+        {/* Cards on top of the ribbon */}
         {visibleWords.map((word, i) => {
           const { col, row } = path[i];
+          const x = offsetX + col * (cardSize + hGapPx);
+          const y = offsetY + row * (cardSize + vGapPx);
           return (
             <div key={word.uid || word.MOTS + i}
-              style={{ position: 'absolute', left: col * (cardW + hGapPx), top: row * (cardH + vGapPx), width: cardW, height: cardH }}>
+              style={{ position: 'absolute', left: x, top: y, width: cardSize, height: cardSize }}>
               <ParcoursOverlay number={start + i + 1} isFirst={i === 0} isLast={i === n - 1}>
                 <ImagierCard
                   word={word} settings={settings} index={i}

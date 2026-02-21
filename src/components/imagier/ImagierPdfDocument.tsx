@@ -1,8 +1,9 @@
 import {
   Document, Page, View, Text, Image, Font, StyleSheet,
+  Svg, Path as SvgPath,
 } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
-import { ImagierSettings, getGridMax, getGridDimensions, getParcoursRect, spiralPath } from '@/types/imagier';
+import { ImagierSettings, getGridMax, getGridDimensions, getAutoGrid, snakePath } from '@/types/imagier';
 import { applyCasse, formatPhonemes, getDeterminer } from '@/utils/imagier-utils';
 
 /* ─── Font registration ─── */
@@ -305,28 +306,69 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               );
             })()}
 
-            {/* ── Parcours — rectangular perimeter (game board frame) ── always landscape */}
+            {/* ── Parcours — snake board game with visible ribbon ── always landscape */}
             {settings.pageStyle === 'parcours-s' && (() => {
-              const { cols, rows } = getParcoursRect(settings.parcoursPerPage);
-              // Always landscape A4
-              const pageW = 842;
-              const pageH = 595;
+              const n = pageWords.length;
+              if (n === 0) return null;
+
+              const pdfPageW = 842;
+              const pdfPageH = 595;
               const headerH = settings.showHeader ? 52 : 0;
               const footerH = 28;
-              const usableW = pageW - 2 * pagePadding;
-              const usableH = pageH - 10 - 8 - headerH - footerH;
+              const pdfUsableW = pdfPageW - 2 * pagePadding;
+              const pdfUsableH = pdfPageH - 10 - 8 - headerH - footerH;
 
-              const cardW = (usableW - (cols - 1) * hGap) / cols;
-              const cardH = (usableH - (rows - 1) * vGap) / rows;
-              const path = spiralPath(cols, rows);
+              // Auto-compute grid from actual word count
+              const { cols, rows } = getAutoGrid(n);
+              const path = snakePath(cols, rows);
+
+              // Square cards
+              const availW = (pdfUsableW - (cols - 1) * hGap) / cols;
+              const availH = (pdfUsableH - (rows - 1) * vGap) / rows;
+              const cardSize = Math.min(availW, availH);
+
+              // Center the grid
+              const gridW = cols * cardSize + (cols - 1) * hGap;
+              const gridH = rows * cardSize + (rows - 1) * vGap;
+              const offsetX = (pdfUsableW - gridW) / 2;
+              const offsetY = (pdfUsableH - gridH) / 2;
+
+              // Card centers for ribbon
+              const centers = [];
+              for (let i = 0; i < n; i++) {
+                const { col, row } = path[i];
+                centers.push({
+                  cx: offsetX + col * (cardSize + hGap) + cardSize / 2,
+                  cy: offsetY + row * (cardSize + vGap) + cardSize / 2,
+                });
+              }
+              const ribbonWidth = cardSize * 1.08;
+              const pathD = centers.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.cx} ${p.cy}`).join(' ');
 
               return (
                 <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>
+                  {/* Ribbon path */}
+                  {n > 1 && (
+                    <Svg style={{ position: 'absolute', left: 0, top: 0 }} width={pdfUsableW} height={pdfUsableH}>
+                      <SvgPath
+                        d={pathD}
+                        stroke="#A29BFE"
+                        strokeWidth={ribbonWidth}
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity={0.18}
+                      />
+                    </Svg>
+                  )}
+                  {/* Cards on top */}
                   {pageWords.map((word, i) => {
                     const { col, row } = path[i];
+                    const x = offsetX + col * (cardSize + hGap);
+                    const y = offsetY + row * (cardSize + vGap);
                     return (
                       <View key={word.uid || word.MOTS + i}
-                        style={{ position: 'absolute', left: col * (cardW + hGap), top: row * (cardH + vGap), width: cardW, height: cardH }}>
+                        style={{ position: 'absolute', left: x, top: y, width: cardSize, height: cardSize }}>
                         <ParcoursCellPdf
                           word={word} settings={settings} imageMap={imageMap}
                           number={start + i + 1} isFirst={start + i === 0} isLast={start + i === words.length - 1}

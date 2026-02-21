@@ -143,13 +143,13 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                     onClick={() => updateSetting('pageStyle', 'parcours-s')}
                     icon={
                       <svg viewBox="0 0 40 40" fill="none">
-                        {/* Rectangular perimeter loop */}
-                        <polyline points="4,8 14,8 26,8 36,8 36,18 36,30 26,30 14,30 4,30 4,18"
-                          stroke={settings.pageStyle==='parcours-s'?'#A29BFE':'#D1D5DB'} strokeWidth="9" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
-                        <polyline points="4,8 14,8 26,8 36,8 36,18 36,30 26,30 14,30 4,30 4,18"
-                          stroke={settings.pageStyle==='parcours-s'?'#6C5CE7':'#9CA3AF'} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
-                        <text x="5" y="12" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">1</text>
-                        <text x="15" y="12" fontFamily="'Sora',sans-serif" fontSize="5" fontWeight="800" fill="white">2</text>
+                        {/* Snake/serpentine ribbon */}
+                        <polyline points="4,8 14,8 26,8 36,8 36,20 26,20 14,20 4,20 4,32 14,32 26,32 36,32"
+                          stroke={settings.pageStyle==='parcours-s'?'#A29BFE':'#D1D5DB'} strokeWidth="8" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
+                        <polyline points="4,8 14,8 26,8 36,8 36,20 26,20 14,20 4,20 4,32 14,32 26,32 36,32"
+                          stroke={settings.pageStyle==='parcours-s'?'#6C5CE7':'#9CA3AF'} strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
+                        <text x="5" y="11" fontFamily="'Sora',sans-serif" fontSize="4.5" fontWeight="800" fill="white">1</text>
+                        <text x="15" y="11" fontFamily="'Sora',sans-serif" fontSize="4.5" fontWeight="800" fill="white">2</text>
                       </svg>
                     }
                   />
@@ -504,7 +504,7 @@ function PageStyleThumb({ label, active, onClick, icon }: PageStyleThumbProps) {
   );
 }
 
-const PARCOURS_PRESETS = [6, 8, 9, 12, 16] as const;
+const PARCOURS_PRESETS = [12, 16, 20, 30, 40] as const;
 
 function ParcoursPerPageField({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const idx = PARCOURS_PRESETS.indexOf(value as typeof PARCOURS_PRESETS[number]);

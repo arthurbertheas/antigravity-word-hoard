@@ -8,7 +8,7 @@ export interface ImagierSettings {
   grid: GridLayout;
   orientation: Orientation;
   pageStyle: PageStyle;
-  parcoursPerPage: number; // 6 | 8 | 9 | 12 | 16
+  parcoursPerPage: number; // 12 | 16 | 20 | 30 | 40
   showHeader: boolean;
   title: string;
   subtitle: string;
@@ -30,7 +30,7 @@ export const DEFAULT_IMAGIER_SETTINGS: ImagierSettings = {
   grid: '3x3',
   orientation: 'portrait',
   pageStyle: 'grid',
-  parcoursPerPage: 9,
+  parcoursPerPage: 30,
   showHeader: true,
   title: '',
   subtitle: '',
@@ -85,13 +85,14 @@ export function getGridDimensions(grid: GridLayout, orientation: Orientation): {
  *  cols * rows = n  →  chosen so ratio ≈ landscape A4  */
 export function getParcoursRect(n: number): { cols: number; rows: number } {
   const map: Record<number, { cols: number; rows: number }> = {
-    6:  { cols: 3, rows: 2 },
-    8:  { cols: 4, rows: 2 },
     9:  { cols: 3, rows: 3 },
     12: { cols: 4, rows: 3 },
     16: { cols: 4, rows: 4 },
+    20: { cols: 5, rows: 4 },
+    24: { cols: 6, rows: 4 },
+    30: { cols: 6, rows: 5 },
   };
-  return map[n] ?? { cols: 3, rows: 3 };
+  return map[n] ?? { cols: 5, rows: 4 };
 }
 
 /** Spiral (snail) path — fills ALL cells from outside inward, clockwise. */
@@ -113,6 +114,39 @@ export function spiralPath(cols: number, rows: number): Array<{ col: number; row
     }
   }
   return path;
+}
+
+/** Snake/boustrophedon path — rows alternate left→right, right→left. */
+export function snakePath(cols: number, rows: number): Array<{ col: number; row: number }> {
+  const path: Array<{ col: number; row: number }> = [];
+  for (let row = 0; row < rows; row++) {
+    for (let c = 0; c < cols; c++) {
+      const col = row % 2 === 0 ? c : (cols - 1 - c);
+      path.push({ col, row });
+    }
+  }
+  return path;
+}
+
+/** Auto-compute optimal cols×rows for n cards in landscape orientation.
+ *  Targets A4 landscape ratio ≈ 1.41, keeps cols ≥ rows. */
+export function getAutoGrid(n: number): { cols: number; rows: number } {
+  if (n <= 0) return { cols: 1, rows: 1 };
+  const targetRatio = 1.41;
+  let bestCols = n, bestRows = 1, bestScore = Infinity;
+  for (let rows = 1; rows <= n; rows++) {
+    const cols = Math.ceil(n / rows);
+    if (cols < rows) break;
+    const ratio = cols / rows;
+    const waste = (cols * rows - n) / n;
+    const score = Math.abs(ratio - targetRatio) + waste * 0.3;
+    if (score < bestScore) {
+      bestScore = score;
+      bestCols = cols;
+      bestRows = rows;
+    }
+  }
+  return { cols: bestCols, rows: bestRows };
 }
 
 /** @deprecated Use spiralPath instead */
