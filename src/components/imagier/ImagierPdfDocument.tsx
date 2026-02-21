@@ -342,7 +342,8 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
                   cy: offsetY + row * (cardSize + vGap) + cardSize / 2,
                 });
               }
-              const ribbonWidth = cardSize * 1.08;
+              // Ribbon narrower than cards → visible gap between rows = path feeling
+              const ribbonWidth = cardSize * 0.72;
               const pathD = centers.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.cx} ${p.cy}`).join(' ');
 
               return (
@@ -357,7 +358,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
                         strokeLinejoin="round"
                         strokeLinecap="round"
                         fill="none"
-                        opacity={0.18}
+                        opacity={0.22}
                       />
                     </Svg>
                   )}

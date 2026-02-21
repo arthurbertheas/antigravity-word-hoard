@@ -189,7 +189,8 @@ export function ImagierPreview({
         cy: offsetY + row * (cardSize + vGapPx) + cardSize / 2,
       });
     }
-    const ribbonWidth = cardSize * 1.08;
+    // Ribbon narrower than cards → visible gap between rows = path feeling
+    const ribbonWidth = cardSize * 0.72;
 
     return (
       <div style={{ position: 'absolute', inset: 0 }}>
@@ -205,7 +206,7 @@ export function ImagierPreview({
               strokeLinejoin="round"
               strokeLinecap="round"
               fill="none"
-              opacity={0.18}
+              opacity={0.22}
             />
           </svg>
         )}
