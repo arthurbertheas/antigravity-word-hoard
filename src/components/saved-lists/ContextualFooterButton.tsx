@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,7 +16,7 @@ export function ContextualFooterButton({ mode, onSave }: ContextualFooterButtonP
         if (saveState === 'saved') {
             const timer = setTimeout(() => {
                 setSaveState('idle');
-            }, 2500);
+            }, 1500);
             return () => clearTimeout(timer);
         }
     }, [saveState]);
