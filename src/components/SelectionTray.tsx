@@ -54,7 +54,7 @@ export function SelectionTray({ onOpenImagier }: { onOpenImagier: () => void }) 
   }, [isCollapsed]);
 
   // Detect modifications (Ticket 2)
-  const hasChanges = currentListId && originalWords.length > 0 && (
+  const hasChanges = currentListId && (
   originalWords.length !== selectedWords.length ||
   !originalWords.every((w, i) => w.MOTS === selectedWords[i]?.MOTS));
 
