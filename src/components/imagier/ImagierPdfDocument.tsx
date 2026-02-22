@@ -426,7 +426,9 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const cx = usableW / 2;
               const cy = usableH / 2;
               const R = Math.min(usableW, usableH) * 0.38;
-              const cardSize = Math.min(R * 0.52, (2 * Math.PI * R) / Math.max(n, 1) * 0.82);
+              const gapPt = (hGap + vGap) / 2;
+              const arcPerCard = (2 * Math.PI * R) / Math.max(n, 1);
+              const cardSize = Math.max(10, Math.min(R * 0.52, arcPerCard - gapPt));
 
               return (
                 <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>

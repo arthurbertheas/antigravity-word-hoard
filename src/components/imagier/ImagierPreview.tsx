@@ -270,7 +270,9 @@ export function ImagierPreview({
     const cx = usableW / 2;
     const cy = usableH / 2;
     const R = Math.min(usableW, usableH) * 0.38;
-    const cardSize = Math.min(R * 0.52, (2 * Math.PI * R) / Math.max(n, 1) * 0.82);
+    const gapPx = (hGapPx + vGapPx) / 2;
+    const arcPerCard = (2 * Math.PI * R) / Math.max(n, 1);
+    const cardSize = Math.max(10, Math.min(R * 0.52, arcPerCard - gapPx));
 
     return (
       <div style={{ position: 'absolute', inset: 0 }}>
