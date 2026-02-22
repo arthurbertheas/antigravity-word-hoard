@@ -362,8 +362,8 @@ export function SelectionTray({ onOpenImagier }: { onOpenImagier: () => void }) 
               {/* Contextual Footer Button (Ticket 2 - 4 états) */}
               <ContextualFooterButton
               mode={
-              selectedWords.length === 0 ? 'hidden' :
               hasChanges ? 'update' :
+              selectedWords.length === 0 ? 'hidden' :
               !currentListId ? 'create' :
               'hidden'
               }
