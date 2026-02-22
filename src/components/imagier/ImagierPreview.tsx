@@ -183,34 +183,64 @@ export function ImagierPreview({
     const offsetX = (usableW - gridW) / 2;
     const offsetY = marginPx + (parcUsableH - gridH) / 2;
 
-    // Card centers for the ribbon polyline
-    const centers = [];
-    for (let i = 0; i < n; i++) {
-      const { col, row } = path[i];
-      centers.push({
-        cx: offsetX + col * (cardSize + hGapPx) + cardSize / 2,
-        cy: offsetY + row * (cardSize + vGapPx) + cardSize / 2,
+    // Ribbon segments: row bars + vertical connectors (HTML divs for exact sizing)
+    const br = cardSize / 2;
+    const ribbonRows: Array<{x: number; y: number; w: number}> = [];
+    const ribbonConns: Array<{x: number; y: number; h: number}> = [];
+
+    for (let r = 0; r < rows; r++) {
+      const colsInRow: number[] = [];
+      for (let i = 0; i < n; i++) {
+        if (path[i].row === r) colsInRow.push(path[i].col);
+      }
+      if (colsInRow.length === 0) continue;
+      const minC = Math.min(...colsInRow);
+      const maxC = Math.max(...colsInRow);
+      ribbonRows.push({
+        x: offsetX + minC * (cardSize + hGapPx),
+        y: offsetY + r * (cardSize + vGapPx),
+        w: (maxC - minC) * (cardSize + hGapPx) + cardSize,
       });
     }
-    const ribbonWidth = cardSize;
+
+    for (let r = 0; r < rows - 1; r++) {
+      let lastInRow = -1;
+      let hasNext = false;
+      for (let i = 0; i < n; i++) {
+        if (path[i].row === r) lastInRow = i;
+        if (path[i].row === r + 1) hasNext = true;
+      }
+      if (lastInRow < 0 || !hasNext) break;
+      const turnCol = path[lastInRow].col;
+      ribbonConns.push({
+        x: offsetX + turnCol * (cardSize + hGapPx),
+        y: offsetY + r * (cardSize + vGapPx) + cardSize - br,
+        h: vGapPx + 2 * br,
+      });
+    }
 
     return (
       <div style={{ position: 'absolute', inset: 0 }}>
-        {/* Ribbon path — colored band connecting card centers */}
+        {/* Ribbon — HTML divs for pixel-perfect sizing match with cards */}
         {n > 1 && (
-          <svg
-            style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}
-          >
-            <polyline
-              points={centers.map(p => `${p.cx},${p.cy}`).join(' ')}
-              stroke="#A29BFE"
-              strokeWidth={ribbonWidth}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              fill="none"
-              opacity={0.22}
-            />
-          </svg>
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.22, pointerEvents: 'none' }}>
+            {ribbonRows.map((bar, i) => (
+              <div key={`rr-${i}`} style={{
+                position: 'absolute', left: bar.x, top: bar.y,
+                width: bar.w, height: cardSize,
+                background: '#A29BFE',
+                borderRadius: br,
+              }} />
+            ))}
+            {ribbonConns.map((conn, i) => (
+              <div key={`rc-${i}`} style={{
+                position: 'absolute', left: conn.x, top: conn.y,
+                width: cardSize, height: conn.h,
+                background: '#A29BFE',
+                borderRadius: br,
+              }} />
+            ))}
+          </div>
         )}
         {/* Cards on top of the ribbon */}
         {visibleWords.map((word, i) => {

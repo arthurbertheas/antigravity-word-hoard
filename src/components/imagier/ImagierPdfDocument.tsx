@@ -1,6 +1,5 @@
 import {
   Document, Page, View, Text, Image, Font, StyleSheet,
-  Svg, Path as SvgPath,
 } from '@react-pdf/renderer';
 import { Word } from '@/types/word';
 import { ImagierSettings, getGridMax, getGridDimensions, getAutoGrid, snakePath } from '@/types/imagier';
@@ -336,33 +335,64 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const offsetX = (pdfUsableW - gridW) / 2;
               const offsetY = pagePadding + (parcUsableH - gridH) / 2;
 
-              // Card centers for ribbon
-              const centers = [];
-              for (let i = 0; i < n; i++) {
-                const { col, row } = path[i];
-                centers.push({
-                  cx: offsetX + col * (cardSize + hGap) + cardSize / 2,
-                  cy: offsetY + row * (cardSize + vGap) + cardSize / 2,
+              // Ribbon segments: row bars + vertical connectors (View for exact sizing)
+              const br = cardSize / 2;
+              const ribbonRowBars: Array<{x: number; y: number; w: number}> = [];
+              const ribbonConns: Array<{x: number; y: number; h: number}> = [];
+
+              for (let r = 0; r < rows; r++) {
+                const colsInRow: number[] = [];
+                for (let i = 0; i < n; i++) {
+                  if (path[i].row === r) colsInRow.push(path[i].col);
+                }
+                if (colsInRow.length === 0) continue;
+                const minC = Math.min(...colsInRow);
+                const maxC = Math.max(...colsInRow);
+                ribbonRowBars.push({
+                  x: offsetX + minC * (cardSize + hGap),
+                  y: offsetY + r * (cardSize + vGap),
+                  w: (maxC - minC) * (cardSize + hGap) + cardSize,
                 });
               }
-              const ribbonWidth = cardSize;
-              const pathD = centers.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.cx} ${p.cy}`).join(' ');
+
+              for (let r = 0; r < rows - 1; r++) {
+                let lastInRow = -1;
+                let hasNext = false;
+                for (let i = 0; i < n; i++) {
+                  if (path[i].row === r) lastInRow = i;
+                  if (path[i].row === r + 1) hasNext = true;
+                }
+                if (lastInRow < 0 || !hasNext) break;
+                const turnCol = path[lastInRow].col;
+                ribbonConns.push({
+                  x: offsetX + turnCol * (cardSize + hGap),
+                  y: offsetY + r * (cardSize + vGap) + cardSize - br,
+                  h: vGap + 2 * br,
+                });
+              }
 
               return (
                 <View style={{ flex: 1, position: 'relative', marginLeft: pagePadding, marginRight: pagePadding }}>
-                  {/* Ribbon path */}
+                  {/* Ribbon — View elements for exact sizing match with cards */}
                   {n > 1 && (
-                    <Svg style={{ position: 'absolute', left: 0, top: 0 }} width={pdfUsableW} height={pdfUsableH}>
-                      <SvgPath
-                        d={pathD}
-                        stroke="#A29BFE"
-                        strokeWidth={ribbonWidth}
-                        strokeLinejoin="round"
-                        strokeLinecap="round"
-                        fill="none"
-                        opacity={0.22}
-                      />
-                    </Svg>
+                    <View style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, opacity: 0.22 }}>
+                      {ribbonRowBars.map((bar, i) => (
+                        <View key={`rr-${i}`} style={{
+                          position: 'absolute', left: bar.x, top: bar.y,
+                          width: bar.w, height: cardSize,
+                          backgroundColor: '#A29BFE',
+                          borderRadius: br,
+                        }} />
+                      ))}
+                      {ribbonConns.map((conn, i) => (
+                        <View key={`rc-${i}`} style={{
+                          position: 'absolute', left: conn.x, top: conn.y,
+                          width: cardSize, height: conn.h,
+                          backgroundColor: '#A29BFE',
+                          borderRadius: br,
+                        }} />
+                      ))}
+                    </View>
                   )}
                   {/* Cards on top */}
                   {pageWords.map((word, i) => {
