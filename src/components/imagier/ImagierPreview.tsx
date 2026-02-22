@@ -169,16 +169,19 @@ export function ImagierPreview({
     const { cols, rows } = getAutoGrid(n);
     const path = snakePath(cols, rows);
 
+    // Account for vertical margin (horizontal margin already in usableW)
+    const parcUsableH = usableH - 2 * marginPx;
+
     // Square cards: use the smaller dimension so cards are perfect squares
     const availW = (usableW - (cols - 1) * hGapPx) / cols;
-    const availH = (usableH - (rows - 1) * vGapPx) / rows;
+    const availH = (parcUsableH - (rows - 1) * vGapPx) / rows;
     const cardSize = Math.min(availW, availH);
 
-    // Center the grid in the available space
+    // Center the grid in the available space (with vertical margin offset)
     const gridW = cols * cardSize + (cols - 1) * hGapPx;
     const gridH = rows * cardSize + (rows - 1) * vGapPx;
     const offsetX = (usableW - gridW) / 2;
-    const offsetY = (usableH - gridH) / 2;
+    const offsetY = marginPx + (parcUsableH - gridH) / 2;
 
     // Card centers for the ribbon polyline
     const centers = [];

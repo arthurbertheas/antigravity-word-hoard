@@ -322,16 +322,19 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
               const { cols, rows } = getAutoGrid(n);
               const path = snakePath(cols, rows);
 
+              // Account for vertical margin (horizontal margin already in pdfUsableW)
+              const parcUsableH = pdfUsableH - 2 * pagePadding;
+
               // Square cards
               const availW = (pdfUsableW - (cols - 1) * hGap) / cols;
-              const availH = (pdfUsableH - (rows - 1) * vGap) / rows;
+              const availH = (parcUsableH - (rows - 1) * vGap) / rows;
               const cardSize = Math.min(availW, availH);
 
-              // Center the grid
+              // Center the grid (with vertical margin offset)
               const gridW = cols * cardSize + (cols - 1) * hGap;
               const gridH = rows * cardSize + (rows - 1) * vGap;
               const offsetX = (pdfUsableW - gridW) / 2;
-              const offsetY = (pdfUsableH - gridH) / 2;
+              const offsetY = pagePadding + (parcUsableH - gridH) / 2;
 
               // Card centers for ribbon
               const centers = [];

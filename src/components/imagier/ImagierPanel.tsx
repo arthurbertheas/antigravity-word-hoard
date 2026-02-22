@@ -140,7 +140,12 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                     value="parcours-s"
                     label="Parcours"
                     active={settings.pageStyle === 'parcours-s'}
-                    onClick={() => updateSetting('pageStyle', 'parcours-s')}
+                    onClick={() => {
+                      updateSetting('pageStyle', 'parcours-s');
+                      // Auto-set comfortable gaps for board game feel
+                      if (settings.hGap < 15) updateSetting('hGap', 20);
+                      if (settings.vGap < 15) updateSetting('vGap', 20);
+                    }}
                     icon={
                       <svg viewBox="0 0 40 40" fill="none">
                         {/* Snake/serpentine ribbon */}
@@ -504,7 +509,7 @@ function PageStyleThumb({ label, active, onClick, icon }: PageStyleThumbProps) {
   );
 }
 
-const PARCOURS_PRESETS = [12, 16, 20, 30, 40] as const;
+const PARCOURS_PRESETS = [6, 12, 20, 30, 40] as const;
 
 function ParcoursPerPageField({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const idx = PARCOURS_PRESETS.indexOf(value as typeof PARCOURS_PRESETS[number]);
