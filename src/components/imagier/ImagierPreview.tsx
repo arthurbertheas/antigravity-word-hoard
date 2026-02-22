@@ -192,8 +192,7 @@ export function ImagierPreview({
         cy: offsetY + row * (cardSize + vGapPx) + cardSize / 2,
       });
     }
-    // Ribbon narrower than cards → visible gap between rows = path feeling
-    const ribbonWidth = cardSize * 0.72;
+    const ribbonWidth = cardSize;
 
     return (
       <div style={{ position: 'absolute', inset: 0 }}>

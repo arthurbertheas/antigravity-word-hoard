@@ -345,8 +345,7 @@ export function ImagierPdfDocument({ words, settings, imageMap }: ImagierPdfDocu
                   cy: offsetY + row * (cardSize + vGap) + cardSize / 2,
                 });
               }
-              // Ribbon narrower than cards → visible gap between rows = path feeling
-              const ribbonWidth = cardSize * 0.72;
+              const ribbonWidth = cardSize;
               const pathD = centers.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.cx} ${p.cy}`).join(' ');
 
               return (
