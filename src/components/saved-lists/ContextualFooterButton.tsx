@@ -21,7 +21,7 @@ export function ContextualFooterButton({ mode, onSave }: ContextualFooterButtonP
         }
     }, [saveState]);
 
-    if (mode === 'hidden') {
+    if (mode === 'hidden' && saveState === 'idle') {
         return null;
     }
 
