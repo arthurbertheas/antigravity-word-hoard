@@ -227,16 +227,14 @@ export function SelectionTray({ onOpenImagier }: { onOpenImagier: () => void }) 
           </div>
 
           <div className="flex-1 overflow-hidden flex flex-col py-0">
-            <div className="flex-none px-4 py-[16px]">
+            <div className="flex-none px-4 pt-3 pb-1.5">
               <UnifiedListSelector
               selectedList={currentListId ? savedLists.find((l) => l.id === currentListId) || null : null}
               onOpenListView={() => setActiveView('saved-lists')}
               onDeselect={handleDirectDeselect} />
-
             </div>
 
-
-            <div className="flex-none p-4 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
+            <div className="flex-none px-4 pt-2 pb-3 border-b border-slate-50 bg-gradient-to-b from-white to-transparent">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-2xl font-black text-foreground">
                   {selectedWords.length} <span className="text-sm font-medium text-muted-foreground">mots</span>
