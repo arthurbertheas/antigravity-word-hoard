@@ -389,9 +389,11 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
                           ))}
                         </div>
                       </div>
+                      <div className="border-t border-[rgba(108,92,231,0.1)] pt-2 mt-1">
+                        <ToggleRow icon="le" label="Déterminant" desc="le/la devant le mot" checked={settings.showDeterminer} onCheckedChange={() => updateSetting('showDeterminer', !settings.showDeterminer)} />
+                      </div>
                     </div>
                   </ToggleRow>
-                  <ToggleRow icon="le" label="Déterminant" desc="Affiche le/la/un/une devant le mot" checked={settings.showDeterminer} onCheckedChange={() => updateSetting('showDeterminer', !settings.showDeterminer)} />
                 </div>
               </div>
 
