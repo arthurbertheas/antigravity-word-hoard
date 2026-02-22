@@ -1,7 +1,7 @@
-import React from 'react';
 import { Folder, X, ChevronRight } from 'lucide-react';
 import { SavedList } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
+import { useSavedListsContext } from '@/contexts/SavedListsContext';
 
 interface UnifiedListSelectorProps {
     selectedList: SavedList | null;
@@ -14,7 +14,9 @@ export function UnifiedListSelector({
     onOpenListView,
     onDeselect
 }: UnifiedListSelectorProps) {
+    const { savedLists } = useSavedListsContext();
     const hasSelection = !!selectedList;
+    const listCount = savedLists.length;
 
     return (
         <div
@@ -22,11 +24,11 @@ export function UnifiedListSelector({
                 "border rounded-xl overflow-hidden transition-all",
                 hasSelection
                     ? "border-[#6366f1] bg-gradient-to-br from-[#fafaff] to-[#f8f8ff]"
-                    : "border-[#E5E7EB] bg-white hover:border-[#d0d4e0]"
+                    : "border-[#E5E7EB] bg-[#FAFAFF] hover:border-[#6366f1] hover:bg-[#F5F3FF]"
             )}
         >
             <div
-                className="flex items-center px-3.5 py-3 cursor-pointer transition-colors hover:bg-[rgba(99,102,241,0.04)]"
+                className="flex items-center px-3.5 py-3 cursor-pointer transition-colors"
                 onClick={onOpenListView}
             >
                 {/* Icon Box */}
@@ -35,13 +37,13 @@ export function UnifiedListSelector({
                         "w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 mr-3 transition-colors",
                         hasSelection
                             ? "bg-gradient-to-br from-[#6366f1] to-[#818cf8]"
-                            : "bg-[#F0F1F8]"
+                            : "bg-[#F0EDFF]"
                     )}
                 >
                     <Folder
                         className={cn(
                             "w-[18px] h-[18px]",
-                            hasSelection ? "text-white" : "text-[#8b8fa8]"
+                            hasSelection ? "text-white" : "text-[#6C5CE7]"
                         )}
                     />
                 </div>
@@ -68,11 +70,14 @@ export function UnifiedListSelector({
                         </>
                     ) : (
                         <>
-                            <div className="text-[11px] font-[500] text-[#8b8fa8] uppercase tracking-[0.3px] mb-0.5 font-['DM_Sans']">
-                                Listes enregistrées
+                            <div className="font-['Sora'] text-[13px] font-[600] text-[#1A1A2E]">
+                                Charger une liste
                             </div>
-                            <div className="font-['Sora'] text-[14px] font-[600] text-[#1A1A2E]">
-                                Aucune liste
+                            <div className="text-[11px] text-[#9CA3AF] mt-0.5 font-['DM_Sans']">
+                                {listCount === 0
+                                    ? 'Aucune liste sauvegardée'
+                                    : `${listCount} liste${listCount > 1 ? 's' : ''} disponible${listCount > 1 ? 's' : ''}`
+                                }
                             </div>
                         </>
                     )}

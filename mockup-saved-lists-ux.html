@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — UX Listes sauvegardées</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F3F4F6;
+    color: #1A1A2E;
+    padding: 40px 24px;
+  }
+  h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1A1A2E;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .page-desc {
+    text-align: center;
+    color: #6B7280;
+    font-size: 14px;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+
+  /* Section layout */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto 56px;
+  }
+  .section-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1A1A2E;
+    margin-bottom: 4px;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: #6B7280;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .section-tag {
+    display: inline-block;
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .tag-current { background: #FEF3C7; color: #92400E; }
+  .tag-option-a { background: #DBEAFE; color: #1E40AF; }
+  .tag-option-b { background: #D1FAE5; color: #065F46; }
+  .tag-option-c { background: #EDE9FE; color: #5B21B6; }
+  .tag-recommended { background: #10B981; color: white; margin-left: 6px; }
+
+  .states-row {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  /* Panel mock */
+  .panel {
+    width: 320px;
+    flex-shrink: 0;
+    background: white;
+    border-radius: 16px;
+    border: 1.5px solid #E5E7EB;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+  }
+  .panel-header {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid #F1F5F9;
+  }
+  .panel-header-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1A1A2E;
+  }
+  .panel-header-sub {
+    font-size: 12px;
+    color: #9CA3AF;
+    margin-top: 2px;
+  }
+  .panel-body {
+    padding: 16px;
+  }
+  .state-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #9CA3AF;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  /* ── Selector block (the key component) ── */
+  .selector {
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .selector:hover { border-color: #d0d4e0; }
+  .selector-inner {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    gap: 12px;
+  }
+  .selector-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .selector-icon.empty { background: #F0F1F8; }
+  .selector-icon.active { background: linear-gradient(135deg, #6366f1, #818cf8); }
+  .selector-icon svg { width: 18px; height: 18px; }
+  .selector-content { flex: 1; min-width: 0; }
+  .selector-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    color: #8b8fa8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .selector-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A1A2E;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .selector-title.muted { color: #9CA3AF; }
+  .selector-subtitle {
+    font-size: 12px;
+    color: #9CA3AF;
+    margin-top: 2px;
+  }
+  .selector-chevron {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8b8fa8;
+    flex-shrink: 0;
+  }
+  .selector-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+  }
+  .selector-tag {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    background: #eef0ff;
+    color: #6366f1;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .selector.loaded {
+    border-color: #6366f1;
+    background: linear-gradient(135deg, #fafaff, #f8f8ff);
+  }
+
+  /* Word count */
+  .word-count {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 14px 0 8px;
+  }
+  .word-count-num {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1A1A2E;
+  }
+  .word-count-label {
+    font-size: 14px;
+    color: #6B7280;
+    font-weight: 500;
+  }
+
+  /* Empty state */
+  .empty-zone {
+    padding: 32px 16px;
+    text-align: center;
+  }
+  .empty-zone svg {
+    width: 32px;
+    height: 32px;
+    color: #D1D5DB;
+    margin: 0 auto 12px;
+  }
+  .empty-zone p {
+    font-size: 12px;
+    color: #9CA3AF;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* CTA link */
+  .cta-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6366f1;
+    margin-top: 8px;
+    cursor: pointer;
+  }
+  .cta-link:hover { text-decoration: underline; }
+  .cta-link svg { width: 14px; height: 14px; }
+
+  /* Highlight box */
+  .highlight-box {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .highlight-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #F59E0B;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .highlight-box p {
+    font-size: 11.5px;
+    color: #92400E;
+    line-height: 1.5;
+  }
+
+  /* Annotations */
+  .annotation {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #F0FDF4;
+    border: 1px dashed #86EFAC;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #166534;
+    line-height: 1.5;
+  }
+  .annotation.red {
+    background: #FEF2F2;
+    border-color: #FECACA;
+    color: #991B1B;
+  }
+  .annotation strong { font-weight: 700; }
+
+  /* Separator */
+  .sep { height: 1px; background: #F1F5F9; margin: 12px 0; }
+
+  /* Bottom bar */
+  .bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #9CA3AF;
+    padding-top: 4px;
+  }
+  .bottom-count {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Sora', sans-serif;
+    color: #6366f1;
+  }
+
+  /* Option B specific */
+  .cta-block {
+    border: 1.5px dashed #C4B8FF;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #FAFAFF;
+  }
+  .cta-block:hover {
+    border-color: #6366f1;
+    background: #F5F3FF;
+  }
+  .cta-block-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #F0EDFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .cta-block-icon svg { width: 18px; height: 18px; color: #6C5CE7; }
+  .cta-block-content { flex: 1; }
+  .cta-block-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A1A2E;
+  }
+  .cta-block-desc {
+    font-size: 11px;
+    color: #9CA3AF;
+    margin-top: 1px;
+  }
+  .cta-block-chevron { color: #9CA3AF; }
+
+  /* Divider between options */
+  .option-divider {
+    border-top: 2px dashed #E5E7EB;
+    margin: 40px 0;
+  }
+
+  /* SVG icons */
+  .icon-folder { color: #8b8fa8; }
+  .icon-folder.white { color: white; }
+  .icon-chevron { color: #8b8fa8; }
+</style>
+</head>
+<body>
+
+<h1>UX Listes sauvegardées — Comparatif</h1>
+<p class="page-desc">
+  Problème signalé : l'orthophoniste voit "Aucune liste" et pense qu'elle n'a aucune liste enregistrée,
+  alors que ça signifie "aucune liste chargée dans la sélection". Voici 3 solutions comparées.
+</p>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- ACTUEL -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="section">
+  <span class="section-tag tag-current">Actuel</span>
+  <div class="section-title">Design actuel — le problème</div>
+  <div class="section-desc">
+    "LISTES ENREGISTRÉES / <strong>Aucune liste</strong>" est ambigu.
+    L'utilisatrice comprend "je n'ai aucune liste sauvegardée" au lieu de "aucune liste n'est chargée".
+  </div>
+
+  <div class="states-row">
+    <!-- State 1: No list loaded -->
+    <div>
+      <div class="state-label">Aucune liste chargée</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="selector">
+            <div class="selector-inner">
+              <div class="selector-icon empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-folder"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-eyebrow">Listes enregistrées</div>
+                <div class="selector-title">Aucune liste</div>
+              </div>
+              <div class="selector-chevron">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="annotation red">
+            <strong>Problème :</strong> "Aucune liste" sous "Listes enregistrées" = interprété comme "vous n'avez aucune liste sauvegardée"
+          </div>
+          <div class="word-count">
+            <span class="word-count-num">0</span>
+            <span class="word-count-label">mots</span>
+          </div>
+          <div class="empty-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><path d="M9 14l2 2 4-4"/></svg>
+            <p>Cliquez sur un mot pour<br>l'ajouter à votre liste.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- State 2: List loaded -->
+    <div>
+      <div class="state-label">Liste chargée</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="selector loaded">
+            <div class="selector-inner">
+              <div class="selector-icon active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-title">Images</div>
+                <div class="selector-tags">
+                  <span class="selector-tag">CE1</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="selector-chevron" style="color:#ef4444;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </div>
+                <div class="selector-chevron">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="word-count">
+            <span class="word-count-num">11</span>
+            <span class="word-count-label">mots</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="option-divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- OPTION A -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="section">
+  <span class="section-tag tag-option-a">Option A</span>
+  <div class="section-title">Reformulation minimale</div>
+  <div class="section-desc">
+    On change juste le texte : "Aucune liste" → "Pas de liste active" + sous-texte avec le nombre de listes disponibles.
+    Changement minimal, résout l'ambiguïté.
+  </div>
+
+  <div class="states-row">
+    <!-- No list, no saved lists -->
+    <div>
+      <div class="state-label">Aucune liste chargée · 0 listes</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="selector">
+            <div class="selector-inner">
+              <div class="selector-icon empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-folder"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-eyebrow">Listes enregistrées</div>
+                <div class="selector-title muted">Pas de liste active</div>
+                <div class="selector-subtitle">Aucune liste sauvegardée</div>
+              </div>
+              <div class="selector-chevron">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="annotation">
+            <strong>"Pas de liste active"</strong> = clairement rien de chargé.<br>
+            <strong>"Aucune liste sauvegardée"</strong> = info contextuelle rassurante/explicative.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No list loaded, but has saved lists -->
+    <div>
+      <div class="state-label">Aucune liste chargée · 3 listes</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="selector">
+            <div class="selector-inner">
+              <div class="selector-icon empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-folder"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-eyebrow">Listes enregistrées</div>
+                <div class="selector-title muted">Pas de liste active</div>
+                <div class="selector-subtitle">3 listes disponibles</div>
+              </div>
+              <div class="selector-chevron">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="annotation">
+            <strong>"3 listes disponibles"</strong> rassure : l'ortho sait qu'elle a bien des listes, juste aucune de chargée.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List loaded -->
+    <div>
+      <div class="state-label">Liste chargée</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="selector loaded">
+            <div class="selector-inner">
+              <div class="selector-icon active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-title">Images</div>
+                <div class="selector-tags">
+                  <span class="selector-tag">CE1</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="selector-chevron" style="color:#ef4444;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </div>
+                <div class="selector-chevron">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="annotation">Pas de changement — l'état chargé reste identique.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="option-divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- OPTION B -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="section">
+  <span class="section-tag tag-option-b">Option B</span>
+  <span class="section-tag tag-recommended">Recommandée</span>
+  <div class="section-title">Call-to-action explicite</div>
+  <div class="section-desc">
+    Quand aucune liste n'est chargée, le bloc devient un bouton d'action clair "Charger une liste".
+    Quand une liste est chargée, il se transforme en la carte violette habituelle.
+    L'action est explicite, pas de confusion possible.
+  </div>
+
+  <div class="states-row">
+    <!-- No list, no saved lists -->
+    <div>
+      <div class="state-label">Aucune liste chargée · 0 listes</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="cta-block">
+            <div class="cta-block-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            </div>
+            <div class="cta-block-content">
+              <div class="cta-block-title">Charger une liste</div>
+              <div class="cta-block-desc">Aucune liste sauvegardée</div>
+            </div>
+            <div class="cta-block-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+          <div class="annotation">
+            Le bloc est un <strong>bouton d'action</strong>. Pas de confusion possible : on invite à charger, pas d'état "vide" ambigu.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No list loaded, but has saved lists -->
+    <div>
+      <div class="state-label">Aucune liste chargée · 3 listes</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="cta-block">
+            <div class="cta-block-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            </div>
+            <div class="cta-block-content">
+              <div class="cta-block-title">Charger une liste</div>
+              <div class="cta-block-desc">3 listes disponibles</div>
+            </div>
+            <div class="cta-block-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+          <div class="annotation">
+            <strong>"3 listes disponibles"</strong> sous l'action = l'ortho sait qu'elle a des listes et qu'elle peut en charger une.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List loaded -->
+    <div>
+      <div class="state-label">Liste chargée</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="selector loaded">
+            <div class="selector-inner">
+              <div class="selector-icon active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-title">Images</div>
+                <div class="selector-tags">
+                  <span class="selector-tag">CE1</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="selector-chevron" style="color:#ef4444;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </div>
+                <div class="selector-chevron">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="annotation">Même état chargé que l'actuel — transition fluide du CTA vers la carte.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="option-divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- OPTION C -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="section">
+  <span class="section-tag tag-option-c">Option C</span>
+  <div class="section-title">Séparation visuelle des concepts</div>
+  <div class="section-desc">
+    Le bloc "listes" est visuellement séparé de la sélection. Il indique toujours le nombre de listes disponibles.
+    Il agit comme un lien vers l'écran de listes, jamais comme un label d'état.
+  </div>
+
+  <div class="states-row">
+    <!-- No list, no saved lists -->
+    <div>
+      <div class="state-label">Aucune liste chargée · 0 listes</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="word-count">
+            <span class="word-count-num">0</span>
+            <span class="word-count-label">mots</span>
+          </div>
+          <div class="sep"></div>
+          <div class="selector" style="border-style: dashed; border-color: #D1D5DB;">
+            <div class="selector-inner" style="padding: 10px 14px;">
+              <div class="selector-icon empty" style="width:32px;height:32px;border-radius:8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;" class="icon-folder"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-title" style="font-size:13px;">Mes listes sauvegardées</div>
+                <div class="selector-subtitle">Aucune liste pour le moment</div>
+              </div>
+              <div class="selector-chevron">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="annotation">
+            Le bloc listes est <strong>en dessous</strong> du compteur de mots, clairement séparé.
+            "Mes listes sauvegardées" ne peut pas être confondu avec l'état de la sélection.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No list loaded, has saved lists -->
+    <div>
+      <div class="state-label">Aucune liste chargée · 3 listes</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="word-count">
+            <span class="word-count-num">0</span>
+            <span class="word-count-label">mots</span>
+          </div>
+          <div class="sep"></div>
+          <div class="selector">
+            <div class="selector-inner" style="padding: 10px 14px;">
+              <div class="selector-icon empty" style="width:32px;height:32px;border-radius:8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;" class="icon-folder"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-title" style="font-size:13px;">Mes listes sauvegardées</div>
+                <div class="selector-subtitle">3 listes disponibles</div>
+              </div>
+              <div class="selector-chevron">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List loaded -->
+    <div>
+      <div class="state-label">Liste chargée</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-title">Ma sélection</div>
+          <div class="panel-header-sub">Liste et actions</div>
+        </div>
+        <div class="panel-body">
+          <div class="selector loaded">
+            <div class="selector-inner">
+              <div class="selector-icon active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+              </div>
+              <div class="selector-content">
+                <div class="selector-title">Images</div>
+                <div class="selector-tags">
+                  <span class="selector-tag">CE1</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="selector-chevron" style="color:#ef4444;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </div>
+                <div class="selector-chevron">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="word-count">
+            <span class="word-count-num">11</span>
+            <span class="word-count-label">mots</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- SUMMARY -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<div class="section" style="max-width:700px;">
+  <div class="option-divider" style="margin-top:0;"></div>
+  <div style="padding-top:32px;">
+    <div class="section-title" style="text-align:center;">Synthèse</div>
+    <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:13px;">
+      <thead>
+        <tr style="text-align:left;border-bottom:2px solid #E5E7EB;">
+          <th style="padding:8px 12px;font-family:'Sora',sans-serif;font-size:11px;font-weight:700;color:#6B7280;">Option</th>
+          <th style="padding:8px 12px;font-family:'Sora',sans-serif;font-size:11px;font-weight:700;color:#6B7280;">Effort</th>
+          <th style="padding:8px 12px;font-family:'Sora',sans-serif;font-size:11px;font-weight:700;color:#6B7280;">Clarté</th>
+          <th style="padding:8px 12px;font-family:'Sora',sans-serif;font-size:11px;font-weight:700;color:#6B7280;">Résumé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #F1F5F9;">
+          <td style="padding:10px 12px;"><span class="section-tag tag-option-a" style="margin:0;">A</span></td>
+          <td style="padding:10px 12px;color:#10B981;font-weight:600;">Faible</td>
+          <td style="padding:10px 12px;">Bonne</td>
+          <td style="padding:10px 12px;color:#6B7280;">Reformulation texte + sous-texte contextuel</td>
+        </tr>
+        <tr style="border-bottom:1px solid #F1F5F9;background:#F0FDF4;">
+          <td style="padding:10px 12px;"><span class="section-tag tag-option-b" style="margin:0;">B</span> <span style="font-size:10px;color:#065F46;font-weight:700;">Reco.</span></td>
+          <td style="padding:10px 12px;color:#F59E0B;font-weight:600;">Moyen</td>
+          <td style="padding:10px 12px;color:#10B981;font-weight:600;">Excellente</td>
+          <td style="padding:10px 12px;color:#6B7280;">CTA explicite → carte active. Zéro ambiguïté.</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px;"><span class="section-tag tag-option-c" style="margin:0;">C</span></td>
+          <td style="padding:10px 12px;color:#EF4444;font-weight:600;">Élevé</td>
+          <td style="padding:10px 12px;color:#10B981;font-weight:600;">Excellente</td>
+          <td style="padding:10px 12px;color:#6B7280;">Séparation structurelle. Plus gros changement de layout.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
