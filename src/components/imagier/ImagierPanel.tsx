@@ -336,60 +336,60 @@ export function ImagierPanel({ settings, updateSetting, words, removedCount, onR
               <div className="px-5">
                 <SectionHeader label="Texte du mot" />
                 <div className="flex flex-col gap-2.5">
-                  <ToggleRow icon="Aa" label="Mot" desc="Le mot écrit sous l'image" checked={settings.showWord} onCheckedChange={() => updateSetting('showWord', !settings.showWord)} />
+                  <ToggleRow icon="Aa" label="Mot" desc="Le mot écrit sous l'image" checked={settings.showWord} onCheckedChange={() => updateSetting('showWord', !settings.showWord)}>
+                    {/* Typographie — casse + taille, visible only when showWord is ON */}
+                    <div className="flex flex-col gap-3">
+                      <div>
+                        <div className="text-[11px] font-semibold text-[#6B7280] mb-1.5">Casse</div>
+                        <div className="flex gap-1.5">
+                          {([
+                            { value: 'lower' as const, label: 'minuscule', display: 'chaton' },
+                            { value: 'upper' as const, label: 'MAJUSCULE', display: 'CHATON' },
+                            { value: 'capitalize' as const, label: 'Capitale', display: 'Chaton' },
+                          ]).map(opt => (
+                            <button
+                              key={opt.value}
+                              onClick={(e) => { e.stopPropagation(); updateSetting('casse', opt.value); }}
+                              className={`flex-1 py-1.5 px-1.5 border-[1.5px] rounded-lg text-center transition-all
+                                ${settings.casse === opt.value
+                                  ? 'border-[#6C5CE7] bg-white shadow-[0_0_0_3px_rgba(108,92,231,0.12)]'
+                                  : 'border-[#E5E7EB] bg-white hover:border-[#A29BFE]'
+                                }
+                              `}
+                            >
+                              <div className={`text-[12px] font-semibold ${settings.casse === opt.value ? 'text-[#6C5CE7]' : 'text-[#6B7280]'}`}>{opt.display}</div>
+                              <div className={`text-[8px] mt-0.5 ${settings.casse === opt.value ? 'text-[#6C5CE7]' : 'text-[#9CA3AF]'}`}>{opt.label}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[11px] font-semibold text-[#6B7280] mb-1.5">Taille</div>
+                        <div className="flex gap-1.5">
+                          {([
+                            { value: 'small' as const, label: 'Petit', size: '10px' },
+                            { value: 'medium' as const, label: 'Moyen', size: '14px' },
+                            { value: 'large' as const, label: 'Grand', size: '18px' },
+                          ]).map(opt => (
+                            <button
+                              key={opt.value}
+                              onClick={(e) => { e.stopPropagation(); updateSetting('fontSize', opt.value); }}
+                              className={`flex-1 py-1.5 px-1.5 border-[1.5px] rounded-lg text-center transition-all
+                                ${settings.fontSize === opt.value
+                                  ? 'border-[#6C5CE7] bg-white shadow-[0_0_0_3px_rgba(108,92,231,0.12)]'
+                                  : 'border-[#E5E7EB] bg-white hover:border-[#A29BFE]'
+                                }
+                              `}
+                            >
+                              <div className={`font-bold ${settings.fontSize === opt.value ? 'text-[#6C5CE7]' : 'text-[#6B7280]'}`} style={{ fontSize: opt.size }}>A</div>
+                              <div className={`text-[8px] mt-0.5 ${settings.fontSize === opt.value ? 'text-[#6C5CE7]' : 'text-[#9CA3AF]'}`}>{opt.label}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </ToggleRow>
                   <ToggleRow icon="le" label="Déterminant" desc="Affiche le/la/un/une devant le mot" checked={settings.showDeterminer} onCheckedChange={() => updateSetting('showDeterminer', !settings.showDeterminer)} />
-                </div>
-              </div>
-
-              {/* Section: Casse du mot */}
-              <div className="px-5">
-                <SectionHeader label="Casse du mot" />
-                <div className="flex gap-1.5">
-                  {([
-                    { value: 'lower' as const, label: 'minuscule', display: 'chaton' },
-                    { value: 'upper' as const, label: 'MAJUSCULE', display: 'CHATON' },
-                    { value: 'capitalize' as const, label: 'Capitale', display: 'Chaton' },
-                  ]).map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => updateSetting('casse', opt.value)}
-                      className={`flex-1 py-2 px-2 border-[1.5px] rounded-lg text-center transition-all
-                        ${settings.casse === opt.value
-                          ? 'border-[#6C5CE7] bg-[#F5F3FF] shadow-[0_0_0_3px_rgba(108,92,231,0.12)]'
-                          : 'border-[#E5E7EB] bg-white hover:border-[#A29BFE]'
-                        }
-                      `}
-                    >
-                      <div className={`text-sm font-semibold ${settings.casse === opt.value ? 'text-[#6C5CE7]' : 'text-[#6B7280]'}`}>{opt.display}</div>
-                      <div className={`text-[9px] mt-0.5 ${settings.casse === opt.value ? 'text-[#6C5CE7]' : 'text-[#9CA3AF]'}`}>{opt.label}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Section: Taille de police */}
-              <div className="px-5">
-                <SectionHeader label="Taille de police" />
-                <div className="flex gap-1.5">
-                  {([
-                    { value: 'small' as const, label: 'Petit', size: '11px' },
-                    { value: 'medium' as const, label: 'Moyen', size: '15px' },
-                    { value: 'large' as const, label: 'Grand', size: '20px' },
-                  ]).map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => updateSetting('fontSize', opt.value)}
-                      className={`flex-1 py-2 px-2 border-[1.5px] rounded-lg text-center transition-all
-                        ${settings.fontSize === opt.value
-                          ? 'border-[#6C5CE7] bg-[#F5F3FF] shadow-[0_0_0_3px_rgba(108,92,231,0.12)]'
-                          : 'border-[#E5E7EB] bg-white hover:border-[#A29BFE]'
-                        }
-                      `}
-                    >
-                      <div className={`font-bold ${settings.fontSize === opt.value ? 'text-[#6C5CE7]' : 'text-[#6B7280]'}`} style={{ fontSize: opt.size }}>A</div>
-                      <div className={`text-[9px] mt-0.5 ${settings.fontSize === opt.value ? 'text-[#6C5CE7]' : 'text-[#9CA3AF]'}`}>{opt.label}</div>
-                    </button>
-                  ))}
                 </div>
               </div>
 
